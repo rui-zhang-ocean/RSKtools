@@ -51,7 +51,7 @@ dbid = mksqlite('open',fname);
 
 RSK.dbInfo = mksqlite('select version,type from dbInfo');
 vsnString = RSK.dbInfo.version;
-vsn = strsplit(vsnString, '.');
+vsn = strread(vsnString,'%s','delimiter','.');
 vsnMajor = str2num(vsn{1});
 vsnMinor = str2num(vsn{2});
 vsnPatch = str2num(vsn{3});
