@@ -85,8 +85,6 @@ ndown = length(profileNum);
 if strcmp(direction, 'down') | strcmp(direction, 'both')
     RSK.profiles.downcast.data(ndown).tstamp = [];
     RSK.profiles.downcast.data(ndown).values = [];
-    Schannel = find(strncmp('Salinity', {RSK.channels.longName}, 4));
-    RSK.channels(Schannel) = [];
     % loop through downcasts
     ii = 1;
     for i=profileNum
