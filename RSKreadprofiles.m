@@ -64,7 +64,7 @@ elseif nargin == 2
 end
 nprof = min([length(RSK.profiles.downcast.tstart) length(RSK.profiles.upcast.tstart)]);
 if isempty(profileNum) profileNum = 1:nprof; end
-if isempty(direction) type = 'down'; end
+if isempty(direction) direction = 'down'; end
 
 nup = length(profileNum);
 ndown = length(profileNum);
