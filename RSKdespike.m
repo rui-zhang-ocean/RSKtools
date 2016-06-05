@@ -48,7 +48,7 @@ y = x;
 ref = runmed(x, k);
 dx = x - ref;
 sd = std(dx);
-I = find(dx > n*sd);
+I = find(abs(dx) > n*sd);
 
 switch action
   case 'replace'
