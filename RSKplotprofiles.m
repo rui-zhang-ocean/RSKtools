@@ -65,7 +65,7 @@ if isempty(profileNum)
             profileNum = 1:length(RSK.profiles.downcast.data); 
         end
     elseif strcmp(direction, 'up')
-        if ~isfield(RSK.profiles.downcast, 'data')
+        if ~isfield(RSK.profiles.upcast, 'data')
             error('No upcasts in RSK');
         else 
             profileNum = 1:length(RSK.profiles.upcast.data); 
