@@ -1,4 +1,4 @@
-function [RSK, lags] = RSKalignprofile(RSK, profileNum, nsmooth, despike)
+function [RSK, lags] = RSKalignprofile(RSK, profileNum, CTlag, nsmooth, despike)
 
 % RSKalignprofile - Align conductivity and temperature in CTD profiles
 %     to minimize salinity spiking
@@ -8,7 +8,8 @@ function [RSK, lags] = RSKalignprofile(RSK, profileNum, nsmooth, despike)
 % Calculates, and applies, the optimal conductivity/temperature lag to
 % minimize salinity "spikes". Salinity spikes typically result from
 % temporal C/T mismatches when the sensors are moving through regions
-% of high vertical gradients. The optimal lag is determined by
+% of high vertical gradients. Either the value of CTlag is used for
+% the alignment, or if left empty the optimal lag is determined by
 % constructing a smoothed reference salinity by running the calculated
 % salinity through an `nsmooth`-point boxcar filter, then comparing
 % the standard deviations of the residuals for a range of lags from
@@ -54,14 +55,31 @@ function [RSK, lags] = RSKalignprofile(RSK, profileNum, nsmooth, despike)
 
 if nargin == 1
     profileNum = 1:length(RSK.profiles.downcast.data);
+    CTlag = [];
     nsmooth = 21;
     despike = 0;
 elseif nargin == 2
+    CTlag = [];
     nsmooth = 21;
     despike = 0;
 elseif nargin == 3
+    nsmooth = 21;
+    despike = 0;
+elseif nargin == 4
     despike = 0;
 end
+% Check for one value of CTlag or one for each profile
+if length(CTlag) == 1
+    if length(profileNum) == 1
+    else
+        CTlag = repmat(CTlag, 1, length(profileNum));
+    end
+elseif length(CTlag) > 1
+    if length(CTlag) ~= length(profileNum)
+        error('Length of CTlag must match number of profiles');
+    end
+end
+
 hasTEOS = exist('gsw_SP_from_C') == 2;
 
 if (~hasTEOS) error('Error: Must install TEOS-10 toolbox'); end
@@ -73,32 +91,52 @@ Tcol = find(strncmp('temperature', lower({RSK.channels.longName}), 4));
 pcol = find(strncmp('pressure', lower({RSK.channels.longName}), 4));
 
 bestlag = [];
-for i=profileNum
-    disp(['Processing profile: ' num2str(i)])
-    C = RSK.profiles.downcast.data(i).values(:, Ccol);
-    T = RSK.profiles.downcast.data(i).values(:, Tcol);
-    p = RSK.profiles.downcast.data(i).values(:, pcol);
-    S = gsw_SP_from_C(C, T, p);
-    lags = -20:20;
-    dSsd = [];
-    for lag=lags
-        Cshift = RSKshift(C, lag);
-        SS = gsw_SP_from_C(Cshift, T, p);
-        Ssmooth = smooth(SS, nsmooth);
-        dS = SS - Ssmooth;
-        dSsd = [dSsd std(dS)];
+lags = [];
+counter = 0;
+if ~isempty(CTlag)
+    for i=profileNum
+        counter = counter + 1;
+        disp(['Processing profile: ' num2str(i)])
+        C = RSK.profiles.downcast.data(i).values(:, Ccol);
+        T = RSK.profiles.downcast.data(i).values(:, Tcol);
+        p = RSK.profiles.downcast.data(i).values(:, pcol);
+        Sbest = gsw_SP_from_C(RSKshift(C, CTlag(counter)), T, p);
+        switch despike(1)
+          case 0
+            RSK.profiles.downcast.data(i).values(:, Scol) = Sbest;
+          otherwise
+            RSK.profiles.downcast.data(i).values(:, Scol) = RSKdespike(Sbest, despike(1), despike(2));
+        end
     end
-    bestlag = [bestlag lags(find(dSsd == min(dSsd)))];
-    Sbest = gsw_SP_from_C(RSKshift(C, bestlag(end)), T, p);
-    switch despike(1)
-      case 0
-        RSK.profiles.downcast.data(i).values(:, Scol) = Sbest;
-      otherwise
-        RSK.profiles.downcast.data(i).values(:, Scol) = RSKdespike(Sbest, despike(1), despike(2));
+    lags = CTlag;
+else
+    disp('No CTlag specified -- attemping to find optimal CT lag')
+    for i=profileNum
+        disp(['Processing profile: ' num2str(i)])
+        C = RSK.profiles.downcast.data(i).values(:, Ccol);
+        T = RSK.profiles.downcast.data(i).values(:, Tcol);
+        p = RSK.profiles.downcast.data(i).values(:, pcol);
+        S = gsw_SP_from_C(C, T, p);
+        lags = -20:20;
+        dSsd = [];
+        for lag=lags
+            Cshift = RSKshift(C, lag);
+            SS = gsw_SP_from_C(Cshift, T, p);
+            Ssmooth = smooth(SS, nsmooth);
+            dS = SS - Ssmooth;
+            dSsd = [dSsd std(dS)];
+        end
+        bestlag = [bestlag lags(find(dSsd == min(dSsd)))];
+        Sbest = gsw_SP_from_C(RSKshift(C, bestlag(end)), T, p);
+        switch despike(1)
+          case 0
+            RSK.profiles.downcast.data(i).values(:, Scol) = Sbest;
+          otherwise
+            RSK.profiles.downcast.data(i).values(:, Scol) = RSKdespike(Sbest, despike(1), despike(2));
+        end
     end
+    lags = bestlag;
 end
-
-lags = bestlag;
 
 end
 
