@@ -7,18 +7,24 @@ function [RSK, lags] = RSKalignprofile(RSK, profileNum, nsmooth, despike)
 % 
 % Calculates, and applies, the optimal conductivity/temperature lag to
 % minimize salinity "spikes". Salinity spikes typically result from
-% C/T mismatch in time when the sensors are moving through regions of
-% high gradients. The optimal lag is determined by constructing a
-% smoothed reference salinity by running the calculated salinity
-% through an `nsmooth`-point boxcar filter, then comparing the standard
-% deviations of the residuals for a range of lags from -20 to +20
-% samples.
+% temporal C/T mismatches when the sensors are moving through regions
+% of high vertical gradients. The optimal lag is determined by
+% constructing a smoothed reference salinity by running the calculated
+% salinity through an `nsmooth`-point boxcar filter, then comparing
+% the standard deviations of the residuals for a range of lags from
+% -20 to +20 samples.
+%
+% After calculating and applying the optimal lag, the despike argument
+% can used to apply despiking to the lagged salinity via the
+% RSKdespike function.
 %
 % Requires the TEOS-10 toolbox to be installed, to allow salinity to
 % be calculated using gsw_SP_from_C.
 %
-% Inputs:
-%    RSK - the input RSK structure, with profiles
+% Inputs: 
+%    
+%    RSK - the input RSK structure, with profiles as read using
+%        RSKreadprofiles
 %
 %    profileNum - the profiles to which to apply the correction
 %
@@ -26,9 +32,9 @@ function [RSK, lags] = RSKalignprofile(RSK, profileNum, nsmooth, despike)
 %        reference salinity. Defaults to 30 samples
 %
 %    despike - optional flag indicating whether to despike the lagged
-%        salinity using RSKdespike. If 0 do not despike, if a positive
-%        integer is the length of the despike window to use in
-%        RSKdespike.
+%        salinity using RSKdespike. If 0, do not despike, if a 2
+%        element vector of positive integers it is the n and k
+%        arguments to use in RSKdespike.
 %
 % Outputs:
 %    RSK - the RSK structure with corrected salinities
@@ -37,6 +43,9 @@ function [RSK, lags] = RSKalignprofile(RSK, profileNum, nsmooth, despike)
 %
 % Example: 
 %   
+%    rsk = RSKopen('file.rsk');
+%    rsk = RSKreadprofiles(rsk, 1:4); % read first 4 downcasts
+%    rsk = RSKalignprofile(rsk, 1:4, 21, [1 21]); % use 21 point smoothing, with despike parameters of n=1 and k=21
 %
 % Author: RBR Ltd. Ottawa ON, Canada
 % email: support@rbr-global.com
@@ -65,6 +74,7 @@ pcol = find(strncmp('pressure', lower({RSK.channels.longName}), 4));
 
 bestlag = [];
 for i=profileNum
+    disp(['Processing profile: ' num2str(i)])
     C = RSK.profiles.downcast.data(i).values(:, Ccol);
     T = RSK.profiles.downcast.data(i).values(:, Tcol);
     p = RSK.profiles.downcast.data(i).values(:, pcol);
@@ -80,11 +90,11 @@ for i=profileNum
     end
     bestlag = [bestlag lags(find(dSsd == min(dSsd)))];
     Sbest = gsw_SP_from_C(RSKshift(C, bestlag(end)), T, p);
-    switch despike
+    switch despike(1)
       case 0
         RSK.profiles.downcast.data(i).values(:, Scol) = Sbest;
       otherwise
-        RSK.profiles.downcast.data(i).values(:, Scol) = RSKdespike(Sbest, 1, despike);
+        RSK.profiles.downcast.data(i).values(:, Scol) = RSKdespike(Sbest, despike(1), despike(2));
     end
 end
 
