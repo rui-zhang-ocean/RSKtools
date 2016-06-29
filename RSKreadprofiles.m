@@ -57,7 +57,7 @@ function RSK = RSKreadprofiles(RSK, profileNum, direction, latency)
 % Author: RBR Ltd. Ottawa ON, Canada
 % email: support@rbr-global.com
 % Website: www.rbr-global.com
-% Last revision: 2016-06-02
+% Last revision: 2016-06-29
 
 if ~isfield(RSK, 'profiles') 
     error('No profiles events in this RSK');

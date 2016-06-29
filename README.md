@@ -1,6 +1,6 @@
 # RSKtools
 
-Current Version: 1.4.1 (2016-05-20)
+Current stable version: 1.4.1 (2016-05-20)
 
 RSKtools is a simple Matlab toolbox to open RSK SQLite files generated
 by RBR instruments. This repository is for the development version of
@@ -47,6 +47,7 @@ If the [TEOS-10](http://www.teos-10.org/software.htm) matlab toolbox is installe
 * Develop version 1.5.0:
 
     - migrate repository from Github to Bitbucket
+	- merge latency branch to support profiles with long latency sensors
 
 * Version 1.4.1 (2016-05-20)
 
