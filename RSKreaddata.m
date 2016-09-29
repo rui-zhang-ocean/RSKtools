@@ -57,13 +57,18 @@ results = rmfield(results,'tstamp_1'); % get rid of the corrupted one
 
 %% RSK version >= 1.12.2 now has a datasetID column in the data table
 % Look for the presence of that column and extract it from results
-if isfield(results, 'datasetID')
-    datasetID = [results(:).datasetID]';
-    results = rmfield(results, 'datasetID'); % get rid of the datasetID column
-    hasdatasetID = 1;
-else 
-    hasdatasetID = 0;
+names = fieldnames(results);
+fieldmatch = strcmpi(names, 'datasetid');
+hasdatasetID = sum(fieldmatch);
+
+if hasdatasetID
+    try
+        results = rmfield(results, names(fieldmatch == 1)); % get rid of the datasetID column
+%        datasetID = [results(:).datasetID]';
+    catch
+    end
 end
+
 %% RSK version >= 1.12.2 also replaces serialID with instrumentID in the instrumentChannels table
 % Look for serialID (in older versions) and replace it
 if sum(strcmp('serialID', fieldnames(RSK.instrumentChannels))) > 0
