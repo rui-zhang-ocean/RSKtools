@@ -34,7 +34,7 @@ function RSK = RSKreaddata(RSK, t1, t2)
 % Author: RBR Ltd. Ottawa ON, Canada
 % email: support@rbr-global.com
 % Website: www.rbr-global.com
-% Last revision: 2016-03-01
+% Last revision: 2016-09-29
 
 if nargin==1 % user wants to read ALL the data
     t1 = datenum2RSKtime(RSK.epochs.startTime);
