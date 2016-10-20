@@ -48,6 +48,7 @@ If the [TEOS-10](http://www.teos-10.org/software.htm) matlab toolbox is installe
     - 	Changed removal of 'datasetID' to be case insensitive
     - 	Fix upcast/downcast type in RSKplotprofiles
     -	Fix RSKreadprofile typo
+    -   Fix bug opening |rt instruments data
 
 * Version 1.4.1 (2016-05-20)
 
