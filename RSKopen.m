@@ -20,6 +20,8 @@ function [RSK, dbid] = RSKopen(fname)
 % instructions from the original author.  You can also find the source
 % through Google.
 %
+% Note: If the file is "realtime" there is no thumbnail data.
+%
 % Inputs:
 %    fname - filename of the RSK file
 %
@@ -110,7 +112,11 @@ catch
 end
 RSK.deployments = mksqlite('select * from deployments');
 
-RSK.thumbnailData = RSKreadthumbnail;
+%Realtime instruments do not have thumbnailData.
+if RSK.dbInfo.type=='live'
+else
+    RSK.thumbnailData = RSKreadthumbnail;
+end
 
 %% Want to read in events so that we can get the profile event metadata
 % 
