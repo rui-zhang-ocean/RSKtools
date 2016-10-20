@@ -20,7 +20,7 @@ function [RSK, dbid] = RSKopen(fname)
 % instructions from the original author.  You can also find the source
 % through Google.
 %
-% Note: If the file is "realtime" there is no thumbnail data.
+% Note: If the file was recorded from an |rt instrument there is no thumbnail data.
 %
 % Inputs:
 %    fname - filename of the RSK file
@@ -113,8 +113,7 @@ end
 RSK.deployments = mksqlite('select * from deployments');
 
 %Realtime instruments do not have thumbnailData.
-if RSK.dbInfo.type=='live'
-else
+if ~strcmp(RSK.dbInfo.type, 'live')
     RSK.thumbnailData = RSKreadthumbnail;
 end
 
