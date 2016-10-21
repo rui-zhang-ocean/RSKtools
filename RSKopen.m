@@ -113,8 +113,9 @@ end
 RSK.deployments = mksqlite('select * from deployments');
 
 %Realtime instruments do not have thumbnailData.
-if ~strcmp(RSK.dbInfo.type, 'live')
+try 
     RSK.thumbnailData = RSKreadthumbnail;
+catch
 end
 
 %% Want to read in events so that we can get the profile event metadata
