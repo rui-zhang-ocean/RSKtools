@@ -90,7 +90,7 @@ end
 RSK.channels = mksqlite('select longName,units from channels');
 % remove derived channel names (because the data aren't there anyway)
 % but only do this if it's NOT an EP format rsk
-if ~strncmp(RSK.dbInfo.type, 'EP', 2)
+if ~strcmp(RSK.dbInfo(end).type, 'EPdesktop')
     isDerived = mksqlite('select isDerived from channels');
     isMeasured = ~[isDerived.isDerived];
     for c = length(isMeasured):-1:1
