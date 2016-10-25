@@ -30,7 +30,7 @@ function RSK = RSKreadevents(RSK, t1, t2)
 % Author: RBR Ltd. Ottawa ON, Canada
 % email: support@rbr-global.com
 % Website: www.rbr-global.com
-% Last revision: 2013-03-20
+% Last revision: 2013-10-25
 
 if nargin==1 % user wants to read ALL the events
     t1 = datenum2RSKtime(RSK.epochs.startTime);
@@ -47,7 +47,18 @@ if isempty(results)
 end
 results = rmfield(results,'tstamp_1'); % get rid of the corrupted one
 
-results = RSKarrangedata(results);
+
+%If events have notes they will be conserved if it is a number, otherwise
+%will show up as NaN.
+try 
+    results = RSKarrangedata(results);
+catch
+    notes = extractfield(results, 'notes');
+    notesarray = str2double(notes);
+    results_notes = rmfield(results, 'notes');
+    results = RSKarrangedata(results_notes);
+    results.notes = notesarray';
+end
 
 t=results.tstamp';
 results.tstamp = RSKtime2datenum(t); % convert RSK millis time to datenum
