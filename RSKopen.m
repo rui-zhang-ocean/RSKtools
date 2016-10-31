@@ -37,7 +37,7 @@ function [RSK, dbid] = RSKopen(fname)
 % Author: RBR Ltd. Ottawa ON, Canada
 % email: support@rbr-global.com
 % Website: www.rbr-global.com
-% Last revision: 2016-05-16
+% Last revision: 2016-10-25
 
 RSKconstants
 
@@ -71,6 +71,19 @@ RSK.datasetDeployments = mksqlite('select * from datasetDeployments');
 try
     RSK.calibrations = mksqlite('select * from calibrations');
 catch % ignore if there is an error, rsk files from an easyparse logger  do not contain calibrations
+end
+
+%As of RSK 1.13.4 coefficients is it's own table. We add it back into calibration to be consistent with previous files.
+try
+    RSK.coefficients = mksqlite('select * from coefficients');
+    
+catch
+end
+
+try
+    RSK.parameters = mksqlite('select * from parameters');
+    RSK.parameterKeys = mksqlite('select * from parameterKeys');
+catch
 end
 
 RSK.instruments = mksqlite('select * from instruments');
@@ -117,6 +130,9 @@ try
     RSK.thumbnailData = RSKreadthumbnail;
 catch
 end
+
+
+
 
 %% Want to read in events so that we can get the profile event metadata
 % 
