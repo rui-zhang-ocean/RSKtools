@@ -1,8 +1,8 @@
-function y = RSKdespike(x, n, k, action)
+function y = RSKdespike(x, varargin)
 
 % RSKdespike - De-spike a time series using a running median filter.
 %
-% Syntax:  [y] = RSKdespike(x, n, k, action)
+% Syntax:  [y] = RSKdespike(x, [OPTIONS])
 % 
 % RSKdespike is a despike algorithm that utilizes a running median
 % filter to create a reference series. Each point in the original
@@ -12,37 +12,49 @@ function y = RSKdespike(x, n, k, action)
 % reference value.
 %
 % Inputs:
-%    x - the input time series
+%    
+%   [Required] - x - the input time series
 %
-%    n - the number of standard deviations to use for the spike criterion
+%   [Optional] - n - the number of standard deviations to use for the spike criterion.
+%                   Default value is 4.
 %
-%    k - the length of the running median
+%                k - the length of the running median. Default value is 7.
 %
-%    action - the "action" to perform on a spike. The default,
-%    'replace' is to replace it with the reference value. Can also be
-%    'NaN' to leave the spike as a missing value.
+%                action - the "action" to perform on a spike. The default,
+%                   'replace' is to replace it with the reference value. Can also be
+%                   'NaN' to leave the spike as a missing value.
 %
 % Outputs:
 %    y - the de-spiked series
 %
 % Example: 
-%    temperatureDS = RSKdespike(rsk.data.values(:,2));
+%    temperatureDS = RSKdespike(rsk.data.values(:,2))
+%   OR
+%    temperatureDS = RSKdespike(rsk.data.values(:,2), 'n',2, 'k',10, 'action','NaN');
 %
 % Author: RBR Ltd. Ottawa ON, Canada
 % email: support@rbr-global.com
 % Website: www.rbr-global.com
-% Last revision: 2016-06-03
+% Last revision: 2016-10-02
 
-if nargin==1 
-    n = 4;
-    k = 7;
-    action = 'replace';
-elseif nargin==2
-    k = 7;
-    action = 'replace';
-elseif nargin==3
-    action='replace';
-end
+%Set input and default arguments
+p = inputParser;
+
+defaultAction = 'replace';
+validActions = {'replace','NaN'};
+checkAction = @(x) any(validatestring(x,validActions));
+
+addRequired(p,'x', @isnumeric);
+addParameter(p,'n', 4, @isnumeric);
+addParameter(p,'k', 7, @isnumeric);
+addParameter(p,'action', defaultAction', checkAction);
+
+parse(p,x,varargin{:})
+
+%Assign each argument
+n = p.Results.n;
+k = p.Results.k;
+action = p.Results.action;
 
 y = x;
 ref = runmed(x, k);
