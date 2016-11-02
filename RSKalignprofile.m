@@ -81,19 +81,21 @@ addParameter(p,'direction', defaultDirection, checkDirection);
 addParameter(p,'CTlag', defaultCTlag, @isnumeric);
 addParameter(p,'nsmooth', defaultnsmooth, @isnumeric);
  
-if ~isequal(fix(lags),lags),
-    error('Lag values must be integers.')
-end
-
- 
  
 parse(p,RSK,varargin{:})
+
 
 %Assign each argument
 profileNum = p.Results.profileNum;
 direction = p.Results.direction;
 CTlag = p.Results.CTlag;
 nsmooth = p.Results.nsmooth;
+
+% check to make sure that lags are integers
+if ~isequal(fix(CTlag),CTlag),
+    error('Lag values must be integers.')
+end
+
 
 %Default ProfileNum is dependent on direction of cast
 checkProfileNum = strcmp(p.UsingDefaults,'profileNum');
@@ -114,7 +116,8 @@ if length(CTlag) == 1
     end
 elseif length(CTlag) > 1
     if length(CTlag) ~= length(profileNum)
-        error('Length of CTlag must match number of profiles');
+        error(['Length of CTlag must match number of profiles or be a ' ...
+               'single value']);
     end
 end
 
