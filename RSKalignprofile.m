@@ -1,9 +1,9 @@
-function [RSK, lags] = RSKalignprofile(RSK, profileNum, direction, CTlag, nsmooth, despike)
+function [RSK, lags] = RSKalign(RSK, varargin)
 
 % RSKalignprofile - Align conductivity and temperature in CTD profiles
 %     to minimize salinity spiking
 %
-% Syntax:  [RSK, lags] = RSKalignprofile(RSK, profileNum, nsmooth, despike)
+% Syntax:  [RSK, lags] = RSKalignprofile(RSK, [OPTIONS])
 % 
 % Calculates, and applies, the optimal conductivity/temperature lag to
 % minimize salinity "spikes". Salinity spikes typically result from
@@ -15,35 +15,27 @@ function [RSK, lags] = RSKalignprofile(RSK, profileNum, direction, CTlag, nsmoot
 % the standard deviations of the residuals for a range of lags from
 % -20 to +20 samples.
 %
-% After calculating and applying the optimal lag, the despike argument
-% can used to apply despiking to the lagged salinity via the
-% RSKdespike function.
-%
 % Requires the TEOS-10 toolbox to be installed, to allow salinity to
 % be calculated using gsw_SP_from_C.
 %
 % Inputs: 
 %    
-%    RSK - the input RSK structure, with profiles as read using
-%        RSKreadprofiles
+%    [Required] - RSK - the input RSK structure, with profiles as read using
+%                    RSKreadprofiles
 %
-%    profileNum - the profiles to which to apply the correction. If
-%        left as an empty vector, will do all profiles.
+%    [Optional] - profileNum - the profiles to which to apply the correction. If
+%                    left as an empty vector, will do all profiles.
+%            
+%                direction - the profile direction to consider. Must be either
+%                   'down' or 'up'. Defaults to 'down'.
+%                    
+%                 CTlag - optional value of C/T lag to apply to all profiles. If
+%                     not provided or left empty will attempt to infer optimal C/T
+%                     lag for each profile (see above).
+%             
+%                 nsmooth - the length of the smoothing windown to use for the
+%                     reference salinity. Defaults to 21 samples
 %
-%    direction - the profile direction to consider. Must be either
-%       'down' or 'up'. Defaults to 'down'.
-%        
-%    CTlag - optional value of C/T lag to apply to all profiles. If
-%        not provided or left empty will attempt to infer optimal C/T
-%        lag for each profile (see above).
-%
-%    nsmooth - the length of the smoothing windown to use for the
-%        reference salinity. Defaults to 21 samples
-%
-%    despike - optional flag indicating whether to despike the lagged
-%        salinity using RSKdespike. If 0, do not despike, if a 2
-%        element vector of positive integers it is the n and k
-%        arguments to use in RSKdespike.
 %
 % Outputs:
 %    RSK - the RSK structure with corrected salinities
@@ -53,38 +45,50 @@ function [RSK, lags] = RSKalignprofile(RSK, profileNum, direction, CTlag, nsmoot
 % Example: 
 %   
 %    rsk = RSKopen('file.rsk');
-%    rsk = RSKreadprofiles(rsk, 1:4); % read first 4 downcasts
-%    rsk = RSKalignprofile(rsk, 1:4, 'down', [], 21, [1 21]); % use 21 point smoothing, with despike parameters of n=1 and k=21
+%    rsk = RSKreadprofiles(rsk, 1:10); % read first 10 downcasts
+%
+%   1. All downcast profiles with infered optimal C/T lag.
+%    rsk = RSKalignprofile(rsk);
+%   2. Specified profiles (first 4) and C/T lag values (one for each profile)
+%    rsk = RSKalignprofile(rsk, 'profileNum',1:4, 'CTlag',[2 1 -1 0]);
+%   3. Specified profiles (first 4) and C/T lag value (one for ALL profiles being aligned).
+%    rsk = RSKalignprofile(rsk, 'profileNum',1:4, 'CTlag',[2]);
+%   4. All upcast profiles
+%    rsk = RSKalignprofile(rsk, 'direction','up');
 %
 % Author: RBR Ltd. Ottawa ON, Canada
 % email: support@rbr-global.com
 % Website: www.rbr-global.com
-% Last revision: 2016-06-03
+% Last revision: 2016-11-02
 
-nsmoothDefault = 21;
-despikeDefault = 0;
-if nargin == 1
-    profileNum = 1:length(RSK.profiles.downcast.data);
-    direction = 'down';
-    CTlag = [];
-    nsmooth = nsmoothDefault;
-    despike = despikeDefault;
-elseif nargin == 2
-    direction = 'down';
-    CTlag = [];
-    nsmooth = nsmoothDefault;
-    despike = despikeDefault;
-elseif nargin == 3
-    CTlag = [];
-    nsmooth = nsmoothDefault;
-    despike = despikeDefault;
-elseif nargin == 4
-    nsmooth = nsmoothDefault;
-    despike = despikeDefault;
-elseif nargin == 5
-    despike = despikeDefault;
-end
-if isempty(profileNum) 
+p = inputParser;
+
+defaultprofileNum = 1:length(RSK.profiles.downcast.tstart) ;
+
+defaultDirection = 'down';
+validDirections = {'down','up'};
+checkDirection = @(x) any(validatestring(x,validDirections));
+
+defaultCTlag = [];
+defaultnsmooth = 21;
+
+addRequired(p,'RSK', @isstruct);
+addParameter(p,'profileNum', defaultprofileNum, @isnumeric);
+addParameter(p,'direction', defaultDirection, checkDirection);
+addParameter(p,'CTlag', defaultCTlag, @isnumeric);
+addParameter(p,'nsmooth', defaultnsmooth, @isnumeric);
+
+parse(p,RSK,varargin{:})
+
+%Assign each argument
+profileNum = p.Results.profileNum;
+direction = p.Results.direction;
+CTlag = p.Results.CTlag;
+nsmooth = p.Results.nsmooth;
+
+%Default ProfileNum is dependent on direction of cast
+checkProfileNum = strcmp(p.UsingDefaults,'profileNum');
+if sum(checkProfileNum)==1
     switch direction
       case 'down'
         profileNum = 1:length(RSK.profiles.downcast.data);
@@ -92,6 +96,7 @@ if isempty(profileNum)
         profileNum = 1:length(RSK.profiles.upcast.data);
     end
 end
+
 % Check for one value of CTlag or one for each profile
 if length(CTlag) == 1
     if length(profileNum) == 1
@@ -133,12 +138,7 @@ if ~isempty(CTlag)
             p = RSK.profiles.upcast.data(i).values(:, pcol);
         end
         Sbest = gsw_SP_from_C(RSKshift(C, CTlag(counter)), T, p);
-        switch despike(1)
-          case 0
-            RSK.profiles.downcast.data(i).values(:, Scol) = Sbest;
-          otherwise
-            RSK.profiles.downcast.data(i).values(:, Scol) = RSKdespike(Sbest, despike(1), despike(2));
-        end
+        RSK.profiles.downcast.data(i).values(:, Scol) = Sbest;
     end
     lags = CTlag;
 else
@@ -167,22 +167,11 @@ else
         end
         bestlag = [bestlag lags(find(dSsd == min(dSsd)))];
         Sbest = gsw_SP_from_C(RSKshift(C, bestlag(end)), T, p);
-        switch despike(1)
-          case 0
-            switch direction
-              case 'down'
-                RSK.profiles.downcast.data(i).values(:, Scol) = Sbest;
-              case 'up'
-                RSK.profiles.upcast.data(i).values(:, Scol) = Sbest;
-            end
-          otherwise
-            switch direction
-              case 'down'
-                RSK.profiles.downcast.data(i).values(:, Scol) = RSKdespike(Sbest, despike(1), despike(2));
-              case 'up'
-                RSK.profiles.upcast.data(i).values(:, Scol) = RSKdespike(Sbest, despike(1), despike(2));
-            end
-
+        switch direction
+          case 'down'
+            RSK.profiles.downcast.data(i).values(:, Scol) = Sbest;
+          case 'up'
+            RSK.profiles.upcast.data(i).values(:, Scol) = Sbest;
         end
     end
     lags = bestlag;
