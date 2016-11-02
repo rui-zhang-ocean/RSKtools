@@ -1,4 +1,4 @@
-function [RSK, lags] = RSKalign(RSK, varargin)
+function [RSK, lags] = RSKalignprofile(RSK, varargin)
 
 % RSKalignprofile - Align conductivity and temperature in CTD profiles
 %     to minimize salinity spiking
@@ -66,6 +66,9 @@ p = inputParser;
 defaultprofileNum = 1:length(RSK.profiles.downcast.tstart) ;
 
 defaultDirection = 'down';
+if ~isfield(RSK.profiles.downcast, 'data')
+    defaultDirection = 'up';
+end
 validDirections = {'down','up'};
 checkDirection = @(x) any(validatestring(x,validDirections));
 
@@ -144,7 +147,12 @@ if ~isempty(CTlag)
             p = RSK.profiles.upcast.data(i).values(:, pcol);
         end
         Sbest = gsw_SP_from_C(RSKshift(C, CTlag(counter)), T, p);
-        RSK.profiles.downcast.data(i).values(:, Scol) = Sbest;
+        switch direction
+          case 'down'
+            RSK.profiles.downcast.data(i).values(:, Scol) = Sbest;
+          case 'up'
+            RSK.profiles.upcast.data(i).values(:, Scol) = Sbest;
+        end
     end
     lags = CTlag;
 else
