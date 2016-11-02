@@ -77,7 +77,13 @@ addParameter(p,'profileNum', defaultprofileNum, @isnumeric);
 addParameter(p,'direction', defaultDirection, checkDirection);
 addParameter(p,'CTlag', defaultCTlag, @isnumeric);
 addParameter(p,'nsmooth', defaultnsmooth, @isnumeric);
+ 
+if ~isequal(fix(lags),lags),
+    error('Lag values must be integers.')
+end
 
+ 
+ 
 parse(p,RSK,varargin{:})
 
 %Assign each argument
