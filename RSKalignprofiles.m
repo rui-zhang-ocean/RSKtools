@@ -1,4 +1,4 @@
-function [RSK, lags] = RSKalignprofile(RSK, varargin)
+function [RSK, lags] = RSKalignprofiles(RSK, varargin)
 
 % RSKalignprofile - Align conductivity and temperature in CTD profiles
 %     to minimize salinity spiking
