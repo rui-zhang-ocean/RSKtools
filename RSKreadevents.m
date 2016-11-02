@@ -39,26 +39,16 @@ else
     t1 = datenum2RSKtime(t1);
     t2 = datenum2RSKtime(t2);
 end
-sql = ['select tstamp/1.0 as tstamp,* from events where tstamp/1.0 between ' num2str(t1) ' and ' num2str(t2) ' order by tstamp'];
+
+%Does not extract notes because it is never used.
+sql = ['select tstamp/1.0 as tstamp, deploymentID, type, sampleIndex, channelIndex from events where tstamp/1.0 between ' num2str(t1) ' and ' num2str(t2) ' order by tstamp'];
 results = mksqlite(sql);
 if isempty(results)
     disp('No data found in that interval')
     return
 end
-results = rmfield(results,'tstamp_1'); % get rid of the corrupted one
 
-
-%If events have notes they will be conserved if it is a number, otherwise
-%will show up as NaN.
-try 
-    results = RSKarrangedata(results);
-catch
-    notes = extractfield(results, 'notes');
-    notesarray = str2double(notes);
-    results_notes = rmfield(results, 'notes');
-    results = RSKarrangedata(results_notes);
-    results.notes = notesarray';
-end
+results = RSKarrangedata(results);
 
 t=results.tstamp';
 results.tstamp = RSKtime2datenum(t); % convert RSK millis time to datenum
