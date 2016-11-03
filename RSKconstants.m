@@ -3,12 +3,12 @@
 % Author: RBR Ltd. Ottawa ON, Canada
 % email: support@rbr-global.com
 % Website: www.rbr-global.com
-% Last revision: 2016-05-16
+% Last revision: 2016-10-03
 
-latestRSKversion = '1.13.0';
+latestRSKversion = '1.13.4';
 latestRSKversionMajor = 1;
 latestRSKversionMinor = 13;
-latestRSKversionPatch = 0;
+latestRSKversionPatch = 4;
 
 eventBeginUpcast = 33;
 eventBeginDowncast = 34;
