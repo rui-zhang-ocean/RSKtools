@@ -148,7 +148,7 @@ if ~isempty(CTlag)
             T = RSK.profiles.upcast.data(i).values(:, Tcol);
             p = RSK.profiles.upcast.data(i).values(:, pcol);
         end
-        Sbest = gsw_SP_from_C(RSKshift(C, CTlag(counter)), T, p);
+        Sbest = gsw_SP_from_C(shiftarray(C, CTlag(counter)), T, p);
         switch direction
           case 'down'
             RSK.profiles.downcast.data(i).values(:, Scol) = Sbest;
@@ -175,14 +175,14 @@ else
         lags = -20:20;
         dSsd = [];
         for lag=lags
-            Cshift = RSKshift(C, lag);
+            Cshift = shiftarray(C, lag);
             SS = gsw_SP_from_C(Cshift, T, p);
             Ssmooth = smooth(SS, nsmooth);
             dS = SS - Ssmooth;
             dSsd = [dSsd std(dS)];
         end
         bestlag = [bestlag lags(find(dSsd == min(dSsd)))];
-        Sbest = gsw_SP_from_C(RSKshift(C, bestlag(end)), T, p);
+        Sbest = gsw_SP_from_C(shiftarray(C, bestlag(end)), T, p);
         switch direction
           case 'down'
             RSK.profiles.downcast.data(i).values(:, Scol) = Sbest;

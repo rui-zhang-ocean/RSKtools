@@ -1,8 +1,9 @@
-function out = RSKshift(in, shift)
+function out = shiftarray(in, shift)
 
-% RSKshift - Shift a time series by a specified number of samples
+% shiftarray - Convenience function to shift a time series by a
+% specified number of samples
 %
-% Syntax:  out = RSKshift(in, shift)
+% Syntax:  out = shiftarray(in, shift)
 % 
 % Shifts a vector time series by a lag corresponding to an integer
 % number of samples, e.g. for aligning temperature and conductivity
@@ -20,7 +21,7 @@ function out = RSKshift(in, shift)
 %    out - the shifted time series
 %
 % Example: 
-%    conductivityLagged = RSKshift(rsk.data.values(:,1), -3); % shift back by 3 samples
+%    conductivityLagged = shiftarray(rsk.data.values(:,1), -3); % shift back by 3 samples
 %
 % Author: RBR Ltd. Ottawa ON, Canada
 % email: support@rbr-global.com
