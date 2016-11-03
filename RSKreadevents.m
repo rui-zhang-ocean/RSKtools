@@ -30,7 +30,7 @@ function RSK = RSKreadevents(RSK, t1, t2)
 % Author: RBR Ltd. Ottawa ON, Canada
 % email: support@rbr-global.com
 % Website: www.rbr-global.com
-% Last revision: 2013-03-20
+% Last revision: 2013-10-25
 
 if nargin==1 % user wants to read ALL the events
     t1 = datenum2RSKtime(RSK.epochs.startTime);
@@ -39,13 +39,14 @@ else
     t1 = datenum2RSKtime(t1);
     t2 = datenum2RSKtime(t2);
 end
-sql = ['select tstamp/1.0 as tstamp,* from events where tstamp/1.0 between ' num2str(t1) ' and ' num2str(t2) ' order by tstamp'];
+
+%Does not extract notes because it is never used.
+sql = ['select tstamp/1.0 as tstamp, deploymentID, type, sampleIndex, channelIndex from events where tstamp/1.0 between ' num2str(t1) ' and ' num2str(t2) ' order by tstamp'];
 results = mksqlite(sql);
 if isempty(results)
     disp('No data found in that interval')
     return
 end
-results = rmfield(results,'tstamp_1'); % get rid of the corrupted one
 
 results = RSKarrangedata(results);
 

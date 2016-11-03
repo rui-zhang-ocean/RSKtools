@@ -1,5 +1,5 @@
 % RSKTOOLS
-% Version 1.4.1 2016-05-20
+% Version 1.4.2 2016-10-20
 %
 % 1.  This toolbox depends on the presence of a functional mksqlite
 % library.  We have included a couple of versions here for Windows (32 bit/ 64 bit), Linux (64 bit)
@@ -13,7 +13,7 @@
 %
 % This generates an RSK structure with all the metadata from the database, 
 % and a thumbnail of the data, but without slurping in a massive amount of 
-% data
+% data. Note that if the file was recorded by a |rt instument there is no thumbnail data.
 %
 % 3.  Plot the thumbnail data from the RSK that gives you an overview of
 % the dataset:

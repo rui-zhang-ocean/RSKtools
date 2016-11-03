@@ -20,6 +20,8 @@ function [RSK, dbid] = RSKopen(fname)
 % instructions from the original author.  You can also find the source
 % through Google.
 %
+% Note: If the file was recorded from an |rt instrument there is no thumbnail data.
+%
 % Inputs:
 %    fname - filename of the RSK file
 %
@@ -35,7 +37,7 @@ function [RSK, dbid] = RSKopen(fname)
 % Author: RBR Ltd. Ottawa ON, Canada
 % email: support@rbr-global.com
 % Website: www.rbr-global.com
-% Last revision: 2016-05-16
+% Last revision: 2016-10-25
 
 RSKconstants
 
@@ -71,6 +73,19 @@ try
 catch % ignore if there is an error, rsk files from an easyparse logger  do not contain calibrations
 end
 
+%As of RSK 1.13.4 coefficients is it's own table. We add it back into calibration to be consistent with previous files.
+try
+    RSK.coefficients = mksqlite('select * from coefficients');
+    
+catch
+end
+
+try
+    RSK.parameters = mksqlite('select * from parameters');
+    RSK.parameterKeys = mksqlite('select * from parameterKeys');
+catch
+end
+
 RSK.instruments = mksqlite('select * from instruments');
 try
     RSK.instrumentChannels = mksqlite('select * from instrumentChannels');
@@ -88,7 +103,7 @@ end
 RSK.channels = mksqlite('select longName,units from channels');
 % remove derived channel names (because the data aren't there anyway)
 % but only do this if it's NOT an EP format rsk
-if ~strncmp(RSK.dbInfo.type, 'EP', 2)
+if ~strcmp(RSK.dbInfo(end).type, 'EPdesktop')
     isDerived = mksqlite('select isDerived from channels');
     isMeasured = ~[isDerived.isDerived];
     for c = length(isMeasured):-1:1
@@ -110,7 +125,14 @@ catch
 end
 RSK.deployments = mksqlite('select * from deployments');
 
-RSK.thumbnailData = RSKreadthumbnail;
+%Realtime instruments do not have thumbnailData.
+try 
+    RSK.thumbnailData = RSKreadthumbnail;
+catch
+end
+
+
+
 
 %% Want to read in events so that we can get the profile event metadata
 % 

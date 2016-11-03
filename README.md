@@ -1,6 +1,6 @@
 # RSKtools
 
-Current Version: 1.4.1 (2016-05-20)
+Current stable version: 1.4.2 (2016-10-20)
 
 RSKtools is a simple Matlab toolbox to open RSK SQLite files generated
 by RBR instruments. This repository is for the development version of
@@ -38,40 +38,42 @@ If the [TEOS-10](http://www.teos-10.org/software.htm) matlab toolbox is installe
 ## Contribution guidelines
 
 * Feel free to add improvements at any time:
-  * by forking and sending a pull request
-  * by emailing patches or changes to `support@rbr-global.com`
+    * by forking and sending a pull request
+    * by emailing patches or changes to `support@rbr-global.com`
 * Write to `support@rbr-global.com` if you need help
 
 ## Changes
 
-* Develop version 1.5.0:
-
-  - migrate repository from Github to Bitbucket
+* Version 1.4.2 (2016-10-20)
+    - 	Changed removal of 'datasetID' to be case insensitive
+    - 	Fix upcast/downcast type in RSKplotprofiles
+    -	Fix RSKreadprofile typo
+    -   Fix bug opening |rt instruments data
 
 * Version 1.4.1 (2016-05-20)
 
-  - Add RSKreadwavetxt to handle import wave text exports	
-  - properly read "realtime" RSK files
-  - don't plot hidden channels in profiles
-  - Fix bug reading data table for RSK version >= 1.12.2
-  - add info from `ranging` table to structure
-  - mfile vignette using Matlab markup
-
+    - Add RSKreadwavetxt to handle import wave text exports	
+    - properly read "realtime" RSK files
+    - don't plot hidden channels in profiles
+    - Fix bug reading data table for RSK version >= 1.12.2
+    - add info from `ranging` table to structure
+    - mfile vignette using Matlab markup
+  
 * Version 1.4 (2015-11-30)
 
-  - add support for profile events and profile plotting
-  - supports TEOS-10 for calculation of salinity
-  - improved documentation
-
+    - add support for profile events and profile plotting
+    - supports TEOS-10 for calculation of salinity
+    - improved documentation
+  
 * Version 1.3
 
-  - compatible with RSK generated from an EasyParse (iOs format) logger
+    - compatible with RSK generated from an EasyParse (iOs format) logger
 
 * Version 1.2
 
-  - added linux 64 bit mksqlite library
+    - added linux 64 bit mksqlite library
 
 * Version 1.1
 
-  - added burst and event readers
+    - added burst and event readers
 
