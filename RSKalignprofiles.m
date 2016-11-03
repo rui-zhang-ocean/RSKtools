@@ -61,13 +61,14 @@ function [RSK, lags] = RSKalignprofiles(RSK, varargin)
 % Website: www.rbr-global.com
 % Last revision: 2016-11-02
 
-p = inputParser;
-
+% Set up default variables
+isstruct(RSK);
 defaultprofileNum = 1:length(RSK.profiles.downcast.tstart) ;
 
-defaultDirection = 'down';
 if ~isfield(RSK.profiles.downcast, 'data')
     defaultDirection = 'up';
+else
+    defaultDirection = 'down';
 end
 validDirections = {'down','up'};
 checkDirection = @(x) any(validatestring(x,validDirections));
@@ -75,23 +76,21 @@ checkDirection = @(x) any(validatestring(x,validDirections));
 defaultCTlag = [];
 defaultnsmooth = 21;
 
-addRequired(p,'RSK', @isstruct);
+% Parse Inputs
+p = inputParser;
 addParameter(p,'profileNum', defaultprofileNum, @isnumeric);
 addParameter(p,'direction', defaultDirection, checkDirection);
 addParameter(p,'CTlag', defaultCTlag, @isnumeric);
 addParameter(p,'nsmooth', defaultnsmooth, @isnumeric);
- 
- 
-parse(p,RSK,varargin{:})
+parse(p,varargin{:})
 
-
-%Assign each argument
+% Assign each input argument
 profileNum = p.Results.profileNum;
 direction = p.Results.direction;
 CTlag = p.Results.CTlag;
 nsmooth = p.Results.nsmooth;
 
-% check to make sure that lags are integers
+% Check to make sure that lags are integers
 if ~isequal(fix(CTlag),CTlag),
     error('Lag values must be integers.')
 end
