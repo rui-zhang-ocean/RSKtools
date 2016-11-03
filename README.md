@@ -47,6 +47,7 @@ If the [TEOS-10](http://www.teos-10.org/software.htm) matlab toolbox is installe
 * Version 1.4.3 (2016-11-03)
     - Events structure does not read in notes
     - Fix dbInfo bug to read last entry
+    - Support for RSK v1.13.4
 
 * Version 1.4.2 (2016-10-20)
     - Changed removal of 'datasetID' to be case insensitive
