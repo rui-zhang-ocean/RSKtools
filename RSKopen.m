@@ -37,7 +37,7 @@ function [RSK, dbid] = RSKopen(fname)
 % Author: RBR Ltd. Ottawa ON, Canada
 % email: support@rbr-global.com
 % Website: www.rbr-global.com
-% Last revision: 2016-10-25
+% Last revision: 2016-11-03
 
 RSKconstants
 
@@ -76,7 +76,7 @@ end
 %As of RSK 1.13.4 coefficients is it's own table. We add it back into calibration to be consistent with previous files.
 try
     RSK.coefficients = mksqlite('select * from coefficients');
-    
+    RSK = coef2cal(RSK);
 catch
 end
 
