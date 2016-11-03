@@ -1,33 +1,128 @@
-function lags = RSKgetCTlag(RSK)
+function lags = RSKgetCTlag(RSK,varargin)
 
 % RSKgetCTlag - Calculate a conductivity lag by minimizing salinity
-% spikes.  Spikes are causes by mis-aligned conductivyt and
-% temperatuer channels.
+% spikes.  Spikes are causes by misaligned conductivity and
+% temperature channels.
 %
 % Syntax: [lags] = RSKgetCTlag(RSK, [OPTIONS])
 %
-% the optimal lag is determined by constructing a smoothed reference
-% salinity by running the calculated salinity through an
-% `nsmooth`-point boxcar filter, then comparing the standard
+% Calculates the optimal conductivity time shift relative to
+% temperature to minimize salinity spiking.  The shift is made in
+% time, but if temperature is not shifted then it is effectively
+% aligned to temperature.  The optimal lag is determined by
+% constructing a smoothed reference salinity by running the calculated
+% salinity through a boxcar filter, then comparing the standard
 % deviations of the residuals for a range of lags from -20 to +20
 % samples.
 %
-% The RSK structure should be parsed into profiles before 
+% Requires the TEOS-10 GSW toobox to compute salinity.
 %
-% Direction should be specified when both the upcast and downcast
-% exist.  Default when both exist is 'downcast'.
+% Inputs:
 %
-% Uses upcast if it is the only thing that exists.
+%    [Required] - RSK - the input RSK structure, with profiles as read using
+%                    RSKreadprofiles.
 %
-% GSW toobox must be installed to compute salinity.
-
+%    [Optional] - profileNum - the profiles to which to apply the
+%                    correction. If left as an empty vector, the lag
+%                    is calculated for all profiles.
+%
+%                direction - the profile direction to consider. Must be either
+%                   'down' or 'up'. Defaults to 'down'.
+%
+%                 nsmooth - the length of the smoothing window to use for the
+%                     reference salinity. Defaults to 21 samples.
+%
+%
+% Outputs:
+%
+%    lags - the optimal lags of conductivity for each profile.  These
+%    can serve as inputs into RSKalignchannel.m
+%
+% Example usage:
+%
+%    rsk = RSKopen('file.rsk');
+%    rsk = RSKreadprofiles(rsk, 1:10); % read first 10 downcasts
+%
+%   1. All downcast profiles with default smoothing
+%    lags = RSKgetCTlag(rsk);
+%
+%   2. Specified profiles (first 4), reference salinity found with 13 pt boxcar.
+%    rsk = RSKgetCTlag(rsk, 'profileNum',1:4, 'nsmooth',13);
+%
+%   3. All upcast profiles
+%    rsk = RSKgetCTlag(rsk, 'direction','up');
+%
+% Author: RBR Ltd. Ottawa ON, Canada
+% email: support@rbr-global.com
+% Website: www.rbr-global.com
+% Last revision: 2016-11-03
+    
+    
 % check if user has the TEOS-10 GSW toolbox installed
 hasTEOS = exist('gsw_SP_from_C') == 2;
 
 if (~hasTEOS) error('Error: Must install TEOS-10 toolbox'); end
 
 
-% find column number of channels
+%% input handling
+
+% profiling direction
+defaultDirection = 'down';
+validDirections = {'down','up'};
+checkDirection = @(x) any(validatestring(x,validDirections));
+
+% profiles on which to operate
+defaultprofileNum = 1:length(RSK.profiles.downcast.tstart);
+
+% default smoothing window for reference salinity
+defaultnsmooth = 21;
+
+
+% Parse Inputs
+p = inputParser;
+addParameter(p,'profileNum', defaultprofileNum, @isnumeric);
+addParameter(p,'direction', defaultDirection, checkDirection);
+addParameter(p,'nsmooth', defaultnsmooth, @isnumeric);
+parse(p,varargin{:})
+
+% Assign each input argument
+profileNum = p.Results.profileNum;
+direction = p.Results.direction;
+nsmooth = p.Results.nsmooth;
+
+%% determine the cast direction from the RSK structure
+% Direction needs to be specified only when upcast and downcast exist.
+% 
+% Direction is otherwise set by whatever is present in structure.
+
+isDown = isfield(RSK.profiles.downcast, 'data');
+isUp   = isfield(RSK.profiles.upcast, 'data');
+
+if isDown & ~isUp,
+    direction = 'down';
+elseif ~isDown & isUp,
+    direction = 'up';
+elseif isDown & isUp,
+    error(['Need to specify a cast direction when both upcasts and ' ...
+           'downcasts exist.'])
+else
+    error('No casts exist. Use ''RSKreadprofiles'' to find casts.')
+end
+
+
+%% default ProfileNum depends on cast direction
+checkProfileNum = strcmp(p.UsingDefaults,'profileNum');
+if sum(checkProfileNum)==1
+    switch direction
+      case 'down'
+        profileNum = 1:length(RSK.profiles.downcast.data);
+      case 'up'
+        profileNum = 1:length(RSK.profiles.upcast.data);
+    end
+end 
+
+
+%% find column number of channels
 pcol = find(strncmp('pressure', lower({RSK.channels.longName}), 4));
 Ccol = find(strncmp('conductivity', lower({RSK.channels.longName}), 4));
 Tcol = find(strncmp('temperature', lower({RSK.channels.longName}), 4));
@@ -36,12 +131,6 @@ Tcol = Tcol(1); % only take the first temperature channel
 % only needed for if replacing current salinity estimate with new calc.
 Scol = find(strncmp('salinity', lower({RSK.channels.longName}), 4));
 
-% inputs
-direction = 'down';
-direction = 'up';
-nsmooth = 21;
-
-profileNum = 1:length(RSK.profiles.([direction 'cast']).data);
 
 bestlag = [];
 for k=profileNum
