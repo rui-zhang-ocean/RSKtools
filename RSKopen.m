@@ -68,24 +68,23 @@ end
 RSK.datasets = mksqlite('select * from datasets');
 RSK.datasetDeployments = mksqlite('select * from datasetDeployments');
 
-try
-    RSK.calibrations = mksqlite('select * from calibrations');
-catch % ignore if there is an error, rsk files from an easyparse logger  do not contain calibrations
-end
-
-%As of RSK 1.13.4 coefficients is it's own table. We add it back into calibration to be consistent with previous files.
-try
-    RSK.coefficients = mksqlite('select * from coefficients');
-    RSK = coef2cal(RSK);
-catch
-end
-
-try
+% As of RSK v1.13.4 coefficients is it's own table. We add it back into calibration to be consistent with previous versions.
+if (vsnMajor >= 1) & (vsnMinor >= 13) & (vsnPatch >= 4)
     RSK.parameters = mksqlite('select * from parameters');
-    RSK.parameterKeys = mksqlite('select * from parameterKeys');
-catch
+    RSK.parameterKeys = mksqlite('select * from parameterKeys'); 
+    try
+        RSK.calibrations = mksqlite('select * from calibrations');
+        RSK.coefficients = mksqlite('select * from coefficients');
+        RSK = coef2cal(RSK);
+    catch
+    end
+else
+    try 
+        RSK.calibrations = mksqlite('select * from calibrations');
+    catch % ignore if there is an error, rsk files from an easyparse logger  do not contain calibrations
+    end
 end
-
+        
 RSK.instruments = mksqlite('select * from instruments');
 try
     RSK.instrumentChannels = mksqlite('select * from instrumentChannels');
