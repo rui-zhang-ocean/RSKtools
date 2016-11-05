@@ -58,68 +58,54 @@ function lags = RSKgetCTlag(RSK,varargin)
 % Last revision: 2016-11-03
     
     
-% check if user has the TEOS-10 GSW toolbox installed
+%% check if user has the TEOS-10 GSW toolbox installed
 hasTEOS = exist('gsw_SP_from_C') == 2;
-
 if (~hasTEOS) error('Error: Must install TEOS-10 toolbox'); end
 
 
 %% input handling
 
-% profiling direction
+% set the defaults
+p = inputParser;
 defaultDirection = 'down';
+defaultProfileNum = []; % will determine this later
+defaultNsmooth = 21;
 validDirections = {'down','up'};
 checkDirection = @(x) any(validatestring(x,validDirections));
-
-% profiles on which to operate
-defaultprofileNum = 1:length(RSK.profiles.downcast.tstart);
-
-% default smoothing window for reference salinity
-defaultnsmooth = 21;
-
+   
+addRequired(p,'rsk',@isstruct);
+addParameter(p,'direction', defaultDirection, checkDirection);
+addParameter(p,'profileNum',defaultProfileNum)   
+addParameter(p,'nsmooth',defaultNsmooth)
 
 % Parse Inputs
-p = inputParser;
-addParameter(p,'profileNum', defaultprofileNum, @isnumeric);
-addParameter(p,'direction', defaultDirection, checkDirection);
-addParameter(p,'nsmooth', defaultnsmooth, @isnumeric);
-parse(p,varargin{:})
+parse(p,RSK,varargin{:})
 
 % Assign each input argument
 profileNum = p.Results.profileNum;
-direction = p.Results.direction;
-nsmooth = p.Results.nsmooth;
+direction  = p.Results.direction;
+nsmooth    = p.Results.nsmooth;
 
-%% determine the cast direction from the RSK structure
-% Direction needs to be specified only when upcast and downcast exist.
-% 
-% Direction is otherwise set by whatever is present in structure.
 
+%% determine if the structure has downcasts and upcasts
 isDown = isfield(RSK.profiles.downcast, 'data');
-isUp   = isfield(RSK.profiles.upcast, 'data');
+isUp   = isfield(RSK.profiles.upcast,   'data');
 
-if isDown & ~isUp,
-    direction = 'down';
-elseif ~isDown & isUp,
-    direction = 'up';
-elseif isDown & isUp,
-    error(['Need to specify a cast direction when both upcasts and ' ...
-           'downcasts exist.'])
-else
-    error('No casts exist. Use ''RSKreadprofiles'' to find casts.')
+if ~isUp & strcmp(direction,'up')
+  error('Structure does not contain upcasts')
+elseif ~isDown & strcmp(direction,'down')
+  error('Structure does not contain downcasts')
 end
 
 
-%% default ProfileNum depends on cast direction
-checkProfileNum = strcmp(p.UsingDefaults,'profileNum');
-if sum(checkProfileNum)==1
-    switch direction
-      case 'down'
+%% choose all profiles if none were specified
+if isempty(profileNum),
+    if strcmp(direction,'down'),
         profileNum = 1:length(RSK.profiles.downcast.data);
-      case 'up'
+    elseif strcmp(direction,'up'),
         profileNum = 1:length(RSK.profiles.upcast.data);
-    end
-end 
+    end 
+end
 
 
 %% find column number of channels
@@ -194,4 +180,5 @@ end
 
 
 end
+
 
