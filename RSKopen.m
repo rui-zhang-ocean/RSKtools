@@ -37,7 +37,7 @@ function [RSK, dbid] = RSKopen(fname)
 % Author: RBR Ltd. Ottawa ON, Canada
 % email: support@rbr-global.com
 % Website: www.rbr-global.com
-% Last revision: 2016-11-03
+% Last revision: 2016-11-07
 
 RSKconstants
 
@@ -99,7 +99,7 @@ try
 catch % ignore if there is an error, rsk files from an easyparse logger do not contain instrument sensors table
 end
 
-RSK.channels = mksqlite('select longName,units from channels');
+RSK.channels = mksqlite('select shortName,longName,units from channels');
 % remove derived channel names (because the data aren't there anyway)
 % but only do this if it's NOT an EP format rsk
 if ~strcmp(RSK.dbInfo(end).type, 'EPdesktop')
