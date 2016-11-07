@@ -37,7 +37,7 @@ function [RSK, dbid] = RSKopen(fname)
 % Author: RBR Ltd. Ottawa ON, Canada
 % email: support@rbr-global.com
 % Website: www.rbr-global.com
-% Last revision: 2016-10-25
+% Last revision: 2016-11-07
 
 RSKconstants
 
@@ -68,24 +68,23 @@ end
 RSK.datasets = mksqlite('select * from datasets');
 RSK.datasetDeployments = mksqlite('select * from datasetDeployments');
 
-try
-    RSK.calibrations = mksqlite('select * from calibrations');
-catch % ignore if there is an error, rsk files from an easyparse logger  do not contain calibrations
-end
-
-%As of RSK 1.13.4 coefficients is it's own table. We add it back into calibration to be consistent with previous files.
-try
-    RSK.coefficients = mksqlite('select * from coefficients');
-    
-catch
-end
-
-try
+% As of RSK v1.13.4 coefficients is it's own table. We add it back into calibration to be consistent with previous versions.
+if (vsnMajor >= 1) & (vsnMinor >= 13) & (vsnPatch >= 4)
     RSK.parameters = mksqlite('select * from parameters');
-    RSK.parameterKeys = mksqlite('select * from parameterKeys');
-catch
+    RSK.parameterKeys = mksqlite('select * from parameterKeys'); 
+    try
+        RSK.calibrations = mksqlite('select * from calibrations');
+        RSK.coefficients = mksqlite('select * from coefficients');
+        RSK = coef2cal(RSK);
+    catch
+    end
+else
+    try 
+        RSK.calibrations = mksqlite('select * from calibrations');
+    catch % ignore if there is an error, rsk files from an easyparse logger  do not contain calibrations
+    end
 end
-
+        
 RSK.instruments = mksqlite('select * from instruments');
 try
     RSK.instrumentChannels = mksqlite('select * from instrumentChannels');
@@ -100,7 +99,7 @@ try
 catch % ignore if there is an error, rsk files from an easyparse logger do not contain instrument sensors table
 end
 
-RSK.channels = mksqlite('select longName,units from channels');
+RSK.channels = mksqlite('select shortName,longName,units from channels');
 % remove derived channel names (because the data aren't there anyway)
 % but only do this if it's NOT an EP format rsk
 if ~strcmp(RSK.dbInfo(end).type, 'EPdesktop')
