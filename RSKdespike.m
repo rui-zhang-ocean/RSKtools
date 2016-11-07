@@ -8,7 +8,7 @@ function [RSK] = RSKdespike(RSK, varargin)
 % filter to create a reference series. Each point in the original
 % series is compared against the reference series, with points lying
 % further than n standard deviations from the mean treated as
-% spikes. The default behaviour is to replace the spike wth the
+% spikes. The default behaviour is to replace the spike with the
 % reference value.
 %
 % Inputs:
@@ -17,7 +17,7 @@ function [RSK] = RSKdespike(RSK, varargin)
 %                    RSKreadprofiles
 %
 %   [Optional] - channel - Longname of channel to plot (e.g. temperature,
-%                   salinity, etc). Default is ;Temperature'
+%                   salinity, etc). Default is 'Temperature'
 %
 %                series - the data series to apply correction. Must be
 %                   either 'data' or 'profile'. If 'data' must run RSKreaddata() 
@@ -50,7 +50,7 @@ function [RSK] = RSKdespike(RSK, varargin)
 % Author: RBR Ltd. Ottawa ON, Canada
 % email: support@rbr-global.com
 % Website: www.rbr-global.com
-% Last revision: 2016-11-04
+% Last revision: 2016-11-07
 
 %% Check input and default arguments
 
@@ -69,6 +69,7 @@ checkAction = @(x) any(validatestring(x,validActions));
 %% Parse Inputs
 
 p = inputParser;
+addRequired(p,'RSK',@isstruct);
 addParameter(p,'channel', 'temperature', checkChannelName);
 addParameter(p,'series', 'data', checkSeriesName);
 addParameter(p,'profileNum', [], @isnumeric)
@@ -76,7 +77,7 @@ addParameter(p,'n', 4, @isnumeric);
 addParameter(p,'k', 7, @isnumeric);
 addParameter(p,'action', 'replace', checkAction);
 addParameter(p,'direction', 'down', checkDirection);% Only needed if series is 'profile'
-parse(p, varargin{:})
+parse(p,RSK,varargin{:})
 
 %Assign each argument
 channel = p.Results.channel;
@@ -87,13 +88,24 @@ n = p.Results.n;
 k = p.Results.k;
 action = p.Results.action;
 
-%% Select Time Series
-if strcmp(series,'profile') & strcmp(p.UsingDefaults,'profileNum')
+
+%% For Profiles: determine if the structure has downcasts and upcasts & set profileNum accordingly
+if strcmp(series,'profile')
+    isDown = isfield(RSK.profiles.downcast, 'data');
+    isUp   = isfield(RSK.profiles.upcast,   'data');
     switch direction
-      case 'down'
-        profileNum = 1:length(RSK.profiles.downcast.data);
-      case 'up'
-        profileNum = 1:length(RSK.profiles.upcast.data);
+        case 'up'
+            if ~isUp
+                error('Structure does not contain upcasts')
+            elseif isempty(profileNum)
+                profileNum = 1:length(RSK.profiles.upcast.data);
+            end
+        case 'down'
+            if ~isDown
+                error('Structure does not contain downcasts')
+            elseif isempty(profileNum)
+                profileNum = 1:length(RSK.profiles.downcast.data);
+            end
     end
 end
 
