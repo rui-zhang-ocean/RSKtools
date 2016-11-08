@@ -104,8 +104,7 @@ RSK.channels = mksqlite('select longName,units from channels');
 % EPdesktop format rsk)
 if ~strcmp(RSK.dbInfo(end).type, 'EPdesktop')
     try
-        isVisible = ~[RSK.instrumentChannels.channelStatus]% hidden and derived channels have a non-zero channelStatus
-        isMeasured = isVisible;
+        isMeasured = ~[RSK.instrumentChannels.channelStatus]% hidden and derived channels have a non-zero channelStatus
     catch
         isDerived = mksqlite('select isDerived from channels');
         isMeasured = ~[isDerived.isDerived] % some files may not have channelStatus
