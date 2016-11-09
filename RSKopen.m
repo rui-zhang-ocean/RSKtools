@@ -81,7 +81,7 @@ if (vsnMajor >= 1) & (vsnMinor >= 13) & (vsnPatch >= 4)
 else
     try 
         RSK.calibrations = mksqlite('select * from calibrations');
-    catch % ignore if there is an error, rsk files from an easyparse logger  do not contain calibrations
+    catch % ignore if there is an error, rsk files from an easyparse logger do not contain calibrations
     end
 end
         
@@ -99,15 +99,21 @@ try
 catch % ignore if there is an error, rsk files from an easyparse logger do not contain instrument sensors table
 end
 
-RSK.channels = mksqlite('select shortName,longName,units from channels');
-% remove derived channel names (because the data aren't there anyway)
-% but only do this if it's NOT an EP format rsk
+RSK.channels = mksqlite('select longName,units from channels');
+% Remove derived channel names & hidden channels (only if it's NOT an
+% EPdesktop format rsk)
 if ~strcmp(RSK.dbInfo(end).type, 'EPdesktop')
-    isDerived = mksqlite('select isDerived from channels');
-    isMeasured = ~[isDerived.isDerived];
+    try
+        isMeasured = ~[RSK.instrumentChannels.channelStatus];% hidden and derived channels have a non-zero channelStatus
+    catch
+        isDerived = mksqlite('select isDerived from channels');
+        isMeasured = ~[isDerived.isDerived]; % some files may not have channelStatus
+    end
     for c = length(isMeasured):-1:1
-        if ~isMeasured(c) RSK.channels(c) = []; end
-        if ~isMeasured(c) RSK.instrumentChannels(c) = []; end
+        if ~isMeasured(c)
+            RSK.channels(c) = [];  
+            RSK.instrumentChannels(c) = []; 
+        end
     end
 end
 
@@ -129,8 +135,6 @@ try
     RSK.thumbnailData = RSKreadthumbnail;
 catch
 end
-
-
 
 
 %% Want to read in events so that we can get the profile event metadata
