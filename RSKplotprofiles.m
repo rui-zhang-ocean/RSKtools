@@ -1,4 +1,4 @@
-function RSKplotprofiles(RSK, profileNum, field, direction)
+function hdls = RSKplotprofiles(RSK, profileNum, field, direction)
 
 % RSKplotprofiles - plots profiles from an RSK object, based on upcast
 %                   and downcast events
@@ -7,7 +7,8 @@ function RSKplotprofiles(RSK, profileNum, field, direction)
 % 
 % Plots profiles from automatically detected casts. If called with one
 % argument, will default to plotting downcasts of temperature for all
-% profiles in the structure.
+% profiles in the structure.  Optionally outputs an array of handles
+% to the line objects.
 %
 % Inputs: 
 %    RSK - Structure containing the logger data read
@@ -34,15 +35,16 @@ function RSKplotprofiles(RSK, profileNum, field, direction)
 %    % plot selective downcasts
 %    RSKplotprofiles(rsk, [1 5 10]);
 %
-%    % plot conductivity for selective downcasts
-%    RSKplotprofiles(rsk, [1 5 10], 'conductivity');
+%    % plot conductivity for selective downcasts and output handles
+%      for customization
+%    hdls = RSKplotprofiles(rsk, [1 5 10], 'conductivity');
 %
 % See also: RSKreadprofiles, RSKreaddata, RSKreadevents
 %
 % Author: RBR Ltd. Ottawa ON, Canada
 % email: support@rbr-global.com
 % Website: www.rbr-global.com
-% Last revision: 2015-10-06
+% Last revision: 2015-11-09
 
 if nargin == 1
     if ~isfield(RSK.profiles.downcast, 'data') error('No downcasts in RSK'); end
@@ -108,7 +110,7 @@ pmax = 0;
 if strcmp(direction, 'up') | strcmp(direction, 'both')
     for i=profileNum
         p = RSK.profiles.upcast.data(i).values(:, pcol) - 10.1325; % FIXME: should read ptAm from rskfile
-        plot(RSK.profiles.upcast.data(i).values(:, col), p)
+        hdls(i) = plot(RSK.profiles.upcast.data(i).values(:, col), p);
         hold on
         pmax = max([pmax; p]);
     end
@@ -117,7 +119,7 @@ if strcmp(direction, 'both') ax = gca; ax.ColorOrderIndex = 1; end
 if strcmp(direction, 'down') | strcmp(direction, 'both')
     for i=profileNum
         p = RSK.profiles.downcast.data(i).values(:, pcol) - 10.1325; % FIXME: should read pAtm from rskfile
-        plot(RSK.profiles.downcast.data(i).values(:, col), p)
+        hdls(i) = plot(RSK.profiles.downcast.data(i).values(:, col), p);
         hold on
         pmax = max([pmax; p]);
     end
