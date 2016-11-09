@@ -38,7 +38,7 @@ function [RSK] = RSKdespike(RSK, channel, varargin)
 %                action - the 'action' to perform on a spike. The default,
 %                   'replace' is to replace it with the reference value. Can also be
 %                   'NaN' to leave the spike as a missing value or
-%                   'iterpl' to interpolate based on 'good' values.
+%                   'interp' to interpolate based on 'good' values.
 %
 % Outputs:
 %    y - the de-spiked series
@@ -64,7 +64,7 @@ checkSeriesName = @(x) any(validatestring(x,validSeries));
 validDirections = {'up', 'down'};
 checkDirection = @(x) any(validatestring(x,validDirections));
 
-validActions = {'replace', 'interpl', 'NaN'};
+validActions = {'replace', 'interp', 'NaN'};
 checkAction = @(x) any(validatestring(x,validActions));
 
 %% Parse Inputs
@@ -80,7 +80,7 @@ addParameter(p, 'action', 'replace', checkAction);
 addParameter(p, 'direction', 'down', checkDirection);% Only needed if series is 'profile'
 parse(p, RSK, channel, varargin{:})
 
-%Assign each argument
+% Assign each argument
 RSK = p.Results.RSK;
 channel = p.Results.channel;
 series = p.Results.series;
@@ -153,7 +153,7 @@ switch action
     y(I) = ref(I);
   case 'NaN'
     y(I) = NaN;
-  case 'interpl'
+  case 'interp'
     y(I) = interp1(t(good), x(good), t(I)) ;
 end
 end
