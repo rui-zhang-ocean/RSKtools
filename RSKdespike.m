@@ -1,13 +1,13 @@
-function [RSK] = RSKdespike(RSK, varargin)
+function [RSK] = RSKdespike(RSK, channel, varargin)
 
 % RSKdespike - De-spike a time series using a running median filter.
 %
-% Syntax:  [RSK] = RSKdespike(RSK, [OPTIONS])
+% Syntax:  [RSK] = RSKdespike(RSK, channel, [OPTIONS])
 % 
 % RSKdespike is a despike algorithm that utilizes a running median
 % filter to create a reference series. Each point in the original
 % series is compared against the reference series, with points lying
-% further than n standard deviations from the mean treated as
+% further than 'threshold' standard deviations from the mean treated as
 % spikes. The default behaviour is to replace the spike with the
 % reference value.
 %
@@ -16,10 +16,10 @@ function [RSK] = RSKdespike(RSK, varargin)
 %   [Required] - RSK - the input RSK structure, with profiles as read using
 %                    RSKreadprofiles
 %
-%   [Optional] - channel - Longname of channel to plot (e.g. temperature,
+%                channel - Longname of channel to plot (e.g. temperature,
 %                   salinity, etc). Default is 'Temperature'
 %
-%                series - the data series to apply correction. Must be
+%   [Optional] - series - the data series to apply correction. Must be
 %                   either 'data' or 'profile'. If 'data' must run RSKreaddata() 
 % .                 before RSKdespike, if 'profile' must first run RSKreadprofiles().
 %                   Default is 'data'.
@@ -30,14 +30,15 @@ function [RSK] = RSKdespike(RSK, varargin)
 %                direction - the profile direction to consider. Must be either
 %                   'down' or 'up'. Only needed if series is profile. Defaults to 'down'.
 %
-%                n - the number of standard deviations to use for the spike criterion.
+%                threshold - the number of standard deviations to use for the spike criterion.
 %                   Default value is 4.
 %
-%                k - the length of the running median. Default value is 7.
+%                windowLength - the length of the running median. Default value is 7.
 %
-%                action - the "action" to perform on a spike. The default,
+%                action - the 'action' to perform on a spike. The default,
 %                   'replace' is to replace it with the reference value. Can also be
-%                   'NaN' to leave the spike as a missing value.
+%                   'NaN' to leave the spike as a missing value or
+%                   'iterpl' to interpolate based on 'good' values.
 %
 % Outputs:
 %    y - the de-spiked series
@@ -45,16 +46,16 @@ function [RSK] = RSKdespike(RSK, varargin)
 % Example: 
 %    temperatureDS = RSKdespike(RSK)
 %   OR
-%    temperatureDS = RSKdespike(RSK, 'n',2, 'k',10, 'action','NaN');
+%    temperatureDS = RSKdespike(RSK, 'threshold',2, 'windowLength',10, 'action','NaN');
 %
 % Author: RBR Ltd. Ottawa ON, Canada
 % email: support@rbr-global.com
 % Website: www.rbr-global.com
-% Last revision: 2016-11-07
+% Last revision: 2016-11-09
 
 %% Check input and default arguments
 
-validChannelNames = {'Salinity', 'Temperature', 'Conductivity', 'Chlorophyll', 'Dissolved O', 'CDOM', 'Turbidity'};
+validChannelNames = {'Salinity', 'Temperature', 'Conductivity', 'Chlorophyll', 'Dissolved O', 'CDOM', 'Turbidity', 'pH'};
 checkChannelName = @(x) any(validatestring(x,validChannelNames));
 
 validSeries = {'profile', 'data'};
@@ -63,36 +64,37 @@ checkSeriesName = @(x) any(validatestring(x,validSeries));
 validDirections = {'up', 'down'};
 checkDirection = @(x) any(validatestring(x,validDirections));
 
-validActions = {'replace','NaN'};
+validActions = {'replace', 'interpl', 'NaN'};
 checkAction = @(x) any(validatestring(x,validActions));
 
 %% Parse Inputs
 
 p = inputParser;
-addRequired(p,'RSK',@isstruct);
-addParameter(p,'channel', 'temperature', checkChannelName);
-addParameter(p,'series', 'data', checkSeriesName);
-addParameter(p,'profileNum', [], @isnumeric)
-addParameter(p,'n', 4, @isnumeric);
-addParameter(p,'k', 7, @isnumeric);
-addParameter(p,'action', 'replace', checkAction);
-addParameter(p,'direction', 'down', checkDirection);% Only needed if series is 'profile'
-parse(p,RSK,varargin{:})
+addRequired(p, 'RSK', @isstruct);
+addRequired(p, 'channel', checkChannelName);
+addParameter(p, 'series', 'data', checkSeriesName);
+addParameter(p, 'profileNum', [], @isnumeric);
+addParameter(p, 'threshold', 4, @isnumeric);
+addParameter(p, 'windowLength', 7, @isnumeric);
+addParameter(p, 'action', 'replace', checkAction);
+addParameter(p, 'direction', 'down', checkDirection);% Only needed if series is 'profile'
+parse(p, RSK, channel, varargin{:})
 
 %Assign each argument
+RSK = p.Results.RSK;
 channel = p.Results.channel;
 series = p.Results.series;
 direction = p.Results.direction;
 profileNum = p.Results.profileNum;
-n = p.Results.n;
-k = p.Results.k;
+windowLength = p.Results.windowLength;
+threshold = p.Results.threshold;
 action = p.Results.action;
 
 
 %% For Profiles: determine if the structure has downcasts and upcasts & set profileNum accordingly
-if strcmp(series,'profile')
+if strcmp(series, 'profile')
     isDown = isfield(RSK.profiles.downcast, 'data');
-    isUp   = isfield(RSK.profiles.upcast,   'data');
+    isUp   = isfield(RSK.profiles.upcast, 'data');
     switch direction
         case 'up'
             if ~isUp
@@ -110,65 +112,70 @@ if strcmp(series,'profile')
 end
 
 channelCol = find(strncmpi(channel, {RSK.channels.longName}, 4));
-channelCol = channelCol(1); % If there are two pick the first. Usually temp or pressure.
 
 %% Despike
 switch series
     case 'profile'
         switch direction
             case 'up'
-                for i=profileNum
+                for i = profileNum
                     x = RSK.profiles.upcast.data(i).values(:,channelCol);
-                    RSK.profiles.upcast.data(i).values(:, channelCol) = despike(x, n, k, action); 
+                    xtime = RSK.profiles.upcast.data(i).tstamp;
+                    RSK.profiles.upcast.data(i).values(:,channelCol) = despike(x, xtime, threshold, windowLength, action); 
                 end
             case 'down'
-                for i=profileNum
+                for i = profileNum
                     x = RSK.profiles.downcast.data(i).values(:,channelCol);
-                    RSK.profiles.downcast.data(i).values(:, channelCol) = despike(x, n, k, action); 
+                    xtime = RSK.profiles.downcast.data(i).tstamp;
+                    RSK.profiles.downcast.data(i).values(:,channelCol) = despike(x, xtime, threshold, windowLength, action); 
                 end
         end
         
     case 'data'
         x = RSK.data.values(:,channelCol);
-        RSK.data.values(:, channelCol) = despike(x, n, k, action); 
+        xtime = RSK.data.tstamp;
+        RSK.data.values(:,channelCol) = despike(x, xtime, threshold, windowLength, action); 
 end
 end
 
 
 %% Nested Functions
-function [y] = despike(x, n, k, action)
+function [y] = despike(x, t, threshold, windowLength, action)
 y = x;
-ref = runmed(x, k);
+ref = runmed(x, windowLength);
 dx = x - ref;
 sd = std(dx);
-I = find(abs(dx) > n*sd);
+I = find(abs(dx) > threshold*sd);
+good = find(abs(dx) <= threshold*sd);
 
 switch action
   case 'replace'
     y(I) = ref(I);
   case 'NaN'
     y(I) = NaN;
+  case 'interpl'
+    y(I) = interp1(t(good), x(good), t(I)) ;
 end
 end
 
-function out = runmed(in, k)
-% A running median of length k. k must be odd, has one added if it's found to be even.
+function out = runmed(in, windowLength)
+% A running median of length windowLength. windowLength must be odd, has one added if it's found to be even.
 
 n = length(in);
 out = NaN*in;
 
-if mod(k, 2) == 0
-    warning('k must be odd; adding 1');
-    k = k + 1;
+if mod(windowLength, 2) == 0
+    warning('windowLength must be odd; adding 1');
+    windowLength = windowLength + 1;
 end
 
 for i = 1:n
-    if i <= (k-1)/2
-        out(i) = median(in(1:i+(k-1)/2));
-    elseif i >= n-(k-1)/2
-        out(i) = median(in(i-(k-1)/2:n));
+    if i <= (windowLength-1)/2
+        out(i) = median(in(1:i+(windowLength-1)/2));
+    elseif i >= n-(windowLength-1)/2
+        out(i) = median(in(i-(windowLength-1)/2:n));
     else
-        out(i) = median(in(i-(k-1)/2:i+(k-1)/2));
+        out(i) = median(in(i-(windowLength-1)/2:i+(windowLength-1)/2));
     end
 end
 
