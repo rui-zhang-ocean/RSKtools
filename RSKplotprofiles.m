@@ -98,18 +98,9 @@ elseif strcmp(direction, 'both')
 end    
 
 % find column number of field
-pcol = find(strncmp('pressure', lower({RSK.channels.longName}), 4));
+pcol = find(strncmpi('pressure', {RSK.channels.longName}, 4));
 pcol = pcol(1); 
-col = find(strncmp(field, lower({RSK.channels.longName}), 4));
-% Is it a "hidden" channel?
-if ~strncmp(RSK.dbInfo(end).type, 'EP', 2)
-    isHidden = [];
-    for i=1:length(col)
-        isHidden = [isHidden RSK.instrumentChannels(col(i)).channelStatus ~= 0];
-    end
-    % only plot non-hidden channels
-    col = col(~isHidden);
-end
+col = find(strncmpi(field, {RSK.channels.longName}, 4));
 
 % clf
 ax = gca; ax.ColorOrderIndex = 1;
