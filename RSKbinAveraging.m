@@ -12,7 +12,7 @@ function [Y, binCenter] = RSKbinAveraging(X, Pressure, varargin)
 %
 %                P - Pressure array corresponding to X.
 %
-%   [Optional] - BinBy - The array it will be bin wrt... Depth or Pressure.
+%   [Optional] - binBy - The array it will be bin wrt... Depth or Pressure.
 %                Defaults to 'pressure'.
 %
 %                binWidth - the width of the bin. Default is 1.
@@ -36,19 +36,19 @@ checkBinBy = @(x) any(validatestring(x,validBinBy));
 p = inputParser;
 addRequired(p, 'X', @isnumeric);
 addRequired(p, 'Pressure', @isnumeric);
-addParameter(p, 'BinBy', 'pressure', checkBinBy);
+addParameter(p, 'binBy', 'pressure', checkBinBy);
 addParameter(p, 'binWidth', 1, @isnumeric);
 parse(p, X, Pressure, varargin{:})
 
 % Assign each argument
 X = p.Results.X;
 Pressure = p.Results.Pressure;
-BinBy = p.Results.BinBy;
+binBy = p.Results.binBy;
 binWidth = p.Results.binWidth;
 
 %% Binning 
 
-switch BinBy
+switch binBy
   case 'pressure'
     binCenter = [binWidth:binWidth:ceil(max(Pressure))]';
   case 'depth'
@@ -61,7 +61,7 @@ Y = NaN(length(binCenter),1);
 
 for k=1:length(binCenter)
     
-  switch BinBy
+  switch binBy
     case 'pressure'
       kk = (Pressure >= binCenter(k)-binWidth/2) & (Pressure < binCenter(k)+binWidth/2);
     case 'depth'
