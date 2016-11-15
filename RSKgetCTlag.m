@@ -111,6 +111,7 @@ pcol = find(strncmpi('pressure', {RSK.channels.longName}, 4));
 Ccol = find(strncmpi('conductivity', {RSK.channels.longName}, 4));
 Tcol = find(strncmpi('temperature', {RSK.channels.longName}, 4));
 Tcol = Tcol(1); % only take the first temperature channel
+pcol = pcol(1); % Some files (WireWalker) have 'Pressure (sea)' as second pressure channel.
 
 % only needed for if replacing current salinity estimate with new calc.
 Scol = find(strncmpi('salinity', {RSK.channels.longName}, 4));
