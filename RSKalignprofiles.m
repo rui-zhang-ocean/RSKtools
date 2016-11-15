@@ -59,29 +59,18 @@ function [RSK, lags] = RSKalignprofiles(RSK, varargin)
 % Author: RBR Ltd. Ottawa ON, Canada
 % email: support@rbr-global.com
 % Website: www.rbr-global.com
-% Last revision: 2016-11-02
+% Last revision: 2016-11-15
 
-% Set up default variables
-isstruct(RSK);
-defaultprofileNum = 1:length(RSK.profiles.downcast.tstart) ;
-
-if ~isfield(RSK.profiles.downcast, 'data')
-    defaultDirection = 'up';
-else
-    defaultDirection = 'down';
-end
+%% Check input and default arguments
 validDirections = {'down','up'};
 checkDirection = @(x) any(validatestring(x,validDirections));
 
-defaultCTlag = [];
-defaultnsmooth = 21;
-
 % Parse Inputs
 p = inputParser;
-addParameter(p,'profileNum', defaultprofileNum, @isnumeric);
-addParameter(p,'direction', defaultDirection, checkDirection);
-addParameter(p,'CTlag', defaultCTlag, @isnumeric);
-addParameter(p,'nsmooth', defaultnsmooth, @isnumeric);
+addParameter(p,'profileNum', [], @isnumeric);
+addParameter(p,'direction', 'down', checkDirection);
+addParameter(p,'CTlag', [], @isnumeric);
+addParameter(p,'nsmooth', 21, @isnumeric);
 parse(p,varargin{:})
 
 % Assign each input argument
@@ -90,24 +79,32 @@ direction = p.Results.direction;
 CTlag = p.Results.CTlag;
 nsmooth = p.Results.nsmooth;
 
-% Check to make sure that lags are integers
+%% determine if the structure has downcasts and upcasts
+isDown = isfield(RSK.profiles.downcast, 'data');
+isUp   = isfield(RSK.profiles.upcast, 'data');
+switch direction
+    case 'up'
+        if ~isUp
+            error('Structure does not contain upcasts')
+        elseif isempty(profileNum)
+            profileNum = 1:length(RSK.profiles.upcast.data);
+        end
+    case 'down'
+        if ~isDown
+            error('Structure does not contain downcasts')
+        elseif isempty(profileNum)
+            profileNum = 1:length(RSK.profiles.downcast.data);
+        end
+end
+
+
+%% Check to make sure that lags are integers
 if ~isequal(fix(CTlag),CTlag),
     error('Lag values must be integers.')
 end
 
 
-%Default ProfileNum is dependent on direction of cast
-checkProfileNum = strcmp(p.UsingDefaults,'profileNum');
-if sum(checkProfileNum)==1
-    switch direction
-      case 'down'
-        profileNum = 1:length(RSK.profiles.downcast.data);
-      case 'up'
-        profileNum = 1:length(RSK.profiles.upcast.data);
-    end
-end
-
-% Check for one value of CTlag or one for each profile
+%% Check for one value of CTlag or one for each profile
 if length(CTlag) == 1
     if length(profileNum) == 1
     else
@@ -125,11 +122,12 @@ hasTEOS = exist('gsw_SP_from_C') == 2;
 if (~hasTEOS) error('Error: Must install TEOS-10 toolbox'); end
 
 % find column number of C and T
-Scol = find(strncmp('salinity', lower({RSK.channels.longName}), 4));
-Ccol = find(strncmp('conductivity', lower({RSK.channels.longName}), 4));
-Tcol = find(strncmp('temperature', lower({RSK.channels.longName}), 4));
+Scol = find(strncmpi('salinity', {RSK.channels.longName}, 4));
+Ccol = find(strncmpi('conductivity', {RSK.channels.longName}, 4));
+Tcol = find(strncmpi('temperature', {RSK.channels.longName}, 4));
 Tcol = Tcol(1); % only take the first one
-pcol = find(strncmp('pressure', lower({RSK.channels.longName}), 4));
+pcol = find(strncmpi('pressure', {RSK.channels.longName}, 4));
+pcol = pcol(1);% some files also have sea pressure.
 
 bestlag = [];
 lags = [];
