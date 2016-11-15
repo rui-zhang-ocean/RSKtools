@@ -1,8 +1,8 @@
-function [RSK, lag] = RSKalignchannel(RSK, channel, lag, varargin)
+function [RSK] = RSKalignchannel(RSK, channel, lag, varargin)
 
 % RSKalignchannel - Align a channel profiles to minimize spiking
 %
-% Syntax:  [RSK, lags] = RSKalignchannel(RSK, channel, lag, [OPTIONS])
+% Syntax:  [RSK] = RSKalignchannel(RSK, channel, lag, [OPTIONS])
 % 
 % Applies the lag to minimize  "spikes". Typically used for salinity
 % because it spikes typically result from temporal C/T mismatches when the
@@ -30,9 +30,7 @@ function [RSK, lag] = RSKalignchannel(RSK, channel, lag, varargin)
 %
 %
 % Outputs:
-%    RSK - the RSK structure with corrected salinities
-%
-%    lags - the optimal values of the lags for each profile
+%    RSK - the RSK structure with aligned channel values
 %
 % Example: 
 %   
@@ -42,15 +40,17 @@ function [RSK, lag] = RSKalignchannel(RSK, channel, lag, varargin)
 %   1. All downcast profiles with calculated optimal C/T lag.
 %    lags = RSKgetCTlag(rsk)
 %    rsk = RSKalignchannel(rsk, 'salinity', lags);
+%
 %   2. Specified profiles (first 4) and C/T lag values (one for each profile)
 %    rsk = RSKalignchannel(rsk, 'Dissolved O', [2 1 -1 0], 'profileNum',1:4);
+%
 %   3. Specified profiles (first 4) and C/T lag value (one for ALL profiles being aligned).
 %    rsk = RSKalignchannel(rsk, 'temperature', [2], 'profileNum', 1:4);;
 %
 % Author: RBR Ltd. Ottawa ON, Canada
 % email: support@rbr-global.com
 % Website: www.rbr-global.com
-% Last revision: 2016-11-02
+% Last revision: 2016-11-15
 
 %% Check input and default arguments
 
@@ -81,7 +81,6 @@ direction = p.Results.direction;
 
 
 
-
 %% determine if the structure has downcasts and upcasts
 isDown = isfield(RSK.profiles.downcast, 'data');
 isUp   = isfield(RSK.profiles.upcast, 'data');
@@ -101,6 +100,7 @@ switch direction
 end
 
 
+
 %% Check to make sure that lags are integers & one value of CTlag or one for each profile
 if ~isequal(fix(lag),lag),
     error('Lag values must be integers.')
@@ -117,6 +117,7 @@ elseif length(lag) > 1
                'single value']);
     end
 end
+
 
 
 %% Apply lag to conductivity
@@ -158,16 +159,18 @@ if strcmpi(channel, 'salinity')
     
 else
     counter = 0;
-    channelCol = strncmpi(channel, {RSK.channels.longName}, 4);
+    channelCol = find(strncmpi(channel, {RSK.channels.longName}, 4));
     
     for i=profileNum
         counter = counter + 1;
-        channelData = RSK.profiles.downcast.data(i).values(:, channelCol);
-        channelShifted = shiftarray(channelData, lag(counter));
             switch direction
-                case 'down'
+                case 'down'        
+                    channelData = RSK.profiles.downcast.data(i).values(:, channelCol);
+                    channelShifted = shiftarray(channelData, lag(counter));
                     RSK.profiles.downcast.data(i).values(:, channelCol) = channelShifted;
                 case 'up'
+                    channelData = RSK.profiles.upcast.data(i).values(:, channelCol);
+                    channelShifted = shiftarray(channelData, lag(counter));                    
                     RSK.profiles.upcast.data(i).values(:, channelCol) = channelShifted;
             end
     end
