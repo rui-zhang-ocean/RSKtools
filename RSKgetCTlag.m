@@ -89,33 +89,31 @@ nsmooth    = p.Results.nsmooth;
 
 %% determine if the structure has downcasts and upcasts
 isDown = isfield(RSK.profiles.downcast, 'data');
-isUp   = isfield(RSK.profiles.upcast,   'data');
-
-if ~isUp & strcmp(direction,'up')
-  error('Structure does not contain upcasts')
-elseif ~isDown & strcmp(direction,'down')
-  error('Structure does not contain downcasts')
-end
-
-
-%% choose all profiles if none were specified
-if isempty(profileNum),
-    if strcmp(direction,'down'),
-        profileNum = 1:length(RSK.profiles.downcast.data);
-    elseif strcmp(direction,'up'),
-        profileNum = 1:length(RSK.profiles.upcast.data);
-    end 
+isUp   = isfield(RSK.profiles.upcast, 'data');
+switch direction
+    case 'up'
+        if ~isUp
+            error('Structure does not contain upcasts')
+        elseif isempty(profileNum)
+            profileNum = 1:length(RSK.profiles.upcast.data);
+        end
+    case 'down'
+        if ~isDown
+            error('Structure does not contain downcasts')
+        elseif isempty(profileNum)
+            profileNum = 1:length(RSK.profiles.downcast.data);
+        end
 end
 
 
 %% find column number of channels
-pcol = find(strncmp('pressure', lower({RSK.channels.longName}), 4));
-Ccol = find(strncmp('conductivity', lower({RSK.channels.longName}), 4));
-Tcol = find(strncmp('temperature', lower({RSK.channels.longName}), 4));
+pcol = find(strncmpi('pressure', {RSK.channels.longName}, 4));
+Ccol = find(strncmpi('conductivity', {RSK.channels.longName}, 4));
+Tcol = find(strncmpi('temperature', {RSK.channels.longName}, 4));
 Tcol = Tcol(1); % only take the first temperature channel
 
 % only needed for if replacing current salinity estimate with new calc.
-Scol = find(strncmp('salinity', lower({RSK.channels.longName}), 4));
+Scol = find(strncmpi('salinity', {RSK.channels.longName}, 4));
 
 
 bestlag = [];
@@ -142,13 +140,6 @@ for k=profileNum
         dSsd = [dSsd std(dS)];
     end
     bestlag = [bestlag lags(find(dSsd == min(dSsd)))];
-    Sbest = gsw_SP_from_C(shiftarray(C, bestlag(end)), T, p);
-    switch direction
-      case 'down'
-        RSK.profiles.downcast.data(k).values(:, Scol) = Sbest;
-      case 'up'
-        RSK.profiles.upcast.data(k).values(:, Scol) = Sbest;
-    end
 end
 lags = bestlag;
 
