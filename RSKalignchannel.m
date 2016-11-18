@@ -1,6 +1,6 @@
 function [RSK] = RSKalignchannel(RSK, channel, lag, varargin)
 
-% RSKalignchannel - Align a channel profiles to minimize spiking
+% RSKalignchannel - Align a channel profiles using a specified lag.
 %
 % Syntax:  [RSK] = RSKalignchannel(RSK, channel, lag, [OPTIONS])
 % 
@@ -8,7 +8,7 @@ function [RSK] = RSKalignchannel(RSK, channel, lag, varargin)
 % because it spikes typically result from temporal C/T mismatches when the
 % sensors are moving through regionsof high vertical gradients.
 %
-% If aligning salinity it eequires the TEOS-10 toolbox to be installed, to
+% If aligning salinity it requires the TEOS-10 toolbox to be installed, to
 % allow salinity to be calculated using gsw_SP_from_C.
 %
 % Inputs: 
@@ -81,7 +81,7 @@ direction = p.Results.direction;
 
 
 
-%% determine if the structure has downcasts and upcasts
+%% Determine if the structure has downcasts and upcasts
 isDown = isfield(RSK.profiles.downcast, 'data');
 isUp   = isfield(RSK.profiles.upcast, 'data');
 switch direction
@@ -120,7 +120,7 @@ end
 
 
 
-%% Apply lag to conductivity
+%% Apply lag to salinity from conductivity
 if strcmpi(channel, 'salinity')
     hasTEOS = exist('gsw_SP_from_C') == 2;
 
@@ -157,6 +157,7 @@ if strcmpi(channel, 'salinity')
             end
     end
     
+% Apply lag to any other channel.    
 else
     counter = 0;
     channelCol = find(strncmpi(channel, {RSK.channels.longName}, 4));
