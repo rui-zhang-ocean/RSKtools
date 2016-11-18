@@ -69,7 +69,7 @@ RSK.datasets = mksqlite('select * from datasets');
 RSK.datasetDeployments = mksqlite('select * from datasetDeployments');
 
 % As of RSK v1.13.4 coefficients is it's own table. We add it back into calibration to be consistent with previous versions.
-if (vsnMajor >= 1) & (vsnMinor >= 13) & (vsnPatch >= 4)
+if (vsnMajor > 1) | ((vsnMajor == 1)&(vsnMinor > 13)) | ((vsnMajor == 1)&(vsnMinor == 13) & (vsnPatch >= 4))
     RSK.parameters = mksqlite('select * from parameters');
     RSK.parameterKeys = mksqlite('select * from parameterKeys'); 
     try
@@ -103,9 +103,10 @@ RSK.channels = mksqlite('select longName,units from channels');
 % Remove derived channel names & hidden channels (only if it's NOT an
 % EPdesktop format rsk)
 if ~strcmp(RSK.dbInfo(end).type, 'EPdesktop')
-    try
+    % Channel status was instroduced in RSK V 1.8.9.
+    if (vsnMajor > 1) | ((vsnMajor == 1)&(vsnMinor > 8)) | ((vsnMajor == 1)&(vsnMinor == 8) & (vsnPatch >= 9))
         isMeasured = ~[RSK.instrumentChannels.channelStatus];% hidden and derived channels have a non-zero channelStatus
-    catch
+    else
         isDerived = mksqlite('select isDerived from channels');
         isMeasured = ~[isDerived.isDerived]; % some files may not have channelStatus
     end
