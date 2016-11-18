@@ -6,28 +6,17 @@ function RSKplotcontour(RSK, channel, direction)
 %
 % Syntax:  RSKplotcontour(RSK, channel, direction)
 % 
-% This generates a plot of the profiles over time. It despikes and bins the
-% data for any specified channel. For salinity it also calculates the optimal lag
-% and aligns each profile.
+% This generates a plot of the profiles over time. It bins the
+% data for any specified channel.
 % 
 % Inputs:
 %    RSK - Structure containing the logger metadata and data
 %
 %
-%
 % Author: RBR Ltd. Ottawa ON, Canada
 % email: support@rbr-global.com
 % Website: www.rbr-global.com
-% Last revision: 2016-11-10
-
-RSK = RSKdespike(RSK, channel, 'series', 'profile', 'direction', direction);
-
-% Filtering function here?
-
-if strcmpi(channel,'salinity') % Option for DO also?
-    lags = RSKgetCTlag(RSK, 'direction', direction);
-    RSK = RSKalignchannel(RSK, 'salinity', lags, 'direction', direction);
-end
+% Last revision: 2016-11-17
 
 channelCol = find(strncmpi(channel, {RSK.channels.longName}, 4));
 pressureCol = find(strncmpi('pressure', {RSK.channels.longName}, 4));
@@ -53,7 +42,7 @@ for i = 1:size(cast.data,2)
     if profileMax > maxP, maxP = profileMax; end
 end
 
-binWidth = 0.5;
+binWidth = 0.25;
 binArray = fix(minP):binWidth:ceil(maxP);
 
 % Bin Average each cast
@@ -65,7 +54,7 @@ end
 %% Interpolate
 t = cast.tstart;
 z = -bins;
-grid = 500;
+grid = 100;
 dt = linspace(t(1),t(end), grid);
 dz = linspace(z(1),z(end), grid);
 
@@ -79,11 +68,16 @@ else
     units = '(m)';
 end
 
-figure(1);
+
+
 [~,h] = contourf(dt, dz, vq, 90);
 cb = colorbar;
-colormap parula
+cmocean('haline');
+if strcmpi(channel, 'chlorophyll'), cmocean('algae'); 
+elseif strcmpi(channel, 'dissolved o'), cmocean('oxy');end
 ylabel(cb, RSK.channels(channelCol).units, 'FontSize', 12)
+if strcmpi(channel, 'salinity'), caxis([33.2 33.7]); 
+elseif strcmpi(channel, 'chlorophyll'), caxis([40 320]);end
 title(sprintf('%s on %s', RSK.channels(channelCol).longName, date));
 xlabel(sprintf('Time (UTC)'))
 ylim(-[ bins(end) bins(1)])
