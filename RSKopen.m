@@ -59,9 +59,9 @@ vsnMinor = str2num(vsn{2});
 vsnPatch = str2num(vsn{3});
 if vsnMajor > latestRSKversionMajor
     warning(['RSK version ' vsnString ' is newer than your RSKtools version. It is recommended to update RSKtools at https://rbr-global.com/support/matlab-tools']);
-elseif (vsnMajor == latestRSKversionMajor) & (vsnMinor > latestRSKversionMinor)
+elseif (vsnMajor == latestRSKversionMajor) && (vsnMinor > latestRSKversionMinor)
     warning(['RSK version ' vsnString ' is newer than your RSKtools version. It is recommended to update RSKtools at https://rbr-global.com/support/matlab-tools']);
-elseif (vsnMajor == latestRSKversionMajor) & (vsnMinor == latestRSKversionMinor) & (vsnPatch > latestRSKversionPatch)
+elseif (vsnMajor == latestRSKversionMajor) && (vsnMinor == latestRSKversionMinor) && (vsnPatch > latestRSKversionPatch)
     warning(['RSK version ' vsnString ' is newer than your RSKtools version. It is recommended to update RSKtools at https://rbr-global.com/support/matlab-tools']);
 end
 
@@ -69,7 +69,7 @@ RSK.datasets = mksqlite('select * from datasets');
 RSK.datasetDeployments = mksqlite('select * from datasetDeployments');
 
 % As of RSK v1.13.4 coefficients is it's own table. We add it back into calibration to be consistent with previous versions.
-if (vsnMajor > 1) | ((vsnMajor == 1)&(vsnMinor > 13)) | ((vsnMajor == 1)&(vsnMinor == 13) & (vsnPatch >= 4))
+if (vsnMajor > 1) || ((vsnMajor == 1)&&(vsnMinor > 13)) || ((vsnMajor == 1)&&(vsnMinor == 13)&&(vsnPatch >= 4))
     RSK.parameters = mksqlite('select * from parameters');
     RSK.parameterKeys = mksqlite('select * from parameterKeys'); 
     try
@@ -103,19 +103,15 @@ RSK.channels = mksqlite('select longName,units from channels');
 % Remove derived channel names & hidden channels (only if it's NOT an
 % EPdesktop format rsk)
 if ~strcmp(RSK.dbInfo(end).type, 'EPdesktop')
-    % Channel status was instroduced in RSK V 1.8.9.
-    if (vsnMajor > 1) | ((vsnMajor == 1)&(vsnMinor > 8)) | ((vsnMajor == 1)&(vsnMinor == 8) & (vsnPatch >= 9))
+    % channelStatus was instroduced in RSK V 1.8.9.
+    if (vsnMajor > 1) || ((vsnMajor == 1)&&(vsnMinor > 8)) || ((vsnMajor == 1)&&(vsnMinor == 8) && (vsnPatch >= 9))
         isMeasured = ~[RSK.instrumentChannels.channelStatus];% hidden and derived channels have a non-zero channelStatus
     else
-        isDerived = mksqlite('select isDerived from channels');
-        isMeasured = ~[isDerived.isDerived]; % some files may not have channelStatus
+        results = mksqlite('select isDerived from channels');
+        isMeasured = ~[results.isDerived]; % some files may not have channelStatus
     end
-    for c = length(isMeasured):-1:1
-        if ~isMeasured(c)
-            RSK.channels(c) = [];  
-            RSK.instrumentChannels(c) = []; 
-        end
-    end
+    RSK.channels(~isMeasured) = [];  
+    RSK.instrumentChannels(~isMeasured) = []; 
 end
 
 RSK.epochs = mksqlite('select deploymentID,startTime/1.0 as startTime, endTime/1.0 as endTime from epochs');
