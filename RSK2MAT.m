@@ -25,12 +25,19 @@ function [RBR] = RSK2MAT(RSK)
 % Website: www.rbr-global.com
 % Last revision: 2016-11-21
 
-try 
-    firmwareV  = RSK.deployments.firmwareVersion;
-catch
+% Firmware Version location is dependant on the rsk file version
+vsnString = RSK.dbInfo.version;
+vsn = strread(vsnString,'%s','delimiter','.');
+vsnMajor = str2num(vsn{1});
+vsnMinor = str2num(vsn{2});
+vsnPatch = str2num(vsn{3});
+if (vsnMajor > 1) || ((vsnMajor == 1)&&(vsnMinor > 12)) || ((vsnMajor == 1)&&(vsnMinor == 12)&&(vsnPatch >= 2))
     firmwareV  = RSK.instruments.firmwareVersion;
+else
+    firmwareV  = RSK.deployments.firmwareVersion;    
 end
 
+% Set up metadata
 RBR.name = ['RBR ' RSK.instruments.model ' ' firmwareV ' ' num2str(RSK.instruments.serialID)];
 RBR.datasetfilename = RSK.datasets.name;
 RBR.sampleperiod = RSK.schedules.samplingPeriod/1000; % seconds
@@ -51,6 +58,7 @@ for i=1:nchannels
     RBR.coefficients(:,i) = cell2mat(coefcell);
 end
 
+% Set up data tables
 RBR.sampletimes = cellstr(datestr(RSK.data.tstamp, 'yyyy-mm-dd HH:MM:ss.FFF'));
 RBR.data = RSK.data.values;
 
