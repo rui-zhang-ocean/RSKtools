@@ -52,11 +52,11 @@ end
 dbid = mksqlite('open',fname);
 
 RSK.dbInfo = mksqlite('select version,type from dbInfo');
-vsnString = RSK.dbInfo.version;
-vsn = strread(vsnString,'%s','delimiter','.');
-vsnMajor = str2num(vsn{1});
-vsnMinor = str2num(vsn{2});
-vsnPatch = str2num(vsn{3});
+vsnString = RSK.dbInfo(end).version;
+vsn = textscan(vsnString,'%s','delimiter','.');
+vsnMajor = str2double(vsn{1}{1});
+vsnMinor = str2double(vsn{1}{2});
+vsnPatch = str2double(vsn{1}{3});
 if vsnMajor > latestRSKversionMajor
     warning(['RSK version ' vsnString ' is newer than your RSKtools version. It is recommended to update RSKtools at https://rbr-global.com/support/matlab-tools']);
 elseif (vsnMajor == latestRSKversionMajor) && (vsnMinor > latestRSKversionMinor)

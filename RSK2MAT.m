@@ -26,11 +26,11 @@ function [RBR] = RSK2MAT(RSK)
 % Last revision: 2016-11-21
 
 % Firmware Version location is dependant on the rsk file version
-vsnString = RSK.dbInfo.version;
-vsn = strread(vsnString,'%s','delimiter','.');
-vsnMajor = str2num(vsn{1});
-vsnMinor = str2num(vsn{2});
-vsnPatch = str2num(vsn{3});
+vsnString = RSK.dbInfo(end).version;
+vsn = textscan(vsnString,'%s','delimiter','.');
+vsnMajor = str2double(vsn{1}{1});
+vsnMinor = str2double(vsn{1}{2});
+vsnPatch = str2double(vsn{1}{3});
 if (vsnMajor > 1) || ((vsnMajor == 1)&&(vsnMinor > 12)) || ((vsnMajor == 1)&&(vsnMinor == 12)&&(vsnPatch >= 2))
     firmwareV  = RSK.instruments.firmwareVersion;
 else
@@ -43,7 +43,10 @@ RBR.datasetfilename = RSK.datasets.name;
 RBR.sampleperiod = RSK.schedules.samplingPeriod/1000; % seconds
 RBR.channelnames = {RSK.channels.longName}';
 RBR.channelunits = {RSK.channels.units}';
-RBR.channelranging = {RSK.ranging.mode}';
+try
+    RBR.channelranging = {RSK.ranging.mode}';
+catch
+end
 RBR.starttime = datestr(RSK.epochs.startTime, 'dd/mm/yyyy HH:MM:SS PM');
 RBR.endtime = datestr(RSK.epochs.endTime, 'dd/mm/yyyy HH:MM:SS PM');
 
@@ -61,15 +64,5 @@ end
 % Set up data tables
 RBR.sampletimes = cellstr(datestr(RSK.data.tstamp, 'yyyy-mm-dd HH:MM:ss.FFF'));
 RBR.data = RSK.data.values;
-
-% %Events...Not consistent
-% if isfield(RSK, 'events')
-%     k = find(RSK.events.values(:,4) == 0);
-%     x1 = cellstr(strcat('DIAG-',num2str(RSK.events.values(k,2))));
-%     x2 = cellstr(datestr(RSK.events.tstamp(k), 'dd/mm/yyyy HH:MM:SS PM'));
-%     x3 = cellstr(num2str(RSK.events.values(k,3)));
-%     RBR.events = [x1, x2, x3];
-% end
-%     
 
 end
