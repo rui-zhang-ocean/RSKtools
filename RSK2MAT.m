@@ -34,6 +34,7 @@ function [RBR] = RSK2MAT(RSK)
 % Last revision: 2016-11-22
 
 %% Firmware Version location is dependant on the rsk file version
+
 vsnString = RSK.dbInfo(end).version;
 vsn = textscan(vsnString,'%s','delimiter','.');
 vsnMajor = str2double(vsn{1}{1});
@@ -71,7 +72,6 @@ for i=1:nchannels
 end
 
 %% Set up data tables
-RBR.sampletimes = cellstr(datestr(RSK.data.tstamp, 'yyyy-mm-dd HH:MM:ss.FFF'));
-RBR.data = RSK.data.values;
-
+RBR.sampletimes = cellstr(datestr(RSK.data.tstamp, 'HH:MM:ss.FFF'));
+RBR.data = RSK.data.values(:,1:nchannels);
 end
