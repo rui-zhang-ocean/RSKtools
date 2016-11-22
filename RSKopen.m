@@ -68,6 +68,7 @@ end
 RSK.datasets = mksqlite('select * from datasets');
 RSK.datasetDeployments = mksqlite('select * from datasetDeployments');
 
+
 % As of RSK v1.13.4 coefficients is it's own table. We add it back into calibration to be consistent with previous versions.
 if (vsnMajor > 1) || ((vsnMajor == 1)&&(vsnMinor > 13)) || ((vsnMajor == 1)&&(vsnMinor == 13)&&(vsnPatch >= 4))
     RSK.parameters = mksqlite('select * from parameters');
@@ -84,7 +85,8 @@ else
     catch % ignore if there is an error, rsk files from an easyparse logger do not contain calibrations
     end
 end
-        
+
+
 RSK.instruments = mksqlite('select * from instruments');
 try
     RSK.instrumentChannels = mksqlite('select * from instrumentChannels');
@@ -99,8 +101,9 @@ try
 catch % ignore if there is an error, rsk files from an easyparse logger do not contain instrument sensors table
 end
 
-RSK.channels = mksqlite('select longName,units from channels');
-% Remove derived channel names & hidden channels (only if it's NOT an
+
+RSK.channels = mksqlite('select shortName,longName,units from channels');
+% Remove non marine channels (only if it's NOT an
 % EPdesktop format rsk)
 if ~strcmp(RSK.dbInfo(end).type, 'EPdesktop')
     % channelStatus was instroduced in RSK V 1.8.9.
@@ -113,6 +116,7 @@ if ~strcmp(RSK.dbInfo(end).type, 'EPdesktop')
     RSK.channels(~isMeasured) = [];  
     RSK.instrumentChannels(~isMeasured) = []; 
 end
+
 
 RSK.epochs = mksqlite('select deploymentID,startTime/1.0 as startTime, endTime/1.0 as endTime from epochs');
 RSK.epochs.startTime = RSKtime2datenum(RSK.epochs.startTime);
