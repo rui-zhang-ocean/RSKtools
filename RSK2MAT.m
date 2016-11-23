@@ -72,6 +72,10 @@ for i=1:nchannels
 end
 
 %% Set up data tables
-RBR.sampletimes = cellstr(datestr(RSK.data.tstamp, 'HH:MM:ss.FFF'));
+RBR.sampletimes = cellstr(datestr(RSK.data.tstamp, 'yyyy-mm-dd HH:MM:ss.FFF'));
 RBR.data = RSK.data.values(:,1:nchannels);
+
+%% Save to mat file
+matfile = strrep(RBR.datasetfilename,'.rsk','.mat');
+save(matfile, 'RBR');
 end
