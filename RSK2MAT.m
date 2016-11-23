@@ -46,6 +46,7 @@ else
     firmwareV  = RSK.deployments.firmwareVersion;    
 end
 
+
 %% Set up metadata
 RBR.name = ['RBR ' RSK.instruments.model ' ' firmwareV ' ' num2str(RSK.instruments.serialID)];
 RBR.datasetfilename = RSK.datasets.name;
@@ -59,23 +60,30 @@ end
 RBR.starttime = datestr(RSK.epochs.startTime, 'dd/mm/yyyy HH:MM:SS PM');
 RBR.endtime = datestr(RSK.epochs.endTime, 'dd/mm/yyyy HH:MM:SS PM');
 
+
 %% Set up coefficients table
 nchannels = length(RBR.channelnames);
-% Only shows first 4 coefficients (c0, c1, c2 & c3).
-RBR.coefficients = zeros(4, nchannels);
-for i=1:nchannels
-    channelindex = find([RSK.calibrations.channelOrder] == i);
-    coefcell = [{RSK.calibrations(channelindex(end)).c0}; {RSK.calibrations(channelindex(end)).c1}; {RSK.calibrations(channelindex(end)).c2; RSK.calibrations(channelindex(end)).c3}];
-    nocoef = cellfun('isempty', coefcell);
-    coefcell(nocoef) = {NaN};
-    RBR.coefficients(:,i) = cell2mat(coefcell);
+if ~strcmp(RSK.dbInfo(end).type, 'EPdesktop') && ~strcmp(RSK.dbInfo(end).type, 'live')%EPdesktop & live does not have calibration table
+    % Only shows first 4 coefficients (c0, c1, c2 & c3).
+    RBR.coefficients = zeros(4, nchannels);
+    for i=1:nchannels
+        channelindex = find([RSK.calibrations.channelOrder] == i);
+        coefcell = [{RSK.calibrations(channelindex(end)).c0}; {RSK.calibrations(channelindex(end)).c1}; {RSK.calibrations(channelindex(end)).c2; RSK.calibrations(channelindex(end)).c3}];
+        nocoef = cellfun('isempty', coefcell);
+        coefcell(nocoef) = {NaN};
+        RBR.coefficients(:,i) = cell2mat(coefcell);
+    end
 end
+
 
 %% Set up data tables
 RBR.sampletimes = cellstr(datestr(RSK.data.tstamp, 'yyyy-mm-dd HH:MM:ss.FFF'));
 RBR.data = RSK.data.values(:,1:nchannels);
 
+
 %% Save to mat file
 matfile = strrep(RBR.datasetfilename,'.rsk','.mat');
 save(matfile, 'RBR');
+
+
 end
