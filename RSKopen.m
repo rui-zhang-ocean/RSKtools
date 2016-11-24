@@ -37,7 +37,7 @@ function [RSK, dbid] = RSKopen(fname)
 % Author: RBR Ltd. Ottawa ON, Canada
 % email: support@rbr-global.com
 % Website: www.rbr-global.com
-% Last revision: 2016-11-07
+% Last revision: 2016-11-21
 
 RSKconstants
 
@@ -52,24 +52,25 @@ end
 dbid = mksqlite('open',fname);
 
 RSK.dbInfo = mksqlite('select version,type from dbInfo');
-vsnString = RSK.dbInfo.version;
-vsn = strread(vsnString,'%s','delimiter','.');
-vsnMajor = str2num(vsn{1});
-vsnMinor = str2num(vsn{2});
-vsnPatch = str2num(vsn{3});
+vsnString = RSK.dbInfo(end).version;
+vsn = textscan(vsnString,'%s','delimiter','.');
+vsnMajor = str2double(vsn{1}{1});
+vsnMinor = str2double(vsn{1}{2});
+vsnPatch = str2double(vsn{1}{3});
 if vsnMajor > latestRSKversionMajor
     warning(['RSK version ' vsnString ' is newer than your RSKtools version. It is recommended to update RSKtools at https://rbr-global.com/support/matlab-tools']);
-elseif (vsnMajor == latestRSKversionMajor) & (vsnMinor > latestRSKversionMinor)
+elseif (vsnMajor == latestRSKversionMajor) && (vsnMinor > latestRSKversionMinor)
     warning(['RSK version ' vsnString ' is newer than your RSKtools version. It is recommended to update RSKtools at https://rbr-global.com/support/matlab-tools']);
-elseif (vsnMajor == latestRSKversionMajor) & (vsnMinor == latestRSKversionMinor) & (vsnPatch > latestRSKversionPatch)
+elseif (vsnMajor == latestRSKversionMajor) && (vsnMinor == latestRSKversionMinor) && (vsnPatch > latestRSKversionPatch)
     warning(['RSK version ' vsnString ' is newer than your RSKtools version. It is recommended to update RSKtools at https://rbr-global.com/support/matlab-tools']);
 end
 
 RSK.datasets = mksqlite('select * from datasets');
 RSK.datasetDeployments = mksqlite('select * from datasetDeployments');
 
+
 % As of RSK v1.13.4 coefficients is it's own table. We add it back into calibration to be consistent with previous versions.
-if (vsnMajor >= 1) & (vsnMinor >= 13) & (vsnPatch >= 4)
+if (vsnMajor > 1) || ((vsnMajor == 1)&&(vsnMinor > 13)) || ((vsnMajor == 1)&&(vsnMinor == 13)&&(vsnPatch >= 4))
     RSK.parameters = mksqlite('select * from parameters');
     RSK.parameterKeys = mksqlite('select * from parameterKeys'); 
     try
@@ -84,7 +85,8 @@ else
     catch % ignore if there is an error, rsk files from an easyparse logger do not contain calibrations
     end
 end
-        
+
+
 RSK.instruments = mksqlite('select * from instruments');
 try
     RSK.instrumentChannels = mksqlite('select * from instrumentChannels');
@@ -99,23 +101,22 @@ try
 catch % ignore if there is an error, rsk files from an easyparse logger do not contain instrument sensors table
 end
 
-RSK.channels = mksqlite('select longName,units from channels');
-% Remove derived channel names & hidden channels (only if it's NOT an
+
+RSK.channels = mksqlite('select shortName,longName,units from channels');
+% Remove non marine channels (only if it's NOT an
 % EPdesktop format rsk)
 if ~strcmp(RSK.dbInfo(end).type, 'EPdesktop')
-    try
+    % channelStatus was instroduced in RSK V 1.8.9.
+    if (vsnMajor > 1) || ((vsnMajor == 1)&&(vsnMinor > 8)) || ((vsnMajor == 1)&&(vsnMinor == 8) && (vsnPatch >= 9))
         isMeasured = ~[RSK.instrumentChannels.channelStatus];% hidden and derived channels have a non-zero channelStatus
-    catch
-        isDerived = mksqlite('select isDerived from channels');
-        isMeasured = ~[isDerived.isDerived]; % some files may not have channelStatus
+    else
+        results = mksqlite('select isDerived from channels');
+        isMeasured = ~[results.isDerived]; % some files may not have channelStatus
     end
-    for c = length(isMeasured):-1:1
-        if ~isMeasured(c)
-            RSK.channels(c) = [];  
-            RSK.instrumentChannels(c) = []; 
-        end
-    end
+    RSK.channels(~isMeasured) = [];  
+    RSK.instrumentChannels(~isMeasured) = []; 
 end
+
 
 RSK.epochs = mksqlite('select deploymentID,startTime/1.0 as startTime, endTime/1.0 as endTime from epochs');
 RSK.epochs.startTime = RSKtime2datenum(RSK.epochs.startTime);
@@ -150,7 +151,7 @@ if exist('events', 'var')
     nup = length(find(events.values(:,2) == eventBeginUpcast));
     ndown = length(find(events.values(:,2) == eventBeginDowncast));
     
-    if ~(nup == 0 & ndown == 0)
+    if ~(nup == 0 && ndown == 0)
         
         iup = find(events.values(:,2) == eventBeginUpcast);
         idown = find(events.values(:,2) == eventBeginDowncast);
