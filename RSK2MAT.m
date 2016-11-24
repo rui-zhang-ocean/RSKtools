@@ -83,7 +83,7 @@ RBR.data = RSK.data.values(:,1:nchannels);
 
 %% Save to mat file
 matfile = strrep(RBR.datasetfilename,'.rsk','.mat');
-save(matfile, 'RBR');
+save(matfile, 'RBR', '-v7.3');
 
 
 end
