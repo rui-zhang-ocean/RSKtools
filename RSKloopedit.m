@@ -28,7 +28,7 @@ function [RSK] = RSKloopedit(RSK, varargin)
 %                   be taken. Default is 0.25 m/s
 %
 %                minDecel - the minimum deceleration at which the profile must
-%                   be taken.Default 0.
+%                   be taken.Default 'None'.
 %
 %                action - the 'action' to perform on a flagged value. The
 %                   default, is to 'interp', to interpolate based on 'good'
@@ -112,7 +112,7 @@ for i = profileNum
     switch direction
         case 'up' 
             depth = -gsw_z_from_p(RSK.profiles.upcast.data(i).values(:,pressureCol), latitude);
-            time = rsk.profiles.upcast.data(i).tstamp;
+            time = RSK.profiles.upcast.data(i).tstamp;
             
         case 'down'    
             depth = -gsw_z_from_p(RSK.profiles.downcast.data(i).values(:,pressureCol), latitude);
@@ -150,7 +150,7 @@ for i = profileNum
                     RSK.profiles.upcast.data(i).values(flag,flagChannels) = NaN;
                 case 'interp'
                     for k = find(flagChannels)
-                        RSK.profiles.upcast.data(i).values(:,k) = interp1(time(~flag), RSK.profiles.upcast.data(i).values(~flag,k), time);
+                        RSK.profiles.upcast.data(i).values(:,k) = interp1(time(~flag), RSK.profiles.upcast.data(i).values(~flag,k), time, 'linear', 'extrap');
                     end
             end
             
@@ -160,7 +160,7 @@ for i = profileNum
                     RSK.profiles.downcast.data(i).values(flag,flagChannels) = NaN;
                 case 'interp'
                     for k = find(flagChannels)
-                        RSK.profiles.downcast.data(i).values(:,k) = interp1(time(~flag), RSK.profiles.downcast.data(i).values(~flag,k), time);
+                        RSK.profiles.downcast.data(i).values(:,k) = interp1(time(~flag), RSK.profiles.downcast.data(i).values(~flag,k), time, 'linear', 'extrap');
                     end
             end
     end
