@@ -5,8 +5,8 @@ function [RSK] = RSKalignchannel(RSK, channel, lag, varargin)
 % Syntax:  [RSK] = RSKalignchannel(RSK, channel, lag, [OPTIONS])
 % 
 % Applies the lag to minimize  "spikes". Typically used for salinity
-% because it spikes typically result from temporal C/T mismatches when the
-% sensors are moving through regionsof high vertical gradients.
+% to reverse the effects from temporal C/T mismatches when the
+% sensors are moving through regions of high vertical gradients.
 %
 % If aligning salinity it requires the TEOS-10 toolbox to be installed, to
 % allow salinity to be calculated using gsw_SP_from_C.
@@ -136,7 +136,7 @@ if strcmpi(channel, 'salinity')
 
 
     counter = 0;
-    for i=profileNum
+    for i = profileNum
         counter = counter + 1;
             switch direction
               case 'down'
@@ -162,7 +162,7 @@ else
     counter = 0;
     channelCol = find(strncmpi(channel, {RSK.channels.longName}, 4));
     
-    for i=profileNum
+    for i = profileNum
         counter = counter + 1;
             switch direction
                 case 'down'        
