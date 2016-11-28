@@ -82,8 +82,10 @@ direction = p.Results.direction;
 
 
 %% Determine if the structure has downcasts and upcasts
+castdir = [direction 'cast'];
 isDown = isfield(RSK.profiles.downcast, 'data');
 isUp   = isfield(RSK.profiles.upcast, 'data');
+
 switch direction
     case 'up'
         if ~isUp
@@ -138,23 +140,11 @@ if strcmpi(channel, 'salinity')
     counter = 0;
     for i = profileNum
         counter = counter + 1;
-            switch direction
-              case 'down'
-                C = RSK.profiles.downcast.data(i).values(:, Ccol);
-                T = RSK.profiles.downcast.data(i).values(:, Tcol);
-                p = RSK.profiles.downcast.data(i).values(:, pcol);
-              case 'up'
-                C = RSK.profiles.upcast.data(i).values(:, Ccol);
-                T = RSK.profiles.upcast.data(i).values(:, Tcol);
-                p = RSK.profiles.upcast.data(i).values(:, pcol);
-            end
-            Sbest = gsw_SP_from_C(shiftarray(C, lag(counter)), T, p);
-            switch direction
-              case 'down'
-                RSK.profiles.downcast.data(i).values(:, Scol) = Sbest;
-              case 'up'
-                RSK.profiles.upcast.data(i).values(:, Scol) = Sbest;
-            end
+        C = RSK.profiles.(castdir).data(i).values(:, Ccol);
+        T = RSK.profiles.(castdir).data(i).values(:, Tcol);
+        p = RSK.profiles.(castdir).data(i).values(:, pcol);
+        Sbest = gsw_SP_from_C(shiftarray(C, lag(counter)), T, p);
+        RSK.profiles.(castdir).data(i).values(:, Scol) = Sbest;
     end
     
 % Apply lag to any other channel.    
@@ -163,17 +153,10 @@ else
     channelCol = find(strncmpi(channel, {RSK.channels.longName}, 4));
     
     for i = profileNum
-        counter = counter + 1;
-            switch direction
-                case 'down'        
-                    channelData = RSK.profiles.downcast.data(i).values(:, channelCol);
-                    channelShifted = shiftarray(channelData, lag(counter));
-                    RSK.profiles.downcast.data(i).values(:, channelCol) = channelShifted;
-                case 'up'
-                    channelData = RSK.profiles.upcast.data(i).values(:, channelCol);
-                    channelShifted = shiftarray(channelData, lag(counter));                    
-                    RSK.profiles.upcast.data(i).values(:, channelCol) = channelShifted;
-            end
+        counter = counter + 1;       
+        channelData = RSK.profiles.(castdir).data(i).values(:, channelCol);
+        channelShifted = shiftarray(channelData, lag(counter));
+        RSK.profiles.(castdir).data(i).values(:, channelCol) = channelShifted;
     end
 end
 end
