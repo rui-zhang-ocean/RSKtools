@@ -88,6 +88,7 @@ nsmooth    = p.Results.nsmooth;
 
 
 %% determine if the structure has downcasts and upcasts
+castdir = [direction 'cast'];
 isDown = isfield(RSK.profiles.downcast, 'data');
 isUp   = isfield(RSK.profiles.upcast, 'data');
 switch direction
@@ -120,16 +121,9 @@ Scol = find(strncmpi('salinity', {RSK.channels.longName}, 4));
 bestlag = [];
 for k=profileNum
     disp(['Processing profile: ' num2str(k)])
-    switch direction
-      case 'down'
-        C = RSK.profiles.downcast.data(k).values(:, Ccol);
-        T = RSK.profiles.downcast.data(k).values(:, Tcol);
-        p = RSK.profiles.downcast.data(k).values(:, pcol);
-      case 'up'
-        C = RSK.profiles.upcast.data(k).values(:, Ccol);
-        T = RSK.profiles.upcast.data(k).values(:, Tcol);
-        p = RSK.profiles.upcast.data(k).values(:, pcol);
-    end
+    C = RSK.profiles.(castdir).data(k).values(:, Ccol);
+    T = RSK.profiles.(castdir).data(k).values(:, Tcol);
+    p = RSK.profiles.(castdir).data(k).values(:, pcol);
     S = gsw_SP_from_C(C, T, p);
     lags = -20:20;
     dSsd = [];
