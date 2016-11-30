@@ -114,7 +114,7 @@ end
 pressureCol = find(strcmpi('pressure', {RSK.channels.longName}));
 secondsperday = 86400;
 for i = profileNum
-    smoothPressure = RSKfilter(RSK, 'Pressure');    
+    smoothPressure = RSKfilter(RSK, 'Pressure', 'direction', direction);    
     depth = -gsw_z_from_p(smoothPressure, latitude);
     time = RSK.profiles.(castdir).data(i).tstamp;
     
