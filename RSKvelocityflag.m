@@ -1,18 +1,15 @@
-function [RSK] = RSKloopedit(RSK, varargin)
+function [RSK] = RSKvelocityflag(RSK, varargin)
 
-% RSKloopedit - Flags values that have pressure reversal or slowdows during
+% RSKvelocityflag - Flags values that have pressure reversal or slowdows during
 %               the profile.
 %
-% Syntax:  [RSK] = RSKloopedit(RSK, [OPTIONS])
+% Syntax:  [RSK] = RSKvelocityflag(RSK, [OPTIONS])
 % 
-% RSKloopedit - This function flags scans that have a low profiling
-% velocity or decelerating below a specified threshold and replaces them
+% RSKloopedit - This function filters the pressure channel with a lowpass
+% boxcar to reduce the effect of noise then flags scans that have a low profiling 
+% velocity or decelerate below a specified threshold and replaces them
 % with a NaN or an interpolated value. It operates on two scans to
 % determine the velocity and two velocities for the acceleration.
-%
-% Note: It is VERY important to run RSKfilter.m on the
-% pressure channel to filter out the noise before running RSKloopedit
-% because the noise will be amplified by this function. 
 %
 % Inputs:
 %
@@ -32,7 +29,7 @@ function [RSK] = RSKloopedit(RSK, varargin)
 %                   be taken. Default is 0.25 m/s
 %
 %                minDecel - the minimum deceleration at which the profile must
-%                   be taken. Default 'None'.
+%                   be taken. Default '-0.1'.
 %
 %                action - the 'action' to perform on a flagged value. The
 %                   default, 'NaN', is to leave the spike as a missing
@@ -43,19 +40,18 @@ function [RSK] = RSKloopedit(RSK, varargin)
 %                   Default is 52.
 %
 % Outputs:
-%    RSK - the structure without pressure reversal or slowdowns
+%    RSK - the structure without pressure reversal or slowdowns. The
+%    pressure channel remains unchanged.
 %
 % Example: 
 %    RSK = RSKopen(RSK)
 %    RSK = RSKreadprofiles(RSK)
-%    RSK = RSKfilter(RSK, 'pressure')
-%    RSK = RSKalignchannel(RSK, 'salinity')
-%    RSK = RSKloopedit(RSK)
+%    RSK = RSKvelocityedit(RSK)
 %
 % Author: RBR Ltd. Ottawa ON, Canada
 % email: support@rbr-global.com
 % Website: www.rbr-global.com
-% Last revision: 2016-11-28
+% Last revision: 2016-11-30
 
 %% Check input and default arguments
 
@@ -77,7 +73,7 @@ addRequired(p, 'RSK', @isstruct);
 addParameter(p, 'direction', 'down', checkDirection);
 addParameter(p, 'profileNum', [], @isnumeric);
 addParameter(p, 'minVelocity', 0.25, @isnumeric);
-addParameter(p, 'minDecel', 'None', @isnumeric);
+addParameter(p, 'minDecel', -0.1, @isnumeric);
 addParameter(p, 'action', 'NaN', checkAction);
 addParameter(p, 'latitude', 52, checkLatitude); 
 parse(p, RSK, varargin{:})
@@ -115,12 +111,15 @@ end
 
 
 %% Edit one cast at a time.
-
 pressureCol = find(strcmpi('pressure', {RSK.channels.longName}));
 secondsperday = 86400;
 for i = profileNum
-    depth = -gsw_z_from_p(RSK.profiles.(castdir).data(i).values(:,pressureCol), latitude);
+    smoothPressure = RSKfilter(RSK, 'Pressure');    
+    depth = -gsw_z_from_p(smoothPressure, latitude);
     time = RSK.profiles.(castdir).data(i).tstamp;
+    
+    %% Filter pressure before taking the diff
+
     
     %% Caculate Velocity.
     deltaD = diff(depth);
