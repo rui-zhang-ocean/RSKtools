@@ -50,9 +50,6 @@ function RSK = RSKfilter(RSK, channel, varargin)
 
 %% Check input and default arguments
 
-validChannelNames = {'Salinity', 'Temperature', 'Conductivity', 'Pressure', 'Chlorophyll', 'Dissolved O', 'CDOM', 'Turbidity', 'pH'};
-checkChannelName = @(x) any(validatestring(x,validChannelNames));
-
 validDirections = {'down', 'up'};
 checkDirection = @(x) any(validatestring(x,validDirections));
 
@@ -64,7 +61,7 @@ checkFilterName = @(x) any(validatestring(x,validFilterNames));
 
 p = inputParser;
 addRequired(p, 'RSK', @isstruct);
-addRequired(p, 'channel', checkChannelName);
+addRequired(p, 'channel');
 addParameter(p, 'filter', 'boxcar', checkFilterName);
 addParameter(p, 'profileNum', [], @isnumeric);
 addParameter(p, 'direction', 'down', checkDirection);
