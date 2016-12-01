@@ -5,12 +5,12 @@ function [RSK] = RSKvelocityflag(RSK, varargin)
 %
 % Syntax:  [RSK] = RSKvelocityflag(RSK, [OPTIONS])
 % 
-% RSKloopedit - This function filters the pressure channel with a lowpass
+% RSKvelocityflag - This function filters the pressure channel with a lowpass
 % boxcar to reduce the effect of noise then flags scans that have a low profiling 
 % velocity or decelerate below a specified threshold and replaces them
 % with a NaN or an interpolated value. It operates on two scans to
 % determine the velocity and two velocities for the acceleration.
-%
+% 
 % Inputs:
 %
 %   [Required] - RSK - the input RSK structure, with profiles as read using
@@ -114,8 +114,8 @@ end
 pressureCol = find(strcmpi('pressure', {RSK.channels.longName}));
 secondsperday = 86400;
 for i = profileNum
-    smoothPressure = RSKfilter(RSK, 'Pressure', 'direction', direction);    
-    depth = -gsw_z_from_p(smoothPressure, latitude);
+    RSKsmoothPressure = RSKfilter(RSK, 'Pressure', 'direction', direction);    
+    depth = -gsw_z_from_p(RSKsmoothPressure.profiles.(castdir).data(i).values(:,pressureCol), latitude);
     time = RSK.profiles.(castdir).data(i).tstamp;
     
     %% Filter pressure before taking the diff
