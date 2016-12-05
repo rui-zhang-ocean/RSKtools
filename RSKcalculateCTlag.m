@@ -13,7 +13,8 @@ function lags = RSKcalculateCTlag(RSK,varargin)
 % constructing a smoothed reference salinity by running the calculated
 % salinity through a boxcar filter, then comparing the standard
 % deviations of the residuals for a range of lags from -20 to +20
-% samples.
+% samples. A depth range can be determined to align with respect to a
+% certain depth of values (avoids large effects form surface anomalies).
 %
 % Requires the TEOS-10 GSW toobox to compute salinity.
 %
@@ -22,7 +23,12 @@ function lags = RSKcalculateCTlag(RSK,varargin)
 %    [Required] - RSK - the input RSK structure, with profiles as read using
 %                    RSKreadprofiles.
 %
-%    [Optional] - profileNum - the profiles to which to apply the
+%    [Optional] - pressureRange - Set the limits of the pressure range that will be
+%                    to obtain the lag. Specify as a two-element vector,
+%                    [pressureMin, pressureMax]. Default is [0,
+%                    max(Pressure)]
+%
+%                profileNum - the profiles to which to apply the
 %                    correction. If left as an empty vector, the lag
 %                    is calculated for all profiles.
 %
@@ -63,31 +69,30 @@ hasTEOS = exist('gsw_SP_from_C') == 2;
 if (~hasTEOS) error('Error: Must install TEOS-10 toolbox'); end
 
 
-%% input handling
 
-% set the defaults
-p = inputParser;
-defaultDirection = 'down';
-defaultProfileNum = []; % will determine this later
-defaultNsmooth = 21;
+%% Check input and default arguments
 validDirections = {'down','up'};
 checkDirection = @(x) any(validatestring(x,validDirections));
    
-addRequired(p,'rsk',@isstruct);
-addParameter(p,'direction', defaultDirection, checkDirection);
-addParameter(p,'profileNum',defaultProfileNum)   
-addParameter(p,'nsmooth',defaultNsmooth)
+%% Parse Inputs
 
-% Parse Inputs
+p = inputParser;
+addRequired(p,'RSK', @isstruct);
+addParameter(p, 'pressureRange', [], @isvector);
+addParameter(p,'direction', 'down', checkDirection);
+addParameter(p,'profileNum', [])   
+addParameter(p,'nsmooth', 21, @isnumeric)
 parse(p,RSK,varargin{:})
 
 % Assign each input argument
-profileNum = p.Results.profileNum;
+RSK = p.Results.RSK;
+pressureRange = p.Results.pressureRange;
 direction  = p.Results.direction;
+profileNum = p.Results.profileNum;
 nsmooth    = p.Results.nsmooth;
 
 
-%% determine if the structure has downcasts and upcasts
+%% Determine if the structure has downcasts and upcasts
 castdir = [direction 'cast'];
 isDown = isfield(RSK.profiles.downcast, 'data');
 isUp   = isfield(RSK.profiles.upcast, 'data');
@@ -112,19 +117,23 @@ pcol = find(strncmpi('pressure', {RSK.channels.longName}, 4));
 Ccol = find(strncmpi('conductivity', {RSK.channels.longName}, 4));
 Tcol = find(strncmpi('temperature', {RSK.channels.longName}, 4));
 Tcol = Tcol(1); % only take the first temperature channel
-pcol = pcol(1); % Some files (WireWalker) have 'Pressure (sea)' as second pressure channel.
-
-% only needed for if replacing current salinity estimate with new calc.
-Scol = find(strncmpi('salinity', {RSK.channels.longName}, 4));
+pcol = pcol(1); % Some file have 'Pressure (sea)' as second pressure channel.
 
 
+%% Calculate Optimal Lag
 bestlag = [];
 for k=profileNum
     disp(['Processing profile: ' num2str(k)])
-    C = RSK.profiles.(castdir).data(k).values(:, Ccol);
-    T = RSK.profiles.(castdir).data(k).values(:, Tcol);
-    p = RSK.profiles.(castdir).data(k).values(:, pcol);
-    S = gsw_SP_from_C(C, T, p);
+    if isempty(pressureRange)
+        C = RSK.profiles.(castdir).data(k).values(:, Ccol);
+        T = RSK.profiles.(castdir).data(k).values(:, Tcol);
+        p = RSK.profiles.(castdir).data(k).values(:, pcol);
+    else
+        selectValues = (RSK.profiles.(castdir).data(k).values(:, pcol) >= pressureRange(1) & (RSK.profiles.(castdir).data(k).values(:, pcol) <= pressureRange(2))); 
+        C = RSK.profiles.(castdir).data(k).values(selectValues, Ccol);
+        T = RSK.profiles.(castdir).data(k).values(selectValues, Tcol);
+        p = RSK.profiles.(castdir).data(k).values(selectValues, pcol);
+    end
     lags = -20:20;
     dSsd = [];
     for lag=lags
@@ -134,7 +143,7 @@ for k=profileNum
         dS = SS - Ssmooth;
         dSsd = [dSsd std(dS)];
     end
-    bestlag = [bestlag lags(find(dSsd == min(dSsd)))];
+    bestlag = [bestlag lags(dSsd == min(dSsd))];
 end
 lags = bestlag;
 
