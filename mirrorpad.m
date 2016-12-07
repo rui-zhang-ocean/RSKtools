@@ -4,7 +4,7 @@ function out = mirrorpad(in, windowLength)
 %
 % Syntax:  out = mirrorpad(in, windowLength)
 % 
-% Pads vector with window length of entries at the begining and end of the
+% Pads vector with window length of entries at the beginning and end of the
 % in vector. The added entries are mirrors of in. 
 %
 % Inputs:
@@ -14,7 +14,7 @@ function out = mirrorpad(in, windowLength)
 %         Must be <= length(in).
 %
 % Outputs:
-%    dnum - MATLAB datenum
+%    out - padded in vector of length length(in)+2*windowLength
 %
 % Example: 
 %    out = mirrorpad([1:10], 3)
@@ -27,7 +27,6 @@ function out = mirrorpad(in, windowLength)
 % email: support@rbr-global.com
 % Website: www.rbr-global.com
 % Last revision: 2016-12-07
-
 
 
 if isrow(in)
