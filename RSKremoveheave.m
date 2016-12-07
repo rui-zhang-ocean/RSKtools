@@ -1,14 +1,14 @@
-function [RSK] = RSKvelocityflag(RSK, varargin)
+function [RSK] = RSKremoveheave(RSK, varargin)
 
 % RSKvelocityflag - Flags values that have pressure reversal or slowdows during
 %               the profile.
 %
-% Syntax:  [RSK] = RSKvelocityflag(RSK, [OPTIONS])
+% Syntax:  [RSK] = RSKremoveheave(RSK, [OPTIONS])
 % 
-% RSKvelocityflag - This function filters the pressure channel with a lowpass
+% RSKremoveheave - This function filters the pressure channel with a lowpass
 % boxcar to reduce the effect of noise then flags scans that have a low profiling 
 % velocity or decelerate below a specified threshold and replaces them
-% with a NaN or an interpolated value. It operates on two scans to
+% with a NaN or deletes the value. It operates on two scans to
 % determine the velocity and two velocities for the acceleration.
 % 
 % Inputs:
@@ -33,11 +33,10 @@ function [RSK] = RSKvelocityflag(RSK, varargin)
 %
 %                action - the 'action' to perform on a flagged value. The
 %                   default, 'NaN', is to leave the spike as a missing
-%                   value. Another option 'interp' is to interpolate based
-%                   on 'good' values. 
+%                   value. Another option 'delete', deletes the value.
 %
 %                latitude - Latitude at which the profile was taken.
-%                   Default is 52.
+%                   Default is [].
 %
 % Outputs:
 %    RSK - the structure without pressure reversal or slowdowns. The
@@ -46,12 +45,12 @@ function [RSK] = RSKvelocityflag(RSK, varargin)
 % Example: 
 %    RSK = RSKopen(RSK)
 %    RSK = RSKreadprofiles(RSK)
-%    RSK = RSKvelocityedit(RSK)
+%    RSK = RSKremoveheave(RSK)
 %
 % Author: RBR Ltd. Ottawa ON, Canada
 % email: support@rbr-global.com
 % Website: www.rbr-global.com
-% Last revision: 2016-11-30
+% Last revision: 2016-12-07
 
 %% Check input and default arguments
 
@@ -75,7 +74,7 @@ addParameter(p, 'profileNum', [], @isnumeric);
 addParameter(p, 'minVelocity', 0.25, @isnumeric);
 addParameter(p, 'minDecel', -0.1, @isnumeric);
 addParameter(p, 'action', 'NaN', checkAction);
-addParameter(p, 'latitude', 52, checkLatitude); 
+addParameter(p, 'latitude', [], checkLatitude); 
 parse(p, RSK, varargin{:})
 
 % Assign each argument
@@ -114,13 +113,12 @@ end
 pressureCol = find(strcmpi('pressure', {RSK.channels.longName}));
 secondsperday = 86400;
 for i = profileNum
+    %% Filter pressure before taking the diff    
     RSKsmoothPressure = RSKfilter(RSK, 'Pressure', 'direction', direction);    
-    depth = -gsw_z_from_p(RSKsmoothPressure.profiles.(castdir).data(i).values(:,pressureCol), latitude);
+    depth = -calculatedepth(RSKsmoothPressure.profiles.(castdir).data(i).values(:,pressureCol), latitude);
     time = RSK.profiles.(castdir).data(i).tstamp;
     
-    %% Filter pressure before taking the diff
 
-    
     %% Caculate Velocity.
     deltaD = diff(depth);
     deltaT = diff(time * secondsperday);
@@ -135,6 +133,7 @@ for i = profileNum
             flag = velocity > minVelocity;    
     end  
     
+    
     %% Calculate Acceleration.
     if ~strcmp(minDecel, 'None')
         d2DdT2 = diff(dDdT) ./ deltaT(1:end-1);
@@ -148,10 +147,9 @@ for i = profileNum
     switch action
         case 'NaN' 
             RSK.profiles.(castdir).data(i).values(flag,flagChannels) = NaN;
-        case 'interp'
-            for k = find(flagChannels)
-                RSK.profiles.(castdir).data(i).values(:,k) = interp1(time(~flag), RSK.profiles.(castdir).data(i).values(~flag,k), time, 'linear', 'extrap');
-            end
+        case 'delete'
+            RSK.profiles.(castdir).data(i).tstamp(flag) = [];
+            RSK.profiles.(castdir).data(i).values(flag,:) = [];
     end                 
 
 end
