@@ -1,14 +1,14 @@
-function [RSK] = RSKremoveheave(RSK, varargin)
+function varargout = RSKremoveheave(RSK, varargin)
 
 % RSKvelocityflag - Flags values that have pressure reversal or slowdows during
 %               the profile.
 %
-% Syntax:  [RSK] = RSKremoveheave(RSK, [OPTIONS])
+% Syntax:  varargout = RSKremoveheave(RSK, [OPTIONS])
 % 
 % RSKremoveheave - This function filters the pressure channel with a lowpass
-% boxcar to reduce the effect of noise then flags scans that have a low profiling 
+% boxcar to reduce the effect of noise then flags samples that have a low profiling 
 % velocity or decelerate below a specified threshold and replaces them
-% with a NaN or deletes the value. It operates on two scans to
+% with a NaN, deletes the value or ignores it. It operates on two scans to
 % determine the velocity and two velocities for the acceleration.
 % 
 % Inputs:
@@ -33,10 +33,15 @@ function [RSK] = RSKremoveheave(RSK, varargin)
 %
 %                action - the 'action' to perform on a flagged value. The
 %                   default, 'NaN', is to leave the spike as a missing
-%                   value. Another option 'delete', deletes the value.
+%                   value. Other options include 'delete', deletes the
+%                   value and 'nothing' simply returns the same RSK as was
+%                   input and returns a vector of flagged samples.
 %
 %                latitude - Latitude at which the profile was taken.
 %                   Default is [].
+%
+%                flagindex - Output the index of the values that were part of
+%                  the pressure reversal. Default false.
 %
 % Outputs:
 %    RSK - the structure without pressure reversal or slowdowns. The
@@ -110,13 +115,25 @@ end
 
 
 %% Edit one cast at a time.
+data = RSK.profiles.(castdir).data;
+
+%Find length of longest profile to set up flag matrix.
+maxproflength = 0;
+for ndx = profileNum
+    proflength = length(data(ndx).tstamp);
+    if proflength > maxproflength
+    maxproflength = proflength;
+    end
+end
+flagmat = NaN(maxproflength, length(profileNum));
+
 pressureCol = find(strcmpi('pressure', {RSK.channels.longName}));
 secondsperday = 86400;
-for i = profileNum
+for ndx = profileNum
     %% Filter pressure before taking the diff    
     RSKsmoothPressure = RSKfilter(RSK, 'Pressure', 'direction', direction);    
-    depth = -calculatedepth(RSKsmoothPressure.profiles.(castdir).data(i).values(:,pressureCol), latitude);
-    time = RSK.profiles.(castdir).data(i).tstamp;
+    depth = -calculatedepth(RSKsmoothPressure.profiles.(castdir).data(ndx).values(:,pressureCol), 'latitude', latitude);
+    time = RSK.profiles.(castdir).data(ndx).tstamp;
     
 
     %% Caculate Velocity.
@@ -128,9 +145,9 @@ for i = profileNum
     velocity = interp1(midtime, dDdT, time, 'linear', 'extrap');
     switch direction
         case 'up'
-            flag = velocity < -minVelocity; 
+            flagidx = velocity < -minVelocity; 
         case 'down'
-            flag = velocity > minVelocity;    
+            flagidx = velocity > minVelocity;    
     end  
     
     
@@ -139,21 +156,39 @@ for i = profileNum
         d2DdT2 = diff(dDdT) ./ deltaT(1:end-1);
         acceleration = interp1(midtime(1:end-1), d2DdT2, time, 'linear', 'extrap');
         flagA = acceleration < minDecel; 
-        flag = flagA & flag;
+        flagidx = flagA & flagidx;
     end
    
     %% Perform the action on flagged scans.
     flagChannels = ~strcmpi('pressure', {RSK.channels.longName});    
     switch action
         case 'NaN' 
-            RSK.profiles.(castdir).data(i).values(flag,flagChannels) = NaN;
+            data(ndx).values(flagidx,flagChannels) = NaN;
         case 'delete'
-            RSK.profiles.(castdir).data(i).tstamp(flag) = [];
-            RSK.profiles.(castdir).data(i).values(flag,:) = [];
+            data(ndx).tstamp(flagidx) = [];
+            data(ndx).values(flagidx,:) = [];
     end                 
+    flagmat(1:length(flagidx),ndx) = flagidx;
+end
+varargout{1} = RSK;
+varargout{2} = find(flagmat);
+end
+
+
+function diagnosticremoveheave(data, RSKsmoothPressure, flagmat)
+
+% diagnosticremoveheave - Highlight the samples that have pressure reversal
+% or were taken while the profiling was too slow.
+pressureCol
+
+
+plot(RSK)
 
 end
-end
+
+
+
+
 
 
 
