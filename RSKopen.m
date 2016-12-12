@@ -137,6 +137,14 @@ try
 catch
 end
 
+%Load in geodata table if present. Could be in any version of RSK.
+try
+    RSK.geodata = mksqlite('select * from regionGeoData');
+catch 
+end
+
+
+
 
 %% Want to read in events so that we can get the profile event metadata
 % 
