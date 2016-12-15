@@ -21,17 +21,18 @@ function [Y, binCenter] = RSKbin(RSK, varargin)
 %                binBy - The array it will be bin wrt... Depth or Pressure.
 %                   Defaults to 'Pressure'.
 %
-%                regimes - Amount of sections with different sizes of bins.
-%                   Default 1, all bins are the same width
+%                numRegimes - Amount of sections with different sizes of bins.
+%                   Default 1, all bins are the same width.
 %
-%                binSize - Size of bins. Must have length(binSize) ==
-%                   regimes. Default 1.
+%                binSize - Size of bins in each regime. Must have length(binSize) ==
+%                   numRegimes. Default 1.
 %
-%                Boundary - Bottom bounday of each regime, in same units as
-%                binBy. Must have length(boundary) == regimes. Default
-%                max(Pressure).
+%                boundary - First boundary crossed in the direction selected of each regime, in same units as
+%                   binBy. Must have length(boundary) == regimes. Default
+%                   []; whole pressure range.
 %               
-%                latitude - latitude at the location of sampling.
+%                latitude - latitude at the location of sampling in degree
+%                    north. Default 45.
 %           
 %
 % Outputs:
@@ -41,30 +42,37 @@ function [Y, binCenter] = RSKbin(RSK, varargin)
 % Author: RBR Ltd. Ottawa ON, Canada
 % email: support@rbr-global.com
 % Website: www.rbr-global.com
-% Last revision: 2016-12-06
+% Last revision: 2016-12-14
 
-%% Input Parse
+%% Check input and default arguments
 validBinBy = {'Pressure', 'Depth'};
 checkBinBy = @(x) any(validatestring(x,validBinBy));
+
+validDirections = {'down', 'up'};
+checkDirection = @(x) any(validatestring(x,validDirections));
 
 
 %% Parse Inputs
 
 p = inputParser;
 addRequired(p, 'RSK', @isstruct);
+addParameter(p, 'profileNum', [], @isnumeric);
+addParameter(p, 'direction', 'down', checkDirection);
 addParameter(p, 'binBy', 'Pressure', checkBinBy);
-addParameter(p, 'Regimes', (0.5:1:100), @isnumeric);
+addParameter(p, 'numRegimes', 1, @isnumeric);
 addParameter(p, 'binSize', 1, @isnumeric);
-addParameter(p, 'boundary', 1, @isnumeric);
-addParameter(p, 'laititude', [], @isnumeric);
+addParameter(p, 'boundary', [], @isnumeric);
+addParameter(p, 'latitude', 45, @isnumeric);
 parse(p, RSK,varargin{:})
 
 % Assign each argument
-X = p.Results.X;
-Method = p.Results.Method;
+RSK = p.Results.RSK;
+profileNum = p.Results.profileNum;
+direction = p.Results.direction;
 binBy = p.Results.binBy;
-binArray = p.Results.binArray;
-binWidth = p.Results.binWidth;
+numRegimes = p.Results.numRegimes;
+binSize = p.Results.binSize;
+boundary = p.Results.firstBoundary;
 latitude = p.Results.latitude;
 
 
@@ -90,73 +98,84 @@ end
 
 
 
-%% Binning 
-pressureCol = strcmpi('pressure', {RSK.channels.longName});
-
-for ndx = profileNum
-    Pressure = RSK.profiles.(castdir).data(ndx).values(:,pressureCol);
-    Depth = -calculatedepth(Pressure,'latitude', latitude);
-
-    switch Method
-        case 'Width' %Should output bins for this case
-            switch binBy
-              case 'Pressure'
-                binCenter = (binWidth:binWidth:ceil(max(Pressure)))';
-              case 'Depth'
-                binCenter = (binWidth:binWidth:ceil(max(Depth)))';
-            end
-
-            %  initialize the binned output field  
-            Y = NaN(length(binCenter),1);
-
-            for k=1:length(binCenter)
-
-              switch binBy
-                case 'Pressure'
-                  kk = (Pressure >= binCenter(k)-binWidth/2) & (Pressure < binCenter(k)+binWidth/2);
-                case 'Depth'
-                  kk = (Depth >= binCenter(k)-binWidth/2) & (Depth < binCenter(k)+binWidth/2);
-              end
-              Y(k) = nanmean(X(kk));
-            end
-
-        case 'Array'
-            bins = binArray;
-            binCenter = tsmovavg(bins, 's', 2);
-            binCenter = binCenter(2:end); %Starts with NaN.
-            %  initialize the binned output field         
-            Y = NaN(length(bins)-1,1);
-            for k=1:length(bins)-1
-              switch binBy
-                case 'Pressure'            
-                    kk = Pressure >= bins(k) & Pressure < bins(k+1);
-                case 'Depth'
-                    kk = Depth >= bins(k) & Depth < bins(k+1);
-              end
-                Y(k) = nanmean(X(kk));
-            end
-
-        case 'ArgoRegimes'
-            if strcmp(binBy, 'Depth'), warning('Must be binned by Pressure...will bin by pressure'); end
-            bins = [10, 50, 60:20:200, 250:50:500];
-            binCenter = tsmovavg(bins, 's', 2);
-            binCenter = binCenter(2:end); %Starts with NaN.
-
-            %  initialize the binned output field         
-            Y = NaN(length(bins)-1,1);
-            for k=1:length(bins)-1
-                kk = Pressure >= bins(k) & Pressure < bins(k+1);
-                Y(k) = nanmean(X(kk));
-            end
-
-            %Regimes
-            
-            
-            
-            
-    end
-  
+%% Set up pressure/depth of profiles in matrix
+pressureCol = find(strcmpi('pressure', {RSK.channels.longName}));
+k=1;
+switch binBy
+    case 'Pressure'
+        for ndx = profileNum
+            Y(k) = RSK.profiles.(castdir).data(ndx).values(:,pressureCol(1));
+            k = k+1;
+        end
+    case 'Depth'
+        for ndx = profileNum
+            Pressure = RSK.profiles.(castdir).data(ndx).values(:,pressureCol(1));
+            Y(k) = -calculatedepth(Pressure, latitude);
+            k = k+1;
+        end
 end
+
+
+
+%% Set up binArray
+if isempty(boundary)     
+    boundary = max(Y);
+end
+
+switch direction
+    case 'up'
+        if isempty(boundary)     
+            boundary = max(Y);
+        end
+        binArray = [];
+        boundary = [boundary 0];
+        for ndx = 1:length(boundary)-1
+            binArray = [binArray boundary(ndx):-binSize(ndx):boundary(ndx+1)];
+        end
+        binArray = unique(binArray);
+
+        
+    case 'down'
+        if isempty(boundary)     
+            boundary = min(Y);
+        end
+        binArray = boundary(end):binSize(end):max(Y)+binSize(end)-1;
+        if numRegimes>1
+            for ndx = numRegimes:-1:2
+                binArray = [boundary(ndx-1):binSize(ndx-1):boundary(ndx)-1 binArray];
+            end        
+        end
+        
+end
+
+
+
+%% Set up channel to bin
+if strcompi(channel, 'all')
+    channelCol = find(~pressureCol);
+else
+    for ndx = 1:length(channel)
+        channelCol(ndx) = find(strcmpi(channel{ndx}, {RSK.channels.longName}));
+    end
+end
+                
+%% Binning 
+for channelCol
+    for ndx = profileNum
+        binCenter = tsmovavg(binArray, 's', 2);
+        binCenter = binCenter(2:end); %Starts with NaN.
+        %  initialize the binned output field         
+        binnedValues = NaN(length(binArray)-1,1);
+        for ndx = 1:size(Y,2)
+            for k=1:size(Y,1)-1
+                kk = Y(:,ndx) >= binArray(k) & Y(:,ndx) < binArray(k+1);
+                binnedValues(k) = nanmean(X(kk));
+            end
+
+        end
+    end
+end
+
 
 
 
