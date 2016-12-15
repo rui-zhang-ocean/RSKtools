@@ -139,7 +139,10 @@ end
 
 %Load in geodata table if present. Could be in any version of RSK.
 try
-    RSK.geodata = mksqlite('select * from regionGeoData');
+    RSK.geodata = mksqlite('select * from geodata');
+    for ndx = 1:length(RSK.geodata)
+        RSK.geodata(ndx).tstamp = RSKtime2datenum(RSK.geodata(ndx).tstamp);
+    end
 catch 
 end
 
