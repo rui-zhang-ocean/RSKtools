@@ -37,7 +37,7 @@ function [RSK, dbid] = RSKopen(fname)
 % Author: RBR Ltd. Ottawa ON, Canada
 % email: support@rbr-global.com
 % Website: www.rbr-global.com
-% Last revision: 2016-11-21
+% Last revision: 2016-12-15
 
 RSKconstants
 
@@ -136,6 +136,17 @@ try
     RSK.thumbnailData = RSKreadthumbnail;
 catch
 end
+
+%Load in geodata table if present. Could be in any version of RSK.
+try
+    RSK.geodata = mksqlite('select * from geodata');
+    for ndx = 1:length(RSK.geodata)
+        RSK.geodata(ndx).tstamp = RSKtime2datenum(RSK.geodata(ndx).tstamp);
+    end
+catch 
+end
+
+
 
 
 %% Want to read in events so that we can get the profile event metadata
