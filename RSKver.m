@@ -1,4 +1,4 @@
-function ver = RSKver(RSK)
+function [ver, vsnMajor, vsnMinor, vsnPatch]  = RSKver(RSK)
 
 %RSKver - Returns the version of the RSK file.
 %
@@ -19,6 +19,10 @@ function ver = RSKver(RSK)
 % Last revision: 2016-12-19
 
 ver = RSK.dbInfo(end).version;
+vsn = textscan(ver,'%s','delimiter','.');
+vsnMajor = str2double(vsn{1}{1});
+vsnMinor = str2double(vsn{1}{2});
+vsnPatch = str2double(vsn{1}{3});
 
 end
 
