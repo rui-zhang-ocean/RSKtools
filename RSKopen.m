@@ -70,7 +70,7 @@ switch RSK.dbInfo(end).type
         RSK = readheaderEPdesktop(RSK);
     case 'skinny'
         disp('skinny')
-        RSK = readheaderEP(RSK);
+        RSK = readheaderskinny(RSK);
     case 'full'
         disp('full')
         RSK = readheaderfull(RSK);
