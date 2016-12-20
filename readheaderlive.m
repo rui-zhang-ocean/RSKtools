@@ -1,14 +1,20 @@
 function RSK = readheaderlive(RSK)
 
-% readheaderlive - read tables that are populated in an live file.
+% readheaderlive - read tables that are populated in an 'live' file.
 %
 % Syntax:  [RSK] = readheaderlive(RSK)
 %
 % readheaderlive is a RSKtools helper function that opens the populated
-% tables of RSK live files. Only to be used by RSKopen.m
+% tables of RSK 'live' files. Only to be used by RSKopen.m
+% These tables are channels, datasets, datasetDeployments, epochs,
+% schedules, deployments, instruments ,instrumentsChannels and parameters. If available
+% it will open appSettings, parameterKeys and geodata.  
+%
+% Note: Only marine channels will be displayed. There is no thumbnail data
+% for 'live' file types.
 %
 % Inputs:
-%    RSK - live file opened using RSKopen.m
+%    RSK - 'live' file opened using RSKopen.m
 %
 % Outputs:
 %    RSK - Structure containing the logger metadata and thumbnails
@@ -16,7 +22,7 @@ function RSK = readheaderlive(RSK)
 % Author: RBR Ltd. Ottawa ON, Canada
 % email: support@rbr-global.com
 % Website: www.rbr-global.com
-% Last revision: 2016-12-19
+% Last revision: 2016-12-20
 
 %% Set up version variables
 [~, vsnMajor, vsnMinor, vsnPatch] = RSKver(RSK);
@@ -39,23 +45,12 @@ RSK.deployments = mksqlite('select * from deployments');
 RSK.instruments = mksqlite('select * from instruments');
 RSK.instrumentChannels = mksqlite('select * from instrumentChannels');
 
+RSK.parameters = mksqlite('select * from parameters');
+
 %% Load calibration
-%As of RSK v1.13.4 coefficients is it's own table. We add it back into calibration to be consistent with previous versions.
+%As of RSK v1.13.4 parameterKeys is a table
 if (vsnMajor > 1) || ((vsnMajor == 1)&&(vsnMinor > 13)) || ((vsnMajor == 1)&&(vsnMinor == 13)&&(vsnPatch >= 4))
-    RSK.parameters = mksqlite('select * from parameters');
     RSK.parameterKeys = mksqlite('select * from parameterKeys'); 
-    try
-        RSK.calibrations = mksqlite('select * from calibrations');
-        RSK.coefficients = mksqlite('select * from coefficients');
-        RSK = coef2cal(RSK);
-    catch
-    end
-else
-    try
-        RSK.calibrations = mksqlite('select * from calibrations');
-        RSK.parameters = mksqlite('select * from parameters');
-    catch
-    end
 end
 
 
