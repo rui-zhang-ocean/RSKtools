@@ -6,10 +6,10 @@ function RSK = readheaderfull(RSK)
 %
 % readheaderfull is a RSKtools helper function that opens the populated
 % tables of RSK 'full' files. Only to be used by RSKopen.m
-% These tables are appSettings, channels, datasets, datasetDeployments, epochs,
-% schedules, deployments, instruments, instrumentsChannels, calibrations
-% and parameters. If available it will open coefficients,
-% parameterKeys, geodata and thumbnail. 
+% These tables are appSettings, channels, epochs, schedules, deployments,
+% instruments, instrumentsChannels, ranging, calibrations and parameters. If data is
+% available it will open datasets, datasetDeployments, coefficients,
+% parameterKeys, geodata and thumbnail.
 %
 % Note: Only marine channels will be displayed.
 %
@@ -36,11 +36,14 @@ RSK.channels = mksqlite('select shortName,longName,units from channels');
 RSK.datasets = mksqlite('select * from datasets');
 RSK.datasetDeployments = mksqlite('select * from datasetDeployments');
 
+
 RSK.epochs = mksqlite('select deploymentID,startTime/1.0 as startTime, endTime/1.0 as endTime from epochs');
 RSK.epochs.startTime = RSKtime2datenum(RSK.epochs.startTime);
 RSK.epochs.endTime = RSKtime2datenum(RSK.epochs.endTime);
 
 RSK.schedules = mksqlite('select * from schedules');
+
+RSK.ranging = mksqlite('select * from ranging');
 
 RSK.deployments = mksqlite('select * from deployments');
 
@@ -56,11 +59,8 @@ if (vsnMajor > 1) || ((vsnMajor == 1)&&(vsnMinor > 13)) || ((vsnMajor == 1)&&(vs
     RSK.coefficients = mksqlite('select * from coefficients');
     RSK = coef2cal(RSK);
 else
-    try
-        RSK.calibrations = mksqlite('select * from calibrations');
-        RSK.parameters = mksqlite('select * from parameters');
-    catch
-    end
+    RSK.calibrations = mksqlite('select * from calibrations');
+    RSK.parameters = mksqlite('select * from parameters');
 end
 
 
@@ -76,14 +76,18 @@ end
 RSK.channels(~isMeasured) = [];  
 RSK.instrumentChannels(~isMeasured) = []; 
 
-%% Tables that may or may not be in 'full'
+%% Tables that could be populated in 'full'
 
 try
     UTCdelta = mksqlite('select UTCdelta/1.0 as UTCdelta from epochs');
     RSK.epochs.UTCdelta = UTCdelta.UTCdelta;
     RSK.geodata = mksqlite('select tstamp/1.0 as tstamp, latitude, longitude, accuracy, accuracyType from geodata');
-    for ndx = 1:length(RSK.geodata)
-        RSK.geodata(ndx).tstamp = RSKtime2datenum(RSK.geodata(ndx).tstamp);
+    if isempty(RSK.geodata)
+        RSK = rmfield(RSK, 'geodata');
+    else
+        for ndx = 1:length(RSK.geodata)
+            RSK.geodata(ndx).tstamp = RSKtime2datenum(RSK.geodata(ndx).tstamp + RSK.epochs.UTCdelta);
+        end
     end
 catch 
 end
@@ -91,6 +95,11 @@ end
 try
     RSK.thumbnailData = RSKreadthumbnail;
 catch
+end
+
+if isempty(RSK.datasets) && isempty(RSK.datasetDeployments)
+    RSK = rmfield(RSK, 'datasets');
+    RSK = rmfield(RSK, 'datasetDeployments');
 end
 
 end
