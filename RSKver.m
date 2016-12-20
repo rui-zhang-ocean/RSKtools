@@ -1,12 +1,12 @@
 function [ver, vsnMajor, vsnMinor, vsnPatch]  = RSKver(RSK)
 
-%RSKver - Returns the version of the RSK file.
+% RSKver - Returns the version of the RSK file.
 %
 % Syntax:  ver = RSKver(RSK)
-% 
+%
 % RSKver will return the most recent version of the RSK file.
-% 
-% Inputs: 
+%
+% Inputs:
 %    RSK - Structure containing the logger metadata and thumbnails
 %          returned by RSKopen.
 %
@@ -25,4 +25,3 @@ vsnMinor = str2double(vsn{1}{2});
 vsnPatch = str2double(vsn{1}{3});
 
 end
-
