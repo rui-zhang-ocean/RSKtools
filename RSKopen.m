@@ -68,6 +68,9 @@ switch RSK.dbInfo(end).type
     case 'EPdesktop'
         disp('EPdesktop')
         RSK = readheaderEPdesktop(RSK);
+    case 'skinny'
+        disp('skinny')
+        RSK = readheaderEP(RSK);
     case 'full'
         disp('full')
         RSK = readheaderfull(RSK);
@@ -113,4 +116,5 @@ if exist('events', 'var')
         RSK.profiles.upcast.tend = events.tstamp(iupend);
         
     end
+
 end
