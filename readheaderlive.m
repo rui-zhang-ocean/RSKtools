@@ -5,13 +5,12 @@ function RSK = readheaderlive(RSK)
 % Syntax:  [RSK] = readheaderlive(RSK)
 %
 % readheaderlive is a RSKtools helper function that opens the populated
-% tables of RSK 'live' files. Only to be used by RSKopen.m
+% tables of RSK 'live' files.
 % These tables are channels, datasets, datasetDeployments, epochs,
-% schedules, deployments, instruments ,instrumentsChannels and parameters. If available
-% it will open appSettings, parameterKeys and geodata.  
+% schedules, deployments, instruments ,instrumentsChannels and parameters.
+% If data is available it will open appSettings, parameterKeys and thumbnail.  
 %
-% Note: Only marine channels will be displayed. There is no thumbnail data
-% for 'live' file types.
+% Note: Only marine channels will be displayed.
 %
 % Inputs:
 %    RSK - 'live' file opened using RSKopen.m
@@ -27,7 +26,7 @@ function RSK = readheaderlive(RSK)
 %% Set up version variables
 [~, vsnMajor, vsnMinor, vsnPatch] = RSKver(RSK);
 
-%% Tables that are definitely in full
+%% Tables that are definitely in 'live'
 
 RSK.channels = mksqlite('select shortName,longName,units from channels');
 
@@ -66,22 +65,16 @@ end
 RSK.channels(~isMeasured) = [];  
 RSK.instrumentChannels(~isMeasured) = []; 
 
-%% Tables that may or may not be in full
+%% Tables that may or may not be in 'live'
 try
     RSK.appSettings = mksqlite('select * from appSettings');
 catch
 end
 
 try
-    UTCdelta = mksqlite('select UTCdelta/1.0 as UTCdelta from epochs');
-    RSK.epochs.UTCdelta = UTCdelta.UTCdelta;    
-    RSK.geodata = mksqlite('select tstamp/1.0 as tstamp, latitude, longitude, accuracy, accuracyType from geodata');
-    for ndx = 1:length(RSK.geodata)
-        RSK.geodata(ndx).tstamp = RSKtime2datenum(RSK.geodata(ndx).tstamp + RSK.epochs.UTCdelta);
-    end
-catch 
+    RSK.thumbnailData = RSKreadthumbnail;
+catch
 end
-
 
 end
 
