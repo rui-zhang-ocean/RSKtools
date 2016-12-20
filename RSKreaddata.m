@@ -7,6 +7,10 @@ function RSK = RSKreaddata(RSK, t1, t2)
 % Reads the actual data tables from the RSK file previously opened
 % with RSKopen(). Will either read the entire data structre, or a
 % specified subset. 
+%
+% Note: If the file type is 'skinny' the file will have to be opened with
+% Ruskin before RSKtools can read the data because the data is stored in a
+% raw bin file.
 % 
 % Inputs: 
 %    RSK - Structure containing the logger metadata and thumbnails
@@ -34,7 +38,7 @@ function RSK = RSKreaddata(RSK, t1, t2)
 % Author: RBR Ltd. Ottawa ON, Canada
 % email: support@rbr-global.com
 % Website: www.rbr-global.com
-% Last revision: 2016-09-29
+% Last revision: 2016-12-20
 
 if nargin==1 % user wants to read ALL the data
     t1 = datenum2RSKtime(RSK.epochs.startTime);
