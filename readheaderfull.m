@@ -1,14 +1,20 @@
 function RSK = readheaderfull(RSK)
 
-% readheaderfull - read tables that are populated in an full file.
+% readheaderfull - read tables that are populated in an 'full' file.
 %
 % Syntax:  [RSK] = readheaderfull(RSK)
 %
 % readheaderfull is a RSKtools helper function that opens the populated
-% tables of RSK full files. Only to be used by RSKopen.m
+% tables of RSK 'full' files. Only to be used by RSKopen.m
+% These tables are appSettings, channels, datasets, datasetDeployments, epochs,
+% schedules, deployments, instruments, instrumentsChannels, calibrations
+% and parameters. If available it will open coefficients,
+% parameterKeys, geodata and thumbnail. 
+%
+% Note: Only marine channels will be displayed.
 %
 % Inputs:
-%    RSK - full file opened using RSKopen.m
+%    RSK - 'full' file opened using RSKopen.m
 %
 % Outputs:
 %    RSK - Structure containing the logger metadata and thumbnails
@@ -16,12 +22,14 @@ function RSK = readheaderfull(RSK)
 % Author: RBR Ltd. Ottawa ON, Canada
 % email: support@rbr-global.com
 % Website: www.rbr-global.com
-% Last revision: 2016-12-19
+% Last revision: 2016-12-20
 
 %% Set up version variables
 [~, vsnMajor, vsnMinor, vsnPatch] = RSKver(RSK);
 
 %% Tables that are definitely in full
+
+RSK.appSettings = mksqlite('select * from appSettings');
 
 RSK.channels = mksqlite('select shortName,longName,units from channels');
 
@@ -69,10 +77,6 @@ RSK.channels(~isMeasured) = [];
 RSK.instrumentChannels(~isMeasured) = []; 
 
 %% Tables that may or may not be in full
-try
-    RSK.appSettings = mksqlite('select * from appSettings');
-catch
-end
 
 try
     RSK.geodata = mksqlite('select tstamp/1.0 as tstamp, latitude, longitude, accuracy, accuracyType from geodata');
