@@ -5,10 +5,11 @@ function RSK = readheaderEPdesktop(RSK)
 % Syntax:  [RSK] = readheaderEPdesktop(RSK)
 %
 % readheaderEPdesktop is a RSKtools helper function that opens the populated
-% tables of 'EPdesktop' files. Only to be used by RSKopen.m
+% tables of 'EPdesktop' files. 
 % These tables are channels, epochs, schedules, deployments, instruments,
-% instrumentsChannels, parameters and thumbnail. If available it will open
-% appSettings, datasets, datasetDeployments, parameterKeys and geodata. 
+% instrumentsChannels and thumbnail. If data is available it
+% will open appSettings, datasets, datasetDeployments, parameters,
+% parameterKeys and geodata. 
 %
 % Inputs:
 %    RSK - 'EPdesktop' file opened using RSKopen.m
@@ -39,7 +40,6 @@ RSK.deployments = mksqlite('select * from deployments');
 RSK.instruments = mksqlite('select * from instruments');
 RSK.instrumentChannels = mksqlite('select * from instrumentChannels');
 
-RSK.parameters = mksqlite('select * from parameters');
 
 RSK.thumbnailData = RSKreadthumbnail;
 
@@ -59,18 +59,25 @@ try
 catch
 end
 
-try
+% Parameter table is empty if data is from mobile.
+if ~strcmpi(RSK.dbInfo(1).type, 'EasyParse') && ~strcmpi(RSK.dbInfo(1).type, 'skinny') 
+    RSK.parameters = mksqlite('select * from parameters');
+end
+if ~strcmpi(RSK.dbInfo(1).type, 'EasyParse')
     RSK.datasets = mksqlite('select * from datasets');
-    RSK.datasetDeployments = mksqlite('select * from datasetDeployments');
-catch
+    RSK.datasetDeployments = mksqlite('select * from datasetDeployments');     
 end
 
 try
     UTCdelta = mksqlite('select UTCdelta/1.0 as UTCdelta from epochs');
     RSK.epochs.UTCdelta = UTCdelta.UTCdelta;
     RSK.geodata = mksqlite('select tstamp/1.0 as tstamp, latitude, longitude, accuracy, accuracyType from geodata');
-    for ndx = 1:length(RSK.geodata)
-        RSK.geodata(ndx).tstamp = RSKtime2datenum(RSK.geodata(ndx).tstamp + RSK.epochs.UTCdelta);
+    if isempty(RSK.geodata)
+        RSK = rmfield(RSK, 'geodata');
+    else
+        for ndx = 1:length(RSK.geodata)
+            RSK.geodata(ndx).tstamp = RSKtime2datenum(RSK.geodata(ndx).tstamp + RSK.epochs.UTCdelta);
+        end
     end
 catch 
 end
