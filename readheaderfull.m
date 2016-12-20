@@ -27,7 +27,7 @@ function RSK = readheaderfull(RSK)
 %% Set up version variables
 [~, vsnMajor, vsnMinor, vsnPatch] = RSKver(RSK);
 
-%% Tables that are definitely in full
+%% Tables that are definitely in 'full'
 
 RSK.appSettings = mksqlite('select * from appSettings');
 
@@ -76,9 +76,11 @@ end
 RSK.channels(~isMeasured) = [];  
 RSK.instrumentChannels(~isMeasured) = []; 
 
-%% Tables that may or may not be in full
+%% Tables that may or may not be in 'full'
 
 try
+    UTCdelta = mksqlite('select UTCdelta/1.0 as UTCdelta from epochs');
+    RSK.epochs.UTCdelta = UTCdelta.UTCdelta;
     RSK.geodata = mksqlite('select tstamp/1.0 as tstamp, latitude, longitude, accuracy, accuracyType from geodata');
     for ndx = 1:length(RSK.geodata)
         RSK.geodata(ndx).tstamp = RSKtime2datenum(RSK.geodata(ndx).tstamp);

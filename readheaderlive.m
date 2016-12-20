@@ -73,9 +73,11 @@ catch
 end
 
 try
+    UTCdelta = mksqlite('select UTCdelta/1.0 as UTCdelta from epochs');
+    RSK.epochs.UTCdelta = UTCdelta.UTCdelta;    
     RSK.geodata = mksqlite('select tstamp/1.0 as tstamp, latitude, longitude, accuracy, accuracyType from geodata');
     for ndx = 1:length(RSK.geodata)
-        RSK.geodata(ndx).tstamp = RSKtime2datenum(RSK.geodata(ndx).tstamp);
+        RSK.geodata(ndx).tstamp = RSKtime2datenum(RSK.geodata(ndx).tstamp + RSK.epochs.UTCdelta);
     end
 catch 
 end
