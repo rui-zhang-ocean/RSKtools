@@ -79,8 +79,6 @@ RSK.instrumentChannels(~isMeasured) = [];
 %% Tables that could be populated in 'full'
 
 try
-    UTCdelta = mksqlite('select UTCdelta/1.0 as UTCdelta from epochs');
-    RSK.epochs.UTCdelta = UTCdelta.UTCdelta;
     RSK.geodata = mksqlite('select tstamp/1.0 as tstamp, latitude, longitude, accuracy, accuracyType from geodata');
     if isempty(RSK.geodata)
         RSK = rmfield(RSK, 'geodata');
