@@ -20,8 +20,15 @@ function [v, vsnMajor, vsnMinor, vsnPatch]  = RSKver(RSK)
 
 v = RSK.dbInfo(end).version;
 vsn = textscan(v,'%s','delimiter','.');
+s=size(vsn);
+if s(2) ~= 3
+    disp('Version unreadable')
+    vsnMajor = 0;
+    vsnMinor=0;
+    vsnPatch=0;
+else
 vsnMajor = str2double(vsn{1}{1});
 vsnMinor = str2double(vsn{1}{2});
 vsnPatch = str2double(vsn{1}{3});
-
+end
 end
