@@ -79,14 +79,7 @@ RSK.instrumentChannels(~isMeasured) = [];
 %% Tables that could be populated in 'full'
 
 try
-    RSK.geodata = mksqlite('select tstamp/1.0 as tstamp, latitude, longitude, accuracy, accuracyType from geodata');
-    if isempty(RSK.geodata)
-        RSK = rmfield(RSK, 'geodata');
-    else
-        for ndx = 1:length(RSK.geodata)
-            RSK.geodata(ndx).tstamp = RSKtime2datenum(RSK.geodata(ndx).tstamp);
-        end
-    end
+    RSK = RSKreadgeodata(RSK);
 catch 
 end
 
