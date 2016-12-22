@@ -79,14 +79,16 @@ switch RSK.dbInfo(end).type
         RSK = readheaderlive(RSK);
     otherwise
         disp('Not recognised')
+        return
 end
 
 
 %% Want to read in events so that we can get the profile event metadata
 % 
 % FIXME: what happens when there are no profile events? Should just skip this
-tmp = RSKreadevents(RSK);
-try
+
+try 
+    tmp = RSKreadevents(RSK);
     events = tmp.events;
 catch
 end
