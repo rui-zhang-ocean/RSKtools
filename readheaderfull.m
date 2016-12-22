@@ -84,7 +84,7 @@ try
         RSK = rmfield(RSK, 'geodata');
     else
         for ndx = 1:length(RSK.geodata)
-            RSK.geodata(ndx).tstamp = RSKtime2datenum(RSK.geodata(ndx).tstamp + RSK.epochs.UTCdelta);
+            RSK.geodata(ndx).tstamp = RSKtime2datenum(RSK.geodata(ndx).tstamp);
         end
     end
 catch 
