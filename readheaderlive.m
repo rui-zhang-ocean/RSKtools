@@ -6,9 +6,9 @@ function RSK = readheaderlive(RSK)
 %
 % readheaderlive is a RSKtools helper function that opens the populated
 % tables of RSK 'live' files.
-% These tables are channels, datasets, datasetDeployments, epochs,
+% These tables are appSettings, channels, datasets, datasetDeployments, epochs,
 % schedules, deployments, instruments ,instrumentsChannels and parameters.
-% If data is available it will open appSettings, parameterKeys and thumbnail.  
+% If data is available it will open parameterKeys and thumbnailData.  
 %
 % Note: Only marine channels will be displayed.
 %
@@ -21,12 +21,13 @@ function RSK = readheaderlive(RSK)
 % Author: RBR Ltd. Ottawa ON, Canada
 % email: support@rbr-global.com
 % Website: www.rbr-global.com
-% Last revision: 2016-12-20
+% Last revision: 2016-12-22
 
 %% Set up version variables
 [~, vsnMajor, vsnMinor, vsnPatch] = RSKver(RSK);
 
 %% Tables that are definitely in 'live'
+RSK.appSettings = mksqlite('select * from appSettings');
 
 RSK.channels = mksqlite('select shortName,longName,units from channels');
 
@@ -66,10 +67,6 @@ RSK.channels(~isMeasured) = [];
 RSK.instrumentChannels(~isMeasured) = []; 
 
 %% Tables that may or may not be in 'live'
-try
-    RSK.appSettings = mksqlite('select * from appSettings');
-catch
-end
 
 try
     RSK.thumbnailData = RSKreadthumbnail;
