@@ -7,7 +7,7 @@ function RSK = readheaderEPdesktop(RSK)
 % readheaderEPdesktop is a RSKtools helper function that opens the populated
 % tables of 'EPdesktop' files. 
 % These tables are channels, epochs, schedules, deployments, instruments,
-% instrumentsChannels and thumbnail. If data is available it
+% instrumentsChannels and thumbnailData. If data is available it
 % will open appSettings, datasets, datasetDeployments, parameters,
 % parameterKeys and geodata. 
 %
@@ -59,7 +59,7 @@ try
 catch
 end
 
-% Parameter table is empty if data is from mobile.
+% Parameter table is empty if data is from Mobile Ruskin.
 if ~strcmpi(RSK.dbInfo(1).type, 'EasyParse') && ~strcmpi(RSK.dbInfo(1).type, 'skinny') 
     RSK.parameters = mksqlite('select * from parameters');
 end
