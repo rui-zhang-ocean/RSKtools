@@ -1,8 +1,8 @@
-function [ver, vsnMajor, vsnMinor, vsnPatch]  = RSKver(RSK)
+function [v, vsnMajor, vsnMinor, vsnPatch]  = RSKver(RSK)
 
 % RSKver - Returns the version of the RSK file.
 %
-% Syntax:  ver = RSKver(RSK)
+% Syntax:  [v, vsnMajor, vsnMinor, vsnPatch] = RSKver(RSK)
 %
 % RSKver will return the most recent version of the RSK file.
 %
@@ -11,15 +11,15 @@ function [ver, vsnMajor, vsnMinor, vsnPatch]  = RSKver(RSK)
 %          returned by RSKopen.
 %
 % Output:
-%    ver - The lastest version of the RSK file.
+%    v - The lastest version of the RSK file.
 %
 % Author: RBR Ltd. Ottawa ON, Canada
 % email: support@rbr-global.com
 % Website: www.rbr-global.com
 % Last revision: 2016-12-19
 
-ver = RSK.dbInfo(end).version;
-vsn = textscan(ver,'%s','delimiter','.');
+v = RSK.dbInfo(end).version;
+vsn = textscan(v,'%s','delimiter','.');
 vsnMajor = str2double(vsn{1}{1});
 vsnMinor = str2double(vsn{1}{2});
 vsnPatch = str2double(vsn{1}{3});
