@@ -37,7 +37,7 @@ function [RSK, dbid] = RSKopen(fname)
 % Author: RBR Ltd. Ottawa ON, Canada
 % email: support@rbr-global.com
 % Website: www.rbr-global.com
-% Last revision: 2016-12-15
+% Last revision: 2016-12-19
 
 RSKconstants
 
@@ -52,11 +52,7 @@ end
 dbid = mksqlite('open',fname);
 
 RSK.dbInfo = mksqlite('select version,type from dbInfo');
-vsnString = RSK.dbInfo(end).version;
-vsn = textscan(vsnString,'%s','delimiter','.');
-vsnMajor = str2double(vsn{1}{1});
-vsnMinor = str2double(vsn{1}{2});
-vsnPatch = str2double(vsn{1}{3});
+[vsnString, vsnMajor, vsnMinor, vsnPatch] = RSKver(RSK);
 if vsnMajor > latestRSKversionMajor
     warning(['RSK version ' vsnString ' is newer than your RSKtools version. It is recommended to update RSKtools at https://rbr-global.com/support/matlab-tools']);
 elseif (vsnMajor == latestRSKversionMajor) && (vsnMinor > latestRSKversionMinor)
@@ -65,95 +61,34 @@ elseif (vsnMajor == latestRSKversionMajor) && (vsnMinor == latestRSKversionMinor
     warning(['RSK version ' vsnString ' is newer than your RSKtools version. It is recommended to update RSKtools at https://rbr-global.com/support/matlab-tools']);
 end
 
-RSK.datasets = mksqlite('select * from datasets');
-RSK.datasetDeployments = mksqlite('select * from datasetDeployments');
-
-
-% As of RSK v1.13.4 coefficients is it's own table. We add it back into calibration to be consistent with previous versions.
-if (vsnMajor > 1) || ((vsnMajor == 1)&&(vsnMinor > 13)) || ((vsnMajor == 1)&&(vsnMinor == 13)&&(vsnPatch >= 4))
-    RSK.parameters = mksqlite('select * from parameters');
-    RSK.parameterKeys = mksqlite('select * from parameterKeys'); 
-    try
-        RSK.calibrations = mksqlite('select * from calibrations');
-        RSK.coefficients = mksqlite('select * from coefficients');
-        RSK = coef2cal(RSK);
-    catch
-    end
-else
-    try 
-        RSK.calibrations = mksqlite('select * from calibrations');
-    catch % ignore if there is an error, rsk files from an easyparse logger do not contain calibrations
-    end
+switch RSK.dbInfo(end).type
+    case 'EasyParse'
+        disp('EP')
+        RSK = readheaderEP(RSK);
+    case 'EPdesktop'
+        disp('EPdesktop')
+        RSK = readheaderEPdesktop(RSK);
+    case 'skinny'
+        disp('skinny')
+        RSK = readheaderskinny(RSK);
+    case 'full'
+        disp('full')
+        RSK = readheaderfull(RSK);
+    case 'live'
+        disp('live')
+        RSK = readheaderlive(RSK);
+    otherwise
+        disp('Not recognised')
+        return
 end
-
-
-RSK.instruments = mksqlite('select * from instruments');
-try
-    RSK.instrumentChannels = mksqlite('select * from instrumentChannels');
-catch
-end
-try
-    RSK.ranging = mksqlite('select * from ranging');
-catch
-end
-try
-    RSK.instrumentSensors = mksqlite('select * from instrumentSensors');
-catch % ignore if there is an error, rsk files from an easyparse logger do not contain instrument sensors table
-end
-
-
-RSK.channels = mksqlite('select shortName,longName,units from channels');
-% Remove non marine channels (only if it's NOT an
-% EPdesktop format rsk)
-if ~strcmp(RSK.dbInfo(end).type, 'EPdesktop')
-    % channelStatus was instroduced in RSK V 1.8.9.
-    if (vsnMajor > 1) || ((vsnMajor == 1)&&(vsnMinor > 8)) || ((vsnMajor == 1)&&(vsnMinor == 8) && (vsnPatch >= 9))
-        isMeasured = ~[RSK.instrumentChannels.channelStatus];% hidden and derived channels have a non-zero channelStatus
-    else
-        results = mksqlite('select isDerived from channels');
-        isMeasured = ~[results.isDerived]; % some files may not have channelStatus
-    end
-    RSK.channels(~isMeasured) = [];  
-    RSK.instrumentChannels(~isMeasured) = []; 
-end
-
-
-RSK.epochs = mksqlite('select deploymentID,startTime/1.0 as startTime, endTime/1.0 as endTime from epochs');
-RSK.epochs.startTime = RSKtime2datenum(RSK.epochs.startTime);
-RSK.epochs.endTime = RSKtime2datenum(RSK.epochs.endTime);
-
-RSK.schedules = mksqlite('select * from schedules');
-
-
-try
-    RSK.appSettings = mksqlite('select * from appSettings');
-catch
-end
-RSK.deployments = mksqlite('select * from deployments');
-
-%Realtime instruments do not have thumbnailData.
-try 
-    RSK.thumbnailData = RSKreadthumbnail;
-catch
-end
-
-%Load in geodata table if present. Could be in any version of RSK.
-try
-    RSK.geodata = mksqlite('select * from geodata');
-    for ndx = 1:length(RSK.geodata)
-        RSK.geodata(ndx).tstamp = RSKtime2datenum(RSK.geodata(ndx).tstamp);
-    end
-catch 
-end
-
-
 
 
 %% Want to read in events so that we can get the profile event metadata
 % 
 % FIXME: what happens when there are no profile events? Should just skip this
-tmp = RSKreadevents(RSK);
-try
+
+try 
+    tmp = RSKreadevents(RSK);
     events = tmp.events;
 catch
 end
@@ -183,4 +118,5 @@ if exist('events', 'var')
         RSK.profiles.upcast.tend = events.tstamp(iupend);
         
     end
+
 end

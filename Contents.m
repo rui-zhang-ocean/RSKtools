@@ -1,5 +1,5 @@
 % RSKTOOLS
-% Version 1.4.4 2016-12-15
+% Version 1.4.5 2016-12-22
 %
 % 1.  This toolbox depends on the presence of a functional mksqlite
 % library.  We have included a couple of versions here for Windows (32 bit/ 64 bit), Linux (64 bit)
@@ -62,6 +62,8 @@
 %   RSKreadburstdata   - 
 %   RSKplotburstdata   - plot burst data - needs time axis sorting
 %   RSKreadevents      -
+%   RSKver             - reads the version of the file
+%   RSKreadgeodata     - read geodata
 %
 %
 % Helper files
@@ -71,6 +73,11 @@
 %   datenum2RSKtime    - Converts Matlab datenums to SQLite times
 %   unixtime2datenum   - Converts unixtimes to Matlab datenums
 %   datenum2unixtime   - Converts Matlab datenums to unixtimes
+%   readheaderEP       - Reads metadata tables in 'EasyParse' files
+%   readheaderEPdesktop- Reads metadata tables in 'EPdesktop' files
+%   readheaderskinny   - Reads metadata tables in 'skinny' files
+%   readheaderlive     - Reads metadata tables in 'live' files
+%   readheaderfull     - Reads metadata tables in 'full' files
 %
 % 
 
