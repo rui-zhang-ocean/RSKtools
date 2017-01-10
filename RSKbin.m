@@ -7,8 +7,9 @@ function [binnedValues, binCenter] = RSKbin(RSK, varargin)
 % Based on the regimes specified this function bins the profiles in the RSK
 % structure of a single or many channels based on pressure or depth
 %
-% Note: The bin boundary will be respected over the bin size. (Ex.
+% Note: The boundary takes precendence over the bin size. (Ex.
 % boundary= [5 20], binSize = [10 5]. BinArray will be [5 15 20 25 30...]
+
 % Inputs:
 %    
 %   [Required] - RSK - the input RSK structure, with profiles as read using
@@ -100,6 +101,8 @@ switch direction
         end
 end
 
+
+
 %% Find max profile length
 profilelength = 0;
 for ndx = profileNum
@@ -108,6 +111,8 @@ for ndx = profileNum
     end
 end
 Y = NaN(profilelength, length(profileNum));
+
+
 
 %% Set up pressure/depth of profiles in matrix
 pressureCol = find(strcmpi('pressure', {RSK.channels.longName}));
@@ -122,7 +127,7 @@ switch binBy
     case 'Depth'
         for ndx = profileNum
             Pressure = RSK.profiles.(castdir).data(ndx).values(:,pressureCol(1));
-            Y(1:length(Pressure), k) = -calculatedepth(Pressure, latitude);
+            Y(1:length(Pressure), k) = calculatedepth(Pressure, latitude);
             k = k+1;
         end
 end
@@ -163,6 +168,7 @@ end
 %% Set up channel to bin
 channelCol = strcmpi(channel, {RSK.channels.longName});
 
+
                 
 %% Binning 
 binnedValues = NaN(length(binArray)-1, length(profileNum));
@@ -177,11 +183,5 @@ for ndx = profileNum
     end
 end
 end
-
-
-
-
-
-
 
 
