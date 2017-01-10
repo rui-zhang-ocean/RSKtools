@@ -1,6 +1,6 @@
 function [binnedValues, binCenter] = RSKbin(RSK, varargin)
 
-% RSKbin - Bins the profiles in the RSK 
+% RSKbin - Bins the profiles of a single channel
 %
 % Syntax:  [RSK] = RSKbin(RSK, channel, [OPTIONS])
 % 
@@ -13,7 +13,7 @@ function [binnedValues, binCenter] = RSKbin(RSK, varargin)
 % Inputs:
 %    
 %   [Required] - RSK - the input RSK structure, with profiles as read using
-%                    RSKreadprofiles
+%                    RSKreadprofiles.
 %
 %   [Optional] - profileNum - the profiles to which to apply the correction. If
 %                    left as an empty vector, will do all profiles.
@@ -116,25 +116,21 @@ Y = NaN(profilelength, length(profileNum));
 
 %% Set up pressure/depth of profiles in matrix
 pressureCol = find(strcmpi('pressure', {RSK.channels.longName}));
-k=1;
-switch binBy
-    case 'Pressure'
-        for ndx = profileNum
-            Pressure = RSK.profiles.(castdir).data(ndx).values(:,pressureCol(1));
+k=1;        
+for ndx = profileNum
+    Pressure = RSK.profiles.(castdir).data(ndx).values(:,pressureCol(1));
+    switch binBy
+        case 'Pressure'
             Y(1:length(Pressure),k) = Pressure;
-            k = k+1;
-        end
-    case 'Depth'
-        for ndx = profileNum
-            Pressure = RSK.profiles.(castdir).data(ndx).values(:,pressureCol(1));
+        case 'Depth'
             Y(1:length(Pressure), k) = calculatedepth(Pressure, latitude);
-            k = k+1;
-        end
+    end
+    k = k+1;
 end
 
 
-
 %% Set up binArray
+binArray = [];
 switch direction
     case 'up'
         if isempty(boundary) && numRegimes == 1  
@@ -142,12 +138,9 @@ switch direction
         else
             boundary = [boundary 0];
         end
-        binArray = [];
         for ndx = 1:length(boundary)-1
             binArray = [binArray boundary(ndx):-binSize(ndx):boundary(ndx+1)];
         end
-        binArray = unique(binArray);
-
         
     case 'down'
         if isempty(boundary) && numRegimes == 1       
@@ -155,14 +148,11 @@ switch direction
         else
             boundary = [boundary ceil(max(max(Y)))];
         end
-        binArray = [];
         for ndx = 1:length(boundary)-1
             binArray = [binArray boundary(ndx):binSize(ndx):boundary(ndx+1)];       
         end
-        binArray = unique(binArray);
-        
 end
-
+binArray = unique(binArray);
 
 
 %% Set up channel to bin
