@@ -22,7 +22,7 @@ function [RSK] = RSKdespike(RSK, channel, varargin)
 %
 %   [Optional] - series - the data series to apply correction. Must be
 %                   either 'data' or 'profile'. If 'data' must run RSKreaddata() 
-% .                 before RSKdespike, if 'profile' must first run RSKreadprofiles().
+%                   before RSKdespike, if 'profile' must first run RSKreadprofiles().
 %                   Default is 'data'.
 %
 %                profileNum - the profiles to which to apply the correction. If
