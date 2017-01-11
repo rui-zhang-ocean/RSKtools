@@ -12,6 +12,9 @@ function [v, vsnMajor, vsnMinor, vsnPatch]  = RSKver(RSK)
 %
 % Output:
 %    v - The lastest version of the RSK file.
+%    vsnMajor - The latest version number of category major.
+%    vsnMinor - The latest version number of category minor.
+%    vsnPatch - The latest version number of category patch.
 %
 % Author: RBR Ltd. Ottawa ON, Canada
 % email: support@rbr-global.com
