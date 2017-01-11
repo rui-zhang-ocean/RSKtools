@@ -1,15 +1,15 @@
 function [RSK] = RSKdespike(RSK, channel, varargin)
 
-% RSKdespike - De-spike a time series using a running median filter.
+% RSKdespike - De-spike a time series by comparing it to a reference time
+%              series
 %
 % Syntax:  [RSK] = RSKdespike(RSK, channel, [OPTIONS])
 % 
-% RSKdespike is a despike algorithm that utilizes a running median
-% filter to create a reference series. Each point in the original
-% series is compared against the reference series, with points lying
-% further than 'threshold' standard deviations from the mean treated as
-% spikes. The default behaviour is to replace the spike with the
-% reference value.
+% RSKdespike is a despike algorithm that compares the time series to a
+% reference series. Each point in the original series is compared against
+% the reference series, with points lying further than 'threshold' standard
+% deviations from the mean treated as spikes. The default behaviour is to
+% replace the spike with the reference value. 
 %
 % Inputs:
 %    
@@ -156,27 +156,4 @@ switch action
   case 'interp'
     y(I) = interp1(t(good), x(good), t(I)) ;
 end
-end
-
-function out = runmed(in, windowLength)
-% A running median of length windowLength. windowLength must be odd, has one added if it's found to be even.
-
-n = length(in);
-out = NaN*in;
-
-if mod(windowLength, 2) == 0
-    warning('windowLength must be odd; adding 1');
-    windowLength = windowLength + 1;
-end
-
-for i = 1:n
-    if i <= (windowLength-1)/2
-        out(i) = median(in(1:i+(windowLength-1)/2));
-    elseif i >= n-(windowLength-1)/2
-        out(i) = median(in(i-(windowLength-1)/2:n));
-    else
-        out(i) = median(in(i-(windowLength-1)/2:i+(windowLength-1)/2));
-    end
-end
-
 end
