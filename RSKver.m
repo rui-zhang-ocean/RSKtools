@@ -19,7 +19,7 @@ function [v, vsnMajor, vsnMinor, vsnPatch]  = RSKver(RSK)
 % Author: RBR Ltd. Ottawa ON, Canada
 % email: support@rbr-global.com
 % Website: www.rbr-global.com
-% Last revision: 2016-12-19
+% Last revision: 2017-01-11
 
 v = RSK.dbInfo(end).version;
 vsn = textscan(v,'%s','delimiter','.');
