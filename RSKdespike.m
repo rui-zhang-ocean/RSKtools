@@ -17,7 +17,8 @@ function [RSK] = RSKdespike(RSK, channel, varargin)
 %                    RSKreadprofiles
 %
 %                channel - Longname of channel to plot (e.g. temperature,
-%                   salinity, etc). Default is 'Temperature'
+%                    salinity, etc). Default is 'Temperature'. Can be cell 
+%                    array of many channels
 %
 %   [Optional] - series - the data series to apply correction. Must be
 %                   either 'data' or 'profile'. If 'data' must run RSKreaddata() 
@@ -111,22 +112,21 @@ if strcmp(series, 'profile')
     end
     castdir = [direction 'cast'];
 end
-
-channelCol = find(strncmpi(channel, {RSK.channels.longName}, 4));
-
 %% Despike
-switch series
-    case 'profile'
-            for i = profileNum
-                x = RSK.profiles.(castdir).data(i).values(:,channelCol);
-                xtime = RSK.profiles.(castdir).data(i).tstamp;
-                RSK.profiles.(castdir).data(i).values(:,channelCol) = despike(x, xtime, threshold, windowLength, action); 
-            end
-    case 'data'
-        x = RSK.data.values(:,channelCol);
-        xtime = RSK.data.tstamp;
-        RSK.data.values(:,channelCol) = despike(x, xtime, threshold, windowLength, action); 
-end
+for chanName = channel
+    channelCol = find(strcmpi(chanName, {RSK.channels.longName}));
+    switch series
+        case 'profile'
+                for i = profileNum
+                    x = RSK.profiles.(castdir).data(i).values(:,channelCol);
+                    xtime = RSK.profiles.(castdir).data(i).tstamp;
+                    RSK.profiles.(castdir).data(i).values(:,channelCol) = despike(x, xtime, threshold, windowLength, action); 
+                end
+        case 'data'
+            x = RSK.data.values(:,channelCol);
+            xtime = RSK.data.tstamp;
+            RSK.data.values(:,channelCol) = despike(x, xtime, threshold, windowLength, action); 
+    end
 end
 
 
