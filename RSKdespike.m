@@ -51,7 +51,7 @@ function [RSK] = RSKdespike(RSK, channel, varargin)
 % Author: RBR Ltd. Ottawa ON, Canada
 % email: support@rbr-global.com
 % Website: www.rbr-global.com
-% Last revision: 2016-11-09
+% Last revision: 2017-01-11
 
 %% Check input and default arguments
 
@@ -109,6 +109,7 @@ if strcmp(series, 'profile')
                 profileNum = 1:length(RSK.profiles.downcast.data);
             end
     end
+    castdir = [direction 'cast'];
 end
 
 channelCol = find(strncmpi(channel, {RSK.channels.longName}, 4));
@@ -116,21 +117,11 @@ channelCol = find(strncmpi(channel, {RSK.channels.longName}, 4));
 %% Despike
 switch series
     case 'profile'
-        switch direction
-            case 'up'
-                for i = profileNum
-                    x = RSK.profiles.upcast.data(i).values(:,channelCol);
-                    xtime = RSK.profiles.upcast.data(i).tstamp;
-                    RSK.profiles.upcast.data(i).values(:,channelCol) = despike(x, xtime, threshold, windowLength, action); 
-                end
-            case 'down'
-                for i = profileNum
-                    x = RSK.profiles.downcast.data(i).values(:,channelCol);
-                    xtime = RSK.profiles.downcast.data(i).tstamp;
-                    RSK.profiles.downcast.data(i).values(:,channelCol) = despike(x, xtime, threshold, windowLength, action); 
-                end
-        end
-        
+            for i = profileNum
+                x = RSK.profiles.(castdir).data(i).values(:,channelCol);
+                xtime = RSK.profiles.(castdir).data(i).tstamp;
+                RSK.profiles.(castdir).data(i).values(:,channelCol) = despike(x, xtime, threshold, windowLength, action); 
+            end
     case 'data'
         x = RSK.data.values(:,channelCol);
         xtime = RSK.data.tstamp;
