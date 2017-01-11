@@ -1,4 +1,4 @@
-function out = mirrorpad(in, windowLength)
+function out = mirrorpad(in, padSize)
 
 % mirrorpad - Pad a vector by mirroring elements in the vector.
 %
@@ -10,11 +10,11 @@ function out = mirrorpad(in, windowLength)
 % Inputs:
 %    in - a vector
 %
-%    windowLength - The length of the padding on each side of the vector.
+%    padSize - The length of the padding on each side of the vector.
 %         Must be <= length(in).
 %
 % Outputs:
-%    out - padded in vector of length length(in)+2*windowLength
+%    out - padded in vector of length length(in)+2*padSize
 %
 % Example: 
 %    out = mirrorpad([1:10], 3)
@@ -26,16 +26,16 @@ function out = mirrorpad(in, windowLength)
 % Author: RBR Ltd. Ottawa ON, Canada
 % email: support@rbr-global.com
 % Website: www.rbr-global.com
-% Last revision: 2016-12-07
+% Last revision: 2017-01-11
 
 
 if isrow(in)
-    pre = fliplr(in(1:windowLength));
-    post = fliplr(in(end-windowLength+1:end));
+    pre = fliplr(in(1:padSize));
+    post = fliplr(in(end-padSize+1:end));
     out = [pre in post];
 elseif iscolumn(in)
-    pre = flipud(in(1:windowLength));
-    post = flipud(in(end-windowLength+1:end));
+    pre = flipud(in(1:padSize));
+    post = flipud(in(end-padSize+1:end));
     out = [pre; in; post];
 else
     error('in must be a row or column vector.')
