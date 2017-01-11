@@ -23,7 +23,7 @@ function depth = calculatedepth(pressure, varargin)
 % Author: RBR Ltd. Ottawa ON, Canada
 % email: support@rbr-global.com
 % Website: www.rbr-global.com
-% Last revision: 2016-12-14
+% Last revision: 2017-01-11
 
 %% Parse Inputs
 
