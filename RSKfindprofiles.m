@@ -31,13 +31,20 @@ end
 % results if it is not filled.
 
 %% Set up values
-pressureCol = find(strcmpi('pressure', {RSK.channels.longName})) ;
+pressureCol = find(strcmpi('pressure', {RSK.channels.longName}));
+condCol = find(strcmpi('conductivity', {RSK.channels.longName}));
 pressure = RSK.data.values(:, pressureCol(1));
+if isempty(condCol)
+    conductivity = [];
+else 
+    conductivity = RSK.data.values(:, condCol(1));
+end
 timestamp = RSK.data.tstamp;
 
+profileThreshold = (max(pressure)-min(pressure))/4;
 
 %% Run profile detection
-[upcaststart, downcaststart] = detectprofiles(pressure, timestamp);
+[upcaststart, downcaststart] = detectprofiles(pressure, timestamp, conductivity, profileThreshold);
 
 if upcaststart(1) < downcaststart(1)
     RSK.profiles.upcast.tstart = upcaststart;
