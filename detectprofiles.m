@@ -14,6 +14,12 @@ function [upcaststart, downcaststart] = detectprofiles(pressure, timestamp, cond
 %
 %    timestamp - The time associated with the pressure time series.
 %
+%    conductivity - A optional input, checked that the logger is in the
+%        water before detecting a profile. If no conductivity channel use [].
+%    
+%    pressureThreshold - The pressure difference required to detect a
+%        profile. Standard is 3dbar, or 1/4(max(pressure)-min(pressure).
+%
 % Outputs:
 %
 %    upcaststart - The timestamp of the start of upcasts.
@@ -23,7 +29,7 @@ function [upcaststart, downcaststart] = detectprofiles(pressure, timestamp, cond
 % Author: RBR Ltd. Ottawa ON, Canada
 % email: support@rbr-global.com
 % Website: www.rbr-global.com
-% Last revision: 2017-01-12
+% Last revision: 2017-01-13
 
 %% Set up
 detectcaststate = 0; % 0 unknown, 1 down, 2 up
