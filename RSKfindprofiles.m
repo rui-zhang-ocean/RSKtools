@@ -9,43 +9,52 @@ function RSK = RSKfindprofiles(RSK, varargin)
 %
 % Inputs:
 %    
-%   [Required] - RSK - the input RSK structure, with profiles but no
+%   RSK - the input RSK structure, with profiles but no
 %                   profile events
 %
-%   [Optional] - direction - the profile direction to consider. Must be either
-%                   'down' or 'up'. Only needed if series is profile. Defaults to 'down'.
+% Ex:
+%    RSK = RSKopen(fname);
+%    RSK = RSKreaddata(RSK);
+%    RSK = RSKfindprofiles(RSK);
 %
 % Author: RBR Ltd. Ottawa ON, Canada
 % email: support@rbr-global.com
 % Website: www.rbr-global.com
-% Last revision: 2017-01-09
+% Last revision: 2017-01-11
 
-%% Check input and default arguments
-validDirections = {'up', 'down'};
-checkDirection = @(x) any(validatestring(x,validDirections));
-
-
-%% Parse Inputs
-
-p = inputParser;
-addRequired(p, 'RSK', @isstruct);
-addParameter(p, 'direction', 'down', checkDirection);
-parse(p, RSK, varargin{:})
-
-% Assign each argument
-RSK = p.Results.RSK;
-direction = p.Results.direction;
-
-castdir = [direction 'cast'];
 
 %% Check if upcasts is already populated
-if isfield(RSK.profiles.(castdir). tstart)
+if isfield(RSK, 'profiles')
     error('Profiles are already found, get data using RSKreadprofiles.m');
 end
 % Check regionCast once this table is used to find casts...populate with
 % results if it is not filled.
 
+%% Set up values
+pressureCol = find(strcmpi('pressure', {RSK.channels.longName})) ;
+pressure = RSK.data.values(:, pressureCol(1));
+timestamp = RSK.data.tstamp;
 
+
+%% Run profile detection
+[upcaststart, downcaststart] = detectprofiles(pressure, timestamp);
+
+if upcaststart(1) < downcaststart(1)
+    RSK.profiles.upcast.tstart = upcaststart;
+    RSK.profiles.upcast.tend = downcaststart;
+    RSK.profiles.downcast.tstart = downcaststart;
+    RSK.profiles.downcast.tend = upcaststart(2:end);
+    RSK.profiles.downcast.tend(end+1) = RSK.data.tstamp(end);
+else
+    RSK.profiles.upcast.tstart = upcaststart;
+    RSK.profiles.upcast.tend = downcaststart(2:end);
+    RSK.profiles.upcast.tend(end+1) = RSK.data.tstamp(end);
+    RSK.profiles.downcast.tstart = downcaststart;
+    RSK.profiles.downcast.tend = upcaststart;
+end
+end
+            
+   
 
 
 
