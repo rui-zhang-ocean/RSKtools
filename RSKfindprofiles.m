@@ -20,7 +20,7 @@ function RSK = RSKfindprofiles(RSK, varargin)
 % Author: RBR Ltd. Ottawa ON, Canada
 % email: support@rbr-global.com
 % Website: www.rbr-global.com
-% Last revision: 2017-01-11
+% Last revision: 2017-01-13
 
 
 %% Check if upcasts is already populated
