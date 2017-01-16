@@ -20,8 +20,19 @@ function RSK = RSKfindprofiles(RSK, varargin)
 % Author: RBR Ltd. Ottawa ON, Canada
 % email: support@rbr-global.com
 % Website: www.rbr-global.com
-% Last revision: 2017-01-13
+% Last revision: 2017-01-16
 
+
+%% Parse Inputs
+
+p = inputParser;
+addRequired(p, 'RSK', @isstruct);
+addParameter(p, 'profileThreshold', [], @ isnumeric);
+parse(p, RSK, varargin{:})
+
+% Assign each argument
+RSK = p.Results.RSK;
+profileThreshold = p.Results.profileThreshold;
 
 %% Check if upcasts is already populated
 if isfield(RSK, 'profiles')
@@ -40,8 +51,9 @@ else
     conductivity = RSK.data.values(:, condCol(1));
 end
 timestamp = RSK.data.tstamp;
-
-profileThreshold = (max(pressure)-min(pressure))/4;
+if isempty(profileThreshold)
+    profileThreshold = (max(pressure)-min(pressure))/4;
+end
 
 %% Run profile detection
 [upcaststart, downcaststart] = detectprofiles(pressure, timestamp, conductivity, profileThreshold);
@@ -59,6 +71,12 @@ else
     RSK.profiles.downcast.tstart = downcaststart;
     RSK.profiles.downcast.tend = upcaststart;
 end
+
+%% Populate regions/annotations if required
+
+% RSK = populateregionCast(RSK)
+    
+
 end
             
    
