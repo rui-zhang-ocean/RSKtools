@@ -31,6 +31,14 @@ RSK.schedules = mksqlite('select * from schedules');
 
 RSK.deployments = mksqlite('select * from deployments');
 
+
+%% Remove non marine channels
+results = mksqlite('select isDerived from channels');
+isMeasured = ~[results.isDerived]; % some files may not have channelStatus
+
+RSK.channels(~isMeasured) = [];  
+
+
 %% Tables that could be populated in 'EasyParse'
 try
     RSK = RSKreadgeodata(RSK);
