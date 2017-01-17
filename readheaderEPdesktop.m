@@ -43,6 +43,17 @@ RSK.instrumentChannels = mksqlite('select * from instrumentChannels');
 
 RSK.thumbnailData = RSKreadthumbnail;
 
+%% Remove non marine channels
+
+try
+    isMeasured = ~[RSK.instrumentChannels.channelStatus];% hidden and derived channels have a non-zero channelStatus
+catch
+    results = mksqlite('select isDerived from channels');
+    isMeasured = ~[results.isDerived]; % some files may not have channelStatus
+end
+RSK.channels(~isMeasured) = [];  
+RSK.instrumentChannels(~isMeasured) = []; 
+
 
 %% Load calibration
 %As of RSK v1.13.4 parameterKeys is a table
@@ -52,6 +63,7 @@ if (vsnMajor > 1) || ((vsnMajor == 1)&&(vsnMinor > 13)) || ((vsnMajor == 1)&&(vs
     catch
     end
 end
+
 
 %% Tables that may or may not be in 'EPdesktop'
 try
