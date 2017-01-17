@@ -4,8 +4,9 @@ function RSK = RSKgetprofiles(RSK)
 %
 % Syntax:  [RSK] = RSKgetprofiles(RSK)
 % 
-% RSKgetprofiles translates events into profile start and end times for
-% upcast and downcast
+% RSKgetprofiles finds the profiles start and end times by first looking at
+% the region table (Ruskin generated) then at the events table (logger
+% generated) if neither are populated it will detect them.
 %
 % Inputs: 
 %    RSK - the input RSK structure, with profile events
@@ -17,10 +18,34 @@ function RSK = RSKgetprofiles(RSK)
 % Author: RBR Ltd. Ottawa ON, Canada
 % email: support@rbr-global.com
 % Website: www.rbr-global.com
-% Last revision: 2017-01-09
+% Last revision: 2017-01-17
 
 RSKconstants
 
+%% Check if upcasts is already populated
+if isfield(RSK, 'profiles')
+    error('Profiles are already found, get data using RSKreadprofiles.m');
+end
+
+
+
+%% Check region/regionCast for profiles
+try
+    RSK.regionCast = mksqlite('select * from regionCast');
+catch
+    RSK.regionCast = [];
+end
+
+hasCast = ~isempty(RSK.regionCast);
+
+if  hasCast
+    RSK = readregionCast(RSK);
+    return;
+end
+
+
+
+%% Check events table for profiles
 try 
     tmp = RSKreadevents(RSK);
     events = tmp.events;
@@ -29,29 +54,23 @@ end
 
 if exist('events', 'var')
     nup = length(find(events.values(:,2) == eventBeginUpcast));
-    ndown = length(find(events.values(:,2) == eventBeginDowncast));
-    
-    if ~(nup == 0 && ndown == 0)
-        
-        iup = find(events.values(:,2) == eventBeginUpcast);
-        idown = find(events.values(:,2) == eventBeginDowncast);
-        iend = find(events.values(:,2) == eventEndcast);
-        
-        % which is first?
-        if (idown(1) < iup(1)) 
-            idownend = iend(1:2:end);
-            iupend = iend(2:2:end);
-        else
-            idownend = iend(2:2:end);
-            iupend = iend(1:2:end);
-        end
-        
-        RSK.profiles.downcast.tstart = events.tstamp(idown);
-        RSK.profiles.downcast.tend = events.tstamp(idownend);
-        RSK.profiles.upcast.tstart = events.tstamp(iup);
-        RSK.profiles.upcast.tend = events.tstamp(iupend);
-        
+    if nup>1
+        RSK = readeventsProfiles(RSK);
+        RSK = populateregionProfiles(RSK);
+        return;
     end
+end
+
+
+
+%% Detect profiles
+RSK = RSKfindprofiles(RSK);
+RSK = populateregionProfiles(RSK);
+
+
 
 end
-end
+
+
+
+        
