@@ -38,8 +38,7 @@ profileThreshold = p.Results.profileThreshold;
 if isfield(RSK, 'profiles')
     error('Profiles are already found, get data using RSKreadprofiles.m');
 end
-% Check regionCast once this table is used to find casts...populate with
-% results if it is not filled.
+
 
 %% Set up values
 pressureCol = find(strcmpi('pressure', {RSK.channels.longName}));
@@ -54,6 +53,8 @@ timestamp = RSK.data.tstamp;
 if isempty(profileThreshold)
     profileThreshold = (max(pressure)-min(pressure))/4;
 end
+
+
 
 %% Run profile detection
 [upcaststart, downcaststart] = detectprofiles(pressure, timestamp, conductivity, profileThreshold);
@@ -71,10 +72,6 @@ else
     RSK.profiles.downcast.tstart = downcaststart;
     RSK.profiles.downcast.tend = upcaststart;
 end
-
-%% Populate regions/annotations if required
-
-% RSK = populateregionCast(RSK)
     
 
 end
