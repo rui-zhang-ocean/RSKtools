@@ -63,19 +63,14 @@ end
 
 switch RSK.dbInfo(end).type
     case 'EasyParse'
-        disp('EP')
         RSK = readheaderEP(RSK);
     case 'EPdesktop'
-        disp('EPdesktop')
         RSK = readheaderEPdesktop(RSK);
     case 'skinny'
-        disp('skinny')
         RSK = readheaderskinny(RSK);
     case 'full'
-        disp('full')
         RSK = readheaderfull(RSK);
     case 'live'
-        disp('live')
         RSK = readheaderlive(RSK);
     otherwise
         disp('Not recognised')
