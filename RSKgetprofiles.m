@@ -39,7 +39,7 @@ end
 hasCast = ~isempty(RSK.regionCast);
 
 if  hasCast
-    RSK = readregionCast(RSK);
+    RSK = readregionProfiles(RSK);
     return;
 end
 
