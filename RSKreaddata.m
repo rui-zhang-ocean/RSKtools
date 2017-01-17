@@ -40,6 +40,12 @@ function RSK = RSKreaddata(RSK, t1, t2)
 % Website: www.rbr-global.com
 % Last revision: 2016-12-20
 
+%% Check if file type is skinny
+if strcmp(RSK.dbInfo(end).type, 'skinny')
+    error('File must be opened in Ruskin before RSKtools can read the data.');
+end
+
+%% Load data
 if nargin==1 % user wants to read ALL the data
     t1 = datenum2RSKtime(RSK.epochs.startTime);
     t2 = datenum2RSKtime(RSK.epochs.endTime);
@@ -68,25 +74,44 @@ hasdatasetID = sum(fieldmatch);
 if hasdatasetID
     try
         results = rmfield(results, names(fieldmatch == 1)); % get rid of the datasetID column
-%        datasetID = [results(:).datasetID]';
     catch
     end
 end
 
-%% RSK version >= 1.12.2 also replaces serialID with instrumentID in the instrumentChannels table
-% Look for serialID (in older versions) and replace it
-% if sum(strcmp('serialID', fieldnames(RSK.instrumentChannels))) > 0
-%     ic = RSK.instrumentChannels;
-%     [ic.instrumentID] = ic.serialID;
-%     ic = rmfield(ic, 'serialID');
-%     RSK.instrumentChannels = ic;
-% end
 
+%% Organise results
 results = RSKarrangedata(results);
 
 t=results.tstamp';
 results.tstamp = RSKtime2datenum(t); % convert RSK millis time to datenum
 
+%% Remove hidden channels from data
+hasS = any(strcmp({RSK.channels.longName}, 'Salinity'));
+
+[~, vsnMajor, vsnMinor, vsnPatch] = RSKver(RSK);
+
+try
+    isMeasured = ~[RSK.instrumentChannels.channelStatus];% hidden and derived channels have a non-zero channelStatus
+    if hasS
+       isMeasured(end)=0;    % Salinity has channelStatus = 0 and is the last data column
+    end
+catch
+    tmp = mksqlite('select isDerived from channels');
+    isMeasured = ~[tmp.isDerived]; % some files may not have channelStatus
+end
+%If Salinity has previously been calculated it will not be in the results
+%table but the metadata will be present.    
+if hasS
+    results.values = results.values(:,isMeasured);
+    salinity = gsw_SP_from_C(results.values(:, 1), results.values(:, 2), results.values(:, 3)- 10.1325); % FIXME: use proper pAtm
+    results.values = [results.values salinity];
+else
+    results.values = results.values(:,isMeasured);
+end
+
+
+
+%% Calculate Salinity
 % Does the RSK have all 3 of conductivity, temperature, and pressure, but not salinity?
 % If so, calculate practical salinity using TEOS-10 (if it exists)
 hasTEOS = exist('gsw_SP_from_C') == 2;
@@ -96,27 +121,33 @@ if nchannels >= 3
 else 
     hasCTP = 0;
 end
-hasS = any(strcmp({RSK.channels.longName}, 'Salinity'));
 
-if hasTEOS & hasCTP & ~hasS
-    % does the RSK already have a salinity channel?
-    % FIXME: need to check if salinity exists in the data struct also
+
+if hasTEOS && hasCTP && ~hasS
     if sum(strcmp({RSK.channels.longName}, 'Salinity')) == 0
         RSK.channels(nchannels+1).longName = 'Salinity';
         RSK.channels(nchannels+1).units = 'PSU';
         % update the instrumentChannels info for the new "channel"
-        RSK.instrumentChannels(nchannels+1).instrumentID = RSK.instrumentChannels(1).instrumentID;
-        RSK.instrumentChannels(nchannels+1).channelID = RSK.instrumentChannels(nchannels).channelID+1;
-        RSK.instrumentChannels(nchannels+1).channelOrder = RSK.instrumentChannels(nchannels).channelOrder+1;
-        if ~strcmpi(RSK.dbInfo(end).type, 'EPdesktop') RSK.instrumentChannels(nchannels+1).channelStatus = 0; end
-        results.longName = {RSK.channels.longName};
-        results.units = {RSK.channels.units};
+        if ~strcmp(RSK.dbInfo(end).type, 'EasyParse')
+            try
+                RSK.instrumentChannels(nchannels+1).instrumentID = RSK.instrumentChannels(1).instrumentID;
+            catch
+            end
+            RSK.instrumentChannels(nchannels+1).channelID = RSK.instrumentChannels(nchannels).channelID+1;
+            RSK.instrumentChannels(nchannels+1).channelOrder = RSK.instrumentChannels(nchannels).channelOrder+1;
+            if (vsnMajor > 1) || ((vsnMajor == 1)&&(vsnMinor > 8)) || ((vsnMajor == 1)&&(vsnMinor == 8) && (vsnPatch >= 9))
+                RSK.instrumentChannels(nchannels+1).channelStatus = 0;
+            end
+        end
     end
-    salinity = gsw_SP_from_C(results.values(:, 1), results.values(:, 2), results.values(:, 3) - 10.1325); % FIXME: use proper pAtm
+    salinity = gsw_SP_from_C(results.values(:, 1), results.values(:, 2), results.values(:, 3)- 10.1325); % FIXME: use proper pAtm
     results.values = [results.values salinity];
 end
 
-% if hasdatasetID
-%     results.datasetID = datasetID;
-% end
+
+
+%% Put data into data field of RSK structure.
 RSK.data=results;
+
+
+end
