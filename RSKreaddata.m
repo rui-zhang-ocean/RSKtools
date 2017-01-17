@@ -87,9 +87,6 @@ results.tstamp = RSKtime2datenum(t); % convert RSK millis time to datenum
 
 %% Remove hidden channels from data
 hasS = any(strcmp({RSK.channels.longName}, 'Salinity'));
-
-[~, vsnMajor, vsnMinor, vsnPatch] = RSKver(RSK);
-
 try
     isMeasured = ~[RSK.instrumentChannels.channelStatus];% hidden and derived channels have a non-zero channelStatus
     if hasS
