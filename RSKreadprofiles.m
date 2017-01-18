@@ -82,7 +82,7 @@ if isempty(latency) latency = 0; end
 nup = length(profileNum);
 ndown = length(profileNum);
 
-if strcmp(direction, 'down') | strcmp(direction, 'both')
+if strcmp(direction, 'down') || strcmp(direction, 'both')
     RSK.profiles.downcast.data(ndown).tstamp = [];
     RSK.profiles.downcast.data(ndown).values = [];
     % loop through downcasts
@@ -93,18 +93,14 @@ if strcmp(direction, 'down') | strcmp(direction, 'both')
         tmp = RSKreaddata(RSK, tstart, tend);
         RSK.profiles.downcast.data(ii).tstamp = tmp.data.tstamp;
         RSK.profiles.downcast.data(ii).values = tmp.data.values;
-        % upddate instrumentsChannels fields
-        RSK.instrumentChannels = tmp.instrumentChannels;
         ii = ii + 1;
     end
-    RSK.channels = tmp.channels;
+    
 end
 
-if strcmp(direction, 'up') | strcmp(direction, 'both')
+if strcmp(direction, 'up') || strcmp(direction, 'both')
     RSK.profiles.upcast.data(nup).tstamp = [];
     RSK.profiles.upcast.data(nup).values = [];
-    Schannel = find(strncmp('Salinity', {RSK.channels.longName}, 4));
-    RSK.channels(Schannel) = [];
     % loop through upcasts
     ii = 1;
     for i=profileNum
@@ -113,9 +109,8 @@ if strcmp(direction, 'up') | strcmp(direction, 'both')
         tmp = RSKreaddata(RSK, tstart, tend);
         RSK.profiles.upcast.data(ii).tstamp = tmp.data.tstamp;
         RSK.profiles.upcast.data(ii).values = tmp.data.values;
-        % upddate instrumentsChannels fields
-        RSK.instrumentChannels = tmp.instrumentChannels;
         ii = ii + 1;
     end
-    RSK.channels = tmp.channels;
 end
+RSK.instrumentChannels = tmp.instrumentChannels;
+RSK.channels = tmp.channels;
