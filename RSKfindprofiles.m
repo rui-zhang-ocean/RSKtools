@@ -58,8 +58,9 @@ end
 
 %% Run profile detection
 [upcaststart, downcaststart] = detectprofiles(pressure, timestamp, conductivity, profileThreshold);
-
-if upcaststart(1) < downcaststart(1)
+if ~any(size(upcaststart)>1 & size(downcaststart)>1)
+    return;
+elseif upcaststart(1) < downcaststart(1)
     RSK.profiles.upcast.tstart = upcaststart;
     RSK.profiles.upcast.tend = downcaststart;
     RSK.profiles.downcast.tstart = downcaststart;
