@@ -1,5 +1,5 @@
 % RSKTOOLS
-% Version 1.4.5 2016-12-22
+% Version 1.4.6 2017-01-18
 %
 % 1.  This toolbox depends on the presence of a functional mksqlite
 % library.  We have included a couple of versions here for Windows (32 bit/ 64 bit), Linux (64 bit)
@@ -57,6 +57,7 @@
 %   RSKplotthumbnail   - plot data
 %   RSKreaddata        - 
 %   RSKplotdata        - plot data - needs time axis sorting
+%   RSKgetprofiles     - read profile start and end times from events
 %   RSKreadprofiles    - read profiles from events
 %   RSKplotprofiles    - plot profiles
 %   RSKreadburstdata   - 
