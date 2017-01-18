@@ -20,10 +20,9 @@ function RSK = RSKreadgeodata(RSK, varargin)
 % Author: RBR Ltd. Ottawa ON, Canada
 % email: support@rbr-global.com
 % Website: www.rbr-global.com
-% Last revision: 2017-01-11
+% Last revision: 2017-01-18
 
 %% Parse Inputs
-
 p = inputParser;
 addRequired(p, 'RSK', @isstruct);
 addParameter(p, 'UTCdelta', 0);
@@ -33,26 +32,26 @@ parse(p, RSK, varargin{:})
 RSK = p.Results.RSK;
 UTCdelta = p.Results.UTCdelta;
 
+
+
 %% Read geodata
 RSK.geodata = mksqlite('select tstamp/1.0 as tstamp, latitude, longitude, accuracy, accuracyType from geodata');
 if isempty(RSK.geodata)
     RSK = rmfield(RSK, 'geodata');
+    return;
 elseif strcmpi(p.UsingDefaults, 'UTCdelta')
     try
-        UTCdelta = mksqlite('select UTCdelta/1.0 as UTCdelta from epochs');
-        RSK.epochs.UTCdelta = UTCdelta.UTCdelta;
-        for ndx = 1:length(RSK.geodata)
-            RSK.geodata(ndx).tstamp = RSKtime2datenum(RSK.geodata(ndx).tstamp + RSK.epochs.UTCdelta);
-        end    
+        tmp = mksqlite('select UTCdelta/1.0 as UTCdelta from epoch');
+        UTCdelta = tmp.UTCdelta;
+        RSK.epochs.UTCdelta = UTCdelta;
     catch
         warning('No UTCdelta value, the timestamps in geodata cannot be adjust to the logger time, will use 0');
-        for ndx = 1:length(RSK.geodata)
-            RSK.geodata(ndx).tstamp = RSKtime2datenum(RSK.geodata(ndx).tstamp);
-        end
+        UTCdelta = 0;
     end
-else
-    for ndx = 1:length(RSK.geodata)
-        RSK.geodata(ndx).tstamp = RSKtime2datenum(RSK.geodata(ndx).tstamp + UTCdelta);
-    end
+end  
+for ndx = 1:length(RSK.geodata)
+    RSK.geodata(ndx).tstamp = RSKtime2datenum(RSK.geodata(ndx).tstamp + UTCdelta);
 end
+
+
 end
