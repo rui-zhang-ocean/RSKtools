@@ -49,6 +49,7 @@ If the [TEOS-10](http://www.teos-10.org/software.htm) matlab toolbox is installe
     - Seperate profile metadata reading into a different fuction in RSKopen.m
     - Add option to enter UTCdelta for geodata
     - Remove channels units and longName from data table
+    - Fix bug in data when reading in profile data
 
 * Version 1.4.5 (2016-12-22)
     - Add more support for geodata
