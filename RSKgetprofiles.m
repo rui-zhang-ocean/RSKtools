@@ -18,7 +18,7 @@ function RSK = RSKgetprofiles(RSK)
 % Author: RBR Ltd. Ottawa ON, Canada
 % email: support@rbr-global.com
 % Website: www.rbr-global.com
-% Last revision: 2017-01-17
+% Last revision: 2017-01-18
 
 RSKconstants
 
@@ -39,8 +39,10 @@ end
 hasCast = ~isempty(RSK.regionCast);
 
 if  hasCast
-    RSK = readregionProfiles(RSK);
+    RSK = readregionprofiles(RSK);
     return;
+elseif ~hasCast
+    RSK = rmfield(RSK, 'regionCast');
 end
 
 
@@ -55,8 +57,8 @@ end
 if exist('events', 'var')
     nup = length(find(events.values(:,2) == eventBeginUpcast));
     if nup>1
-        RSK = readeventsProfiles(RSK);
-        RSK = populateregionProfiles(RSK);
+        RSK = readeventsprofiles(RSK);
+        %RSK = populateregionProfiles(RSK);
         return;
     end
 end
@@ -64,10 +66,16 @@ end
 
 
 %% Detect profiles
-RSK = RSKfindprofiles(RSK);
-RSK = populateregionProfiles(RSK);
+% if ~isfield(RSK, 'profiles')
+%     warning('No profiles were detected by the logger or Ruskin, run RSKfindprofiles.m to detect profiles');
+% end
 
-
+% if ~isfield(RSK, 'data');
+%     RSK = RSKreaddata(RSK);
+% end
+   
+% RSK = RSKfindprofiles(RSK);
+% RSK = populateregionProfiles(RSK);
 
 end
 
