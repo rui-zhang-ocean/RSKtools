@@ -44,6 +44,8 @@ d = 1;
 u = 1;
 maxpressure=pressure(1);
 minpressure=pressure(1);
+upcaststart = 0;
+downcaststart = 0;
 while(k<length(timestamp))
     %
     % profile detection part
