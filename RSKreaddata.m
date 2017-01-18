@@ -38,7 +38,7 @@ function RSK = RSKreaddata(RSK, t1, t2)
 % Author: RBR Ltd. Ottawa ON, Canada
 % email: support@rbr-global.com
 % Website: www.rbr-global.com
-% Last revision: 2016-12-20
+% Last revision: 2017-01-18
 
 %% Check if file type is skinny
 if strcmp(RSK.dbInfo(end).type, 'skinny')
