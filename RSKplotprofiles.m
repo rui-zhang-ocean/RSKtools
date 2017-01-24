@@ -103,6 +103,7 @@ end
 pcol = find(strncmpi('pressure', {RSK.channels.longName}, 4));
 pcol = pcol(1); 
 col = find(strncmpi(field, {RSK.channels.longName}, 4));
+col = col(1);
 
 % clf
 ax = gca; ax.ColorOrderIndex = 1;
