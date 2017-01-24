@@ -31,15 +31,12 @@ function [RBR] = RSK2MAT(RSK)
 % Author: RBR Ltd. Ottawa ON, Canada
 % email: support@rbr-global.com
 % Website: www.rbr-global.com
-% Last revision: 2016-11-22
+% Last revision: 2017-01-24
+
+%% Set up version variables
+[~, vsnMajor, vsnMinor, vsnPatch] = RSKver(RSK);
 
 %% Firmware Version location is dependant on the rsk file version
-
-vsnString = RSK.dbInfo(end).version;
-vsn = textscan(vsnString,'%s','delimiter','.');
-vsnMajor = str2double(vsn{1}{1});
-vsnMinor = str2double(vsn{1}{2});
-vsnPatch = str2double(vsn{1}{3});
 if (vsnMajor > 1) || ((vsnMajor == 1)&&(vsnMinor > 12)) || ((vsnMajor == 1)&&(vsnMinor == 12)&&(vsnPatch >= 2))
     firmwareV  = RSK.instruments.firmwareVersion;
 else
@@ -50,7 +47,11 @@ end
 %% Set up metadata
 RBR.name = ['RBR ' RSK.instruments.model ' ' firmwareV ' ' num2str(RSK.instruments.serialID)];
 RBR.datasetfilename = RSK.datasets.name;
-RBR.sampleperiod = RSK.schedules.samplingPeriod/1000; % seconds
+if (vsnMajor > 1) || ((vsnMajor == 1)&&(vsnMinor > 13)) || ((vsnMajor == 1)&&(vsnMinor == 13)&&(vsnPatch >= 8))
+    RBR.sampleperiod = RSK.deployments.sampleSize/1000; % seconds
+else
+    RBR.sampleperiod = RSK.schedules.samplingPeriod/1000; % seconds
+end
 RBR.channelnames = {RSK.channels.longName}';
 RBR.channelunits = {RSK.channels.units}';
 try
