@@ -46,7 +46,7 @@ RSK.thumbnailData = RSKreadthumbnail;
 %% Remove non marine channels
 results = mksqlite('select isDerived from channels');
 try
-    isMeasured = (~[RSK.instrumentChannels.channelStatus] & ~[results.isDerived]);% hidden and derived channels should have a non-zero channelStatus
+    isMeasured = ~[RSK.instrumentChannels.channelStatus];% hidden and derived channels should have a non-zero channelStatus
 catch
     
     isMeasured = ~[results.isDerived]; % some files may not have channelStatus
