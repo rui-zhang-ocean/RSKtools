@@ -35,7 +35,7 @@ function [RBR] = RSK2MAT(RSK)
 
 %% Notify user that RSK2MAT doesn't work for file that were previously EasyParse
 if strcmpi(RSK.dbInfo(1).type, 'EasyParse');
-    error('RSK2MAT is not compatible with files that are from Mobile Ruskin')
+    error('RSK2MAT is not compatible with files that are from Ruskin Mobile . File should be opened in Ruskin Desktop first.')
 end
 
 
