@@ -18,7 +18,7 @@ function [RSK, salinity] = RSKcalculatesalinity(RSK)
 % Author: RBR Ltd. Ottawa ON, Canada
 % email: support@rbr-global.com
 % Website: www.rbr-global.com
-% Last revision: 2017-01-26
+% Last revision: 2017-01-27
 
 data = RSK.data;
 
@@ -57,8 +57,9 @@ if ~hasS && hasCTP && hasTEOS
     salinity = gsw_SP_from_C(data.values(:, 1), data.values(:, 2), data.values(:, 3)- 10.1325);
     RSK.data.values = [data.values salinity];
 elseif hasS && hasCTP && hasTEOS
+    Scol = strcmp({RSK.channels.longName}, 'Salinity');
     salinity = gsw_SP_from_C(data.values(:, 1), data.values(:, 2), data.values(:, 3)- 10.1325);
-    RSK.data.values(:,end) = salinity;
+    RSK.data.values(:,Scol) = salinity;
 end
 
 
