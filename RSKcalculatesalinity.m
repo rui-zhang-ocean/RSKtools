@@ -58,7 +58,7 @@ if ~hasS && hasCTP && hasTEOS
     RSK.data.values = [data.values salinity];
 elseif hasS && hasCTP && hasTEOS
     salinity = gsw_SP_from_C(data.values(:, 1), data.values(:, 2), data.values(:, 3)- 10.1325);
-    RSK.data.values = [data.values salinity];
+    RSK.data.values(:,end) = salinity;
 end
 
 
