@@ -47,7 +47,7 @@ function [RSK] = RSKdespike(RSK, channel, varargin)
 % Example: 
 %    temperatureDS = RSKdespike(RSK)
 %   OR
-%    temperatureDS = RSKdespike(RSK, 'threshold',2, 'windowLength',10, 'action','NaN');
+%    temperatureDS = RSKdespike(RSK, 'pressure', 'threshold',2, 'windowLength',10, 'action','NaN');
 %
 % Author: RBR Ltd. Ottawa ON, Canada
 % email: support@rbr-global.com
@@ -55,9 +55,6 @@ function [RSK] = RSKdespike(RSK, channel, varargin)
 % Last revision: 2017-01-11
 
 %% Check input and default arguments
-
-validChannelNames = {'Salinity', 'Temperature', 'Conductivity', 'Chlorophyll', 'Dissolved O', 'CDOM', 'Turbidity', 'pH'};
-checkChannelName = @(x) any(validatestring(x,validChannelNames));
 
 validSeries = {'profile', 'data'};
 checkSeriesName = @(x) any(validatestring(x,validSeries));
@@ -72,7 +69,7 @@ checkAction = @(x) any(validatestring(x,validActions));
 
 p = inputParser;
 addRequired(p, 'RSK', @isstruct);
-addRequired(p, 'channel', checkChannelName);
+addRequired(p, 'channel');
 addParameter(p, 'series', 'data', checkSeriesName);
 addParameter(p, 'profileNum', [], @isnumeric);
 addParameter(p, 'threshold', 4, @isnumeric);
@@ -112,6 +109,14 @@ if strcmp(series, 'profile')
     end
     castdir = [direction 'cast'];
 end
+
+
+%% Ensure channel is a cell.
+if ~iscell(channel)
+    channel = {channel};
+end
+
+
 %% Despike
 for chanName = channel
     channelCol = find(strcmpi(chanName, {RSK.channels.longName}));
@@ -132,6 +137,10 @@ end
 
 %% Nested Functions
 function [y] = despike(x, t, threshold, windowLength, action)
+%This helper function replaces the values that are > threshold*standard
+%deviation away from the median with the median, a NaN or interpolated
+%value.
+
 y = x;
 ref = runmed(x, windowLength);
 dx = x - ref;
