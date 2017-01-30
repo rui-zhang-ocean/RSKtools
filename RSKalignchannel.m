@@ -50,7 +50,7 @@ function [RSK] = RSKalignchannel(RSK, channel, lag, varargin)
 % Author: RBR Ltd. Ottawa ON, Canada
 % email: support@rbr-global.com
 % Website: www.rbr-global.com
-% Last revision: 2016-11-15
+% Last revision: 2017-01-30
 
 %% Check input and default arguments
 
@@ -124,39 +124,39 @@ end
 
 %% Apply lag to salinity from conductivity
 if strcmpi(channel, 'salinity')
-    hasTEOS = exist('gsw_SP_from_C') == 2;
+    hasTEOS = exist('gsw_SP_from_C', 'file') == 2;
 
-    if (~hasTEOS) error('Error: Must install TEOS-10 toolbox'); end
+    if ~hasTEOS
+        error('Error: Must install TEOS-10 toolbox');
+    end
 
     % find column number of C and T
-    Scol = find(strncmpi('salinity', {RSK.channels.longName}, 4));
-    Ccol = find(strncmpi('conductivity', {RSK.channels.longName}, 4));
-    Tcol = find(strncmpi('temperature', {RSK.channels.longName}, 4));
-    Tcol = Tcol(1); % only take the first one
-    pcol = find(strncmpi('pressure', {RSK.channels.longName}, 4));
-    pcol = pcol(1);% some files also have sea pressure.
+    Scol = strcmpi('salinity', {RSK.channels.longName});
+    Ccol = strcmpi('conductivity', {RSK.channels.longName});
+    Tcol = strcmpi('temperature', {RSK.channels.longName});
+    pcol = strcmpi('pressure', {RSK.channels.longName});
 
 
     counter = 0;
-    for i = profileNum
+    for ndx = profileNum
         counter = counter + 1;
-        C = RSK.profiles.(castdir).data(i).values(:, Ccol);
-        T = RSK.profiles.(castdir).data(i).values(:, Tcol);
-        p = RSK.profiles.(castdir).data(i).values(:, pcol);
+        C = RSK.profiles.(castdir).data(ndx).values(:, Ccol);
+        T = RSK.profiles.(castdir).data(ndx).values(:, Tcol);
+        p = RSK.profiles.(castdir).data(ndx).values(:, pcol);
         Sbest = gsw_SP_from_C(shiftarray(C, lag(counter)), T, p);
-        RSK.profiles.(castdir).data(i).values(:, Scol) = Sbest;
+        RSK.profiles.(castdir).data(ndx).values(:, Scol) = Sbest;
     end
     
 % Apply lag to any other channel.    
 else
     counter = 0;
-    channelCol = find(strncmpi(channel, {RSK.channels.longName}, 4));
+    channelCol = find(strcmpi(channel, {RSK.channels.longName}));
     
-    for i = profileNum
+    for ndx = profileNum
         counter = counter + 1;       
-        channelData = RSK.profiles.(castdir).data(i).values(:, channelCol);
+        channelData = RSK.profiles.(castdir).data(ndx).values(:, channelCol);
         channelShifted = shiftarray(channelData, lag(counter));
-        RSK.profiles.(castdir).data(i).values(:, channelCol) = channelShifted;
+        RSK.profiles.(castdir).data(ndx).values(:, channelCol) = channelShifted;
     end
 end
 end
