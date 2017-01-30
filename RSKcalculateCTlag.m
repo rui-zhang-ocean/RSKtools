@@ -61,12 +61,14 @@ function lags = RSKcalculateCTlag(RSK,varargin)
 % Author: RBR Ltd. Ottawa ON, Canada
 % email: support@rbr-global.com
 % Website: www.rbr-global.com
-% Last revision: 2016-12-04
+% Last revision: 2017-01-30
     
     
 %% check if user has the TEOS-10 GSW toolbox installed
-hasTEOS = exist('gsw_SP_from_C') == 2;
-if (~hasTEOS) error('Error: Must install TEOS-10 toolbox'); end
+hasTEOS = exist('gsw_SP_from_C', 'file') == 2;
+if ~hasTEOS
+    error('Error: Must install TEOS-10 toolbox'); 
+end
 
 
 
@@ -113,11 +115,10 @@ end
 
 
 %% find column number of channels
-pcol = find(strncmpi('pressure', {RSK.channels.longName}, 4));
-Ccol = find(strncmpi('conductivity', {RSK.channels.longName}, 4));
-Tcol = find(strncmpi('temperature', {RSK.channels.longName}, 4));
-Tcol = Tcol(1); % only take the first temperature channel
-pcol = pcol(1); % Some file have 'Pressure (sea)' as second pressure channel.
+pcol = find(strcmpi('pressure', {RSK.channels.longName}));
+Ccol = find(strcmpi('conductivity', {RSK.channels.longName}));
+Tcol = find(strcmpi('temperature', {RSK.channels.longName}));
+
 
 
 %% Calculate Optimal Lag
@@ -163,13 +164,13 @@ if mod(nsmooth, 2) == 0
     nsmooth = nsmooth + 1;
 end
 
-for i = 1:n
-    if i <= (nsmooth-1)/2
-        out(i) = mean(in(1:i+(nsmooth-1)/2));
-    elseif i >= n-(nsmooth-1)/2
-        out(i) = mean(in(i-(nsmooth-1)/2:n));
+for ndx = 1:n
+    if ndx <= (nsmooth-1)/2
+        out(ndx) = mean(in(1:ndx+(nsmooth-1)/2));
+    elseif ndx >= n-(nsmooth-1)/2
+        out(ndx) = mean(in(ndx-(nsmooth-1)/2:n));
     else
-        out(i) = mean(in(i-(nsmooth-1)/2:i+(nsmooth-1)/2));
+        out(ndx) = mean(in(ndx-(nsmooth-1)/2:ndx+(nsmooth-1)/2));
     end
 end
 
