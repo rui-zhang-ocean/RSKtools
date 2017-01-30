@@ -44,7 +44,7 @@ function hdls = RSKplotprofiles(RSK, profileNum, field, direction)
 % Author: RBR Ltd. Ottawa ON, Canada
 % email: support@rbr-global.com
 % Website: www.rbr-global.com
-% Last revision: 2015-11-09
+% Last revision: 2017-01-24
 
 if nargin == 1
     if ~isfield(RSK.profiles.downcast, 'data') error('No downcasts in RSK'); end
@@ -103,6 +103,7 @@ end
 pcol = find(strncmpi('pressure', {RSK.channels.longName}, 4));
 pcol = pcol(1); 
 col = find(strncmpi(field, {RSK.channels.longName}, 4));
+col = col(1);
 
 % clf
 ax = gca; ax.ColorOrderIndex = 1;

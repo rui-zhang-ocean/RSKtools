@@ -20,7 +20,7 @@ function RSK = readheaderEPdesktop(RSK)
 % Author: RBR Ltd. Ottawa ON, Canada
 % email: support@rbr-global.com
 % Website: www.rbr-global.com
-% Last revision: 2016-12-20
+% Last revision: 2017-01-25
 
 %% Set up version variables
 [~, vsnMajor, vsnMinor, vsnPatch] = RSKver(RSK);
@@ -44,11 +44,11 @@ RSK.instrumentChannels = mksqlite('select * from instrumentChannels');
 RSK.thumbnailData = RSKreadthumbnail;
 
 %% Remove non marine channels
-
+results = mksqlite('select isDerived from channels');
 try
-    isMeasured = ~[RSK.instrumentChannels.channelStatus];% hidden and derived channels have a non-zero channelStatus
+    isMeasured = ~[RSK.instrumentChannels.channelStatus];% hidden and derived channels should have a non-zero channelStatus
 catch
-    results = mksqlite('select isDerived from channels');
+    
     isMeasured = ~[results.isDerived]; % some files may not have channelStatus
 end
 RSK.channels(~isMeasured) = [];  
