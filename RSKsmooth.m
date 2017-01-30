@@ -1,22 +1,24 @@
 function RSK = RSKsmooth(RSK, channel, varargin)
 
-% RSKsmooth - Low pass filter on specified channels
+% RSKsmooth - Applies a low pass filter on specified channels.
 %
 % Syntax:  [RSK] = RSKsmooth(RSK, channel, [OPTIONS])
 % 
-% Applies a smoothing filter either median or average.
-%
+% RSKsmooth is a lowpass filter function that smooths the selected channel.
+% It replaced every value with the median or average of it's neighboring
+% values. The length of the neighbouring value is always centered around
+% the values being evaluated and is determined by the windowLength
+% parameter.
 %
 % Inputs: 
 %    
-%    [Required] - RSK - The input RSK structure, with profiles as read using
-%                    RSKreadprofiles
+%    [Required] - RSK - Structure containing the logger metadata and thumbnails
 %
-%                 channel - Longname of channel to filter, Can be cell
+%                 channel - Longname of channel(s) to filter. Can be cell
 %                    array of many channels
 %               
 %    [Optional] - type - The type of smoothing filter that will be used.
-%                   Either median or average. Default median.
+%                   Either median or average. Default is median.
 %
 %                 series - the data series to apply correction. Must be
 %                   either 'data' or 'profile'. If 'data' must run RSKreaddata() 
@@ -24,15 +26,15 @@ function RSK = RSKsmooth(RSK, channel, varargin)
 %                   Default is 'data'.
 %               
 %                 profileNum - the profiles to which to apply the correction. If
-%                    left as an empty vector, will do all profiles.
+%                    left as an empty vector, will do all profiles that
+%                    have been read by RSKreadprofiles().
 %            
 %                 direction - the profile direction to consider. Must be either
 %                    'down' or 'up'. Defaults to 'down'.
 %
-%                 windowLength - The size of the filter window. Must be odd. Will
-%                    be applied (windowLength-1)/2 samples to the left and right of the
-%                    center value....
-%
+%                 windowLength - The total size of the filter window. Must
+%                    be odd. Default is 3; one value from either side of
+%                    sample being evaluated.
 %
 % Outputs:
 %    RSK - the RSK structure with filtered channel values.
@@ -41,13 +43,13 @@ function RSK = RSKsmooth(RSK, channel, varargin)
 %   
 %    rsk = RSKopen('file.rsk');
 %    rsk = RSKreadprofiles(rsk, 1:10); % read first 10 downcasts
-%    rsk = RSKsmooth(rsk, {'Temperature', 'Salinity'}, 'windowLength', 10);
+%    rsk = RSKsmooth(rsk, {'Temperature', 'Salinity'}, 'windowLength', 17);
 %
 %
 % Author: RBR Ltd. Ottawa ON, Canada
 % email: support@rbr-global.com
 % Website: www.rbr-global.com
-% Last revision: 2017-01-11
+% Last revision: 2017-01-30
 
 %% Check input and default arguments
 
@@ -70,7 +72,8 @@ addParameter(p, 'type', 'median', checkType);
 addParameter(p, 'series', 'data', checkSeriesName)
 addParameter(p, 'profileNum', [], @isnumeric);
 addParameter(p, 'direction', 'down', checkDirection);
-addParameter(p, 'windowLength', 3, @isnumeric)
+addParameter(p, 'windowLength', 3, @isnumeric);
+
 
 parse(p, RSK, channel, varargin{:})
 
@@ -82,7 +85,6 @@ type = p.Results.type;
 profileNum = p.Results.profileNum;
 direction = p.Results.direction;
 windowLength = p.Results.windowLength;
-
 
 
 %% Determine if the structure has downcasts and upcasts
@@ -104,6 +106,12 @@ if strcmpi(series, 'profile')
             end
     end
     castdir = [direction 'cast'];
+end
+
+
+%% Ensure channel is a cell.
+if ~iscell(channel)
+    channel = {channel};
 end
 
 
@@ -132,26 +140,30 @@ for chanName = channel
 end
 end
 
-%% Nested function
+
+%% Nested functions
 function out = runavg(in, windowLength)
 % runavg performs a running average of length windowLength over the
 % mirrorpadded time series.
 
 n = length(in);
 out = NaN*in;
+
+
 %% Check windowLength
 if mod(windowLength, 2) == 0
     warning('windowLength must be odd; adding 1');
     windowLength = windowLength + 1;
 end
 
+
 %% Mirror pad the time series
 padsize = (windowLength-1)/2;
 inpadded = mirrorpad(in, padsize);
+
 
 %% Running median
 for ndx = 1:n
     out(ndx) = mean(inpadded(ndx:ndx+(windowLength-1)));
 end
-
 end
