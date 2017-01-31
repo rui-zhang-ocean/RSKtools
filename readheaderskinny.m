@@ -34,6 +34,11 @@ RSK.schedules = mksqlite('select * from schedules');
 
 RSK.deployments = mksqlite('select * from deployments');
 
+try
+    RSK.instruments = mksqlite('select * from instruments');
+catch
+end
+
 %% Tables that may or may not be in 'skinny'
 try
     RSK = RSKreadgeodata(RSK);

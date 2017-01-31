@@ -31,6 +31,11 @@ RSK.schedules = mksqlite('select * from schedules');
 
 RSK.deployments = mksqlite('select * from deployments');
 
+try
+    RSK.instruments = mksqlite('select * from instruments');
+catch
+end
+
 
 %% Remove non marine channels
 results = mksqlite('select isDerived from channels');
