@@ -21,7 +21,7 @@ function RSK = readheaderskinny(RSK)
 % Author: RBR Ltd. Ottawa ON, Canada
 % email: support@rbr-global.com
 % Website: www.rbr-global.com
-% Last revision: 2016-12-22
+% Last revision: 2017-01-31
 
 %% Tables that are definitely in 'skinny'
 RSK.channels = mksqlite('select shortName,longName,units from channels');
