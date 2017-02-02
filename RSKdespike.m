@@ -133,6 +133,7 @@ for chanName = channel
             RSK.data.values(:,channelCol) = despike(x, xtime, threshold, windowLength, action); 
     end
 end
+end
 
 
 %% Nested Functions
