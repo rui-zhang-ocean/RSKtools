@@ -127,7 +127,7 @@ for chanName = channel
                 for ndx = profileNum
                     x = RSK.profiles.(castdir).data(ndx).values(:,channelCol);
                     xtime = RSK.profiles.(castdir).data(ndx).tstamp;
-                    [RSK.profiles.(castdir).data(ndx).values(:,channelCol), I(ndx).spike] = despike(x, xtime, threshold, windowLength, action); 
+                    [RSK.profiles.(castdir).data(ndx).values(:,channelCol), I(ndx, channelCol).spike] = despike(x, xtime, threshold, windowLength, action); 
                 end
         case 'data'
             x = RSK.data.values(:,channelCol);
