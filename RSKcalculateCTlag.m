@@ -9,7 +9,7 @@ function lags = RSKcalculateCTlag(RSK,varargin)
 % Calculates the optimal conductivity time shift relative to
 % temperature to minimize salinity spiking.  The shift is made in
 % time, but if temperature is not shifted then it is effectively
-% aligned to temperature.  The optimal lag is determined by
+% aligned to pressure.  The optimal lag is determined by
 % constructing a smoothed reference salinity by running the calculated
 % salinity through a boxcar filter, then comparing the standard
 % deviations of the residuals for a range of lags from -20 to +20
@@ -42,7 +42,7 @@ function lags = RSKcalculateCTlag(RSK,varargin)
 % Outputs:
 %
 %    lags - the optimal lags of conductivity for each profile.  These
-%    can serve as inputs into RSKalignchannel.m
+%        can serve as inputs into RSKalignchannel.m
 %
 % Example usage:
 %
@@ -61,7 +61,7 @@ function lags = RSKcalculateCTlag(RSK,varargin)
 % Author: RBR Ltd. Ottawa ON, Canada
 % email: support@rbr-global.com
 % Website: www.rbr-global.com
-% Last revision: 2017-01-30
+% Last revision: 2017-02-03
     
     
 %% check if user has the TEOS-10 GSW toolbox installed
@@ -71,13 +71,12 @@ if ~hasTEOS
 end
 
 
-
 %% Check input and default arguments
 validDirections = {'down','up'};
 checkDirection = @(x) any(validatestring(x,validDirections));
-   
-%% Parse Inputs
 
+
+%% Parse Inputs
 p = inputParser;
 addRequired(p,'RSK', @isstruct);
 addParameter(p, 'pressureRange', [], @isvector);
@@ -120,20 +119,19 @@ Ccol = find(strcmpi('conductivity', {RSK.channels.longName}));
 Tcol = find(strcmpi('temperature', {RSK.channels.longName}));
 
 
-
 %% Calculate Optimal Lag
 bestlag = [];
-for k=profileNum
-    disp(['Processing profile: ' num2str(k)])
+for ndx=profileNum
+    disp(['Processing profile: ' num2str(ndx)])
     if isempty(pressureRange)
-        C = RSK.profiles.(castdir).data(k).values(:, Ccol);
-        T = RSK.profiles.(castdir).data(k).values(:, Tcol);
-        p = RSK.profiles.(castdir).data(k).values(:, pcol);
+        C = RSK.profiles.(castdir).data(ndx).values(:, Ccol);
+        T = RSK.profiles.(castdir).data(ndx).values(:, Tcol);
+        p = RSK.profiles.(castdir).data(ndx).values(:, pcol);
     else
-        selectValues = (RSK.profiles.(castdir).data(k).values(:, pcol) >= pressureRange(1) & (RSK.profiles.(castdir).data(k).values(:, pcol) <= pressureRange(2))); 
-        C = RSK.profiles.(castdir).data(k).values(selectValues, Ccol);
-        T = RSK.profiles.(castdir).data(k).values(selectValues, Tcol);
-        p = RSK.profiles.(castdir).data(k).values(selectValues, pcol);
+        selectValues = (RSK.profiles.(castdir).data(ndx).values(:, pcol) >= pressureRange(1) & (RSK.profiles.(castdir).data(ndx).values(:, pcol) <= pressureRange(2))); 
+        C = RSK.profiles.(castdir).data(ndx).values(selectValues, Ccol);
+        T = RSK.profiles.(castdir).data(ndx).values(selectValues, Tcol);
+        p = RSK.profiles.(castdir).data(ndx).values(selectValues, pcol);
     end
     lags = -20:20;
     dSsd = [];
@@ -147,11 +145,10 @@ for k=profileNum
     bestlag = [bestlag lags(dSsd == min(dSsd))];
 end
 lags = bestlag;
-
-
 end
 
 
+%% Nested function
 function out = smooth(in, nsmooth)
 
 % smooths an input vector with a boxcar filter of length nsmooth
