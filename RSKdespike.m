@@ -7,9 +7,10 @@ function [RSK, I] = RSKdespike(RSK, channel, varargin)
 % 
 % RSKdespike compares the time series to a reference series, a running
 % median filter of length 'windowLength'. Each point in the original series
-% is compared against the reference series, with points lying further than
-% 'threshold' standard deviations from the mean treated as spikes. The
-% default behaviour is to replace the spikes with the reference value. 
+% is compared against the reference series. If a sample is further than
+% 'threshold' standard deviations of the residual away from the reference
+% series the sample is considered a spike. The default behaviour is to
+% replace the spikes with the reference value.  
 %
 % Inputs:
 %    
