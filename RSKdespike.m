@@ -1,9 +1,9 @@
-function [RSK] = RSKdespike(RSK, channel, varargin)
+function [RSK, I] = RSKdespike(RSK, channel, varargin)
 
 % RSKdespike - De-spike a time series by comparing it to a reference time
 %              series
 %
-% Syntax:  [RSK] = RSKdespike(RSK, channel, [OPTIONS])
+% Syntax:  [RSK, I] = RSKdespike(RSK, channel, [OPTIONS])
 % 
 % RSKdespike is a despike algorithm that compares the time series to a
 % reference series. Each point in the original series is compared against
@@ -44,6 +44,8 @@ function [RSK] = RSKdespike(RSK, channel, varargin)
 % Outputs:
 %    y - the de-spiked series
 %
+%    I - The index of the despiked data samples.
+%
 % Example: 
 %    temperatureDS = RSKdespike(RSK)
 %   OR
@@ -52,7 +54,7 @@ function [RSK] = RSKdespike(RSK, channel, varargin)
 % Author: RBR Ltd. Ottawa ON, Canada
 % email: support@rbr-global.com
 % Website: www.rbr-global.com
-% Last revision: 2017-01-11
+% Last revision: 2017-02-03
 
 %% Check input and default arguments
 
@@ -122,25 +124,26 @@ for chanName = channel
     channelCol = find(strcmpi(chanName, {RSK.channels.longName}));
     switch series
         case 'profile'
-                for i = profileNum
-                    x = RSK.profiles.(castdir).data(i).values(:,channelCol);
-                    xtime = RSK.profiles.(castdir).data(i).tstamp;
-                    RSK.profiles.(castdir).data(i).values(:,channelCol) = despike(x, xtime, threshold, windowLength, action); 
+                for ndx = profileNum
+                    x = RSK.profiles.(castdir).data(ndx).values(:,channelCol);
+                    xtime = RSK.profiles.(castdir).data(ndx).tstamp;
+                    [RSK.profiles.(castdir).data(ndx).values(:,channelCol), I(ndx).spike] = despike(x, xtime, threshold, windowLength, action); 
                 end
         case 'data'
             x = RSK.data.values(:,channelCol);
             xtime = RSK.data.tstamp;
-            RSK.data.values(:,channelCol) = despike(x, xtime, threshold, windowLength, action); 
+            [RSK.data.values(:,channelCol), I] = despike(x, xtime, threshold, windowLength, action); 
     end
 end
 end
 
 
 %% Nested Functions
-function [y] = despike(x, t, threshold, windowLength, action)
-%This helper function replaces the values that are > threshold*standard
-%deviation away from the median with the median, a NaN or interpolated
-%value.
+function [y, I] = despike(x, t, threshold, windowLength, action)
+% This helper function replaces the values that are > threshold*standard
+% deviation away from the median with the median, a NaN or interpolated
+% value. The output is the x series with spikes fixed and I is the index of
+% the spikes.
 
 y = x;
 ref = runmed(x, windowLength);
