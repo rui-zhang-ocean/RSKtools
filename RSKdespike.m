@@ -5,11 +5,11 @@ function [RSK, I] = RSKdespike(RSK, channel, varargin)
 %
 % Syntax:  [RSK, I] = RSKdespike(RSK, channel, [OPTIONS])
 % 
-% RSKdespike is a despike algorithm that compares the time series to a
-% reference series. Each point in the original series is compared against
-% the reference series, with points lying further than 'threshold' standard
-% deviations from the mean treated as spikes. The default behaviour is to
-% replace the spike with the reference value. 
+% RSKdespike compares the time series to a reference series, a running
+% median filter of length 'windowLength'. Each point in the original series
+% is compared against the reference series, with points lying further than
+% 'threshold' standard deviations from the mean treated as spikes. The
+% default behaviour is to replace the spikes with the reference value. 
 %
 % Inputs:
 %    
@@ -18,7 +18,8 @@ function [RSK, I] = RSKdespike(RSK, channel, varargin)
 %
 %                channel - Longname of channel to plot (e.g. temperature,
 %                    salinity, etc). Default is 'Temperature'. Can be cell 
-%                    array of many channels
+%                    array of many channels or 'all', will despike all
+%                    channels.
 %
 %   [Optional] - series - the data series to apply correction. Must be
 %                   either 'data' or 'profile'. If 'data' must run RSKreaddata() 
@@ -114,7 +115,9 @@ end
 
 
 %% Ensure channel is a cell.
-if ~iscell(channel)
+if strcmpi(channel, 'all')
+    channel = {RSK.channels.longName};
+elseif ~iscell(channel)
     channel = {channel};
 end
 
@@ -127,7 +130,7 @@ for chanName = channel
                 for ndx = profileNum
                     x = RSK.profiles.(castdir).data(ndx).values(:,channelCol);
                     xtime = RSK.profiles.(castdir).data(ndx).tstamp;
-                    [RSK.profiles.(castdir).data(ndx).values(:,channelCol), I(ndx, channelCol).spike] = despike(x, xtime, threshold, windowLength, action); 
+                    [RSK.profiles.(castdir).data(ndx).values(:,channelCol), I(ndx, channelCol).spike] = despike(x, xtime, threshold, windowLength, action);
                 end
         case 'data'
             x = RSK.data.values(:,channelCol);
