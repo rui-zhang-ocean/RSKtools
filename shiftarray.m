@@ -26,7 +26,7 @@ function out = shiftarray(in, shift)
 % Author: RBR Ltd. Ottawa ON, Canada
 % email: support@rbr-global.com
 % Website: www.rbr-global.com
-% Last revision: 2016-06-03
+% Last revision: 2017-02-06
 
 n = length(in);
 out = NaN*in;
@@ -37,4 +37,4 @@ Ilag(Ilag<1) = 1;
 Ilag(Ilag>n) = n;
 
 out = in(Ilag);
-
+end
