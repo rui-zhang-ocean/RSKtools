@@ -1,4 +1,4 @@
-function lags = RSKcalculateCTlag(RSK,varargin)
+function lag = RSKcalculateCTlag(RSK,varargin)
 
 % RSKcalculateCTlag - Calculate a conductivity lag by minimizing salinity
 % spikes.  Spikes are causes by misaligned conductivity and
@@ -9,12 +9,12 @@ function lags = RSKcalculateCTlag(RSK,varargin)
 % Calculates the optimal conductivity time shift relative to
 % temperature to minimize salinity spiking.  The shift is made in
 % time, but if temperature is not shifted then it is effectively
-% aligned to pressure.  The optimal lag is determined by
+% aligned to temperature.  The optimal lag is determined by
 % constructing a smoothed reference salinity by running the calculated
 % salinity through a boxcar filter, then comparing the standard
 % deviations of the residuals for a range of lags from -20 to +20
-% samples. A depth range can be determined to align with respect to a
-% certain depth of values (avoids large effects form surface anomalies).
+% samples. A pressure range can be determined to align with respect to a
+% certain range of values (avoids large effects from surface anomalies).
 %
 % Requires the TEOS-10 GSW toobox to compute salinity.
 %
@@ -61,7 +61,7 @@ function lags = RSKcalculateCTlag(RSK,varargin)
 % Author: RBR Ltd. Ottawa ON, Canada
 % email: support@rbr-global.com
 % Website: www.rbr-global.com
-% Last revision: 2017-02-03
+% Last revision: 2017-02-06
     
     
 %% check if user has the TEOS-10 GSW toolbox installed
@@ -135,16 +135,17 @@ for ndx=profileNum
     end
     lags = -20:20;
     dSsd = [];
-    for lag=lags
-        Cshift = shiftarray(C, lag);
+    for l=lags
+        Cshift = shiftarray(C, l);
         SS = gsw_SP_from_C(Cshift, T, p);
         Ssmooth = smooth(SS, nsmooth);
         dS = SS - Ssmooth;
         dSsd = [dSsd std(dS)];
     end
-    bestlag = [bestlag lags(dSsd == min(dSsd))];
+    minlag = lags(dSsd == min(dSsd));
+    bestlag = [bestlag minlag];
 end
-lags = bestlag;
+lag = bestlag;
 end
 
 
