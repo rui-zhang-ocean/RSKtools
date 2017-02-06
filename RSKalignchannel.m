@@ -53,19 +53,16 @@ function [RSK] = RSKalignchannel(RSK, channel, lag, varargin)
 % Last revision: 2017-01-30
 
 %% Check input and default arguments
-
-validChannelNames = {'Salinity', 'Temperature', 'Conductivity', 'Chlorophyll', 'Dissolved O', 'CDOM', 'Turbidity', 'pH'};
-checkChannelName = @(x) any(validatestring(x,validChannelNames));
-
 validDirections = {'down', 'up'};
 checkDirection = @(x) any(validatestring(x,validDirections));
+
 
 
 %% Parse Inputs
 
 p = inputParser;
 addRequired(p, 'RSK', @isstruct);
-addRequired(p, 'channel', checkChannelName);
+addRequired(p, 'channel', @ischar);
 addRequired(p, 'lag', @isnumeric);
 addParameter(p, 'profileNum', [], @isnumeric);
 addParameter(p, 'direction', 'down', checkDirection);
@@ -147,8 +144,9 @@ if strcmpi(channel, 'salinity')
         RSK.profiles.(castdir).data(ndx).values(:, Scol) = Sbest;
     end
     
-% Apply lag to any other channel.    
+   
 else
+%% Apply lag to any other channel.
     counter = 0;
     channelCol = find(strcmpi(channel, {RSK.channels.longName}));
     
