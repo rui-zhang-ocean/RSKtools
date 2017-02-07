@@ -1,4 +1,4 @@
-function [binnedValues, binCenter] = RSKbin(RSK, varargin)
+function [binnedValues, binCenter] = RSKbin(RSK, channel, varargin)
 
 % RSKbin - Bins the profiles of a single channel
 %
@@ -15,6 +15,10 @@ function [binnedValues, binCenter] = RSKbin(RSK, varargin)
 %   [Required] - RSK - the input RSK structure, with profiles as read using
 %                    RSKreadprofiles.
 %
+%                channel - Longname of channel to plot (e.g. temperature,
+%                    salinity, etc). Can be cell array of many channels or
+%                    'all', will despike all channels.
+%
 %   [Optional] - profileNum - the profiles to which to apply the correction. If
 %                    left as an empty vector, will do all profiles.
 %            
@@ -30,9 +34,10 @@ function [binnedValues, binCenter] = RSKbin(RSK, varargin)
 %                binSize - Size of bins in each regime. Must have length(binSize) ==
 %                   numRegimes. Default 1.
 %
-%                boundary - First boundary crossed in the direction selected of each regime, in same units as
-%                   binBy. Must have length(boundary) == regimes. Default
-%                   []; whole pressure range.
+%                boundary - First boundary crossed in the direction
+%                   selected of each regime, in same units as binBy. Must
+%                   have length(boundary) == regimes. Default[]; whole
+%                   pressure range.
 %               
 %                latitude - latitude at the location of sampling in degree
 %                    north. Default 45.
@@ -45,7 +50,7 @@ function [binnedValues, binCenter] = RSKbin(RSK, varargin)
 % Author: RBR Ltd. Ottawa ON, Canada
 % email: support@rbr-global.com
 % Website: www.rbr-global.com
-% Last revision: 2017-01-10
+% Last revision: 2017-02-07
 
 %% Check input and default arguments
 validBinBy = {'Pressure', 'Depth'};
@@ -59,7 +64,7 @@ checkDirection = @(x) any(validatestring(x,validDirections));
 
 p = inputParser;
 addRequired(p, 'RSK', @isstruct);
-addParameter(p, 'channel', 'temperature');
+addRequired(p, 'channel');
 addParameter(p, 'profileNum', [], @isnumeric);
 addParameter(p, 'direction', 'down', checkDirection);
 addParameter(p, 'binBy', 'Pressure', checkBinBy);
@@ -67,7 +72,7 @@ addParameter(p, 'numRegimes', 1, @isnumeric);
 addParameter(p, 'binSize', 1, @isnumeric);
 addParameter(p, 'boundary', [], @isnumeric);
 addParameter(p, 'latitude', 45, @isnumeric);
-parse(p, RSK,varargin{:})
+parse(p, RSK, channel, varargin{:})
 
 % Assign each argument
 RSK = p.Results.RSK;
@@ -129,6 +134,7 @@ for ndx = profileNum
 end
 
 
+
 %% Set up binArray
 binArray = [];
 switch direction
@@ -153,6 +159,7 @@ switch direction
         end
 end
 binArray = unique(binArray);
+
 
 
 %% Set up channel to bin
