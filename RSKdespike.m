@@ -18,17 +18,16 @@ function [RSK, I] = RSKdespike(RSK, channel, varargin)
 %                    RSKreadprofiles
 %
 %                channel - Longname of channel to plot (e.g. temperature,
-%                    salinity, etc). Default is 'Temperature'. Can be cell 
-%                    array of many channels or 'all', will despike all
-%                    channels.
+%                    salinity, etc). Can be cell array of many channels or
+%                    'all', will despike all channels.
 %
 %   [Optional] - series - the data series to apply correction. Must be
 %                   either 'data' or 'profile'. If 'data' must run RSKreaddata() 
 %                   before RSKdespike, if 'profile' must first run RSKreadprofiles().
 %                   Default is 'data'.
 %
-%                profileNum - the profiles to which to apply the correction. If
-%                    left as an empty vector, will do all profiles.
+%                profileNum - the profiles to be despiked. If left as an
+%                   empty vector, will do all profiles. 
 %            
 %                direction - the profile direction to consider. Must be either
 %                   'down' or 'up'. Only needed if series is profile. Defaults to 'down'.
@@ -49,14 +48,14 @@ function [RSK, I] = RSKdespike(RSK, channel, varargin)
 %    I - The index of the despiked data samples.
 %
 % Example: 
-%    temperatureDS = RSKdespike(RSK)
+%    temperatureDS = RSKdespike(RSK, 'temperature')
 %   OR
 %    temperatureDS = RSKdespike(RSK, 'pressure', 'threshold',2, 'windowLength',10, 'action','NaN');
 %
 % Author: RBR Ltd. Ottawa ON, Canada
 % email: support@rbr-global.com
 % Website: www.rbr-global.com
-% Last revision: 2017-02-03
+% Last revision: 2017-02-07
 
 %% Check input and default arguments
 
