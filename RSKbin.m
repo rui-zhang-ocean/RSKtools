@@ -15,21 +15,20 @@ function [binnedValues, binCenter] = RSKbin(RSK, channel, varargin)
 %   [Required] - RSK - the input RSK structure, with profiles as read using
 %                    RSKreadprofiles.
 %
-%                channel - Longname of channel to plot (e.g. temperature,
-%                    salinity, etc). Can be cell array of many channels or
-%                    'all', will despike all channels.
+%                channel - Longname of channel to bin (e.g. temperature,
+%                    salinity, etc).
 %
-%   [Optional] - profileNum - the profiles to which to apply the correction. If
-%                    left as an empty vector, will do all profiles.
+%   [Optional] - profileNum - profiles included in the contour plot.
+%                   Default is to do all profiles.
 %            
 %                direction - the profile direction to consider. Must be either
-%                   'down' or 'up'. Only needed if series is profile. Defaults to 'down'.
+%                   'down' or 'up'. Defaults to 'down'. 
 %
-%                binBy - The array it will be bin wrt... Depth or Pressure.
-%                   Defaults to 'Pressure'.
+%                binBy - The units of the binSize and boundary. Depth (m)
+%                   or Pressure (dbar). Defaults to 'Pressure'.
 %
 %                numRegimes - Amount of sections with different sizes of bins.
-%                   Default 1, all bins are the same width.
+%                   Default is 1; all bins are the same width.
 %
 %                binSize - Size of bins in each regime. Must have length(binSize) ==
 %                   numRegimes. Default 1.
@@ -44,8 +43,11 @@ function [binnedValues, binCenter] = RSKbin(RSK, channel, varargin)
 %           
 %
 % Outputs:
+%
 %    binnedValues - Binned array
+%
 %    binCenter - Bin center values
+%
 %
 % Author: RBR Ltd. Ottawa ON, Canada
 % email: support@rbr-global.com
@@ -120,10 +122,10 @@ Y = NaN(profilelength, length(profileNum));
 
 
 %% Set up pressure/depth of profiles in matrix
-pressureCol = find(strcmpi('pressure', {RSK.channels.longName}));
+pressureCol = strcmpi('pressure', {RSK.channels.longName});
 k=1;        
 for ndx = profileNum
-    Pressure = RSK.profiles.(castdir).data(ndx).values(:,pressureCol(1));
+    Pressure = RSK.profiles.(castdir).data(ndx).values(:,pressureCol);
     switch binBy
         case 'Pressure'
             Y(1:length(Pressure),k) = Pressure;
@@ -166,7 +168,7 @@ binArray = unique(binArray);
 channelCol = strcmpi(channel, {RSK.channels.longName});
 
 
-                
+
 %% Binning 
 binnedValues = NaN(length(binArray)-1, length(profileNum));
 for ndx = profileNum
@@ -175,7 +177,7 @@ for ndx = profileNum
     binCenter = binCenter(2:end); %Starts with NaN.
     %  initialize the binned output field         
     for k=1:length(binArray)-1
-        kk = Y(:, ndx) >= binArray(k) & Y(:, ndx) < binArray(k+1);
+        kk = Y(1:length(X), ndx) >= binArray(k) & Y(1:length(X), ndx) < binArray(k+1);
         binnedValues(k, ndx) = nanmean(X(kk));
     end
 end
