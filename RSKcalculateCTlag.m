@@ -1,10 +1,9 @@
 function lag = RSKcalculateCTlag(RSK,varargin)
 
 % RSKcalculateCTlag - Calculate a conductivity lag by minimizing salinity
-% spikes.  Spikes are causes by misaligned conductivity and
-% temperature channels.
+% spikes.
 %
-% Syntax: [lags] = RSKcalculateCTlag(RSK, [OPTIONS])
+% Syntax: [lag] = RSKcalculateCTlag(RSK, [OPTIONS])
 %
 % Calculates the optimal conductivity time shift relative to
 % temperature to minimize salinity spiking.  The shift is made in
@@ -23,24 +22,23 @@ function lag = RSKcalculateCTlag(RSK,varargin)
 %    [Required] - RSK - the input RSK structure, with profiles as read using
 %                    RSKreadprofiles.
 %
-%    [Optional] - pressureRange - Set the limits of the pressure range that will be
+%    [Optional] - pressureRange - Set the limits of the pressure range used
 %                    to obtain the lag. Specify as a two-element vector,
 %                    [pressureMin, pressureMax]. Default is [0,
 %                    max(Pressure)]
 %
-%                profileNum - the profiles to which to apply the
-%                    correction. If left as an empty vector, the lag
-%                    is calculated for all profiles.
+%                profileNum - Optional profile number to calculate lag.
+%                    Default is to calculate the lag of all detected
+%                    profiles
 %
-%                direction - the profile direction to consider. Must be either
-%                   'down' or 'up'. Defaults to 'down'.
+%                direction - 'up' for upcast, 'down' for downcast, or 'both' for
+%                    all. Default is 'down'.
 %
-%                 nsmooth - the length of the smoothing window to use for the
+%                 nsmooth - The length of the smoothing window to use for the
 %                     reference salinity. Defaults to 21 samples.
 %
 %
 % Outputs:
-%
 %    lags - the optimal lags of conductivity for each profile.  These
 %        can serve as inputs into RSKalignchannel.m
 %
@@ -61,7 +59,7 @@ function lag = RSKcalculateCTlag(RSK,varargin)
 % Author: RBR Ltd. Ottawa ON, Canada
 % email: support@rbr-global.com
 % Website: www.rbr-global.com
-% Last revision: 2017-02-06
+% Last revision: 2017-02-07
     
     
 %% check if user has the TEOS-10 GSW toolbox installed
@@ -71,9 +69,11 @@ if ~hasTEOS
 end
 
 
+
 %% Check input and default arguments
 validDirections = {'down','up'};
 checkDirection = @(x) any(validatestring(x,validDirections));
+
 
 
 %% Parse Inputs
@@ -91,6 +91,7 @@ pressureRange = p.Results.pressureRange;
 direction  = p.Results.direction;
 profileNum = p.Results.profileNum;
 nsmooth    = p.Results.nsmooth;
+
 
 
 %% Determine if the structure has downcasts and upcasts
@@ -113,26 +114,29 @@ switch direction
 end
 
 
+
 %% find column number of channels
-pcol = find(strcmpi('pressure', {RSK.channels.longName}));
-Ccol = find(strcmpi('conductivity', {RSK.channels.longName}));
-Tcol = find(strcmpi('temperature', {RSK.channels.longName}));
+pcol = strcmpi('pressure', {RSK.channels.longName});
+Ccol = strcmpi('conductivity', {RSK.channels.longName});
+Tcol = strcmpi('temperature', {RSK.channels.longName});
+
 
 
 %% Calculate Optimal Lag
 bestlag = [];
 for ndx=profileNum
     disp(['Processing profile: ' num2str(ndx)])
-    if isempty(pressureRange)
-        C = RSK.profiles.(castdir).data(ndx).values(:, Ccol);
-        T = RSK.profiles.(castdir).data(ndx).values(:, Tcol);
-        p = RSK.profiles.(castdir).data(ndx).values(:, pcol);
-    else
-        selectValues = (RSK.profiles.(castdir).data(ndx).values(:, pcol) >= pressureRange(1) & (RSK.profiles.(castdir).data(ndx).values(:, pcol) <= pressureRange(2))); 
-        C = RSK.profiles.(castdir).data(ndx).values(selectValues, Ccol);
-        T = RSK.profiles.(castdir).data(ndx).values(selectValues, Tcol);
-        p = RSK.profiles.(castdir).data(ndx).values(selectValues, pcol);
+    C = RSK.profiles.(castdir).data(ndx).values(:, Ccol);
+    T = RSK.profiles.(castdir).data(ndx).values(:, Tcol);
+    p = RSK.profiles.(castdir).data(ndx).values(:, pcol);
+    
+    if ~isempty(pressureRange)
+        selectValues = (p >= pressureRange(1) & p<= pressureRange(2)); 
+        C = C(selectValues);
+        T = T(selectValues);
+        p = P(selectValues);
     end
+    
     lags = -20:20;
     dSsd = [];
     for l=lags
@@ -162,6 +166,8 @@ if mod(nsmooth, 2) == 0
     nsmooth = nsmooth + 1;
 end
 
+
+
 for ndx = 1:n
     if ndx <= (nsmooth-1)/2
         out(ndx) = mean(in(1:ndx+(nsmooth-1)/2));
@@ -171,8 +177,6 @@ for ndx = 1:n
         out(ndx) = mean(in(ndx-(nsmooth-1)/2:ndx+(nsmooth-1)/2));
     end
 end
-
-
 end
 
 
