@@ -13,7 +13,7 @@ function RSK = RSKsmooth(RSK, channel, varargin)
 %    [Required] - RSK - Structure containing the logger metadata and thumbnails
 %
 %                 channel - Longname of channel to filter. Can be cell
-%                    array of many channels.
+%                    array of many channels or 'all'.
 %               
 %    [Optional] - filter - The type of smoothing filter that will be used.
 %                    Either median or average. Default is average.
@@ -29,7 +29,7 @@ function RSK = RSKsmooth(RSK, channel, varargin)
 %                    all. Default is 'down'.
 %
 %                 windowLength - The total size of the filter window. Must
-%                    be odd. Default is 3; one value from either side of
+%                    be odd. Default is 3; one sample from either side of
 %                    sample being evaluated.
 %
 % Outputs:
@@ -90,9 +90,12 @@ end
 
 %% Ensure channel is a cell.
 
-if ~iscell(channel)
+if strcmpi(channel, 'all')
+    channel = {RSK.channels.longName};
+elseif ~iscell(channel)
     channel = {channel};
 end
+
 
 
 %% Smooth
