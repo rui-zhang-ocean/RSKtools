@@ -1,7 +1,7 @@
 function hdls = RSKplotprofiles(RSK, profileNum, field, direction)
 
-% RSKplotprofiles - plots profiles from an RSK object, based on upcast
-%                   and downcast events
+% RSKplotprofiles - Plot profiles from an RSK structure output by 
+%                   RSKreadprofiles.
 %
 % Syntax:  RSKplotprofiles(RSK, profileNum, field, direction)
 % 
@@ -12,15 +12,17 @@ function hdls = RSKplotprofiles(RSK, profileNum, field, direction)
 %
 % Inputs: 
 %    RSK - Structure containing the logger data read
-%          from the RSK file.
+%          from the RSK file using RSKreadprofiles.
 % 
-%    profileNum - optional profile number to plot. Default plots all
-%          detected profiles
+%    profileNum - Optional profile number to plot. Default is to plot 
+%                 all detected profiles.
 %
-%    field - named field to plot (e.g. temperature, salinity, etc)
-%
-%    direction - `up` for upcast, `down` for downcast, or `both` for
-%          all. Default is `both
+%    field - Variable to plot (e.g. temperature, salinity, etc).
+%            List of available variables is contained within the
+%            RSK structure (e.g. RSK.channels.longName).   
+%            
+%    direction - 'up' for upcast, 'down' for downcast, or 'both' for
+%          all. Default is 'both'.
 %
 % Examples:
 %
@@ -44,7 +46,7 @@ function hdls = RSKplotprofiles(RSK, profileNum, field, direction)
 % Author: RBR Ltd. Ottawa ON, Canada
 % email: support@rbr-global.com
 % Website: www.rbr-global.com
-% Last revision: 2017-01-24
+% Last revision: 2017-02-07
 
 if nargin == 1
     if ~isfield(RSK.profiles.downcast, 'data') error('No downcasts in RSK'); end

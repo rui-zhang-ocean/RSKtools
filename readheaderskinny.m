@@ -21,7 +21,7 @@ function RSK = readheaderskinny(RSK)
 % Author: RBR Ltd. Ottawa ON, Canada
 % email: support@rbr-global.com
 % Website: www.rbr-global.com
-% Last revision: 2016-12-22
+% Last revision: 2017-01-31
 
 %% Tables that are definitely in 'skinny'
 RSK.channels = mksqlite('select shortName,longName,units from channels');
@@ -33,6 +33,11 @@ RSK.epochs.endTime = RSKtime2datenum(RSK.epochs.endTime);
 RSK.schedules = mksqlite('select * from schedules');
 
 RSK.deployments = mksqlite('select * from deployments');
+
+try
+    RSK.instruments = mksqlite('select * from instruments');
+catch
+end
 
 %% Tables that may or may not be in 'skinny'
 try
