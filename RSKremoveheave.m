@@ -1,4 +1,4 @@
-function [RSK, flags] = RSKremoveheave(RSK, varargin)
+function [RSK, flags] = RSKremoveloops(RSK, varargin)
 
 % RSKremoveheave - Remove values that have pressure reversal or slowdows during
 %               the profile.
@@ -16,19 +16,16 @@ function [RSK, flags] = RSKremoveheave(RSK, varargin)
 %   [Required] - RSK - the input RSK structure, with profiles as read using
 %                    RSKreadprofiles
 %
-%                channel - Longname of channel to plot (e.g. temperature,
-%                   salinity, etc). Default is 'Temperature'
-%
 %   [Optional] - profileNum - the profiles to which to apply the correction. If
 %                    left as an empty vector, will do all profiles.
 %            
 %                direction - the profile direction to consider. Must be either
 %                   'down' or 'up'. Defaults to 'down'.
 %
-%                minVelocity - the minimum speed at which the profile must
+%                velThreshold - the minimum speed at which the profile must
 %                   be taken. Default is 0.25 m/s
 %
-%                minAccel - the minimum acceleration at which the profile must
+%                accelThreshold - the minimum acceleration at which the profile must
 %                   be taken. Default '-0.1'.
 %
 %                action - the 'action' to perform on a flagged value. The
@@ -42,7 +39,7 @@ function [RSK, flags] = RSKremoveheave(RSK, varargin)
 %
 % Outputs:
 %    RSK - the structure without pressure reversal or slowdowns. The
-%    pressure channel remains unchanged.
+%          pressure channel remains unchanged.
 %
 % Example: 
 %    RSK = RSKopen(RSK)
@@ -52,7 +49,7 @@ function [RSK, flags] = RSKremoveheave(RSK, varargin)
 % Author: RBR Ltd. Ottawa ON, Canada
 % email: support@rbr-global.com
 % Website: www.rbr-global.com
-% Last revision: 2017-03-06
+% Last revision: 2017-02-07
 
 %% Check input and default arguments
 
@@ -73,8 +70,8 @@ p = inputParser;
 addRequired(p, 'RSK', @isstruct);
 addParameter(p, 'direction', 'down', checkDirection);
 addParameter(p, 'profileNum', [], @isnumeric);
-addParameter(p, 'minVelocity', 0.25, @isnumeric);
-addParameter(p, 'minAccel', -0.1, @isnumeric);
+addParameter(p, 'velThreshold', 0.25, @isnumeric);
+addParameter(p, 'accelThreshold', -0.1, @isnumeric);
 addParameter(p, 'action', 'NaN', checkAction);
 addParameter(p, 'latitude', 45, checkLatitude); 
 parse(p, RSK, varargin{:})
@@ -83,8 +80,8 @@ parse(p, RSK, varargin{:})
 RSK = p.Results.RSK;
 direction = p.Results.direction;
 profileNum = p.Results.profileNum;
-minVelocity = p.Results.minVelocity;
-minAccel = p.Results.minAccel;
+velThreshold = p.Results.velThreshold;
+accelThreshold = p.Results.accelThreshold;
 action = p.Results.action;
 latitude = p.Results.latitude;
 
@@ -131,9 +128,9 @@ for ndx = profileNum
     velocity = interp1(midtime, dDdT, time, 'linear', 'extrap');
     switch direction
         case 'up'
-            flagidx = velocity > -minVelocity; 
+            flagidx = velocity > -velThreshold; 
         case 'down'
-            flagidx = velocity < minVelocity;    
+            flagidx = velocity < velThreshold;    
     end  
     
     
@@ -141,7 +138,7 @@ for ndx = profileNum
     if ~strcmpi(minAccel, 'None')
         d2DdT2 = diff(dDdT) ./ deltaT(1:end-1);
         acceleration = interp1(midtime(1:end-1), d2DdT2, time, 'linear', 'extrap');
-        flagA = acceleration < minAccel; 
+        flagA = acceleration < accelThreshold; 
         flagidx = flagA | flagidx;
     end
    
