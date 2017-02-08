@@ -3,7 +3,7 @@ function [RSK, spike] = RSKdespike(RSK, channel, varargin)
 % RSKdespike - De-spike a time series by comparing it to a reference time
 %              series
 %
-% Syntax:  [RSK, I] = RSKdespike(RSK, channel, [OPTIONS])
+% Syntax:  [RSK, spike] = RSKdespike(RSK, channel, [OPTIONS])
 % 
 % RSKdespike compares the time series to a reference series, a running
 % median filter of length 'windowLength'. Each point in the original series
@@ -21,23 +21,24 @@ function [RSK, spike] = RSKdespike(RSK, channel, varargin)
 %                    salinity, etc). Can be cell array of many channels or
 %                    'all', will despike all channels.
 %
-%   [Optional] - series - the data series to apply correction. Must be
+%   [Optional] - series - The series that will be despiked. Must be
 %                   either 'data' or 'profile'. If 'data' must run RSKreaddata() 
 %                   before RSKdespike, if 'profile' must first run RSKreadprofiles().
 %                   Default is 'data'.
 %
-%                profileNum - the profiles to be despiked. If left as an
-%                   empty vector, will do all profiles. 
+%                profileNum - Optional profile number to calculate lag.
+%                    Default is to calculate the lag of all detected
+%                    profiles
 %            
-%                direction - the profile direction to consider. Must be either
-%                   'down' or 'up'. Only needed if series is profile. Defaults to 'down'.
+%                direction - 'up' for upcast, 'down' for downcast, or 'both' for
+%                    all. Default is 'down'.
 %
-%                threshold - the number of standard deviations to use for the spike criterion.
-%                   Default value is 4.
+%                threshold - The number of standard deviations to use for
+%                the spike criterion. Default value is 4.
 %
-%                windowLength - the length of the running median. Default value is 7.
+%                windowLength - The length of the running median. Default value is 7.
 %
-%                action - the 'action' to perform on a spike. The default,
+%                action - The action to perform on a spike. The default,
 %                   'replace' is to replace it with the reference value. Can also be
 %                   'NaN' to leave the spike as a missing value or
 %                   'interp' to interpolate based on 'good' values.
@@ -45,12 +46,12 @@ function [RSK, spike] = RSKdespike(RSK, channel, varargin)
 % Outputs:
 %    y - the de-spiked series
 %
-%    spike - A structure containing the index of the despiked data samples.
+%    spike - A structure containing the index of the spikes organised by channel.
 %
 % Example: 
-%    temperatureDS = RSKdespike(RSK, 'temperature')
+%    temperatureDS = RSKdespike(RSK,  {'pressure', 'Conductivity})
 %   OR
-%    temperatureDS = RSKdespike(RSK, 'pressure', 'threshold',2, 'windowLength',10, 'action','NaN');
+%    temperatureDS = RSKdespike(RSK, 'Temperature', 'threshold',2, 'windowLength',10, 'action','NaN');
 %
 % Author: RBR Ltd. Ottawa ON, Canada
 % email: support@rbr-global.com
