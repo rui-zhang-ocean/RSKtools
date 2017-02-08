@@ -5,32 +5,28 @@ function RSK = RSKsmooth(RSK, channel, varargin)
 % Syntax:  [RSK] = RSKsmooth(RSK, channel, [OPTIONS])
 % 
 % RSKsmooth is a lowpass filter function that smooths the selected channel.
-% It replaced every value with the median or average of it's neighboring
-% values. The length of the neighbouring value is always centered around
-% the values being evaluated and is determined by the windowLength
-% parameter.
+% It replaces every value with the median or average of it's neighboring
+% values. The windowLength parameter determines how many samples are used
+% to filter, it is always sampled around the sample being evaluated.
 %
 % Inputs: 
-%    
 %    [Required] - RSK - Structure containing the logger metadata and thumbnails
 %
-%                 channel - Longname of channel(s) to filter. Can be cell
-%                    array of many channels
+%                 channel - Longname of channel to filter. Can be cell
+%                    array of many channels.
 %               
-%    [Optional] - type - The type of smoothing filter that will be used.
-%                   Either median or average. Default is median.
+%    [Optional] - filter - The type of smoothing filter that will be used.
+%                    Either median or average. Default is average.
 %
-%                 series - the data series to apply correction. Must be
-%                   either 'data' or 'profile'. If 'data' must run RSKreaddata() 
-%                   before RSKsmooth, if 'profile' must first run RSKreadprofiles().
-%                   Default is 'data'.
-%               
-%                 profileNum - the profiles to which to apply the correction. If
-%                    left as an empty vector, will do all profiles that
-%                    have been read by RSKreadprofiles().
+%                 series - Specifies the series to be filtered. Either 'data'
+%                    or 'profile'. Default is 'data'.
+%
+%                 profileNum - Optional profile number to calculate lag.
+%                    Default is to calculate the lag of all detected
+%                    profiles
 %            
-%                 direction - the profile direction to consider. Must be either
-%                    'down' or 'up'. Defaults to 'down'.
+%                 direction - 'up' for upcast, 'down' for downcast, or 'both' for
+%                    all. Default is 'down'.
 %
 %                 windowLength - The total size of the filter window. Must
 %                    be odd. Default is 3; one value from either side of
@@ -45,11 +41,10 @@ function RSK = RSKsmooth(RSK, channel, varargin)
 %    rsk = RSKreadprofiles(rsk, 1:10); % read first 10 downcasts
 %    rsk = RSKsmooth(rsk, {'Temperature', 'Salinity'}, 'windowLength', 17);
 %
-%
 % Author: RBR Ltd. Ottawa ON, Canada
 % email: support@rbr-global.com
 % Website: www.rbr-global.com
-% Last revision: 2017-01-30
+% Last revision: 2017-02-08
 
 %% Check input and default arguments
 
@@ -59,8 +54,8 @@ checkSeriesName = @(x) any(validatestring(x,validSeries));
 validDirections = {'down', 'up'};
 checkDirection = @(x) any(validatestring(x,validDirections));
 
-validTypeNames = {'median', 'average'};
-checkType = @(x) any(validatestring(x,validTypeNames));
+validFilterNames = {'median', 'average'};
+checkFilter = @(x) any(validatestring(x,validFilterNames));
 
 
 %% Parse Inputs
@@ -68,13 +63,11 @@ checkType = @(x) any(validatestring(x,validTypeNames));
 p = inputParser;
 addRequired(p, 'RSK', @isstruct);
 addRequired(p, 'channel');
-addParameter(p, 'type', 'median', checkType);
+addParameter(p, 'filter', 'average', checkFilter);
 addParameter(p, 'series', 'data', checkSeriesName)
 addParameter(p, 'profileNum', [], @isnumeric);
 addParameter(p, 'direction', 'down', checkDirection);
 addParameter(p, 'windowLength', 3, @isnumeric);
-
-
 parse(p, RSK, channel, varargin{:})
 
 % Assign each input argument
@@ -88,34 +81,22 @@ windowLength = p.Results.windowLength;
 
 
 %% Determine if the structure has downcasts and upcasts
+
 if strcmpi(series, 'profile')
-    isDown = isfield(RSK.profiles.downcast, 'data');
-    isUp   = isfield(RSK.profiles.upcast, 'data');
-    switch direction
-        case 'up'
-            if ~isUp
-                error('Structure does not contain upcasts')
-            elseif isempty(profileNum)
-                profileNum = 1:length(RSK.profiles.upcast.data);
-            end
-        case 'down'
-            if ~isDown
-                error('Structure does not contain downcasts')
-            elseif isempty(profileNum)
-                profileNum = 1:length(RSK.profiles.downcast.data);
-            end
-    end
+    profileNum = checkprofiles(RSK, profileNum, direction);
     castdir = [direction 'cast'];
 end
 
 
 %% Ensure channel is a cell.
+
 if ~iscell(channel)
     channel = {channel};
 end
 
 
 %% Smooth
+
 for chanName = channel
     channelCol = find(strcmpi(chanName, {RSK.channels.longName}));
     switch series
@@ -139,6 +120,7 @@ for chanName = channel
         
 end
 end
+
 
 
 %% Nested functions

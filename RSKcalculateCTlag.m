@@ -95,23 +95,8 @@ nsmooth    = p.Results.nsmooth;
 
 
 %% Determine if the structure has downcasts and upcasts
+profileNum = checkprofiles(RSK, profileNum, direction);
 castdir = [direction 'cast'];
-isDown = isfield(RSK.profiles.downcast, 'data');
-isUp   = isfield(RSK.profiles.upcast, 'data');
-switch direction
-    case 'up'
-        if ~isUp
-            error('Structure does not contain upcasts')
-        elseif isempty(profileNum)
-            profileNum = 1:length(RSK.profiles.upcast.data);
-        end
-    case 'down'
-        if ~isDown
-            error('Structure does not contain downcasts')
-        elseif isempty(profileNum)
-            profileNum = 1:length(RSK.profiles.downcast.data);
-        end
-end
 
 
 

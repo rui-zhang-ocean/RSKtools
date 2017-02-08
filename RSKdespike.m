@@ -14,8 +14,7 @@ function [RSK, spike] = RSKdespike(RSK, channel, varargin)
 %
 % Inputs:
 %    
-%   [Required] - RSK - the input RSK structure, with profiles as read using
-%                    RSKreadprofiles
+%   [Required] - RSK - the input RSK structure
 %
 %                channel - Longname of channel to plot (e.g. temperature,
 %                    salinity, etc). Can be cell array of many channels or
@@ -95,22 +94,7 @@ action = p.Results.action;
 
 %% For Profiles: determine if the structure has downcasts and upcasts & set profileNum accordingly
 if strcmp(series, 'profile')
-    isDown = isfield(RSK.profiles.downcast, 'data');
-    isUp   = isfield(RSK.profiles.upcast, 'data');
-    switch direction
-        case 'up'
-            if ~isUp
-                error('Structure does not contain upcasts')
-            elseif isempty(profileNum)
-                profileNum = 1:length(RSK.profiles.upcast.data);
-            end
-        case 'down'
-            if ~isDown
-                error('Structure does not contain downcasts')
-            elseif isempty(profileNum)
-                profileNum = 1:length(RSK.profiles.downcast.data);
-            end
-    end
+    profileNum = checkprofiles(RSK, profileNum, direction);
     castdir = [direction 'cast'];
 end
 
