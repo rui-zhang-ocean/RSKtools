@@ -1,4 +1,4 @@
-function [RSK, I] = RSKdespike(RSK, channel, varargin)
+function [RSK, spike] = RSKdespike(RSK, channel, varargin)
 
 % RSKdespike - De-spike a time series by comparing it to a reference time
 %              series
@@ -45,7 +45,7 @@ function [RSK, I] = RSKdespike(RSK, channel, varargin)
 % Outputs:
 %    y - the de-spiked series
 %
-%    I - The index of the despiked data samples.
+%    spike - A structure containing the index of the despiked data samples.
 %
 % Example: 
 %    temperatureDS = RSKdespike(RSK, 'temperature')
@@ -55,7 +55,7 @@ function [RSK, I] = RSKdespike(RSK, channel, varargin)
 % Author: RBR Ltd. Ottawa ON, Canada
 % email: support@rbr-global.com
 % Website: www.rbr-global.com
-% Last revision: 2017-02-07
+% Last revision: 2017-02-08
 
 %% Check input and default arguments
 
@@ -124,28 +124,22 @@ end
 
 %% Despike
 for chanName = channel
-    channelCol = find(strcmpi(chanName, {RSK.channels.longName}));
+    channelCol = strcmpi(chanName, {RSK.channels.longName});
     switch series
         case 'profile'
-                for ndx = profileNum
-                    x = RSK.profiles.(castdir).data(ndx).values(:,channelCol);
-                    xtime = RSK.profiles.(castdir).data(ndx).tstamp;
-                    [RSK.profiles.(castdir).data(ndx).values(:,channelCol), index] = despike(x, xtime, threshold, windowLength, action);
-                    if length(channel)>1
-                        I(ndx, channelCol).spike = index;
-                    else
-                        I(ndx) = index;
-                    end
-                end
+            k = 1;    
+            for ndx = profileNum
+                x = RSK.profiles.(castdir).data(ndx).values(:,channelCol);
+                xtime = RSK.profiles.(castdir).data(ndx).tstamp;
+                [RSK.profiles.(castdir).data(ndx).values(:,channelCol), index] = despike(x, xtime, threshold, windowLength, action);
+                spike(k).(chanName{1}(1:4)) = index;
+                k = k+1;
+            end
         case 'data'
             x = RSK.data.values(:,channelCol);
             xtime = RSK.data.tstamp;
             [RSK.data.values(:,channelCol), index] = despike(x, xtime, threshold, windowLength, action); 
-            if length(channel)>1
-                I(channelCol).spike = index;
-            else
-                I = index;
-            end
+            spike.(chanName{1}(1:4)) = index;
     end
 end
 end
