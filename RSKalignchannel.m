@@ -12,28 +12,25 @@ function [RSK] = RSKalignchannel(RSK, channel, lag, varargin)
 % allow salinity to be calculated using gsw_SP_from_C.
 %
 % Inputs: 
-%    
-%    [Required] - RSK - the input RSK structure, with profiles as read using
-%                    RSKreadprofiles
+%    [Required] - RSK - The input RSK structure, with profiles as read using
+%                     RSKreadprofiles.
 %
-%                 channel - Longname of channel to plot (e.g. temperature,
-%                   salinity, etc).
+%                 channel - Longname of channel to align (e.g. temperature,
+%                     salinity, etc).
 %
-%                 lag - For salinity, the optimal lags can be calculated
-%                   for each profile using RSKgetCTlag.m
+%                 lag - The lag for each profile, or one lag for all.
 %
-%    [Optional] - profileNum - the profiles to which to apply the correction. If
-%                    left as an empty vector, will do all profiles.
-%            
-%                direction - the profile direction to consider. Must be either
-%                   'down' or 'up'. Defaults to 'down'.
+%    [Optional] - profileNum - Optional profile number to calculate lag.
+%                     Default is to calculate the lag of all detected
+%                     profiles.
 %
+%                 direction - 'up' for upcast, 'down' for downcast, or 'both' for
+%                     all. Default is 'down'.
 %
 % Outputs:
-%    RSK - the RSK structure with aligned channel values
+%    RSK - The RSK structure with aligned channel values.
 %
 % Example: 
-%   
 %    rsk = RSKopen('file.rsk');
 %    rsk = RSKreadprofiles(rsk, 1:10); % read first 10 downcasts
 %
@@ -50,12 +47,12 @@ function [RSK] = RSKalignchannel(RSK, channel, lag, varargin)
 % Author: RBR Ltd. Ottawa ON, Canada
 % email: support@rbr-global.com
 % Website: www.rbr-global.com
-% Last revision: 2017-01-30
+% Last revision: 2017-02-08
 
 %% Check input and default arguments
+
 validDirections = {'down', 'up'};
 checkDirection = @(x) any(validatestring(x,validDirections));
-
 
 
 %% Parse Inputs
@@ -66,7 +63,6 @@ addRequired(p, 'channel', @ischar);
 addRequired(p, 'lag', @isnumeric);
 addParameter(p, 'profileNum', [], @isnumeric);
 addParameter(p, 'direction', 'down', checkDirection);
-
 parse(p, RSK, channel, lag, varargin{:})
 
 % Assign each input argument
@@ -77,14 +73,14 @@ profileNum = p.Results.profileNum;
 direction = p.Results.direction;
 
 
-
 %% Determine if the structure has downcasts and upcasts
+
 profileNum = checkprofile(RSK, profileNum, direction);
 castdir = [direction 'cast'];
 
 
-
 %% Check to make sure that lags are integers & one value of CTlag or one for each profile
+
 if ~isequal(fix(lag),lag),
     error('Lag values must be integers.')
 end
@@ -102,11 +98,10 @@ elseif length(lag) > 1
 end
 
 
-
 %% Apply lag to salinity from conductivity
+
 if strcmpi(channel, 'salinity')
     hasTEOS = exist('gsw_SP_from_C', 'file') == 2;
-
     if ~hasTEOS
         error('Error: Must install TEOS-10 toolbox');
     end
@@ -116,7 +111,6 @@ if strcmpi(channel, 'salinity')
     Ccol = strcmpi('conductivity', {RSK.channels.longName});
     Tcol = strcmpi('temperature', {RSK.channels.longName});
     pcol = strcmpi('pressure', {RSK.channels.longName});
-
 
     counter = 0;
     for ndx = profileNum
@@ -128,7 +122,6 @@ if strcmpi(channel, 'salinity')
         RSK.profiles.(castdir).data(ndx).values(:, Scol) = Sbest;
     end
     
-   
 else
 %% Apply lag to any other channel.
     counter = 0;

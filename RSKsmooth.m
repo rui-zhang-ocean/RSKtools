@@ -13,30 +13,29 @@ function RSK = RSKsmooth(RSK, channel, varargin)
 %    [Required] - RSK - Structure containing the logger metadata and thumbnails
 %
 %                 channel - Longname of channel to filter. Can be cell
-%                    array of many channels or 'all'.
+%                     array of many channels or 'all'.
 %               
 %    [Optional] - filter - The type of smoothing filter that will be used.
-%                    Either median or average. Default is average.
+%                     Either median or average. Default is average.
 %
 %                 series - Specifies the series to be filtered. Either 'data'
-%                    or 'profile'. Default is 'data'.
+%                     or 'profile'. Default is 'data'.
 %
 %                 profileNum - Optional profile number to calculate lag.
-%                    Default is to calculate the lag of all detected
-%                    profiles
+%                     Default is to calculate the lag of all detected
+%                     profiles.
 %            
 %                 direction - 'up' for upcast, 'down' for downcast, or 'both' for
-%                    all. Default is 'down'.
+%                     all. Default is 'down'.
 %
 %                 windowLength - The total size of the filter window. Must
-%                    be odd. Default is 3; one sample from either side of
-%                    sample being evaluated.
+%                     be odd. Default is 3; one sample from either side of
+%                     sample being evaluated.
 %
 % Outputs:
-%    RSK - the RSK structure with filtered channel values.
+%    RSK - The RSK structure with filtered channel values.
 %
 % Example: 
-%   
 %    rsk = RSKopen('file.rsk');
 %    rsk = RSKreadprofiles(rsk, 1:10); % read first 10 downcasts
 %    rsk = RSKsmooth(rsk, {'Temperature', 'Salinity'}, 'windowLength', 17);

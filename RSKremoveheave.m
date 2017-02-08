@@ -1,9 +1,9 @@
-function [RSK, flags] = RSKremoveloops(RSK, varargin)
+function [RSK, flags] = RSKremoveheave(RSK, varargin)
 
 % RSKremoveheave - Remove values that have pressure reversal or slowdows during
 %               the profile.
 %
-% Syntax:  varargout = RSKremoveheave(RSK, [OPTIONS])
+% Syntax:  [RSK, flags] = RSKremoveheave(RSK, [OPTIONS])
 % 
 % RSKremoveheave - This function filters the pressure channel with a lowpass
 % boxcar to reduce the effect of noise, then finds samples that have a low profiling 
@@ -12,33 +12,33 @@ function [RSK, flags] = RSKremoveloops(RSK, varargin)
 % determine the velocity and two velocities for the acceleration.
 % 
 % Inputs:
+%   [Required] - RSK - The input RSK structure, with profiles as read using
+%                    RSKreadprofiles.
 %
-%   [Required] - RSK - the input RSK structure, with profiles as read using
-%                    RSKreadprofiles
+%   [Optional] - profileNum - Optional profile number to calculate lag.
+%                    Default is to calculate the lag of all detected
+%                    profiles.
 %
-%   [Optional] - profileNum - the profiles to which to apply the correction. If
-%                    left as an empty vector, will do all profiles.
-%            
-%                direction - the profile direction to consider. Must be either
-%                   'down' or 'up'. Defaults to 'down'.
+%                direction - 'up' for upcast, 'down' for downcast, or 'both' for
+%                    all. Default is 'down'.
+% 
+%                velThreshold - The minimum speed at which the profile must
+%                    be taken. Default is 0.25 m/s
 %
-%                velThreshold - the minimum speed at which the profile must
-%                   be taken. Default is 0.25 m/s
+%                accelThreshold - The minimum acceleration at which the profile must
+%                    be taken. Default '-0.1'.
 %
-%                accelThreshold - the minimum acceleration at which the profile must
-%                   be taken. Default '-0.1'.
-%
-%                action - the 'action' to perform on a flagged value. The
-%                   default, 'NaN', is to leave the spike as a missing
-%                   value. Other options include 'remove', removes the
-%                   value and 'nothing' simply returns the same RSK as was
-%                   input and returns a vector of flagged samples.
+%                action - The 'action' to perform on a flagged value. The
+%                    default, 'NaN', is to leave the spike as a missing
+%                    value. Other options include 'remove', removes the
+%                    value and 'nothing' simply returns the same RSK as was
+%                    input and returns a vector of flagged samples.
 %
 %                latitude - Latitude at which the profile was taken.
-%                   Default is [].
+%                    Default is 45.
 %
 % Outputs:
-%    RSK - the structure without pressure reversal or slowdowns. The
+%    RSK - The structure without pressure reversal or slowdowns. The
 %          pressure channel remains unchanged.
 %
 % Example: 
@@ -49,7 +49,7 @@ function [RSK, flags] = RSKremoveloops(RSK, varargin)
 % Author: RBR Ltd. Ottawa ON, Canada
 % email: support@rbr-global.com
 % Website: www.rbr-global.com
-% Last revision: 2017-02-07
+% Last revision: 2017-02-08
 
 %% Check input and default arguments
 
@@ -86,29 +86,14 @@ action = p.Results.action;
 latitude = p.Results.latitude;
 
 
+%% Determine if the structure has downcasts and upcasts
 
-%% Determine if the structure has downcasts and upcasts & set profileNum accordingly
+profileNum = checkprofiles(RSK, profileNum, direction);
 castdir = [direction 'cast'];
-isDown = isfield(RSK.profiles.downcast, 'data');
-isUp   = isfield(RSK.profiles.upcast, 'data');
-switch direction
-    case 'up'
-        if ~isUp
-            error('Structure does not contain upcasts')
-        elseif isempty(profileNum)
-            profileNum = 1:length(RSK.profiles.upcast.data);
-        end
-    case 'down'
-        if ~isDown
-            error('Structure does not contain downcasts')
-        elseif isempty(profileNum)
-            profileNum = 1:length(RSK.profiles.downcast.data);
-        end
-end
-
 
 
 %% Edit one cast at a time.
+
 data = RSK.profiles.(castdir).data;
 pressureCol = strcmpi('pressure', {RSK.channels.longName});
 secondsperday = 86400;
@@ -116,8 +101,7 @@ for ndx = profileNum
     %% Filter pressure before taking the diff    
     smoothPressure = RSKsmooth(RSK, 'pressure', 'direction', direction, 'series', 'profile');    
     depth = calculatedepth(smoothPressure.profiles.(castdir).data(ndx).values(:,pressureCol), 'latitude', latitude);
-    time = RSK.profiles.(castdir).data(ndx).tstamp;
-    
+    time = data(ndx).tstamp;
 
     %% Caculate Velocity.
     deltaD = diff(depth);
@@ -132,7 +116,6 @@ for ndx = profileNum
         case 'down'
             flagidx = velocity < velThreshold;    
     end  
-    
     
     %% Calculate Acceleration.
     if ~strcmpi(minAccel, 'None')
@@ -153,7 +136,9 @@ for ndx = profileNum
     end                 
     flags(ndx).index = find(flagidx);
 end
+
 RSK.profiles.(castdir).data = data;
+
 end
 
 

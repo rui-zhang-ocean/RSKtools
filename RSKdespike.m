@@ -13,17 +13,14 @@ function [RSK, spike] = RSKdespike(RSK, channel, varargin)
 % replace the spikes with the reference value.  
 %
 % Inputs:
-%    
-%   [Required] - RSK - the input RSK structure
+%   [Required] - RSK - The input RSK structure
 %
 %                channel - Longname of channel to plot (e.g. temperature,
 %                    salinity, etc). Can be cell array of many channels or
-%                    'all', will despike all channels.
+%                    'all'.
 %
-%   [Optional] - series - The series that will be despiked. Must be
-%                   either 'data' or 'profile'. If 'data' must run RSKreaddata() 
-%                   before RSKdespike, if 'profile' must first run RSKreadprofiles().
-%                   Default is 'data'.
+%   [Optional] - series - Specifies the series to be filtered. Either 'data'
+%                    or 'profile'. Default is 'data'.
 %
 %                profileNum - Optional profile number to calculate lag.
 %                    Default is to calculate the lag of all detected
@@ -33,19 +30,21 @@ function [RSK, spike] = RSKdespike(RSK, channel, varargin)
 %                    all. Default is 'down'.
 %
 %                threshold - The number of standard deviations to use for
-%                the spike criterion. Default value is 4.
+%                    the spike criterion. Default value is 4.
 %
-%                windowLength - The length of the running median. Default value is 7.
+%                windowLength - The total size of the filter window. Must
+%                    be odd. Default is 3.
 %
 %                action - The action to perform on a spike. The default,
-%                   'replace' is to replace it with the reference value. Can also be
-%                   'NaN' to leave the spike as a missing value or
-%                   'interp' to interpolate based on 'good' values.
+%                    'replace' is to replace it with the reference value.
+%                    Can also be 'NaN' to leave the spike as a missing
+%                    value or 'interp' to interpolate based on 'good'
+%                    values. 
 %
 % Outputs:
-%    y - the de-spiked series
+%    RSK - The RSK structure with de-spiked series.
 %
-%    spike - A structure containing the index of the spikes organised by channel.
+%    spike - A structure containing the index of the spikes; organised by channel.
 %
 % Example: 
 %    temperatureDS = RSKdespike(RSK,  {'pressure', 'Conductivity})
@@ -67,6 +66,7 @@ checkDirection = @(x) any(validatestring(x,validDirections));
 
 validActions = {'replace', 'interp', 'NaN'};
 checkAction = @(x) any(validatestring(x,validActions));
+
 
 %% Parse Inputs
 
@@ -93,6 +93,7 @@ action = p.Results.action;
 
 
 %% For Profiles: determine if the structure has downcasts and upcasts & set profileNum accordingly
+
 if strcmp(series, 'profile')
     profileNum = checkprofiles(RSK, profileNum, direction);
     castdir = [direction 'cast'];
@@ -100,6 +101,7 @@ end
 
 
 %% Ensure channel is a cell.
+
 if strcmpi(channel, 'all')
     channel = {RSK.channels.longName};
 elseif ~iscell(channel)
@@ -108,6 +110,7 @@ end
 
 
 %% Despike
+
 for chanName = channel
     channelCol = strcmpi(chanName, {RSK.channels.longName});
     switch series
