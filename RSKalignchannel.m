@@ -75,7 +75,7 @@ direction = p.Results.direction;
 
 %% Determine if the structure has downcasts and upcasts
 
-profileNum = checkprofile(RSK, profileNum, direction);
+profileNum = checkprofiles(RSK, profileNum, direction);
 castdir = [direction 'cast'];
 
 
