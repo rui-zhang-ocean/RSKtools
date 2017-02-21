@@ -128,9 +128,9 @@ for ndx = profileNum
     Pressure = RSK.profiles.(castdir).data(ndx).values(:,pressureCol);
     switch binBy
         case 'Pressure'
-            Y(1:length(Pressure),k) = Pressure;
+            Y(1:length(Pressure),k) = Pressure - 10.1325;
         case 'Depth'
-            Y(1:length(Pressure), k) = calculatedepth(Pressure, latitude);
+            Y(1:length(Pressure), k) = calculatedepth(Pressure - 10.1325, latitude);
     end
     k = k+1;
 end
