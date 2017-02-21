@@ -117,7 +117,7 @@ for ndx=profileNum
         selectValues = (p >= pressureRange(1) & p<= pressureRange(2)); 
         C = C(selectValues);
         T = T(selectValues);
-        p = P(selectValues);
+        p = p(selectValues);
     end
     
     lags = -20:20;
@@ -129,7 +129,7 @@ for ndx=profileNum
         dS = SS - Ssmooth;
         dSsd = [dSsd std(dS)];
     end
-    minlag = lags(dSsd == min(dSsd));
+    minlag = min(abs(lags(dSsd == min(dSsd))));
     bestlag = [bestlag minlag];
 end
 lag = bestlag;
