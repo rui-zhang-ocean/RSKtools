@@ -118,9 +118,9 @@ end
 %% Interpolate bin Centers through time
 t = RSK.profiles.(castdir).tstart(profileNum);
 z = binCenter;
-grid = 50;
-dt = linspace(t(1),t(end), grid);
-dz = linspace(z(1),z(end), grid);
+grid = 500;
+dt = linspace(t(1),t(end), length(t));
+dz = linspace(z(1),z(end), length(z));
 
 [Xq,Yq] = meshgrid(dt, dz);
 vq = interp2(t, z, binnedValues, Xq, Yq);
@@ -138,10 +138,14 @@ end
 
 cb = colorbar;
 cmocean('haline');
-if strcmpi(channel, 'chlorophyll'), 
+if strcmpi(channel, 'temperature')
+    cmocean('thermal'); 
+elseif strcmpi(channel, 'chlorophyll')
     cmocean('algae'); 
-elseif strcmpi(channel, 'dissolved o'), 
-    cmocean('oxy');
+elseif strcmpi(channel, 'backscatter')
+    cmocean('matter');
+elseif strcmpi(channel, 'phycoerythrin')
+    cmocean('turbid');
 end
 chanCol = strcmpi(channel, {RSK.channels.longName});
 ylabel(cb, RSK.channels(chanCol).units, 'FontSize', 12)
@@ -149,7 +153,9 @@ title(sprintf('%s on %s', RSK.channels(chanCol).longName, date));
 xlabel(sprintf('Time (UTC)'))
 ylabel(sprintf('%s %s', binBy, units))
 set(gca, 'YDir', 'reverse')
+set(gcf, 'Renderer', 'painters')
 set(h, 'EdgeColor', 'none');
 datetick('x')
+
 end
 
