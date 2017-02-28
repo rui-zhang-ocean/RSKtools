@@ -1,15 +1,15 @@
 function [RSK, flags] = RSKremoveheave(RSK, varargin)
 
 % RSKremoveheave - Remove values that have pressure reversal or slowdows during
-%               the profile.
+%                  the profiling.
 %
 % Syntax:  [RSK, flags] = RSKremoveheave(RSK, [OPTIONS])
 % 
 % RSKremoveheave - This function filters the pressure channel with a lowpass
-% boxcar to reduce the effect of noise, then finds samples that have a low profiling 
-% velocity or decelerate below a specified threshold and replaces them
-% with a NaN, deletes the value or ignores it. It operates on two scans to
-% determine the velocity and two velocities for the acceleration.
+% boxcar to reduce the effect of noise, then finds samples that have a low
+% profiling velocity or decelerate below a specified threshold and replaces
+% them with a NaN, deletes the value or ignores it. It operates on two
+% scans to determine the velocity and two velocities for the acceleration.
 % 
 % Inputs:
 %   [Required] - RSK - The input RSK structure, with profiles as read using
@@ -38,8 +38,9 @@ function [RSK, flags] = RSKremoveheave(RSK, varargin)
 %                    Default is 45.
 %
 % Outputs:
-%    RSK - The structure without pressure reversal or slowdowns. The
-%          pressure channel remains unchanged.
+%    RSK - The structure without pressure reversal or slowdowns.
+%
+%    flags - The index of the samples that did not meet the criteria.
 %
 % Example: 
 %    RSK = RSKopen(RSK)
@@ -49,7 +50,7 @@ function [RSK, flags] = RSKremoveheave(RSK, varargin)
 % Author: RBR Ltd. Ottawa ON, Canada
 % email: support@rbr-global.com
 % Website: www.rbr-global.com
-% Last revision: 2017-02-08
+% Last revision: 2017-02-10
 
 %% Check input and default arguments
 
@@ -112,9 +113,9 @@ for ndx = profileNum
     velocity = interp1(midtime, dDdT, time, 'linear', 'extrap');
     switch direction
         case 'up'
-            flagidx = velocity > -velThreshold; 
+            flagv = velocity > -velThreshold; 
         case 'down'
-            flagidx = velocity < velThreshold;    
+            flagv = velocity < velThreshold;    
     end  
     
     %% Calculate Acceleration.
@@ -122,7 +123,9 @@ for ndx = profileNum
         d2DdT2 = diff(dDdT) ./ deltaT(1:end-1);
         acceleration = interp1(midtime(1:end-1), d2DdT2, time, 'linear', 'extrap');
         flagA = acceleration < accelThreshold; 
-        flagidx = flagA | flagidx;
+        flagidx = flagA | flagv;
+    else 
+        flagidx = flagv;
     end
    
     %% Perform the action on flagged scans.
