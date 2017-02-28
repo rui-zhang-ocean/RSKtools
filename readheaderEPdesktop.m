@@ -38,8 +38,6 @@ RSK.schedules = mksqlite('select * from schedules');
 RSK.deployments = mksqlite('select * from deployments');
 
 RSK.instruments = mksqlite('select * from instruments');
-RSK.instrumentChannels = mksqlite('select * from instrumentChannels');
-
 
 RSK.thumbnailData = RSKreadthumbnail;
 
