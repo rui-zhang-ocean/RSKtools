@@ -38,20 +38,21 @@ RSK.schedules = mksqlite('select * from schedules');
 RSK.deployments = mksqlite('select * from deployments');
 
 RSK.instruments = mksqlite('select * from instruments');
-RSK.instrumentChannels = mksqlite('select * from instrumentChannels');
 
 RSK.thumbnailData = RSKreadthumbnail;
 
 %% Remove non marine channels
 results = mksqlite('select isDerived from channels');
 try
+    RSK.instrumentChannels = mksqlite('select * from instrumentChannels');
     isMeasured = ~[RSK.instrumentChannels.channelStatus];% hidden and derived channels should have a non-zero channelStatus
+    RSK.instrumentChannels(~isMeasured) = []; 
 catch
     
     isMeasured = ~[results.isDerived]; % some files may not have channelStatus
 end
 RSK.channels(~isMeasured) = [];  
-RSK.instrumentChannels(~isMeasured) = []; 
+
 
 
 %% Load calibration
