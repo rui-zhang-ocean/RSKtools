@@ -1,12 +1,13 @@
-function [upcaststart, downcaststart] = detectprofiles(pressure, timestamp, conductivity, profileThreshold)
+function [wwevt] = detectprofiles(pressure, timestamp, conductivity, profileThreshold)
 
 % detectprofiles - implements the logger profile detection.
 %
-% Syntax:  [RSK] = detectprofiles(pressure, timestamp)
+% Syntax:  [wwevt] = detectprofiles(pressure, timestamp)
 % 
 % detectprofiles is a helper function that implements the algorithm used by
-% the logger to find upcasts and downcasts by going through the pressure
-% time series.
+% the logger to find upcast and downcast events during the pressure time
+% series. If conductivity is also input the algorithm can detect when the
+% logger is out of the water.
 %
 % Inputs:
 %    
@@ -22,14 +23,14 @@ function [upcaststart, downcaststart] = detectprofiles(pressure, timestamp, cond
 %
 % Outputs:
 %
-%    upcaststart - The timestamp of the start of upcasts.
-%
-%    downcaststart - The timestamp of the start of downcasts.
+%    wwevt - A matrix containing the timestamp in the first column and an
+%            event index describing the start of a event (1=downcast,
+%            2=upcast, 3=outofwater)
 %
 % Author: RBR Ltd. Ottawa ON, Canada
 % email: support@rbr-global.com
 % Website: www.rbr-global.com
-% Last revision: 2017-01-13
+% Last revision: 2017-03-08
 
 %% Set up
 detectcaststate = 0; % 0 unknown, 1 down, 2 up
@@ -40,17 +41,17 @@ hasC = ~isempty(conductivity);
 %% The Profile Detection
 k=1;
 klast = k;
-d = 1;
-u = 1;
+n=1;
 maxpressure=pressure(1);
 minpressure=pressure(1);
-upcaststart = 0;
-downcaststart = 0;
+wwevt = zeros(1,2);
 while(k<length(timestamp))
     %
     % profile detection part
     evt=0;
-    if ~hasC || conductivity(k)>0.05
+    if hasC && conductivity(k)<0.05
+        evt=3;
+    else
         
         switch  detectcaststate
 
@@ -102,28 +103,32 @@ while(k<length(timestamp))
                 end
 
         end
+    end
 
+    if evt == 1
+        % downcast detected
+        profiletime = timestamp(klast:k);
+        idx = find(pressure(klast:k) == minpressure);
+        wwevt(n,:) = [profiletime(idx(end)) evt];
+        n = n+1;
+        klast = k;
 
-
-        if evt == 1
-            % downcast detected
-            profiletime = timestamp(klast:k);
-            idx = find(pressure(klast:k) == minpressure);
-            downcaststart(d) = profiletime(idx(end));
-            d = d+1;
-            klast = k;
-
-        elseif evt ==2
-            %upcast detected
-            profiletime = timestamp(klast:k);
-            idx = find(pressure(klast:k) == maxpressure);
-            upcaststart(u) = profiletime(idx(end));
-            u = u+1;
-            klast = k;
-        end
+    elseif evt ==2
+        % upcast detected
+        profiletime = timestamp(klast:k);
+        idx = find(pressure(klast:k) == maxpressure);
+        wwevt(n,:) = [profiletime(idx(end)) evt];
+        n = n+1;
+        klast = k;
+        
+    elseif evt == 3 && wwevt(n-1,2) ~= 3
+        % If logger is out of water mark timestamp a out of water
+        wwevt(n,:) = [timestamp(k) evt];
+        n = n+1;
+        klast = k;
+        
     end
     k= k+1;
 end
-upcaststart = upcaststart';
-downcaststart = downcaststart';
+
 end
