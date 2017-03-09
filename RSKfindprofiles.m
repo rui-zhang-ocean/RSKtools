@@ -78,7 +78,7 @@ upstart = wwevt(wwevt(:,2) == 2,1);
 u=1;% up index
 d=1;% down index
 for ndx = 2:length(wwevt)
-    t = find(timestamp == wwevt(ndx,1));
+    t = find(timestamp == wwevt(ndx,1),1);
     if wwevt(ndx-1,2) ~= 3
         if wwevt(ndx,2) == 1
             % Upcast end is the sample before a downcast start
