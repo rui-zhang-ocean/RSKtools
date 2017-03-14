@@ -74,16 +74,17 @@ if any(strcmpi({tables.name}, 'geodata'))
     RSK = RSKreadgeodata(RSK);
 end
 
+
 % Parameter table is empty if data is from Mobile Ruskin.
-if any(strcmpi({tables.name}, 'parameters'))
+if any(strcmpi({tables.name}, 'parameters')) && ~strcmpi(RSK.dbInfo(1).type, 'EasyParse') && ~strcmpi(RSK.dbInfo(1).type, 'skinny') 
     RSK.parameters = mksqlite('select * from parameters');
 end
 
-if any(strcmpi({tables.name}, 'datasets'))
+if any(strcmpi({tables.name}, 'datasets')) && ~strcmpi(RSK.dbInfo(1).type, 'EasyParse')
     RSK.datasets = mksqlite('select * from datasets');
 end
 
-if any(strcmpi({tables.name}, 'datasetDeployments'))
+if any(strcmpi({tables.name}, 'datasetDeployments')) && ~strcmpi(RSK.dbInfo(1).type, 'EasyParse')
     RSK.datasetDeployments = mksqlite('select * from datasetDeployments');     
 end
 
