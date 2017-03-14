@@ -40,8 +40,9 @@ catch
 end
 
 %% Tables that may or may not be in 'skinny'
-try
+tables = mksqlite('SELECT name FROM sqlite_master WHERE type="table"');
+
+if any(strcmpi({tables.name}, 'geodata'))
     RSK = RSKreadgeodata(RSK);
-catch
 end
 end

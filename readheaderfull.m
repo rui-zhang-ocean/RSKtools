@@ -50,6 +50,7 @@ RSK.deployments = mksqlite('select * from deployments');
 RSK.instruments = mksqlite('select * from instruments');
 RSK.instrumentChannels = mksqlite('select * from instrumentChannels');
 
+
 %% Load calibration
 %As of RSK v1.13.4 coefficients is it's own table. We add it back into calibration to be consistent with previous versions.
 if (vsnMajor > 1) || ((vsnMajor == 1)&&(vsnMinor > 13)) || ((vsnMajor == 1)&&(vsnMinor == 13)&&(vsnPatch >= 4))
@@ -75,16 +76,16 @@ end
 RSK.channels(~isMeasured) = [];  
 RSK.instrumentChannels(~isMeasured) = []; 
 
-%% Tables that could be populated in 'full'
 
-try
+%% Tables that could be populated in 'full'
+tables = mksqlite('SELECT name FROM sqlite_master WHERE type="table"');
+
+if any(strcmpi({tables.name}, 'geodata'))
     RSK = RSKreadgeodata(RSK);
-catch 
 end
 
-try
-    RSK.thumbnailData = RSKreadthumbnail;
-catch
+if any(strcmpi({tables.name}, 'thumbnailData'))
+    RSK = RSKreadthumbnail(RSK);
 end
 
 if isempty(RSK.datasets) && isempty(RSK.datasetDeployments)

@@ -21,7 +21,7 @@ function RSK = readheaderlive(RSK)
 % Author: RBR Ltd. Ottawa ON, Canada
 % email: support@rbr-global.com
 % Website: www.rbr-global.com
-% Last revision: 2017-01-25
+% Last revision: 2017-03-14
 
 %% Set up version variables
 [~, vsnMajor, vsnMinor, vsnPatch] = RSKver(RSK);
@@ -69,10 +69,10 @@ RSK.instrumentChannels(~isMeasured) = [];
 
 
 %% Tables that may or may not be in 'live'
+tables = mksqlite('SELECT name FROM sqlite_master WHERE type="table"');
 
-try
-    RSK.thumbnailData = RSKreadthumbnail;
-catch
+if any(strcmpi({tables.name}, 'geodata'))
+    RSK = RSKreadgeodata(RSK);
 end
 
 end
