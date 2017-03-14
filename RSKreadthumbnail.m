@@ -1,4 +1,4 @@
-function results = RSKreadthumbnail
+function RSK = RSKreadthumbnail(RSK)
 
 % RSKreadthumbnail - Internal function to read thumbnail data from
 %                    an opened RSK file.
@@ -9,20 +9,25 @@ function results = RSKreadthumbnail
 % within RSKopen.
 %
 % Inputs:
-%    None - Reads from the currently open RSK database file
+%    RSK - Structure containing the logger metadata and thumbnails
+%          returned by RSKopen.
 %
-% Outputs:
-%    results - Structure containing the logger thumbnail data
+% Output:
+%    RSK - Structure containing previously present logger metadata as well
+%          as thumbnailData
 %
 % See also: RSKopen
 %
 % Author: RBR Ltd. Ottawa ON, Canada
 % email: support@rbr-global.com
 % Website: www.rbr-global.com
-% Last revision: 2016-03-02
+% Last revision: 2016-03-14
 
 sql = ['select tstamp/1.0 as tstamp,* from thumbnailData order by tstamp'];
 results = mksqlite(sql);
+if isempty(results)
+    return
+end
 results = rmfield(results,'tstamp_1'); % get rid of the corrupted one
 
 %% RSK version >= 1.12.2 now has a datasetID column in the data table
@@ -40,5 +45,8 @@ results = RSKarrangedata(results);
 if hasdatasetID
     results.datasetID = datasetID;
 end
-results.tstamp = RSKtime2datenum(results.tstamp'); % convert unix time to datenum
 
+results.tstamp = RSKtime2datenum(results.tstamp'); % convert unix time to datenum
+RSK.thumbnailData = results;
+
+end
