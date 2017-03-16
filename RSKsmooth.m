@@ -5,9 +5,10 @@ function RSK = RSKsmooth(RSK, channel, varargin)
 % Syntax:  [RSK] = RSKsmooth(RSK, channel, [OPTIONS])
 % 
 % RSKsmooth is a lowpass filter function that smooths the selected channel.
-% It replaces every value with the median or average of it's neighboring
+% It replaces every value with the filter results using it's neighboring
 % values. The windowLength parameter determines how many samples are used
-% to filter, it is always sampled around the sample being evaluated.
+% to filter, the sample being evaluated is always in the center of the
+% filtering window. 
 %
 % Inputs: 
 %    [Required] - RSK - Structure containing the logger metadata and thumbnails
@@ -16,7 +17,7 @@ function RSK = RSKsmooth(RSK, channel, varargin)
 %                     array of many channels or 'all'.
 %               
 %    [Optional] - filter - The type of smoothing filter that will be used.
-%                     Either median or average. Default is average.
+%                     Either median or boxcar. Default is average.
 %
 %                 series - Specifies the series to be filtered. Either 'data'
 %                     or 'profile'. Default is 'data'.
@@ -43,7 +44,7 @@ function RSK = RSKsmooth(RSK, channel, varargin)
 % Author: RBR Ltd. Ottawa ON, Canada
 % email: support@rbr-global.com
 % Website: www.rbr-global.com
-% Last revision: 2017-02-08
+% Last revision: 2017-03-16
 
 %% Check input and default arguments
 
@@ -53,7 +54,7 @@ checkSeriesName = @(x) any(validatestring(x,validSeries));
 validDirections = {'down', 'up'};
 checkDirection = @(x) any(validatestring(x,validDirections));
 
-validFilterNames = {'median', 'average'};
+validFilterNames = {'median', 'boxcar'};
 checkFilter = @(x) any(validatestring(x,validFilterNames));
 
 
@@ -62,7 +63,7 @@ checkFilter = @(x) any(validatestring(x,validFilterNames));
 p = inputParser;
 addRequired(p, 'RSK', @isstruct);
 addRequired(p, 'channel');
-addParameter(p, 'filter', 'average', checkFilter);
+addParameter(p, 'filter', 'boxcar', checkFilter);
 addParameter(p, 'series', 'data', checkSeriesName)
 addParameter(p, 'profileNum', [], @isnumeric);
 addParameter(p, 'direction', 'down', checkDirection);
@@ -104,7 +105,7 @@ for chanName = channel
     switch series
         case 'data'
             switch type
-                case 'average'
+                case 'boxcar'
                     RSK.data.values(:,channelCol) = runavg(RSK.data.values(:,channelCol), windowLength);
                 case 'median'
                     RSK.data.values(:,channelCol) = runmed(RSK.data.values(:,channelCol), windowLength);
@@ -112,7 +113,7 @@ for chanName = channel
         case 'profile'
             for ndx = profileNum
                 switch type
-                    case 'average'
+                    case 'boxcar'
                             RSK.profiles.(castdir).data(ndx).values(:,channelCol) = runavg(RSK.profiles.(castdir).data(ndx).values(:,channelCol), windowLength);
                     case 'median'
                             RSK.profiles.(castdir).data(ndx).values(:,channelCol) = runmed(RSK.profiles.(castdir).data(ndx).values(:,channelCol), windowLength);
@@ -127,8 +128,8 @@ end
 
 %% Nested functions
 function out = runavg(in, windowLength)
-% runavg performs a running average of length windowLength over the
-% mirrorpadded time series.
+% runavg performs a running average, also known as boxcar filter, of length
+% windowLength over the mirrorpadded time series.
 
 n = length(in);
 out = NaN*in;
