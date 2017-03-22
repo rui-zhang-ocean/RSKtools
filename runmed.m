@@ -1,4 +1,4 @@
-function out = runmed(in, windowLength)
+function [out, windowLength] = runmed(in, windowLength)
 
 % runmed - Smooth a time series using a running median filter.
 %
@@ -17,10 +17,13 @@ function out = runmed(in, windowLength)
 % Outputs:
 %    out - the smoothed median time series
 %
+%    windowLength - The length of the running median. Could be different
+%        than the input if it was an even number.
+%
 % Author: RBR Ltd. Ottawa ON, Canada
 % email: support@rbr-global.com
 % Website: www.rbr-global.com
-% Last revision: 2017-01-11
+% Last revision: 2017-03-22
 
 n = length(in);
 out = NaN*in;
