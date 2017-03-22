@@ -37,13 +37,14 @@ function [RSK, spikeidx] = RSKdespike(RSK, channel, varargin)
 %                action - The action to perform on a spike. The default,
 %                    'NaN' to leave the spike as a missing value. Can also
 %                    be 'replace' is to replace it with the reference
-%                    valueor 'interp' to interpolate based on 'good'
+%                    value or 'interp' to interpolate based on 'good' 
 %                    values.
 %
 % Outputs:
 %    RSK - The RSK structure with de-spiked series.
 %
-%    spikeidx - A structure containing the index of the spikes; organised by channel.
+%    spikeidx - A structure containing the index of the spikes; if profiles
+%        were despiked, spikeidx is a structure with a field for each profile.
 %
 % Example: 
 %    [RSK, spikesidx] = RSKdespike(RSK,  'Pressure')
@@ -53,7 +54,7 @@ function [RSK, spikeidx] = RSKdespike(RSK, channel, varargin)
 % Author: RBR Ltd. Ottawa ON, Canada
 % email: support@rbr-global.com
 % Website: www.rbr-global.com
-% Last revision: 2017-03-20
+% Last revision: 2017-03-22
 
 
 %% Check input and default arguments
@@ -77,7 +78,7 @@ addParameter(p, 'series', 'data', checkSeriesName);
 addParameter(p, 'profileNum', [], @isnumeric);
 addParameter(p, 'threshold', 4, @isnumeric);
 addParameter(p, 'windowLength', 7, @isnumeric);
-addParameter(p, 'action', 'replace', checkAction);
+addParameter(p, 'action', 'NaN', checkAction);
 addParameter(p, 'direction', 'down', checkDirection);% Only needed if series is 'profile'
 parse(p, RSK, channel, varargin{:})
 
