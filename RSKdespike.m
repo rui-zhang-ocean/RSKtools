@@ -1,30 +1,29 @@
-function [RSK, spike] = RSKdespike(RSK, channel, varargin)
+function [RSK, spikeidx] = RSKdespike(RSK, channel, varargin)
 
 % RSKdespike - De-spike a time series by comparing it to a reference time
 %              series
 %
-% Syntax:  [RSK, spike] = RSKdespike(RSK, channel, [OPTIONS])
+% Syntax:  [RSK, spikeidx] = RSKdespike(RSK, channel, [OPTIONS])
 % 
-% RSKdespike compares the time series to a reference series, a running
-% median filter of length 'windowLength'. Each point in the original series
-% is compared against the reference series. If a sample is further than
-% 'threshold' standard deviations of the residual away from the reference
-% series the sample is considered a spike. The default behaviour is to
-% replace the spikes with the reference value.  
+% RSKdespike compares the time series to a reference series. The reference
+% series is the time series filtered with a median filter of length
+% 'windowLength'. Each point in the original series is compared against the
+% reference series. If a sample is greater than 'threshold' standard
+% deviations of the residual between the original series and the reference
+% series; the sample is considered a spike. The default behaviour is to
+% replace the spikes with the reference value.
 %
 % Inputs:
 %   [Required] - RSK - The input RSK structure
 %
-%                channel - Longname of channel to plot (e.g. temperature,
-%                    salinity, etc). Can be cell array of many channels or
-%                    'all'.
+%                channel - Longname of channel to despike (e.g. temperature,
+%                    salinity, etc).
 %
 %   [Optional] - series - Specifies the series to be filtered. Either 'data'
 %                    or 'profile'. Default is 'data'.
 %
-%                profileNum - Optional profile number to calculate lag.
-%                    Default is to calculate the lag of all detected
-%                    profiles
+%                profileNum - Optional profile number. Default is to
+%                    calculate the lag of all detected profiles.
 %            
 %                direction - 'up' for upcast, 'down' for downcast, or 'both' for
 %                    all. Default is 'down'.
@@ -36,25 +35,26 @@ function [RSK, spike] = RSKdespike(RSK, channel, varargin)
 %                    be odd. Default is 3.
 %
 %                action - The action to perform on a spike. The default,
-%                    'replace' is to replace it with the reference value.
-%                    Can also be 'NaN' to leave the spike as a missing
-%                    value or 'interp' to interpolate based on 'good'
-%                    values. 
+%                    'NaN' to leave the spike as a missing value. Can also
+%                    be 'replace' is to replace it with the reference
+%                    valueor 'interp' to interpolate based on 'good'
+%                    values.
 %
 % Outputs:
 %    RSK - The RSK structure with de-spiked series.
 %
-%    spike - A structure containing the index of the spikes; organised by channel.
+%    spikeidx - A structure containing the index of the spikes; organised by channel.
 %
 % Example: 
-%    temperatureDS = RSKdespike(RSK,  {'pressure', 'Conductivity})
+%    [RSK, spikesidx] = RSKdespike(RSK,  'Pressure')
 %   OR
-%    temperatureDS = RSKdespike(RSK, 'Temperature', 'threshold',2, 'windowLength',10, 'action','NaN');
+%    [RSK, spikesidx] = RSKdespike(RSK, 'Temperature', 'threshold',2, 'windowLength',10, 'action','NaN');
 %
 % Author: RBR Ltd. Ottawa ON, Canada
 % email: support@rbr-global.com
 % Website: www.rbr-global.com
-% Last revision: 2017-02-08
+% Last revision: 2017-03-20
+
 
 %% Check input and default arguments
 
@@ -100,50 +100,58 @@ if strcmp(series, 'profile')
 end
 
 
-%% Ensure channel is a cell.
-
-if strcmpi(channel, 'all')
-    channel = {RSK.channels.longName};
-elseif ~iscell(channel)
-    channel = {channel};
-end
-
-
 %% Despike
 
-for chanName = channel
-    channelCol = strcmpi(chanName, {RSK.channels.longName});
-    switch series
-        case 'profile'
-            k = 1;    
-            for ndx = profileNum
-                x = RSK.profiles.(castdir).data(ndx).values(:,channelCol);
-                xtime = RSK.profiles.(castdir).data(ndx).tstamp;
-                [RSK.profiles.(castdir).data(ndx).values(:,channelCol), index] = despike(x, xtime, threshold, windowLength, action);
-                spike(k).(chanName{1}(1:4)) = index;
-                k = k+1;
-            end
-        case 'data'
-            x = RSK.data.values(:,channelCol);
-            xtime = RSK.data.tstamp;
-            [RSK.data.values(:,channelCol), index] = despike(x, xtime, threshold, windowLength, action); 
-            spike.(chanName{1}(1:4)) = index;
-    end
+channelCol = strcmpi(channel, {RSK.channels.longName});
+switch series
+    case 'profile'  
+        for ndx = profileNum
+            x = RSK.profiles.(castdir).data(ndx).values(:,channelCol);
+            xtime = RSK.profiles.(castdir).data(ndx).tstamp;
+            [out, index] = despike(x, xtime, threshold, windowLength, action);
+            RSK.profiles.(castdir).data(ndx).values(:,channelCol) = out;
+            spikeidx.(ndx) = index;
+        end
+    case 'data'
+        x = RSK.data.values(:,channelCol);
+        xtime = RSK.data.tstamp;
+        [out, spikeidx] = despike(x, xtime, threshold, windowLength, action); 
+        RSK.data.values(:,channelCol) = out;
 end
+
+%% Update log
+switch series
+    case 'data'
+        logentry = sprintf('%s de-spiked using a %f sample window and %f threshold. Spikes were treated with %s.',...
+            channel, windowLength, threshold, action);
+   
+    case 'profile'
+        if isempty(profileNum)
+            pnum = 'all';
+        else
+            pnum = num2str(profileNum);
+        end
+        logentry = sprintf('%s de-spiked using a %f sample window and %f threshold on %s profiles %s. Spikes were treated with %s.',...
+            channel, windowLength, threshold, direction, pnum, action);
+end
+
+RSK = RSKappendtolog(RSK, logentry);
+
 end
 
 
 %% Nested Functions
 function [y, I] = despike(x, t, threshold, windowLength, action)
 % This helper function replaces the values that are > threshold*standard
-% deviation away from the median with the median, a NaN or interpolated
-% value. The output is the x series with spikes fixed and I is the index of
-% the spikes.
+% deviation away from the residual between the original time series and the
+% running median with the median, a NaN or interpolated value using the
+% non-spike values. The output is the x series with spikes fixed and I is
+% the index of the spikes.
 
 y = x;
 ref = runmed(x, windowLength);
 dx = x - ref;
-sd = std(dx);
+sd = std(dx, 'omitnan');
 I = find(abs(dx) > threshold*sd);
 good = find(abs(dx) <= threshold*sd);
 
