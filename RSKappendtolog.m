@@ -29,4 +29,4 @@ else
     nlog = 0;
 end
 
-RSK.log(nlog+1) = {logentry};
+RSK.log(nlog+1,1) = {logentry};
