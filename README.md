@@ -8,6 +8,8 @@ the toolbox -- for the "officially" distributed version go to:
 
 [http://www.rbr-global.com/support/matlab-tools](http://www.rbr-global.com/support/matlab-tools)
 
+Please note, RSktools requires MATLAB R2013b or later.
+
 ## What does RSKtools do?
 
 * Open RSK files:
