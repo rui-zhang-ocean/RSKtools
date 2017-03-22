@@ -104,9 +104,9 @@ for chanName = channel
             in = RSK.data.values(:,channelCol);
             switch filter
                 case 'boxcar'
-                    out = runavg(in, windowLength);
+                    [out, windowLength] = runavg(in, windowLength);
                 case 'median'
-                    out = runmed(in, windowLength);
+                    [out, windowLength] = runmed(in, windowLength);
             end      
             RSK.data.values(:,channelCol) = out;
             
@@ -115,9 +115,9 @@ for chanName = channel
                 in = RSK.profiles.(castdir).data(ndx).values(:,channelCol);
                 switch filter
                     case 'boxcar'
-                        out = runavg(in, windowLength);
+                        [out, windowLength] = runavg(in, windowLength);
                     case 'median'
-                        out = runmed(in, windowLength);
+                        [out, windowLength] = runmed(in, windowLength);
                 end
                 RSK.profiles.(castdir).data(ndx).values(:,channelCol) = out;
             end
@@ -150,7 +150,7 @@ end
 
 
 %% Nested functions
-function out = runavg(in, windowLength)
+function [out, windowLength] = runavg(in, windowLength)
 % runavg performs a running average, also known as boxcar filter, of length
 % windowLength over the mirrorpadded time series.
 
