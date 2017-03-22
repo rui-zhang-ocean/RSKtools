@@ -5,10 +5,9 @@ function RSK = RSKsmooth(RSK, channel, varargin)
 % Syntax:  [RSK] = RSKsmooth(RSK, channel, [OPTIONS])
 % 
 % RSKsmooth is a lowpass filter function that smooths the selected channel.
-% It replaces every value with the filter results using it's neighboring
-% values. The windowLength parameter determines how many samples are used
-% to filter, the sample being evaluated is always in the center of the
-% filtering window. 
+% It replaces every sample with the filter results. The windowLength
+% parameter determines how many samples are used to filter, the sample
+% being evaluated is always in the center of the filtering window. 
 %
 % Inputs: 
 %    [Required] - RSK - Structure containing the logger metadata and thumbnails
@@ -17,14 +16,13 @@ function RSK = RSKsmooth(RSK, channel, varargin)
 %                     array of many channels or 'all'.
 %               
 %    [Optional] - filter - The type of smoothing filter that will be used.
-%                     Either median or boxcar. Default is average.
+%                     Either median or boxcar. Default is boxcar.
 %
 %                 series - Specifies the series to be filtered. Either 'data'
 %                     or 'profile'. Default is 'data'.
 %
-%                 profileNum - Optional profile number to calculate lag.
-%                     Default is to calculate the lag of all detected
-%                     profiles.
+%                 profileNum - Optional profile number. Default is to
+%                     calculate the lag of all detected profiles.
 %            
 %                 direction - 'up' for upcast, 'down' for downcast, or 'both' for
 %                     all. Default is 'down'.
@@ -44,7 +42,7 @@ function RSK = RSKsmooth(RSK, channel, varargin)
 % Author: RBR Ltd. Ottawa ON, Canada
 % email: support@rbr-global.com
 % Website: www.rbr-global.com
-% Last revision: 2017-03-16
+% Last revision: 2017-03-22
 
 %% Check input and default arguments
 
@@ -74,7 +72,7 @@ parse(p, RSK, channel, varargin{:})
 RSK = p.Results.RSK;
 channel = p.Results.channel;
 series = p.Results.series;
-type = p.Results.type;
+filter = p.Results.filter;
 profileNum = p.Results.profileNum;
 direction = p.Results.direction;
 windowLength = p.Results.windowLength;
@@ -83,7 +81,7 @@ windowLength = p.Results.windowLength;
 %% Determine if the structure has downcasts and upcasts
 
 if strcmpi(series, 'profile')
-    profileNum = checkprofiles(RSK, profileNum, direction);
+    profileIdx = checkprofiles(RSK, profileNum, direction);
     castdir = [direction 'cast'];
 end
 
@@ -97,31 +95,56 @@ elseif ~iscell(channel)
 end
 
 
-
 %% Smooth
 
 for chanName = channel
     channelCol = find(strcmpi(chanName, {RSK.channels.longName}));
     switch series
         case 'data'
-            switch type
+            in = RSK.data.values(:,channelCol);
+            switch filter
                 case 'boxcar'
-                    RSK.data.values(:,channelCol) = runavg(RSK.data.values(:,channelCol), windowLength);
+                    out = runavg(in, windowLength);
                 case 'median'
-                    RSK.data.values(:,channelCol) = runmed(RSK.data.values(:,channelCol), windowLength);
-            end            
+                    out = runmed(in, windowLength);
+            end      
+            RSK.data.values(:,channelCol) = out;
+            
         case 'profile'
-            for ndx = profileNum
-                switch type
+            for ndx = profileIdx
+                in = RSK.profiles.(castdir).data(ndx).values(:,channelCol);
+                switch filter
                     case 'boxcar'
-                            RSK.profiles.(castdir).data(ndx).values(:,channelCol) = runavg(RSK.profiles.(castdir).data(ndx).values(:,channelCol), windowLength);
+                        out = runavg(in, windowLength);
                     case 'median'
-                            RSK.profiles.(castdir).data(ndx).values(:,channelCol) = runmed(RSK.profiles.(castdir).data(ndx).values(:,channelCol), windowLength);
+                        out = runmed(in, windowLength);
                 end
+                RSK.profiles.(castdir).data(ndx).values(:,channelCol) = out;
             end
     end
-        
 end
+
+
+%% Update log
+for chanName = channel
+    switch series
+        case 'data'
+            logentry = sprintf('%s filtered using a %s filter with a %1.0f sample window.', chanName{1}, filter, windowLength);
+
+        case 'profile'
+            if isempty(profileNum)
+                logprofiles = ['all ' direction 'cast profiles'];
+            elseif length(profileIdx) == 1
+                logprofiles = [direction 'cast profiles ' num2str(profileIdx, '%1.0f')];
+            else 
+                logprofiles = [direction 'cast profiles' num2str(profileIdx(1:end-1), ', %1.0f') ' and ' num2str(profileIdx(end))];
+            end
+            logentry = sprintf('%s filtered using a %s filter with a %1.0f sample window on %s.', chanName{1}, filter, windowLength, logprofiles);
+    end
+
+    RSK = RSKappendtolog(RSK, logentry);
+end
+
 end
 
 
@@ -151,4 +174,7 @@ inpadded = mirrorpad(in, padsize);
 for ndx = 1:n
     out(ndx) = mean(inpadded(ndx:ndx+(windowLength-1)));
 end
+
 end
+
+
