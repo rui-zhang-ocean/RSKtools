@@ -95,7 +95,7 @@ action = p.Results.action;
 %% For Profiles: determine if the structure has downcasts and upcasts & set profileNum accordingly
 
 if strcmp(series, 'profile')
-    profileNum = checkprofiles(RSK, profileNum, direction);
+    profileIdx = checkprofiles(RSK, profileNum, direction);
     castdir = [direction 'cast'];
 end
 
@@ -105,34 +105,36 @@ end
 channelCol = strcmpi(channel, {RSK.channels.longName});
 switch series
     case 'profile'  
-        for ndx = profileNum
+        for ndx = profileIdx
             x = RSK.profiles.(castdir).data(ndx).values(:,channelCol);
             xtime = RSK.profiles.(castdir).data(ndx).tstamp;
-            [out, index] = despike(x, xtime, threshold, windowLength, action);
+            [out, index, windowLength] = despike(x, xtime, threshold, windowLength, action);
             RSK.profiles.(castdir).data(ndx).values(:,channelCol) = out;
-            spikeidx.(ndx) = index;
+            spikeidx.(['profile' num2str(ndx)]) = index;
         end
     case 'data'
         x = RSK.data.values(:,channelCol);
         xtime = RSK.data.tstamp;
-        [out, spikeidx] = despike(x, xtime, threshold, windowLength, action); 
+        [out, spikeidx, windowLength] = despike(x, xtime, threshold, windowLength, action); 
         RSK.data.values(:,channelCol) = out;
 end
 
 %% Update log
 switch series
     case 'data'
-        logentry = sprintf('%s de-spiked using a %f sample window and %f threshold. Spikes were treated with %s.',...
+        logentry = sprintf('%s de-spiked using a %1.0f sample window and %1.0f threshold. Spikes were treated with %s.',...
             channel, windowLength, threshold, action);
-   
+
     case 'profile'
         if isempty(profileNum)
-            pnum = 'all';
-        else
-            pnum = num2str(profileNum);
+            logprofiles = ['all ' direction 'cast profiles'];
+        elseif length(profileIdx) == 1
+            logprofiles = [direction 'cast profiles ' num2str(profileIdx, '%1.0f')];
+        else 
+            logprofiles = [direction 'cast profiles' num2str(profileIdx(1:end-1), ', %1.0f') ' and ' num2str(profileIdx(end))];
         end
-        logentry = sprintf('%s de-spiked using a %f sample window and %f threshold on %s profiles %s. Spikes were treated with %s.',...
-            channel, windowLength, threshold, direction, pnum, action);
+        logentry = sprintf('%s de-spiked using a %1.0f sample window and %1.0f threshold on %s. Spikes were treated with %s.',...
+            channel, windowLength, threshold, logprofiles, action);
 end
 
 RSK = RSKappendtolog(RSK, logentry);
@@ -141,7 +143,7 @@ end
 
 
 %% Nested Functions
-function [y, I] = despike(x, t, threshold, windowLength, action)
+function [y, I, windowLength] = despike(x, t, threshold, windowLength, action)
 % This helper function replaces the values that are > threshold*standard
 % deviation away from the residual between the original time series and the
 % running median with the median, a NaN or interpolated value using the
@@ -149,7 +151,7 @@ function [y, I] = despike(x, t, threshold, windowLength, action)
 % the index of the spikes.
 
 y = x;
-ref = runmed(x, windowLength);
+[ref, windowLength] = runmed(x, windowLength);
 dx = x - ref;
 sd = std(dx, 'omitnan');
 I = find(abs(dx) > threshold*sd);
