@@ -7,7 +7,8 @@ function [wwevt] = detectprofiles(pressure, timestamp, conductivity, profileThre
 % detectprofiles is a helper function that implements the algorithm used by
 % the logger to find upcast and downcast events during the pressure time
 % series. If conductivity is also input the algorithm can detect when the
-% logger is out of the water.
+% logger is out of the water, the out of water times will not be included
+% in the profiles.
 %
 % Inputs:
 %    
@@ -30,7 +31,7 @@ function [wwevt] = detectprofiles(pressure, timestamp, conductivity, profileThre
 % Author: RBR Ltd. Ottawa ON, Canada
 % email: support@rbr-global.com
 % Website: www.rbr-global.com
-% Last revision: 2017-03-08
+% Last revision: 2017-03-23
 
 %% Set up
 detectcaststate = 0; % 0 unknown, 1 down, 2 up
