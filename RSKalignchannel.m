@@ -8,15 +8,11 @@ function [RSK] = RSKalignchannel(RSK, channel, lag, varargin)
 % to reverse the effects from temporal C/T mismatches when the
 % sensors are moving through regions of high vertical gradients.
 %
-% If aligning salinity it requires the TEOS-10 toolbox to be installed, to
-% allow salinity to be calculated using gsw_SP_from_C.
-%
 % Inputs: 
 %    [Required] - RSK - The input RSK structure, with profiles as read using
 %                     RSKreadprofiles.
 %
-%                 channel - Longname of channel to align (e.g. temperature,
-%                     salinity, etc).
+%                 channel - Longname of channel to align (e.g. temperature)
 %
 %                 lag - The lag for each profile, or one lag for all.
 %
@@ -36,18 +32,18 @@ function [RSK] = RSKalignchannel(RSK, channel, lag, varargin)
 %
 %   1. All downcast profiles with calculated optimal C/T lag.
 %    lags = RSKgetCTlag(rsk)
-%    rsk = RSKalignchannel(rsk, 'salinity', lags);
+%    rsk = RSKalignchannel(rsk, 'Conductivity', lags);
 %
-%   2. Specified profiles (first 4) and C/T lag values (one for each profile)
+%   2. Specified profiles (first 4) and  lag values (one for each profile)
 %    rsk = RSKalignchannel(rsk, 'Dissolved O', [2 1 -1 0], 'profileNum',1:4);
 %
-%   3. Specified profiles (first 4) and C/T lag value (one for ALL profiles being aligned).
+%   3. Specified profiles (first 4) and lag value (one for ALL profiles being aligned).
 %    rsk = RSKalignchannel(rsk, 'temperature', [2], 'profileNum', 1:4);;
 %
 % Author: RBR Ltd. Ottawa ON, Canada
 % email: support@rbr-global.com
 % Website: www.rbr-global.com
-% Last revision: 2017-02-08
+% Last revision: 2017-03-22
 
 %% Check input and default arguments
 
@@ -75,7 +71,7 @@ direction = p.Results.direction;
 
 %% Determine if the structure has downcasts and upcasts
 
-profileNum = checkprofiles(RSK, profileNum, direction);
+profileIdx = checkprofiles(RSK, profileNum, direction);
 castdir = [direction 'cast'];
 
 
@@ -86,52 +82,46 @@ if ~isequal(fix(lag),lag),
 end
 
 if length(lag) == 1
-    if length(profileNum) == 1
+    if length(profileIdx) == 1
+        lags = lag;
     else
-        lag = repmat(lag, 1, length(profileNum));
+        lags = repmat(lag, 1, length(profileIdx));
     end
 elseif length(lag) > 1
-    if length(lag) ~= length(profileNum)
+    if length(lag) ~= length(profileIdx)
         error(['Length of lag must match number of profiles or be a ' ...
                'single value']);
+    else 
+        lags = lag;
     end
-end
-
-
-%% Apply lag to salinity from conductivity
-
-if strcmpi(channel, 'salinity')
-    hasTEOS = exist('gsw_SP_from_C', 'file') == 2;
-    if ~hasTEOS
-        error('Error: Must install TEOS-10 toolbox');
-    end
-
-    % find column number of C and T
-    Scol = strcmpi('salinity', {RSK.channels.longName});
-    Ccol = strcmpi('conductivity', {RSK.channels.longName});
-    Tcol = strcmpi('temperature', {RSK.channels.longName});
-    pcol = strcmpi('pressure', {RSK.channels.longName});
-
-    counter = 0;
-    for ndx = profileNum
-        counter = counter + 1;
-        C = RSK.profiles.(castdir).data(ndx).values(:, Ccol);
-        T = RSK.profiles.(castdir).data(ndx).values(:, Tcol);
-        p = RSK.profiles.(castdir).data(ndx).values(:, pcol);
-        Sbest = gsw_SP_from_C(shiftarray(C, lag(counter)), T, p);
-        RSK.profiles.(castdir).data(ndx).values(:, Scol) = Sbest;
-    end
-    
 else
+    lags = lag;
+end
+
+
 %% Apply lag to any other channel.
-    counter = 0;
-    channelCol = find(strcmpi(channel, {RSK.channels.longName}));
-    
-    for ndx = profileNum
-        counter = counter + 1;       
-        channelData = RSK.profiles.(castdir).data(ndx).values(:, channelCol);
-        channelShifted = shiftarray(channelData, lag(counter));
-        RSK.profiles.(castdir).data(ndx).values(:, channelCol) = channelShifted;
-    end
+counter = 0;
+channelCol = find(strcmpi(channel, {RSK.channels.longName}));
+
+for ndx = profileIdx
+    counter = counter + 1;       
+    channelData = RSK.profiles.(castdir).data(ndx).values(:, channelCol);
+    channelShifted = shiftarray(channelData, lags(counter));
+    RSK.profiles.(castdir).data(ndx).values(:, channelCol) = channelShifted;
 end
+
+
+%% Update log
+
+if isempty(profileNum)
+    logprofiles = ['all ' direction 'cast profiles'];
+elseif length(profileIdx) == 1
+    logprofiles = [direction 'cast profile ' num2str(profileIdx, '%1.0f')];
+else 
+    logprofiles = [direction 'cast profiles' num2str(profileIdx(1:end-1), ', %1.0f') ' and ' num2str(profileIdx(end)) ', respectively'];
 end
+logentry = sprintf('%s aligned using a %1.0f sample lag on %s .', channel, lag, logprofiles);
+
+RSK = RSKappendtolog(RSK, logentry);
+end
+
