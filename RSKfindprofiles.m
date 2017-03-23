@@ -7,12 +7,15 @@ function RSK = RSKfindprofiles(RSK, varargin)
 % RSKfindprofiles implements the algorithm used by the logger to find upcasts
 % or downcasts if they were not detected while the instument was recording.
 %
-% Inputs:
-%    
-%   RSK - the input RSK structure, with profiles but no
-%                   profile events
+% Inputs: 
+%    [Required] - RSK - Structure containing the logger metadata and thumbnails
+%               
+%    [Optional] - pressureThreshold - The pressure difference required to detect a
+%                    profile. Standard is 3dbar, or
+%                    (max(pressure)-min(pressure)/4.   
 %
 % Output: 
+%
 %   RSK - Structure containing profiles field with the profile metadata.
 %         Use RSKreadprofiles to populate the profiles field with data.
 %
@@ -24,7 +27,7 @@ function RSK = RSKfindprofiles(RSK, varargin)
 % Author: RBR Ltd. Ottawa ON, Canada
 % email: support@rbr-global.com
 % Website: www.rbr-global.com
-% Last revision: 2017-03-08
+% Last revision: 2017-03-22
 
 
 %% Parse Inputs
