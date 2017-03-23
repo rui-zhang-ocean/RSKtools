@@ -145,36 +145,36 @@ for chanName = channel
     RSK = RSKappendtolog(RSK, logentry);
 end
 
+
+
+
+
+    %% Nested functions
+    function [out, windowLength] = runavg(in, windowLength)
+    % runavg performs a running average, also known as boxcar filter, of length
+    % windowLength over the mirrorpadded time series.
+
+    n = length(in);
+    out = NaN*in;
+
+
+    %% Check windowLength
+    if mod(windowLength, 2) == 0
+        warning('windowLength must be odd; adding 1');
+        windowLength = windowLength + 1;
+    end
+
+
+    %% Mirror pad the time series
+    padsize = (windowLength-1)/2;
+    inpadded = mirrorpad(in, padsize);
+
+
+    %% Running median
+    for ndx = 1:n
+        out(ndx) = mean(inpadded(ndx:ndx+(windowLength-1)));
+    end
+
+    end
 end
-
-
-
-%% Nested functions
-function [out, windowLength] = runavg(in, windowLength)
-% runavg performs a running average, also known as boxcar filter, of length
-% windowLength over the mirrorpadded time series.
-
-n = length(in);
-out = NaN*in;
-
-
-%% Check windowLength
-if mod(windowLength, 2) == 0
-    warning('windowLength must be odd; adding 1');
-    windowLength = windowLength + 1;
-end
-
-
-%% Mirror pad the time series
-padsize = (windowLength-1)/2;
-inpadded = mirrorpad(in, padsize);
-
-
-%% Running median
-for ndx = 1:n
-    out(ndx) = mean(inpadded(ndx:ndx+(windowLength-1)));
-end
-
-end
-
 
