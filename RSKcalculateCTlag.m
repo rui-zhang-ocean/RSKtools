@@ -86,9 +86,9 @@ parse(p,RSK,varargin{:})
 % Assign each input argument
 RSK = p.Results.RSK;
 pressureRange = p.Results.pressureRange;
-direction  = p.Results.direction;
+direction = p.Results.direction;
 profileNum = p.Results.profileNum;
-nsmooth    = p.Results.nsmooth;
+nsmooth = p.Results.nsmooth;
 
 
 %% Determine if the structure has downcasts and upcasts
@@ -133,32 +133,32 @@ for ndx=profileNum
     bestlag = [bestlag minlag];
 end
 lag = bestlag;
-end
 
 
-%% Nested function
-function out = smooth(in, nsmooth)
+    %% Nested function
+    function out = smooth(in, nsmooth)
 
-% smooths an input vector with a boxcar filter of length nsmooth
+    % smooths an input vector with a boxcar filter of length nsmooth
 
-n = length(in);
-out = NaN*in;
+    n = length(in);
+    out = NaN*in;
 
-if mod(nsmooth, 2) == 0
-    warning('nsmooth must be odd; adding 1');
-    nsmooth = nsmooth + 1;
-end
-
-
-for ndx = 1:n
-    if ndx <= (nsmooth-1)/2
-        out(ndx) = mean(in(1:ndx+(nsmooth-1)/2));
-    elseif ndx >= n-(nsmooth-1)/2
-        out(ndx) = mean(in(ndx-(nsmooth-1)/2:n));
-    else
-        out(ndx) = mean(in(ndx-(nsmooth-1)/2:ndx+(nsmooth-1)/2));
+    if mod(nsmooth, 2) == 0
+        warning('nsmooth must be odd; adding 1');
+        nsmooth = nsmooth + 1;
     end
-end
+
+
+    for ndx = 1:n
+        if ndx <= (nsmooth-1)/2
+            out(ndx) = mean(in(1:ndx+(nsmooth-1)/2));
+        elseif ndx >= n-(nsmooth-1)/2
+            out(ndx) = mean(in(ndx-(nsmooth-1)/2:n));
+        else
+            out(ndx) = mean(in(ndx-(nsmooth-1)/2:ndx+(nsmooth-1)/2));
+        end
+    end
+    end
 end
 
 
