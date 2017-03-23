@@ -51,6 +51,7 @@ while(k<length(timestamp))
     evt=0;
     if hasC && conductivity(k)<0.05
         evt=3;
+        minpressure=pressure(k);
     else
         
         switch  detectcaststate
@@ -121,12 +122,17 @@ while(k<length(timestamp))
         n = n+1;
         klast = k;
         
-    elseif evt == 3 && wwevt(n-1,2) ~= 3
+    elseif evt == 3
         % If logger is out of water mark timestamp a out of water
-        wwevt(n,:) = [timestamp(k) evt];
-        n = n+1;
-        klast = k;
-        
+        if n==1
+            wwevt(n,:) = [timestamp(k) evt];
+            n = n+1;
+            klast = k;
+        elseif wwevt(n-1,2) ~= 3
+            wwevt(n,:) = [timestamp(k) evt];
+            n = n+1;
+            klast = k;
+        end
     end
     k= k+1;
 end
