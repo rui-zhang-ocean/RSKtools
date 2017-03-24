@@ -38,7 +38,7 @@ function RSK = RSKreaddata(RSK, t1, t2)
 % Author: RBR Ltd. Ottawa ON, Canada
 % email: support@rbr-global.com
 % Website: www.rbr-global.com
-% Last revision: 2017-01-26
+% Last revision: 2017-03-24
 
 %% Check if file type is skinny
 if strcmp(RSK.dbInfo(end).type, 'skinny')
@@ -85,13 +85,10 @@ results = RSKarrangedata(results);
 t=results.tstamp';
 results.tstamp = RSKtime2datenum(t); % convert RSK millis time to datenum
 
+
 %% Remove hidden channels from data
-hasS = any(strcmp({RSK.channels.longName}, 'Salinity'));
 try
     isMeasured = ~[RSK.instrumentChannels.channelStatus];% hidden and derived channels have a non-zero channelStatus
-    if hasS
-       isMeasured(end)=0;    % Salinity has channelStatus = 0 and is the last data column
-    end
 catch
     tmp = mksqlite('select isDerived from channels');
     isMeasured = ~[tmp.isDerived]; % some files may not have channelStatus
