@@ -18,7 +18,7 @@ function [RSK, salinity] = RSKcalculatesalinity(RSK)
 % Author: RBR Ltd. Ottawa ON, Canada
 % email: support@rbr-global.com
 % Website: www.rbr-global.com
-% Last revision: 2017-01-27
+% Last revision: 2017-03-27
 
 data = RSK.data;
 
@@ -38,21 +38,18 @@ end
 % Does the RSK have all 3 of conductivity, temperature, and pressure, but not salinity?
 % If so, calculate practical salinity using TEOS-10 (if it exists)
 if ~hasS && hasCTP && hasTEOS
-    if sum(strcmpi({RSK.channels.longName}, 'Salinity')) == 0
-        RSK.channels(nchannels+1).longName = 'Salinity';
-        RSK.channels(nchannels+1).units = 'PSU';
-        % update the instrumentChannels info for the new "channel"
-        if ~strcmpi(RSK.dbInfo(end).type, 'EasyParse')
-            try
-                RSK.instrumentChannels(nchannels+1).instrumentID = RSK.instrumentChannels(1).instrumentID;
-            catch
-            end
-            if isfield(RSK.instrumentChannels, 'channelStatus')
-                RSK.instrumentChannels(nchannels+1).channelStatus = 0;
-            end
-            RSK.instrumentChannels(nchannels+1).channelID = RSK.instrumentChannels(nchannels).channelID+1;
-            RSK.instrumentChannels(nchannels+1).channelOrder = RSK.instrumentChannels(nchannels).channelOrder+1;
+    RSK.channels(nchannels+1).longName = 'Salinity';
+    RSK.channels(nchannels+1).units = 'PSU';
+    % update the instrumentChannels info for the new "channel"
+    if isfield(RSK, 'instrumentChannels')
+        if isfield(RSK.instrumentChannels, 'instrumentID')
+            RSK.instrumentChannels(nchannels+1).instrumentID = RSK.instrumentChannels(1).instrumentID;
         end
+        if isfield(RSK.instrumentChannels, 'channelStatus')
+            RSK.instrumentChannels(nchannels+1).channelStatus = 0;
+        end
+        RSK.instrumentChannels(nchannels+1).channelID = RSK.instrumentChannels(nchannels).channelID+1;
+        RSK.instrumentChannels(nchannels+1).channelOrder = RSK.instrumentChannels(nchannels).channelOrder+1;
     end
     salinity = gsw_SP_from_C(data.values(:, 1), data.values(:, 2), data.values(:, 3)- 10.1325);
     RSK.data.values = [data.values salinity];
