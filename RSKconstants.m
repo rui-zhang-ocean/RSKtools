@@ -5,10 +5,10 @@
 % Website: www.rbr-global.com
 % Last revision: 2016-11-03
 
-latestRSKversion = '1.13.4';
+latestRSKversion = '1.13.8';
 latestRSKversionMajor = 1;
 latestRSKversionMinor = 13;
-latestRSKversionPatch = 4;
+latestRSKversionPatch = 8;
 
 eventBeginUpcast = 33;
 eventBeginDowncast = 34;
