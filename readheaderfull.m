@@ -68,7 +68,7 @@ end
 %% Remove non marine channels
 % channelStatus was instroduced in RSK V 1.8.9.
 if (vsnMajor > 1) || ((vsnMajor == 1)&&(vsnMinor > 8)) || ((vsnMajor == 1)&&(vsnMinor == 8) && (vsnPatch >= 9))
-    isDerived = ([RSK.instrumentChannels.channelStatus] ~= 0);% hidden and derived channels have a non-zero channelStatus
+    isDerived = logical([RSK.instrumentChannels.channelStatus]);% hidden and derived channels have a non-zero channelStatus
     RSK.instrumentChannels(isDerived) = [];
 else
     results = mksqlite('select isDerived from channels');
