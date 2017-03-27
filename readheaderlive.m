@@ -76,7 +76,7 @@ if any(strcmpi({tables.name}, 'geodata'))
 end
 
 if any(strcmpi({tables.name}, 'thumbnailData'))
-    RSK.thumbnailData = RSKreadthumbnail;
+    RSK = RSKreadthumbnail(RSK);
 end
 
 
