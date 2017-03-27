@@ -18,7 +18,7 @@ function RSK = readheaderEP(RSK)
 % Author: RBR Ltd. Ottawa ON, Canada
 % email: support@rbr-global.com
 % Website: www.rbr-global.com
-% Last revision: 2017-03-14
+% Last revision: 2017-03-27
 
 %% Tables that are definitely in 'EasyParse'
 RSK.channels = mksqlite('select shortName,longName,units from channels');
@@ -41,6 +41,7 @@ RSK.channels(~isMeasured) = [];
 
 %% Tables that could be populated in 'EasyParse'
 tables = mksqlite('SELECT name FROM sqlite_master WHERE type="table"');
+
 if any(strcmpi({tables.name}, 'instruments'))
     RSK.instruments = mksqlite('select * from instruments');
 end
@@ -48,6 +49,7 @@ end
 if any(strcmpi({tables.name}, 'geodata'))
     RSK = RSKreadgeodata(RSK);
 end
+
 
 end
 

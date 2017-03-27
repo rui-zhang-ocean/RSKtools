@@ -22,7 +22,7 @@ function RSK = readheaderfull(RSK)
 % Author: RBR Ltd. Ottawa ON, Canada
 % email: support@rbr-global.com
 % Website: www.rbr-global.com
-% Last revision: 2017-01-25
+% Last revision: 2017-03-27
 
 %% Set up version variables
 [~, vsnMajor, vsnMinor, vsnPatch] = RSKver(RSK);
@@ -70,11 +70,11 @@ results = mksqlite('select isDerived from channels');
 % channelStatus was instroduced in RSK V 1.8.9.
 if (vsnMajor > 1) || ((vsnMajor == 1)&&(vsnMinor > 8)) || ((vsnMajor == 1)&&(vsnMinor == 8) && (vsnPatch >= 9))
     isMeasured = (~[RSK.instrumentChannels.channelStatus] & ~[results.isDerived]);% hidden and derived channels have a non-zero channelStatus
+    RSK.instrumentChannels(~isMeasured) = [];
 else
     isMeasured = ~[results.isDerived]; % some files may not have channelStatus
 end
 RSK.channels(~isMeasured) = [];  
-RSK.instrumentChannels(~isMeasured) = []; 
 
 
 %% Tables that could be populated in 'full'

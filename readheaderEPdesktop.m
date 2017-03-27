@@ -20,7 +20,7 @@ function RSK = readheaderEPdesktop(RSK)
 % Author: RBR Ltd. Ottawa ON, Canada
 % email: support@rbr-global.com
 % Website: www.rbr-global.com
-% Last revision: 2017-03-14
+% Last revision: 2017-03-27
 
 %% Set up version variables
 [~, vsnMajor, vsnMinor, vsnPatch] = RSKver(RSK);
@@ -38,7 +38,6 @@ RSK.schedules = mksqlite('select * from schedules');
 RSK.deployments = mksqlite('select * from deployments');
 
 RSK.instruments = mksqlite('select * from instruments');
-
 
 RSK.thumbnailData = RSKreadthumbnail;
 
@@ -63,7 +62,7 @@ RSK.channels(~isMeasured) = [];
 
 
 %% Load calibration
-%As of RSK v1.13.4 parameterKeys is a table
+% As of RSK v1.13.4 parameterKeys is a table
 if any(strcmpi({tables.name}, 'parameterKeys'))
     RSK.parameterKeys = mksqlite('select * from parameterKeys');
 end
@@ -86,6 +85,10 @@ end
 
 if any(strcmpi({tables.name}, 'datasetDeployments')) && ~strcmpi(RSK.dbInfo(1).type, 'EasyParse')
     RSK.datasetDeployments = mksqlite('select * from datasetDeployments');     
+end
+
+if any(strcmpi({tables.name}, 'appSettings'))
+    RSK.appSettings = mksqlite('select * from appSettings');  
 end
 
 

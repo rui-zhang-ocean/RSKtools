@@ -21,7 +21,7 @@ function RSK = readheaderlive(RSK)
 % Author: RBR Ltd. Ottawa ON, Canada
 % email: support@rbr-global.com
 % Website: www.rbr-global.com
-% Last revision: 2017-03-14
+% Last revision: 2017-03-27
 
 %% Set up version variables
 [~, vsnMajor, vsnMinor, vsnPatch] = RSKver(RSK);
@@ -75,5 +75,9 @@ if any(strcmpi({tables.name}, 'geodata'))
     RSK = RSKreadgeodata(RSK);
 end
 
+if any(strcmpi({tables.name}, 'thumbnailData'))
+    RSK.thumbnailData = RSKreadthumbnail;
 end
 
+
+end
