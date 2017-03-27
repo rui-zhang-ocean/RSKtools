@@ -42,26 +42,9 @@ RSK.instruments = mksqlite('select * from instruments');
 RSK.thumbnailData = RSKreadthumbnail;
 
 
-%% List all tables present
+%% Load calibration
 tables = mksqlite('SELECT name FROM sqlite_master WHERE type="table"');
 
-
-%% Remove non marine channels
-results = mksqlite('select isDerived from channels');
-
-try
-    RSK.instrumentChannels = mksqlite('select * from instrumentChannels');
-    isMeasured = ~[RSK.instrumentChannels.channelStatus];% hidden and derived channels should have a non-zero channelStatus
-    RSK.instrumentChannels(~isMeasured) = []; 
-catch
-    
-    isMeasured = ~[results.isDerived]; % some files may not have channelStatus
-end
-
-RSK.channels(~isMeasured) = [];  
-
-
-%% Load calibration
 % As of RSK v1.13.4 parameterKeys is a table
 if any(strcmpi({tables.name}, 'parameterKeys'))
     RSK.parameterKeys = mksqlite('select * from parameterKeys');
@@ -73,18 +56,21 @@ if any(strcmpi({tables.name}, 'geodata'))
     RSK = RSKreadgeodata(RSK);
 end
 
-
 % Parameter table is empty if data is from Mobile Ruskin.
-if any(strcmpi({tables.name}, 'parameters')) && ~strcmpi(RSK.dbInfo(1).type, 'EasyParse') && ~strcmpi(RSK.dbInfo(1).type, 'skinny') 
-    RSK.parameters = mksqlite('select * from parameters');
-end
+if ~strcmpi(RSK.dbInfo(1).type, 'EasyParse')
+    if ~strcmpi(RSK.dbInfo(1).type, 'skinny')
+        if any(strcmpi({tables.name}, 'parameters')) 
+            RSK.parameters = mksqlite('select * from parameters');
+        end
+    end
 
-if any(strcmpi({tables.name}, 'datasets')) && ~strcmpi(RSK.dbInfo(1).type, 'EasyParse')
-    RSK.datasets = mksqlite('select * from datasets');
-end
+    if any(strcmpi({tables.name}, 'datasets'))
+        RSK.datasets = mksqlite('select * from datasets');
+    end
 
-if any(strcmpi({tables.name}, 'datasetDeployments')) && ~strcmpi(RSK.dbInfo(1).type, 'EasyParse')
-    RSK.datasetDeployments = mksqlite('select * from datasetDeployments');     
+    if any(strcmpi({tables.name}, 'datasetDeployments'))
+        RSK.datasetDeployments = mksqlite('select * from datasetDeployments');     
+    end
 end
 
 if any(strcmpi({tables.name}, 'appSettings'))
