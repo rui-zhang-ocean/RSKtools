@@ -60,12 +60,12 @@ end
 results = mksqlite('select isDerived from channels');
 % channelStatus was instroduced in RSK V 1.8.9.
 if (vsnMajor > 1) || ((vsnMajor == 1)&&(vsnMinor > 8)) || ((vsnMajor == 1)&&(vsnMinor == 8) && (vsnPatch >= 9))
-    isMeasured = (~[RSK.instrumentChannels.channelStatus] & ~[results.isDerived]);% hidden and derived channels have a non-zero channelStatus
+   isDerived = logical([RSK.instrumentChannels.channelStatus]); % hidden and derived channels have a non-zero channelStatus
 else
-    isMeasured = ~[results.isDerived]; % some files may not have channelStatus
+   isDerived = logical([results.isDerived]); % some files may not have channelStatus
 end
-RSK.channels(~isMeasured) = [];  
-RSK.instrumentChannels(~isMeasured) = []; 
+RSK.channels(isDerived) = [];  
+RSK.instrumentChannels(isDerived) = []; 
 
 
 %% Tables that may or may not be in 'live'
