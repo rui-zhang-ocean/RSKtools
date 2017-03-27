@@ -66,15 +66,15 @@ end
 
 
 %% Remove non marine channels
-results = mksqlite('select isDerived from channels');
 % channelStatus was instroduced in RSK V 1.8.9.
 if (vsnMajor > 1) || ((vsnMajor == 1)&&(vsnMinor > 8)) || ((vsnMajor == 1)&&(vsnMinor == 8) && (vsnPatch >= 9))
-    isMeasured = (~[RSK.instrumentChannels.channelStatus] & ~[results.isDerived]);% hidden and derived channels have a non-zero channelStatus
-    RSK.instrumentChannels(~isMeasured) = [];
+    isDerived = ([RSK.instrumentChannels.channelStatus] ~= 0);% hidden and derived channels have a non-zero channelStatus
+    RSK.instrumentChannels(isDerived) = [];
 else
-    isMeasured = ~[results.isDerived]; % some files may not have channelStatus
+    results = mksqlite('select isDerived from channels');
+    isDerived = logical([results.isDerived]); % some files may not have channelStatus
 end
-RSK.channels(~isMeasured) = [];  
+RSK.channels(isDerived) = [];  
 
 
 %% Tables that could be populated in 'full'
