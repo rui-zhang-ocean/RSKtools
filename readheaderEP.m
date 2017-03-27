@@ -34,9 +34,9 @@ RSK.deployments = mksqlite('select * from deployments');
 
 %% Remove non marine channels
 results = mksqlite('select isDerived from channels');
-isMeasured = ~[results.isDerived]; % some files may not have channelStatus
+isDerived = logical([results.isDerived]); 
 
-RSK.channels(~isMeasured) = [];  
+RSK.channels(isDerived) = [];  
 
 
 %% Tables that could be populated in 'EasyParse'
