@@ -36,7 +36,6 @@ RSK.channels = mksqlite('select shortName,longName,units from channels');
 RSK.datasets = mksqlite('select * from datasets');
 RSK.datasetDeployments = mksqlite('select * from datasetDeployments');
 
-
 RSK.epochs = mksqlite('select deploymentID,startTime/1.0 as startTime, endTime/1.0 as endTime from epochs');
 RSK.epochs.startTime = RSKtime2datenum(RSK.epochs.startTime);
 RSK.epochs.endTime = RSKtime2datenum(RSK.epochs.endTime);
@@ -50,18 +49,14 @@ RSK.deployments = mksqlite('select * from deployments');
 RSK.instruments = mksqlite('select * from instruments');
 RSK.instrumentChannels = mksqlite('select * from instrumentChannels');
 
+RSK.parameters = mksqlite('select * from parameters');
+RSK = readcalibrations(RSK);
 
-%% Load calibration
-%As of RSK v1.13.4 coefficients is it's own table. We add it back into calibration to be consistent with previous versions.
+
+%% Load parameter keys
+
 if (vsnMajor > 1) || ((vsnMajor == 1)&&(vsnMinor > 13)) || ((vsnMajor == 1)&&(vsnMinor == 13)&&(vsnPatch >= 4))
-    RSK.parameters = mksqlite('select * from parameters');
     RSK.parameterKeys = mksqlite('select * from parameterKeys'); 
-    RSK.calibrations = mksqlite('select * from calibrations');
-    RSK.coefficients = mksqlite('select * from coefficients');
-    RSK = coef2cal(RSK);
-else
-    RSK.calibrations = mksqlite('select * from calibrations');
-    RSK.parameters = mksqlite('select * from parameters');
 end
 
 
