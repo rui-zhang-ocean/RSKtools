@@ -88,7 +88,7 @@ results.tstamp = RSKtime2datenum(t); % convert RSK millis time to datenum
 
 %% Remove hidden channels from data
 try
-    isMeasured = ~[RSK.instrumentChannels.channelStatus];% hidden and derived channels have a non-zero channelStatus
+    isMeasured = ~[RSK.instrumentChannels.channelStatus]; % hidden and derived channels have a non-zero channelStatus
 catch
     tmp = mksqlite('select isDerived from channels');
     isMeasured = ~[tmp.isDerived]; % some files may not have channelStatus
@@ -100,7 +100,9 @@ results.values = results.values(:,isMeasured);
 RSK.data=results;
 
 %% Calculate Salinity  
-RSK = RSKcalculatesalinity(RSK);
+% RSK = RSKderivesalinity(RSK); 
+% NOTE : We no longer automatically derive salinity when you read data from
+% database. Use RSKderivesalinity(RSK) to calculate salinity.
 
 
 end
