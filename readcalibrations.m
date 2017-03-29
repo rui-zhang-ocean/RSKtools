@@ -29,14 +29,10 @@ function RSK = readcalibrations(RSK)
 if (vsnMajor > 1) || ((vsnMajor == 1)&&(vsnMinor > 13)) || ((vsnMajor == 1)&&(vsnMinor == 13)&&(vsnPatch >= 4))
     RSK = coef2cal(RSK);
 else
-    if (vsnMajor > 1) || ((vsnMajor == 1)&&(vsnMinor > 12)) || ((vsnMajor == 1)&&(vsnMinor == 12)&&(vsnPatch >= 2))
-        RSK.calibrations = mksqlite('select `calibrationID`, `channelOrder`, `instrumentID`, `type`, `tstamp`/1.0 as tstamp, `equation` from calibrations');
-    else
-        RSK.calibrations = mksqlite('select `calibrationID`, `channelOrder`, `type`, `tstamp`/1.0 as tstamp, `equation` from calibrations');
-    end
-    
+    RSK.calibrations = mksqlite('select * from calibrations');
+    tstampstruct = mksqlite('select `tstamp`/1.0 as tstamp from calibrations');
     for ndx = 1:length(RSK.calibrations)
-        RSK.calibrations(ndx).tstamp = RSKtime2datenum(RSK.calibrations(ndx).tstamp);
+        RSK.calibrations(ndx).tstamp = RSKtime2datenum(tstampstruct(ndx).tstamp);
     end
 end
 
