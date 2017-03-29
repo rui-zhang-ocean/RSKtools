@@ -63,14 +63,6 @@ if ~strcmpi(RSK.dbInfo(1).type, 'EasyParse')
             RSK.parameters = mksqlite('select * from parameters');
         end
     end
-
-    if any(strcmpi({tables.name}, 'datasets'))
-        RSK.datasets = mksqlite('select * from datasets');
-    end
-
-    if any(strcmpi({tables.name}, 'datasetDeployments'))
-        RSK.datasetDeployments = mksqlite('select * from datasetDeployments');     
-    end
 end
 
 if any(strcmpi({tables.name}, 'appSettings'))

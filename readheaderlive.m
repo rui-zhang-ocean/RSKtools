@@ -32,9 +32,6 @@ RSK.appSettings = mksqlite('select * from appSettings');
 
 RSK.channels = mksqlite('select shortName,longName,units from channels');
 
-RSK.datasets = mksqlite('select * from datasets');
-RSK.datasetDeployments = mksqlite('select * from datasetDeployments');
-
 RSK.epochs = mksqlite('select deploymentID,startTime/1.0 as startTime, endTime/1.0 as endTime from epochs');
 RSK.epochs.startTime = RSKtime2datenum(RSK.epochs.startTime);
 RSK.epochs.endTime = RSKtime2datenum(RSK.epochs.endTime);
