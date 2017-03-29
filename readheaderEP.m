@@ -6,8 +6,8 @@ function RSK = readheaderEP(RSK)
 %
 % readheaderEP is a RSKtools helper function that opens the populated
 % tables of 'EasyParse' files.
-% These tables are channels, epochs, schedules and deployments. If data is
-% available it will also open geodata and instruments.
+% These tables are channels, epochs, schedules, deployments and instruments. If data is
+% available it will also open geodata.
 %
 % Inputs:
 %    RSK - 'EasyParse' file opened using RSKopen.m
@@ -18,7 +18,7 @@ function RSK = readheaderEP(RSK)
 % Author: RBR Ltd. Ottawa ON, Canada
 % email: support@rbr-global.com
 % Website: www.rbr-global.com
-% Last revision: 2017-03-27
+% Last revision: 2017-03-29
 
 %% Tables that are definitely in 'EasyParse'
 RSK.channels = mksqlite('select shortName,longName,units from channels');
@@ -31,6 +31,7 @@ RSK.schedules = mksqlite('select * from schedules');
 
 RSK.deployments = mksqlite('select * from deployments');
 
+RSK.instruments = mksqlite('select * from instruments');
 
 %% Remove non marine channels
 results = mksqlite('select isDerived from channels');
@@ -41,10 +42,6 @@ RSK.channels(isDerived) = [];
 
 %% Tables that could be populated in 'EasyParse'
 tables = mksqlite('SELECT name FROM sqlite_master WHERE type="table"');
-
-if any(strcmpi({tables.name}, 'instruments'))
-    RSK.instruments = mksqlite('select * from instruments');
-end
 
 if any(strcmpi({tables.name}, 'geodata'))
     RSK = RSKreadgeodata(RSK);
