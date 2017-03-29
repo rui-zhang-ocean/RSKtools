@@ -42,7 +42,7 @@ RSK.instruments = mksqlite('select * from instruments');
 RSK.thumbnailData = RSKreadthumbnail;
 
 
-%% Load calibration
+%% Tables that may or may not be in file
 tables = mksqlite('SELECT name FROM sqlite_master WHERE type="table"');
 
 % As of RSK v1.13.4 parameterKeys is a table
@@ -50,8 +50,6 @@ if any(strcmpi({tables.name}, 'parameterKeys'))
     RSK.parameterKeys = mksqlite('select * from parameterKeys');
 end
 
-
-%% Tables that may or may not be in 'EPdesktop'
 if any(strcmpi({tables.name}, 'geodata'))
     RSK = RSKreadgeodata(RSK);
 end
