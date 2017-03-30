@@ -25,7 +25,7 @@ function RSK = RSKreadcalibrations(RSK)
 
 [~, vsnMajor, vsnMinor, vsnPatch] = RSKver(RSK);
 
-if ~strcmp(RSK.dbInfo.type(end), 'full')
+if ~strcmp(RSK.dbInfo(end).type, 'full')
     error('Only files of type "full" have a calibrations table');
 end
 
@@ -48,7 +48,7 @@ else
     end
     
     if isfield(RSK.calibrations, 'instrumentID')
-        RSK = rmfield(RSK.calibrations, 'instrumentID');
+        RSK.calibrations = rmfield(RSK.calibrations, 'instrumentID');
     end
 end
 
