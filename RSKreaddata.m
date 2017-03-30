@@ -38,7 +38,7 @@ function RSK = RSKreaddata(RSK, t1, t2)
 % Author: RBR Ltd. Ottawa ON, Canada
 % email: support@rbr-global.com
 % Website: www.rbr-global.com
-% Last revision: 2017-03-24
+% Last revision: 2017-03-30
 
 %% Check if file type is skinny
 if strcmp(RSK.dbInfo(end).type, 'skinny')
@@ -87,14 +87,18 @@ results.tstamp = RSKtime2datenum(t); % convert RSK millis time to datenum
 
 
 %% Remove hidden channels from data
-try
-    isMeasured = ~[RSK.instrumentChannels.channelStatus]; % hidden and derived channels have a non-zero channelStatus
-catch
-    tmp = mksqlite('select isDerived from channels');
-    isMeasured = ~[tmp.isDerived]; % some files may not have channelStatus
+% channelStatus was instroduced in RSK V 1.8.9.
+if ~strcmpi(RSK.dbInfo(end).type, 'EPdesktop')
+    if (vsnMajor > 1) || ((vsnMajor == 1)&&(vsnMinor > 8)) || ((vsnMajor == 1)&&(vsnMinor == 8) && (vsnPatch >= 9))
+        isDerived = logical([RSK.instrumentChannels.channelStatus]);% hidden and derived channels have a non-zero channelStatus
+    else
+        results = mksqlite('select isDerived from channels');
+        isDerived = logical([results.isDerived]); % some files may not have channelStatus
+    end
+    RSK.channels(isDerived) = [];
+    results.values = results.values(:,isDerived);
 end
 
-results.values = results.values(:,isMeasured);
 
 %% Put data into data field of RSK structure.
 RSK.data=results;
