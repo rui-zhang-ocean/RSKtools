@@ -19,15 +19,17 @@ function samplingperiod = RSKsamplingperiod(RSK)
 % Last revision: 2017-03-30
 
 mode = RSK.schedules.mode;
-
-if strcmpi(mode, 'ddsampling')
-    samplingperiod.fastThreshold = RSK.directional.fastThreshold/1000;
-    samplingperiod.slowThreshold = RSK.directional.slowThreshold/1000;
-elseif strcmpi(mode, 'fetching')
-    error('"Fetching" files do not have a sampling period');
-else 
-    samplingperiod = RSK.(mode).samplingPeriod/1000;
+if (vsnMajor > 1) || ((vsnMajor == 1)&&(vsnMinor > 13)) || ((vsnMajor == 1)&&(vsnMinor == 13)&&(vsnPatch >= 8))
+    if strcmpi(mode, 'ddsampling')
+        samplingperiod.fastThreshold = RSK.directional.fastThreshold/1000;
+        samplingperiod.slowThreshold = RSK.directional.slowThreshold/1000;
+    elseif strcmpi(mode, 'fetching')
+        error('"Fetching" files do not have a sampling period');
+    else 
+        samplingperiod = RSK.(mode).samplingPeriod/1000;
+    end
+else
+    samplingperiod = RSK.schedules.samplingPeriod/1000;
 end
-
 
 end
