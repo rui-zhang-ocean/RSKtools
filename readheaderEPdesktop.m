@@ -56,6 +56,10 @@ if any(strcmpi({tables.name}, 'parameterKeys'))
     RSK.parameterKeys = mksqlite('select * from parameterKeys');
 end
 
+if any(strcmpi({tables.name}, 'instrumentChannels'))
+    RSK.instrumentChannels = mksqlite('select * from instrumentChannels');
+end
+
 if any(strcmpi({tables.name}, 'geodata'))
     RSK = RSKreadgeodata(RSK);
 end
