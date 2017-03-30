@@ -39,22 +39,12 @@ if strcmpi(RSK.dbInfo(1).type, 'EasyParse');
 end
 
 
-%% Set up version variables
-[~, vsnMajor, vsnMinor, vsnPatch] = RSKver(RSK);
-
 %% Firmware Version location is dependant on the rsk file version
 [firmwareV, ~, ~]  = RSKfirmwarever(RSK);
 
 
 %% Set up metadata
 RBR.name = ['RBR ' RSK.instruments.model ' ' firmwareV ' ' num2str(RSK.instruments.serialID)];
-
-% Filename
-if strcmp(RSK.datasets.name(1), '/')
-    RBR.datasetfilename = RSK.datasets.name(2:end);
-else
-    RBR.datasetfilename = RSK.datasets.name;
-end
 
 % Sample period
 RBR.sampleperiod = RSKsamplingperiod(RSK); 
@@ -83,6 +73,7 @@ end
 
 if ~strcmp(RSK.dbInfo(end).type, 'EPdesktop') && ~strcmp(RSK.dbInfo(end).type, 'live')%EPdesktop & live does not have calibration table
     % Only shows first 4 coefficients (c0, c1, c2 & c3).
+    RSK = RSKreadcalibrations(RSK);
     RBR.coefficients = zeros(4, nchannels);
     for ndx=1:nchannels
         channelindex = find([RSK.calibrations.channelOrder] == ndx);
@@ -100,7 +91,7 @@ RBR.data = RSK.data.values(:,1:nchannels);
 
 
 %% Save to mat file
-matfile = strrep(RBR.datasetfilename,'.rsk','.mat');
+matfile = strrep([num2str(RSK.instruments.serialID) '_' RSK.instruments.model],'.rsk','.mat');
 save(matfile, 'RBR', '-v7.3');
 
 
