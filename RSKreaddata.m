@@ -38,7 +38,7 @@ function RSK = RSKreaddata(RSK, t1, t2)
 % Author: RBR Ltd. Ottawa ON, Canada
 % email: support@rbr-global.com
 % Website: www.rbr-global.com
-% Last revision: 2017-01-26
+% Last revision: 2017-03-30
 
 %% Check if file type is skinny
 if strcmp(RSK.dbInfo(end).type, 'skinny')
@@ -85,25 +85,28 @@ results = RSKarrangedata(results);
 t=results.tstamp';
 results.tstamp = RSKtime2datenum(t); % convert RSK millis time to datenum
 
+
 %% Remove hidden channels from data
-hasS = any(strcmp({RSK.channels.longName}, 'Salinity'));
-try
-    isMeasured = ~[RSK.instrumentChannels.channelStatus];% hidden and derived channels have a non-zero channelStatus
-    if hasS
-       isMeasured(end)=0;    % Salinity has channelStatus = 0 and is the last data column
+% channelStatus was instroduced in RSK V 1.8.9.
+[~, vsnMajor, vsnMinor, vsnPatch]  = RSKver(RSK);
+if ~strcmpi(RSK.dbInfo(end).type, 'EPdesktop')
+    if (vsnMajor > 1) || ((vsnMajor == 1)&&(vsnMinor > 8)) || ((vsnMajor == 1)&&(vsnMinor == 8) && (vsnPatch >= 9))
+        isDerived = logical([RSK.instrumentChannels.channelStatus]);% hidden and derived channels have a non-zero channelStatus
+    else
+        results = mksqlite('select isDerived from channels');
+        isDerived = logical([results.isDerived]); % some files may not have channelStatus
     end
-catch
-    tmp = mksqlite('select isDerived from channels');
-    isMeasured = ~[tmp.isDerived]; % some files may not have channelStatus
+    results.values = results.values(:,~isDerived);
 end
 
-results.values = results.values(:,isMeasured);
 
 %% Put data into data field of RSK structure.
 RSK.data=results;
 
 %% Calculate Salinity  
-RSK = RSKcalculatesalinity(RSK);
+% RSK = RSKderivesalinity(RSK); 
+% NOTE : We no longer automatically derive salinity when you read data from
+% database. Use RSKderivesalinity(RSK) to calculate salinity.
 
 
 end

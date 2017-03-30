@@ -31,7 +31,7 @@ function [RBR] = RSK2MAT(RSK)
 % Author: RBR Ltd. Ottawa ON, Canada
 % email: support@rbr-global.com
 % Website: www.rbr-global.com
-% Last revision: 2017-01-25
+% Last revision: 2017-03-30
 
 %% Notify user that RSK2MAT doesn't work for file that were previously EasyParse
 if strcmpi(RSK.dbInfo(1).type, 'EasyParse');
@@ -39,33 +39,16 @@ if strcmpi(RSK.dbInfo(1).type, 'EasyParse');
 end
 
 
-%% Set up version variables
-[~, vsnMajor, vsnMinor, vsnPatch] = RSKver(RSK);
-
 %% Firmware Version location is dependant on the rsk file version
-if (vsnMajor > 1) || ((vsnMajor == 1)&&(vsnMinor > 12)) || ((vsnMajor == 1)&&(vsnMinor == 12)&&(vsnPatch >= 2))
-    firmwareV  = RSK.instruments.firmwareVersion;
-else
-    firmwareV  = RSK.deployments.firmwareVersion;    
-end
+[firmwareV, ~, ~]  = RSKfirmwarever(RSK);
 
 
 %% Set up metadata
 RBR.name = ['RBR ' RSK.instruments.model ' ' firmwareV ' ' num2str(RSK.instruments.serialID)];
 
-% Filename
-if strcmp(RSK.datasets.name(1), '/')
-    RBR.datasetfilename = RSK.datasets.name(2:end);
-else
-    RBR.datasetfilename = RSK.datasets.name;
-end
+% Sample period
+RBR.sampleperiod = RSKsamplingperiod(RSK); 
 
-% Sample Size
-if (vsnMajor > 1) || ((vsnMajor == 1)&&(vsnMinor > 13)) || ((vsnMajor == 1)&&(vsnMinor == 13)&&(vsnPatch >= 8))
-    RBR.sampleperiod = RSK.deployments.sampleSize/1000; % seconds
-else
-    RBR.sampleperiod = RSK.schedules.samplingPeriod/1000; % seconds
-end
 % Channels
 RBR.channelnames = {RSK.channels.longName}';
 RBR.channelunits = {RSK.channels.units}';
@@ -90,6 +73,7 @@ end
 
 if ~strcmp(RSK.dbInfo(end).type, 'EPdesktop') && ~strcmp(RSK.dbInfo(end).type, 'live')%EPdesktop & live does not have calibration table
     % Only shows first 4 coefficients (c0, c1, c2 & c3).
+    RSK = RSKreadcalibrations(RSK);
     RBR.coefficients = zeros(4, nchannels);
     for ndx=1:nchannels
         channelindex = find([RSK.calibrations.channelOrder] == ndx);
@@ -107,7 +91,7 @@ RBR.data = RSK.data.values(:,1:nchannels);
 
 
 %% Save to mat file
-matfile = strrep(RBR.datasetfilename,'.rsk','.mat');
+matfile = strrep([num2str(RSK.instruments.serialID) '_' RSK.instruments.model],'.rsk','.mat');
 save(matfile, 'RBR', '-v7.3');
 
 

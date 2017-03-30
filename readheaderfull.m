@@ -22,7 +22,7 @@ function RSK = readheaderfull(RSK)
 % Author: RBR Ltd. Ottawa ON, Canada
 % email: support@rbr-global.com
 % Website: www.rbr-global.com
-% Last revision: 2017-01-25
+% Last revision: 2017-03-27
 
 %% Set up version variables
 [~, vsnMajor, vsnMinor, vsnPatch] = RSKver(RSK);
@@ -32,10 +32,6 @@ function RSK = readheaderfull(RSK)
 RSK.appSettings = mksqlite('select * from appSettings');
 
 RSK.channels = mksqlite('select shortName,longName,units from channels');
-
-RSK.datasets = mksqlite('select * from datasets');
-RSK.datasetDeployments = mksqlite('select * from datasetDeployments');
-
 
 RSK.epochs = mksqlite('select deploymentID,startTime/1.0 as startTime, endTime/1.0 as endTime from epochs');
 RSK.epochs.startTime = RSKtime2datenum(RSK.epochs.startTime);
@@ -50,46 +46,45 @@ RSK.deployments = mksqlite('select * from deployments');
 RSK.instruments = mksqlite('select * from instruments');
 RSK.instrumentChannels = mksqlite('select * from instrumentChannels');
 
-%% Load calibration
-%As of RSK v1.13.4 coefficients is it's own table. We add it back into calibration to be consistent with previous versions.
+RSK.parameters = mksqlite('select * from parameters');
+% RSK = RSKreadcalibrations(RSK);
+% NOTE : We no longer automatically read the calibrations table when
+% opening a file with RSKopen. Use RSKreadcalibrations(RSK) to load the
+% calibrations data.
+
+%% Load sampling details
+if (vsnMajor > 1) || ((vsnMajor == 1)&&(vsnMinor > 13)) || ((vsnMajor == 1)&&(vsnMinor == 13)&&(vsnPatch >= 8))
+    RSK = readsamplingdetails(RSK);
+end
+
+
+%% Load parameter keys
 if (vsnMajor > 1) || ((vsnMajor == 1)&&(vsnMinor > 13)) || ((vsnMajor == 1)&&(vsnMinor == 13)&&(vsnPatch >= 4))
-    RSK.parameters = mksqlite('select * from parameters');
     RSK.parameterKeys = mksqlite('select * from parameterKeys'); 
-    RSK.calibrations = mksqlite('select * from calibrations');
-    RSK.coefficients = mksqlite('select * from coefficients');
-    RSK = coef2cal(RSK);
-else
-    RSK.calibrations = mksqlite('select * from calibrations');
-    RSK.parameters = mksqlite('select * from parameters');
 end
 
 
 %% Remove non marine channels
-results = mksqlite('select isDerived from channels');
 % channelStatus was instroduced in RSK V 1.8.9.
 if (vsnMajor > 1) || ((vsnMajor == 1)&&(vsnMinor > 8)) || ((vsnMajor == 1)&&(vsnMinor == 8) && (vsnPatch >= 9))
-    isMeasured = (~[RSK.instrumentChannels.channelStatus] & ~[results.isDerived]);% hidden and derived channels have a non-zero channelStatus
+    isDerived = logical([RSK.instrumentChannels.channelStatus]);% hidden and derived channels have a non-zero channelStatus
+    RSK.instrumentChannels(isDerived) = [];
 else
-    isMeasured = ~[results.isDerived]; % some files may not have channelStatus
+    results = mksqlite('select isDerived from channels');
+    isDerived = logical([results.isDerived]); % some files may not have channelStatus
 end
-RSK.channels(~isMeasured) = [];  
-RSK.instrumentChannels(~isMeasured) = []; 
+RSK.channels(isDerived) = [];  
+
 
 %% Tables that could be populated in 'full'
+tables = mksqlite('SELECT name FROM sqlite_master WHERE type="table"');
 
-try
+if any(strcmpi({tables.name}, 'geodata'))
     RSK = RSKreadgeodata(RSK);
-catch 
 end
 
-try
-    RSK.thumbnailData = RSKreadthumbnail;
-catch
-end
-
-if isempty(RSK.datasets) && isempty(RSK.datasetDeployments)
-    RSK = rmfield(RSK, 'datasets');
-    RSK = rmfield(RSK, 'datasetDeployments');
+if any(strcmpi({tables.name}, 'thumbnailData'))
+    RSK = RSKreadthumbnail(RSK);
 end
 
 end

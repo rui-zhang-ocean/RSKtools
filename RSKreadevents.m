@@ -44,7 +44,6 @@ end
 sql = ['select tstamp/1.0 as tstamp, deploymentID, type, sampleIndex, channelIndex from events where tstamp/1.0 between ' num2str(t1) ' and ' num2str(t2) ' order by tstamp'];
 results = mksqlite(sql);
 if isempty(results)
-    disp('No data found in that interval')
     return
 end
 

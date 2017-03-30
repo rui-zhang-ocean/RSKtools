@@ -20,7 +20,7 @@ function RSK = readheaderEPdesktop(RSK)
 % Author: RBR Ltd. Ottawa ON, Canada
 % email: support@rbr-global.com
 % Website: www.rbr-global.com
-% Last revision: 2017-01-25
+% Last revision: 2017-03-27
 
 %% Set up version variables
 [~, vsnMajor, vsnMinor, vsnPatch] = RSKver(RSK);
@@ -41,48 +41,42 @@ RSK.instruments = mksqlite('select * from instruments');
 
 RSK.thumbnailData = RSKreadthumbnail;
 
-%% Remove non marine channels
-results = mksqlite('select isDerived from channels');
-try
+
+%% Load sampling details
+if (vsnMajor > 1) || ((vsnMajor == 1)&&(vsnMinor > 13)) || ((vsnMajor == 1)&&(vsnMinor == 13)&&(vsnPatch >= 8))
+    RSK = readsamplingdetails(RSK);
+end
+
+
+%% Tables that may or may not be in file
+tables = mksqlite('SELECT name FROM sqlite_master WHERE type="table"');
+
+% As of RSK v1.13.4 parameterKeys is a table
+if any(strcmpi({tables.name}, 'parameterKeys'))
+    RSK.parameterKeys = mksqlite('select * from parameterKeys');
+end
+
+if any(strcmpi({tables.name}, 'instrumentChannels'))
     RSK.instrumentChannels = mksqlite('select * from instrumentChannels');
-    isMeasured = ~[RSK.instrumentChannels.channelStatus];% hidden and derived channels should have a non-zero channelStatus
-    RSK.instrumentChannels(~isMeasured) = []; 
-catch
-    
-    isMeasured = ~[results.isDerived]; % some files may not have channelStatus
-end
-RSK.channels(~isMeasured) = [];  
-
-
-
-%% Load calibration
-%As of RSK v1.13.4 parameterKeys is a table
-if (vsnMajor > 1) || ((vsnMajor == 1)&&(vsnMinor > 13)) || ((vsnMajor == 1)&&(vsnMinor == 13)&&(vsnPatch >= 4))
-    try
-        RSK.parameterKeys = mksqlite('select * from parameterKeys');
-    catch
-    end
 end
 
-
-%% Tables that may or may not be in 'EPdesktop'
-try
-    RSK.appSettings = mksqlite('select * from appSettings');
-catch
+if any(strcmpi({tables.name}, 'geodata'))
+    RSK = RSKreadgeodata(RSK);
 end
 
 % Parameter table is empty if data is from Mobile Ruskin.
-if ~strcmpi(RSK.dbInfo(1).type, 'EasyParse') && ~strcmpi(RSK.dbInfo(1).type, 'skinny') 
-    RSK.parameters = mksqlite('select * from parameters');
-end
 if ~strcmpi(RSK.dbInfo(1).type, 'EasyParse')
-    RSK.datasets = mksqlite('select * from datasets');
-    RSK.datasetDeployments = mksqlite('select * from datasetDeployments');     
+    if ~strcmpi(RSK.dbInfo(1).type, 'skinny')
+        if any(strcmpi({tables.name}, 'parameters')) 
+            RSK.parameters = mksqlite('select * from parameters');
+        end
+    end
 end
 
-try
-    RSK = RSKreadgeodata(RSK);
-catch
+if any(strcmpi({tables.name}, 'appSettings'))
+    RSK.appSettings = mksqlite('select * from appSettings');  
 end
+
+
 end
 

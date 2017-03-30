@@ -6,7 +6,7 @@ function RSK = readheaderskinny(RSK)
 %
 % readheaderskinny is a RSKtools helper function that opens the populated
 % tables of 'skinny' files. Only to be used by RSKopen.m.
-% These tables are channels, epochs, schedules and deployments. If data is
+% These tables are channels, epochs, schedules, deployments and instruments. If data is
 % available it will also open geodata.
 %
 % Note: The data is stored in raw bin file, this file type must be opened in
@@ -21,7 +21,7 @@ function RSK = readheaderskinny(RSK)
 % Author: RBR Ltd. Ottawa ON, Canada
 % email: support@rbr-global.com
 % Website: www.rbr-global.com
-% Last revision: 2017-01-31
+% Last revision: 2017-03-29
 
 %% Tables that are definitely in 'skinny'
 RSK.channels = mksqlite('select shortName,longName,units from channels');
@@ -34,14 +34,15 @@ RSK.schedules = mksqlite('select * from schedules');
 
 RSK.deployments = mksqlite('select * from deployments');
 
-try
-    RSK.instruments = mksqlite('select * from instruments');
-catch
-end
+RSK.instruments = mksqlite('select * from instruments');
+
 
 %% Tables that may or may not be in 'skinny'
-try
+tables = mksqlite('SELECT name FROM sqlite_master WHERE type="table"');
+
+if any(strcmpi({tables.name}, 'geodata'))
     RSK = RSKreadgeodata(RSK);
-catch
 end
+
+
 end

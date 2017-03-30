@@ -21,7 +21,7 @@ function RSK = readheaderlive(RSK)
 % Author: RBR Ltd. Ottawa ON, Canada
 % email: support@rbr-global.com
 % Website: www.rbr-global.com
-% Last revision: 2017-01-25
+% Last revision: 2017-03-27
 
 %% Set up version variables
 [~, vsnMajor, vsnMinor, vsnPatch] = RSKver(RSK);
@@ -31,9 +31,6 @@ function RSK = readheaderlive(RSK)
 RSK.appSettings = mksqlite('select * from appSettings');
 
 RSK.channels = mksqlite('select shortName,longName,units from channels');
-
-RSK.datasets = mksqlite('select * from datasets');
-RSK.datasetDeployments = mksqlite('select * from datasetDeployments');
 
 RSK.epochs = mksqlite('select deploymentID,startTime/1.0 as startTime, endTime/1.0 as endTime from epochs');
 RSK.epochs.startTime = RSKtime2datenum(RSK.epochs.startTime);
@@ -49,6 +46,12 @@ RSK.instrumentChannels = mksqlite('select * from instrumentChannels');
 RSK.parameters = mksqlite('select * from parameters');
 
 
+%% Load sampling details
+if (vsnMajor > 1) || ((vsnMajor == 1)&&(vsnMinor > 13)) || ((vsnMajor == 1)&&(vsnMinor == 13)&&(vsnPatch >= 8))
+    RSK = readsamplingdetails(RSK);
+end
+
+
 %% Load calibration
 %As of RSK v1.13.4 parameterKeys is a table
 if (vsnMajor > 1) || ((vsnMajor == 1)&&(vsnMinor > 13)) || ((vsnMajor == 1)&&(vsnMinor == 13)&&(vsnPatch >= 4))
@@ -60,20 +63,24 @@ end
 results = mksqlite('select isDerived from channels');
 % channelStatus was instroduced in RSK V 1.8.9.
 if (vsnMajor > 1) || ((vsnMajor == 1)&&(vsnMinor > 8)) || ((vsnMajor == 1)&&(vsnMinor == 8) && (vsnPatch >= 9))
-    isMeasured = (~[RSK.instrumentChannels.channelStatus] & ~[results.isDerived]);% hidden and derived channels have a non-zero channelStatus
+   isDerived = logical([RSK.instrumentChannels.channelStatus]); % hidden and derived channels have a non-zero channelStatus
 else
-    isMeasured = ~[results.isDerived]; % some files may not have channelStatus
+   isDerived = logical([results.isDerived]); % some files may not have channelStatus
 end
-RSK.channels(~isMeasured) = [];  
-RSK.instrumentChannels(~isMeasured) = []; 
+RSK.channels(isDerived) = [];  
+RSK.instrumentChannels(isDerived) = []; 
 
 
 %% Tables that may or may not be in 'live'
+tables = mksqlite('SELECT name FROM sqlite_master WHERE type="table"');
 
-try
-    RSK.thumbnailData = RSKreadthumbnail;
-catch
+if any(strcmpi({tables.name}, 'geodata'))
+    RSK = RSKreadgeodata(RSK);
 end
 
+if any(strcmpi({tables.name}, 'thumbnailData'))
+    RSK = RSKreadthumbnail(RSK);
 end
 
+
+end
