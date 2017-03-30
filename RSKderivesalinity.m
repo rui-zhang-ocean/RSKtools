@@ -31,7 +31,6 @@ function [RSK, salinity] = RSKderivesalinity(RSK, varargin)
 % Last revision: 2017-03-30
 
 
-
 %% Check input and default arguments
 
 validSeries = {'profile', 'data'};
