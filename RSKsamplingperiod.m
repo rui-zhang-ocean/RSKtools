@@ -18,6 +18,8 @@ function samplingperiod = RSKsamplingperiod(RSK)
 % Website: www.rbr-global.com
 % Last revision: 2017-03-30
 
+[~, vsnMajor, vsnMinor, vsnPatch]  = RSKver(RSK);
+
 mode = RSK.schedules.mode;
 if (vsnMajor > 1) || ((vsnMajor == 1)&&(vsnMinor > 13)) || ((vsnMajor == 1)&&(vsnMinor == 13)&&(vsnPatch >= 8))
     if strcmpi(mode, 'ddsampling')
