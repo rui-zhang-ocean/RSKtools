@@ -49,11 +49,12 @@ If the [TEOS-10](http://www.teos-10.org/software.htm) matlab toolbox is installe
     - Move salinity derivation from RSKreaddata to RSKderivesalinity
     - Move calibrations table reading from RSKopen to RSKreadcalibrations
     - Add RSKfirmwarever function
-    - Add RSKsampleperiod function
+    - Add RSKsamplingperiod function
     - Add channel longName change for temp04, temp05, temp10 and temp13
     - Remove dataset and datasetDeployments fields
     - Fix bug with loading geodata
     - Support for RSK v1.13.8
+
 
 * Version 1.4.6 (2017-01-18)
     - Remove non-marine channels from data table
@@ -63,10 +64,12 @@ If the [TEOS-10](http://www.teos-10.org/software.htm) matlab toolbox is installe
     - Remove channels units and longName from data table
     - Fix bug in data when reading in profile data
 
+
 * Version 1.4.5 (2016-12-22)
     - Add more support for geodata
     - Add helper files to open different file types
     - Add function to read version of file
+
 
 * Version 1.4.4 (2016-12-15)
     - Add support for geodata
@@ -74,10 +77,12 @@ If the [TEOS-10](http://www.teos-10.org/software.htm) matlab toolbox is installe
     - Add RSK2MAT.m for legacy mat file users
     - Update support for coefficients and parameter tables
 
+
 * Version 1.4.3 (2016-11-03)
     - Events structure does not read in notes
     - Fix dbInfo bug to read last entry
     - Support for RSK v1.13.4
+
 
 * Version 1.4.2 (2016-10-20)
     - Changed removal of 'datasetID' to be case insensitive
@@ -85,8 +90,8 @@ If the [TEOS-10](http://www.teos-10.org/software.htm) matlab toolbox is installe
     - Fix RSKreadprofile typo
     - Fix bug opening |rt instruments data
 
-* Version 1.4.1 (2016-05-20)
 
+* Version 1.4.1 (2016-05-20)
     - Add RSKreadwavetxt to handle import wave text exports	
     - properly read "realtime" RSK files
     - don't plot hidden channels in profiles
@@ -94,18 +99,23 @@ If the [TEOS-10](http://www.teos-10.org/software.htm) matlab toolbox is installe
     - add info from `ranging` table to structure
     - mfile vignette using Matlab markup
   
-* Version 1.4 (2015-11-30)
 
+* Version 1.4 (2015-11-30)
     - add support for profile events and profile plotting
     - supports TEOS-10 for calculation of salinity
     - improved documentation
   
+
 * Version 1.3
     - compatible with RSK generated from an EasyParse (iOs format) logger
 
+
 * Version 1.2
+
     - added linux 64 bit mksqlite library
 
+
 * Version 1.1
+
     - added burst and event readers
 
