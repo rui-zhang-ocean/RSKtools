@@ -31,7 +31,7 @@ function [RBR] = RSK2MAT(RSK)
 % Author: RBR Ltd. Ottawa ON, Canada
 % email: support@rbr-global.com
 % Website: www.rbr-global.com
-% Last revision: 2017-01-25
+% Last revision: 2017-03-30
 
 %% Notify user that RSK2MAT doesn't work for file that were previously EasyParse
 if strcmpi(RSK.dbInfo(1).type, 'EasyParse');
@@ -43,11 +43,7 @@ end
 [~, vsnMajor, vsnMinor, vsnPatch] = RSKver(RSK);
 
 %% Firmware Version location is dependant on the rsk file version
-if (vsnMajor > 1) || ((vsnMajor == 1)&&(vsnMinor > 12)) || ((vsnMajor == 1)&&(vsnMinor == 12)&&(vsnPatch >= 2))
-    firmwareV  = RSK.instruments.firmwareVersion;
-else
-    firmwareV  = RSK.deployments.firmwareVersion;    
-end
+[firmwareV, ~, ~]  = RSKfirmwarever(RSK);
 
 
 %% Set up metadata
@@ -60,12 +56,9 @@ else
     RBR.datasetfilename = RSK.datasets.name;
 end
 
-% Sample Size
-if (vsnMajor > 1) || ((vsnMajor == 1)&&(vsnMinor > 13)) || ((vsnMajor == 1)&&(vsnMinor == 13)&&(vsnPatch >= 8))
-    RBR.sampleperiod = RSK.deployments.sampleSize/1000; % seconds
-else
-    RBR.sampleperiod = RSK.schedules.samplingPeriod/1000; % seconds
-end
+% Sample period
+RBR.sampleperiod = RSKsamplingperiod(RSK); 
+
 % Channels
 RBR.channelnames = {RSK.channels.longName}';
 RBR.channelunits = {RSK.channels.units}';
