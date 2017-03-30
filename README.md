@@ -46,17 +46,18 @@ If the [TEOS-10](http://www.teos-10.org/software.htm) matlab toolbox is installe
 
 ## Changes
 * Version 1.5.0 (2017-03-30)
-    - Move salinity derivation from RSKreaddata to RSKderivesalinity.
+    - Move salinity derivation from RSKreaddata to RSKderivesalinity
     - Move calibrations table reading from RSKopen to RSKreadcalibrations
     - Add RSKfirmwarever function
-    - Add channel longName change for temp04, temp05, temp10 and temp13.
+    - Add RSKsampleperiod function
+    - Add channel longName change for temp04, temp05, temp10 and temp13
     - Remove dataset and datasetDeployments fields
     - Fix bug with loading geodata
     - Support for RSK v1.13.8
 
 * Version 1.4.6 (2017-01-18)
     - Remove non-marine channels from data table
-    - Fix bugs that occured if RSKreaddata.m is run twice.
+    - Fix bugs that occured if RSKreaddata.m is run twice
     - Seperate profile metadata reading into a different fuction in RSKopen.m
     - Add option to enter UTCdelta for geodata
     - Remove channels units and longName from data table
@@ -100,14 +101,11 @@ If the [TEOS-10](http://www.teos-10.org/software.htm) matlab toolbox is installe
     - improved documentation
   
 * Version 1.3
-
     - compatible with RSK generated from an EasyParse (iOs format) logger
 
 * Version 1.2
-
     - added linux 64 bit mksqlite library
 
 * Version 1.1
-
     - added burst and event readers
 
