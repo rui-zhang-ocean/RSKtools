@@ -1,6 +1,7 @@
 function profileNum = checkprofiles(RSK, profileNum, direction)
 
-% checkprofile - check if profiles are present
+% checkprofile - check if profiles are present and outputs the profiles
+% if none are provided
 %
 % Syntax:  [profileNum] = checkprofile(RSK, profileNum, direction)
 % 
@@ -23,7 +24,7 @@ function profileNum = checkprofiles(RSK, profileNum, direction)
 % Author: RBR Ltd. Ottawa ON, Canada
 % email: support@rbr-global.com
 % Website: www.rbr-global.com
-% Last revision: 2017-02-08
+% Last revision: 2017-03-30
 
 isDown = isfield(RSK.profiles.downcast, 'data');
 isUp   = isfield(RSK.profiles.upcast, 'data');
