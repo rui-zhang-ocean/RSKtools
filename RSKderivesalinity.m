@@ -30,7 +30,7 @@ if isempty(which('gsw_SP_from_C'))
     error('RSKtools requires TEOS-10 toolbox to derive salinity. Download it here: http://www.teos-10.org/software.htm');
 end
     
-if length(RSK.channels) < 3 || (~any(strcmpi({RSK.channels.longName}, 'Conductivity')) && ~any(strcmpi({RSK.channels.longName}, 'Temperature')) && ~any(strcmpi({RSK.channels.longName}, 'Pressure')))
+if length(RSK.channels) < 3 || ~any(strcmpi({RSK.channels.longName}, 'Conductivity')) || ~any(strcmpi({RSK.channels.longName}, 'Temperature')) || ~any(strcmpi({RSK.channels.longName}, 'Pressure'))
     error('Conductivity, Temperature and Pressure are required to calculate Salinity');
 end
 
