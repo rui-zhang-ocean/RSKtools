@@ -2,7 +2,7 @@ function [v, vsnMajor, vsnMinor]  = RSKfirmwarever(RSK)
 
 % RSKfirmwarever - Returns the firmware version of the RSK file.
 %
-% Syntax:  [v, vsnMajor, vsnMinor, vsnPatch] = RSKfirmwarever(RSK)
+% Syntax:  [v, vsnMajor, vsnMinor] = RSKfirmwarever(RSK)
 %
 % RSKfirmwarever will return the most recent version of the firmware.
 %
@@ -23,7 +23,7 @@ function [v, vsnMajor, vsnMinor]  = RSKfirmwarever(RSK)
 
 [~, RSKvsnMajor, RSKvsnMinor, RSKvsnPatch] = RSKver(RSK);
 
-if (RSKvsnMajor > 1) || ((RSKvsnMajor == 1)&&(RSKvsnMinor > 12)) || ((RSKvsnMajor == 1)&&(RSKvsnMinor == 12)&&(RSKvsnPatch >= 2))
+if (RSKvsnMajor >= 2) || ((RSKvsnMajor == 1)&&(RSKvsnMinor >= 13)) || ((RSKvsnMajor == 1)&&(RSKvsnMinor == 12)&&(RSKvsnPatch >= 2))
     v = RSK.instruments.firmwareVersion;
 else
     v = RSK.deployments.firmwareVersion;
