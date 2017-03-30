@@ -46,6 +46,12 @@ RSK.instrumentChannels = mksqlite('select * from instrumentChannels');
 RSK.parameters = mksqlite('select * from parameters');
 
 
+%% Load sampling details
+if (vsnMajor > 1) || ((vsnMajor == 1)&&(vsnMinor > 13)) || ((vsnMajor == 1)&&(vsnMinor == 13)&&(vsnPatch >= 8))
+    RSK = readsamplingdetails(RSK);
+end
+
+
 %% Load calibration
 %As of RSK v1.13.4 parameterKeys is a table
 if (vsnMajor > 1) || ((vsnMajor == 1)&&(vsnMinor > 13)) || ((vsnMajor == 1)&&(vsnMinor == 13)&&(vsnPatch >= 4))

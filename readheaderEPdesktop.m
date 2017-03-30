@@ -42,6 +42,12 @@ RSK.instruments = mksqlite('select * from instruments');
 RSK.thumbnailData = RSKreadthumbnail;
 
 
+%% Load sampling details
+if (vsnMajor > 1) || ((vsnMajor == 1)&&(vsnMinor > 13)) || ((vsnMajor == 1)&&(vsnMinor == 13)&&(vsnPatch >= 8))
+    RSK = readsamplingdetails(RSK);
+end
+
+
 %% Tables that may or may not be in file
 tables = mksqlite('SELECT name FROM sqlite_master WHERE type="table"');
 
