@@ -19,7 +19,7 @@ function   check = iscompatibleversion(RSK, minimumvsnMajor, minimumvsnMinor, mi
 %    vsnPatch - The minimum requirement version number of category patch.
 %
 % Output:
-%    check - A logical index 1, version is compatible; 2, version is
+%    check - A logical index 1, version is compatible; 0, version is
 %            not compatible
 %
 % Author: RBR Ltd. Ottawa ON, Canada
