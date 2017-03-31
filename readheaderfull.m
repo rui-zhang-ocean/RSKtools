@@ -22,7 +22,7 @@ function RSK = readheaderfull(RSK)
 % Author: RBR Ltd. Ottawa ON, Canada
 % email: support@rbr-global.com
 % Website: www.rbr-global.com
-% Last revision: 2017-03-27
+% Last revision: 2017-03-31
 
 %% Set up version variables
 [~, vsnMajor, vsnMinor, vsnPatch] = RSKver(RSK);
@@ -31,22 +31,12 @@ function RSK = readheaderfull(RSK)
 
 RSK.appSettings = mksqlite('select * from appSettings');
 
-RSK.channels = mksqlite('select shortName,longName,units from channels');
-
-RSK.epochs = mksqlite('select deploymentID,startTime/1.0 as startTime, endTime/1.0 as endTime from epochs');
-RSK.epochs.startTime = RSKtime2datenum(RSK.epochs.startTime);
-RSK.epochs.endTime = RSKtime2datenum(RSK.epochs.endTime);
-
-RSK.schedules = mksqlite('select * from schedules');
-
 RSK.ranging = mksqlite('select * from ranging');
 
-RSK.deployments = mksqlite('select * from deployments');
-
-RSK.instruments = mksqlite('select * from instruments');
 RSK.instrumentChannels = mksqlite('select * from instrumentChannels');
 
 RSK.parameters = mksqlite('select * from parameters');
+
 % RSK = RSKreadcalibrations(RSK);
 % NOTE : We no longer automatically read the calibrations table when
 % opening a file with RSKopen. Use RSKreadcalibrations(RSK) to load the

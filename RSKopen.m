@@ -51,6 +51,7 @@ if ~exist(fname,'file')
 end
 dbid = mksqlite('open',fname);
 
+%% Check version 
 RSK.dbInfo = mksqlite('select version,type from dbInfo');
 [vsnString, vsnMajor, vsnMinor, vsnPatch] = RSKver(RSK);
 if vsnMajor > latestRSKversionMajor
@@ -60,6 +61,10 @@ elseif (vsnMajor == latestRSKversionMajor) && (vsnMinor > latestRSKversionMinor)
 elseif (vsnMajor == latestRSKversionMajor) && (vsnMinor == latestRSKversionMinor) && (vsnPatch > latestRSKversionPatch)
     warning(['RSK version ' vsnString ' is newer than your RSKtools version. It is recommended to update RSKtools at https://rbr-global.com/support/matlab-tools']);
 end
+
+
+%% Read tables
+RSK = readstandardtables(RSK);
 
 switch RSK.dbInfo(end).type
     case 'EasyParse'
