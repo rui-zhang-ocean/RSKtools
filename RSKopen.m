@@ -61,6 +61,8 @@ elseif (vsnMajor == latestRSKversionMajor) && (vsnMinor == latestRSKversionMinor
     warning(['RSK version ' vsnString ' is newer than your RSKtools version. It is recommended to update RSKtools at https://rbr-global.com/support/matlab-tools']);
 end
 
+RSK = readstandardtables(RSK);
+
 switch RSK.dbInfo(end).type
     case 'EasyParse'
         RSK = readheaderEP(RSK);
