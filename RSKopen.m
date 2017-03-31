@@ -37,18 +37,20 @@ function [RSK, dbid] = RSKopen(fname)
 % Author: RBR Ltd. Ottawa ON, Canada
 % email: support@rbr-global.com
 % Website: www.rbr-global.com
-% Last revision: 2017-01-27
+% Last revision: 2017-03-31
 
 RSKconstants
 
 if nargin==0
     fname=uigetfile({'*.rsk','*.RSK'},'Choose an RSK file');
 end
-if ~exist(fname,'file')
+
+if exist(fullfile(cd, fname),'file') ~= 2
     disp('File cannot be found')
     RSK=[];dbid=[];
     return
 end
+
 dbid = mksqlite('open',fname);
 
 RSK.dbInfo = mksqlite('select version,type from dbInfo');
