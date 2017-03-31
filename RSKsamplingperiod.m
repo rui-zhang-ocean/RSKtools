@@ -16,12 +16,10 @@ function samplingperiod = RSKsamplingperiod(RSK)
 % Author: RBR Ltd. Ottawa ON, Canada
 % email: support@rbr-global.com
 % Website: www.rbr-global.com
-% Last revision: 2017-03-30
-
-[~, vsnMajor, vsnMinor, vsnPatch]  = RSKver(RSK);
+% Last revision: 2017-03-31
 
 mode = RSK.schedules.mode;
-if (vsnMajor > 1) || ((vsnMajor == 1)&&(vsnMinor > 13)) || ((vsnMajor == 1)&&(vsnMinor == 13)&&(vsnPatch >= 8))
+if iscompatibleversion(RSK, 1, 13, 8)
     if strcmpi(mode, 'ddsampling')
         samplingperiod.fastThreshold = RSK.directional.fastThreshold/1000;
         samplingperiod.slowThreshold = RSK.directional.slowThreshold/1000;

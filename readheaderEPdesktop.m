@@ -20,8 +20,6 @@ function RSK = readheaderEPdesktop(RSK)
 % Website: www.rbr-global.com
 % Last revision: 2017-03-31
 
-%% Set up version variables
-[~, vsnMajor, vsnMinor, vsnPatch] = RSKver(RSK);
 
 %% Tables that are definitely in 'EPdesktop'
 
@@ -29,7 +27,7 @@ RSK.thumbnailData = RSKreadthumbnail;
 
 
 %% Load sampling details
-if (vsnMajor > 1) || ((vsnMajor == 1)&&(vsnMinor > 13)) || ((vsnMajor == 1)&&(vsnMinor == 13)&&(vsnPatch >= 8))
+if iscompatibleversion(RSK, 1, 13, 8)
     RSK = readsamplingdetails(RSK);
 end
 

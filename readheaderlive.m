@@ -35,14 +35,14 @@ RSK.parameters = mksqlite('select * from parameters');
 
 
 %% Load sampling details
-if (vsnMajor > 1) || ((vsnMajor == 1)&&(vsnMinor > 13)) || ((vsnMajor == 1)&&(vsnMinor == 13)&&(vsnPatch >= 8))
+if iscompatibleversion(RSK, 1, 13, 8)
     RSK = readsamplingdetails(RSK);
 end
 
 
 %% Load calibration
 %As of RSK v1.13.4 parameterKeys is a table
-if (vsnMajor > 1) || ((vsnMajor == 1)&&(vsnMinor > 13)) || ((vsnMajor == 1)&&(vsnMinor == 13)&&(vsnPatch >= 4))
+if iscompatibleversion(RSK, 1, 13, 4)
     RSK.parameterKeys = mksqlite('select * from parameterKeys'); 
 end
 
@@ -50,7 +50,7 @@ end
 %% Remove non marine channels
 results = mksqlite('select isDerived from channels');
 % channelStatus was instroduced in RSK V 1.8.9.
-if (vsnMajor > 1) || ((vsnMajor == 1)&&(vsnMinor > 8)) || ((vsnMajor == 1)&&(vsnMinor == 8) && (vsnPatch >= 9))
+if iscompatibleversion(RSK, 1, 8, 9)
    isDerived = logical([RSK.instrumentChannels.channelStatus]); % hidden and derived channels have a non-zero channelStatus
 else
    isDerived = logical([results.isDerived]); % some files may not have channelStatus
