@@ -123,42 +123,17 @@ for ndx = profileNum
     lags = -20:20;
     dSsd = [];
     for l=lags
-        Cshift = shiftarray(C, l);
+        Cshift = shiftarray(C, l, 'nanpad');
         SS = gsw_SP_from_C(Cshift, T, P);
-        Ssmooth = smooth(SS, windowLength);
+        Ssmooth = runavg(SS, windowLength, 'nanpad');
         dS = SS - Ssmooth;
-        dSsd = [dSsd std(dS)];
+        dSsd = [dSsd std(dS, 'omitnan')];
     end
     minlag = min(abs(lags(dSsd == min(dSsd))));
     bestlag = [bestlag minlag];
 end
 lag = bestlag;
 
-
-    %% Nested function
-    function out = smooth(in, nsmooth)
-
-    % smooths an input vector with a boxcar filter of length nsmooth
-
-    n = length(in);
-    out = NaN*in;
-
-    if mod(nsmooth, 2) == 0
-        warning('nsmooth must be odd; adding 1');
-        nsmooth = nsmooth + 1;
-    end
-
-
-    for ndx = 1:n
-        if ndx <= (nsmooth-1)/2
-            out(ndx) = mean(in(1:ndx+(nsmooth-1)/2));
-        elseif ndx >= n-(nsmooth-1)/2
-            out(ndx) = mean(in(ndx-(nsmooth-1)/2:n));
-        else
-            out(ndx) = mean(in(ndx-(nsmooth-1)/2:ndx+(nsmooth-1)/2));
-        end
-    end
-    end
 end
 
 
