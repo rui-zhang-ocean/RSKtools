@@ -2,7 +2,7 @@ function [out, windowLength] = runmed(in, windowLength)
 
 % runmed - Smooth a time series using a running median filter.
 %
-% Syntax:  [out] = runmed(in, windowLength)
+% Syntax:  [out, windowLength] = runmed(in, windowLength)
 % 
 % runmed is helper function that performs a running median of length
 % windowLength. The time series is mirror padded to have values at the
