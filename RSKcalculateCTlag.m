@@ -33,7 +33,7 @@ function lag = RSKcalculateCTlag(RSK, varargin)
 %                 direction - 'up' for upcast, 'down' for downcast, or 'both' for
 %                     all. Default is 'down'.
 %
-%                 nsmooth - The length of the filter window used for the
+%                 windowLength - The length of the filter window used for the
 %                     reference salinity. Default is 21 samples.
 %
 % Outputs:
@@ -48,7 +48,7 @@ function lag = RSKcalculateCTlag(RSK, varargin)
 %    lag = RSKcalculateCTlag(rsk);
 %
 %   2. Specified profiles (first 4), reference salinity found with 13 pt boxcar.
-%    lag = RSKcalculateCTlag(rsk, 'profileNum',1:4, 'nsmooth',13);
+%    lag = RSKcalculateCTlag(rsk, 'profileNum',1:4, 'windowLength',13);
 %
 %   3. All upcast profiles
 %    lag = RSKcalculateCTlag(rsk, 'direction','up');
@@ -56,7 +56,7 @@ function lag = RSKcalculateCTlag(RSK, varargin)
 % Author: RBR Ltd. Ottawa ON, Canada
 % email: support@rbr-global.com
 % Website: www.rbr-global.com
-% Last revision: 2017-02-08
+% Last revision: 2017-04-03
     
     
 %% check if user has the TEOS-10 GSW toolbox installed
@@ -75,20 +75,20 @@ checkDirection = @(x) any(validatestring(x,validDirections));
 
 %% Parse Inputs
 
-p = inputParser;
-addRequired(p,'RSK', @isstruct);
-addParameter(p, 'pressureRange', [], @isvector);
-addParameter(p,'direction', 'down', checkDirection);
-addParameter(p,'profileNum', [])   
-addParameter(p,'nsmooth', 21, @isnumeric)
-parse(p,RSK,varargin{:})
+P = inputParser;
+addRequired(P,'RSK', @isstruct);
+addParameter(P, 'pressureRange', [], @isvector);
+addParameter(P,'direction', 'down', checkDirection);
+addParameter(P,'profileNum', [])   
+addParameter(P,'windowLength', 21, @isnumeric)
+parse(P,RSK,varargin{:})
 
 % Assign each input argument
-RSK = p.Results.RSK;
-pressureRange = p.Results.pressureRange;
-direction = p.Results.direction;
-profileNum = p.Results.profileNum;
-nsmooth = p.Results.nsmooth;
+RSK = P.Results.RSK;
+pressureRange = P.Results.pressureRange;
+direction = P.Results.direction;
+profileNum = P.Results.profileNum;
+windowLength = P.Results.windowLength;
 
 
 %% Determine if the structure has downcasts and upcasts
@@ -99,7 +99,7 @@ castdir = [direction 'cast'];
 
 %% find column number of channels
 
-pcol = strcmpi('pressure', {RSK.channels.longName});
+Pcol = strcmpi('pressure', {RSK.channels.longName});
 Ccol = strcmpi('conductivity', {RSK.channels.longName});
 Tcol = strcmpi('temperature', {RSK.channels.longName});
 
@@ -107,25 +107,25 @@ Tcol = strcmpi('temperature', {RSK.channels.longName});
 %% Calculate Optimal Lag
 
 bestlag = [];
-for ndx=profileNum
+for ndx = profileNum
     disp(['Processing profile: ' num2str(ndx)])
     C = RSK.profiles.(castdir).data(ndx).values(:, Ccol);
     T = RSK.profiles.(castdir).data(ndx).values(:, Tcol);
-    p = RSK.profiles.(castdir).data(ndx).values(:, pcol);
+    P = RSK.profiles.(castdir).data(ndx).values(:, Pcol);
     
     if ~isempty(pressureRange)
-        selectValues = (p >= pressureRange(1) & p<= pressureRange(2)); 
+        selectValues = (P >= pressureRange(1) & P<= pressureRange(2)); 
         C = C(selectValues);
         T = T(selectValues);
-        p = p(selectValues);
+        P = P(selectValues);
     end
     
     lags = -20:20;
     dSsd = [];
     for l=lags
         Cshift = shiftarray(C, l);
-        SS = gsw_SP_from_C(Cshift, T, p);
-        Ssmooth = smooth(SS, nsmooth);
+        SS = gsw_SP_from_C(Cshift, T, P);
+        Ssmooth = smooth(SS, windowLength);
         dS = SS - Ssmooth;
         dSsd = [dSsd std(dS)];
     end
