@@ -88,9 +88,8 @@ results.tstamp = RSKtime2datenum(t); % convert RSK millis time to datenum
 
 %% Remove hidden channels from data
 % channelStatus was instroduced in RSK V 1.8.9.
-[~, vsnMajor, vsnMinor, vsnPatch]  = RSKver(RSK);
 if ~strcmpi(RSK.dbInfo(end).type, 'EPdesktop')
-    if (vsnMajor > 1) || ((vsnMajor == 1)&&(vsnMinor > 8)) || ((vsnMajor == 1)&&(vsnMinor == 8) && (vsnPatch >= 9))
+    if iscompatibleversion(RSK, 1, 8, 9)
         isDerived = logical([RSK.instrumentChannels.channelStatus]);% hidden and derived channels have a non-zero channelStatus
     else
         results = mksqlite('select isDerived from channels');

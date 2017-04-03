@@ -4,10 +4,9 @@ function RSK = readheaderlive(RSK)
 %
 % Syntax:  [RSK] = readheaderlive(RSK)
 %
-% readheaderlive is a RSKtools helper function that opens the populated
-% tables of RSK 'live' files.
-% These tables are appSettings, channels, datasets, datasetDeployments, epochs,
-% schedules, deployments, instruments ,instrumentsChannels and parameters.
+% readheaderlive is a RSKtools helper function that opens the non-standars
+% populated tables of RSK 'live' files.
+% These tables are appSettings, instrumentsChannels and parameters.
 % If data is available it will open parameterKeys and thumbnailData.  
 %
 % Note: Only marine channels will be displayed.
@@ -30,31 +29,20 @@ function RSK = readheaderlive(RSK)
 %% Tables that are definitely in 'live'
 RSK.appSettings = mksqlite('select * from appSettings');
 
-RSK.channels = mksqlite('select shortName,longName,units from channels');
-
-RSK.epochs = mksqlite('select deploymentID,startTime/1.0 as startTime, endTime/1.0 as endTime from epochs');
-RSK.epochs.startTime = RSKtime2datenum(RSK.epochs.startTime);
-RSK.epochs.endTime = RSKtime2datenum(RSK.epochs.endTime);
-
-RSK.schedules = mksqlite('select * from schedules');
-
-RSK.deployments = mksqlite('select * from deployments');
-
-RSK.instruments = mksqlite('select * from instruments');
 RSK.instrumentChannels = mksqlite('select * from instrumentChannels');
 
 RSK.parameters = mksqlite('select * from parameters');
 
 
 %% Load sampling details
-if (vsnMajor > 1) || ((vsnMajor == 1)&&(vsnMinor > 13)) || ((vsnMajor == 1)&&(vsnMinor == 13)&&(vsnPatch >= 8))
+if iscompatibleversion(RSK, 1, 13, 8)
     RSK = readsamplingdetails(RSK);
 end
 
 
 %% Load calibration
 %As of RSK v1.13.4 parameterKeys is a table
-if (vsnMajor > 1) || ((vsnMajor == 1)&&(vsnMinor > 13)) || ((vsnMajor == 1)&&(vsnMinor == 13)&&(vsnPatch >= 4))
+if iscompatibleversion(RSK, 1, 13, 4)
     RSK.parameterKeys = mksqlite('select * from parameterKeys'); 
 end
 
@@ -62,7 +50,7 @@ end
 %% Remove non marine channels
 results = mksqlite('select isDerived from channels');
 % channelStatus was instroduced in RSK V 1.8.9.
-if (vsnMajor > 1) || ((vsnMajor == 1)&&(vsnMinor > 8)) || ((vsnMajor == 1)&&(vsnMinor == 8) && (vsnPatch >= 9))
+if iscompatibleversion(RSK, 1, 8, 9)
    isDerived = logical([RSK.instrumentChannels.channelStatus]); % hidden and derived channels have a non-zero channelStatus
 else
    isDerived = logical([results.isDerived]); % some files may not have channelStatus

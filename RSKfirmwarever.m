@@ -21,9 +21,7 @@ function [v, vsnMajor, vsnMinor]  = RSKfirmwarever(RSK)
 % Website: www.rbr-global.com
 % Last revision: 2017-03-28
 
-[~, RSKvsnMajor, RSKvsnMinor, RSKvsnPatch] = RSKver(RSK);
-
-if (RSKvsnMajor >= 2) || ((RSKvsnMajor == 1)&&(RSKvsnMinor >= 13)) || ((RSKvsnMajor == 1)&&(RSKvsnMinor == 12)&&(RSKvsnPatch >= 2))
+if iscompatibleversion(RSK, 1, 12, 2)
     v = RSK.instruments.firmwareVersion;
 else
     v = RSK.deployments.firmwareVersion;

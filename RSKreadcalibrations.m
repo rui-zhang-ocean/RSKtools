@@ -23,14 +23,12 @@ function RSK = RSKreadcalibrations(RSK)
 % Website: www.rbr-global.com
 % Last revision: 2017-03-30
 
-[~, vsnMajor, vsnMinor, vsnPatch] = RSKver(RSK);
-
 if ~strcmp(RSK.dbInfo(end).type, 'full')
     error('Only files of type "full" have a calibrations table');
 end
 
 % As of RSK v1.13.4 coefficients is it's own table. We add it back into calibration to be consistent with previous versions.
-if (vsnMajor > 1) || ((vsnMajor == 1)&&(vsnMinor > 13)) || ((vsnMajor == 1)&&(vsnMinor == 13)&&(vsnPatch >= 4))
+if iscompatibleversion(RSK, 1, 13, 4)
     RSK = coef2cal(RSK);
 else
     RSK.calibrations = mksqlite('select * from calibrations');
