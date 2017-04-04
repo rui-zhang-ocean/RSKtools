@@ -1,3 +1,4 @@
+
 function [out, windowLength] = runmed(in, windowLength, edgevalues)
 
 % runmed - Smooth a time series using a running median filter.
@@ -36,6 +37,8 @@ if mod(windowLength, 2) == 0
     windowLength = windowLength + 1;
 end
 
+
+padsize = (windowLength-1)/2;
 %% Mirror pad the time series
 switch edgevalues
     case 'mirrorpad'
