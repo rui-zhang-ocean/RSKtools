@@ -1,3 +1,4 @@
+
 function RSK = RSKsmooth(RSK, channel, varargin)
 
 % RSKsmooth - Applies a low pass filter on specified channels.
@@ -104,9 +105,9 @@ for chanName = channel
             in = RSK.data.values(:,channelCol);
             switch filter
                 case 'boxcar'
-                    [out, windowLength] = runavg(in, windowLength);
+                    [out, windowLength] = runavg(in, windowLength, 'mirrorpad');
                 case 'median'
-                    [out, windowLength] = runmed(in, windowLength);
+                    [out, windowLength] = runmed(in, windowLength, 'mirrorpad');
             end      
             RSK.data.values(:,channelCol) = out;
             
@@ -115,9 +116,9 @@ for chanName = channel
                 in = RSK.profiles.(castdir).data(ndx).values(:,channelCol);
                 switch filter
                     case 'boxcar'
-                        [out, windowLength] = runavg(in, windowLength);
+                        [out, windowLength] = runavg(in, windowLength, 'mirrorpad');
                     case 'median'
-                        [out, windowLength] = runmed(in, windowLength);
+                        [out, windowLength] = runmed(in, windowLength, 'mirrorpad');
                 end
                 RSK.profiles.(castdir).data(ndx).values(:,channelCol) = out;
             end
