@@ -83,8 +83,7 @@ nup = length(profileNum);
 ndown = length(profileNum);
 
 if strcmp(direction, 'down') || strcmp(direction, 'both')
-    RSK.profiles.downcast.data(ndown).tstamp = [];
-    RSK.profiles.downcast.data(ndown).values = [];
+    RSK.profiles.downcast.data = [];
     % loop through downcasts
     ii = 1;
     for i=profileNum
@@ -99,8 +98,7 @@ if strcmp(direction, 'down') || strcmp(direction, 'both')
 end
 
 if strcmp(direction, 'up') || strcmp(direction, 'both')
-    RSK.profiles.upcast.data(nup).tstamp = [];
-    RSK.profiles.upcast.data(nup).values = [];
+    RSK.profiles.upcast.data = [];
     % loop through upcasts
     ii = 1;
     for i=profileNum
