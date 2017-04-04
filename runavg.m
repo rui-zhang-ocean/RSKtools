@@ -42,11 +42,11 @@ padsize = (windowLength-1)/2;
 %% Mirror pad the time series
 switch edgevalues
     case 'mirrorpad'
-        inpadded = mirrorpad(in, padsize)
+        inpadded = mirrorpad(in, padsize);
     case 'nanpad'
-        inpadded = nanpad(in, padsize)
+        inpadded = nanpad(in, padsize);
     case 'zeroOrderhold'
-        inpadded = zeroOrderholdpad(in, padsize)
+        inpadded = zeroOrderholdpad(in, padsize);
 end
 
 for ndx = 1:n
