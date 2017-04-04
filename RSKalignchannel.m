@@ -1,10 +1,11 @@
+
 function [RSK] = RSKalignchannel(RSK, channel, lag, varargin)
 
 % RSKalignchannel - Align a channel profiles using a specified lag.
 %
 % Syntax:  [RSK] = RSKalignchannel(RSK, channel, lag, [OPTIONS])
 % 
-% Applies the lag to minimize  "spikes". Typically used for salinity
+% Applies the lag to minimize  "spikes". Typically used for conductivity
 % to reverse the effects from temporal C/T mismatches when the
 % sensors are moving through regions of high vertical gradients.
 %
@@ -22,6 +23,15 @@ function [RSK] = RSKalignchannel(RSK, channel, lag, varargin)
 %
 %                 direction - 'up' for upcast, 'down' for downcast, or 'both' for
 %                     all. Default is 'down'.
+%
+%                  shiftval - The values that will fill the shifted area,
+%                     Options are 'nan', fills the removed samples of
+%                     the shifted channel with NaNs', 'zeroOrderhold' fills
+%                     the removed samples of the shifted channels with the
+%                     first or last value repeated and 'union' will deleted
+%                     the values of the OTHER channels that do not align
+%                     with the shifted channel (note: this will reduce the
+%                     size of your values array by "lag")
 %
 % Outputs:
 %    RSK - The RSK structure with aligned channel values.
@@ -43,12 +53,15 @@ function [RSK] = RSKalignchannel(RSK, channel, lag, varargin)
 % Author: RBR Ltd. Ottawa ON, Canada
 % email: support@rbr-global.com
 % Website: www.rbr-global.com
-% Last revision: 2017-03-22
+% Last revision: 2017-04-04
 
 %% Check input and default arguments
 
 validDirections = {'down', 'up'};
 checkDirection = @(x) any(validatestring(x,validDirections));
+
+validShiftval = {'zeroOrderhold', 'union', 'nan'};
+checkShiftval = @(x) any(validatestring(x,validShiftval));
 
 
 %% Parse Inputs
@@ -59,6 +72,7 @@ addRequired(p, 'channel', @ischar);
 addRequired(p, 'lag', @isnumeric);
 addParameter(p, 'profileNum', [], @isnumeric);
 addParameter(p, 'direction', 'down', checkDirection);
+addParameter(p, 'shiftval', 'zeroOrderhold', checkShiftval);
 parse(p, RSK, channel, lag, varargin{:})
 
 % Assign each input argument
@@ -67,61 +81,52 @@ channel = p.Results.channel;
 lag = p.Results.lag;
 profileNum = p.Results.profileNum;
 direction = p.Results.direction;
-
+shiftval = p.Results.shiftval;
 
 %% Determine if the structure has downcasts and upcasts
-
 profileIdx = checkprofiles(RSK, profileNum, direction);
 castdir = [direction 'cast'];
 
 
 %% Check to make sure that lags are integers & one value of CTlag or one for each profile
-
-if ~isequal(fix(lag),lag),
-    error('Lag values must be integers.')
-end
-
-if length(lag) == 1
-    if length(profileIdx) == 1
-        lags = lag;
-    else
-        lags = repmat(lag, 1, length(profileIdx));
-    end
-elseif length(lag) > 1
-    if length(lag) ~= length(profileIdx)
-        error(['Length of lag must match number of profiles or be a ' ...
-               'single value']);
-    else 
-        lags = lag;
-    end
-else
-    lags = lag;
-end
+lags = checklag(lag, profileIdx);
 
 
-%% Apply lag to any other channel.
+%% Apply lag
 counter = 0;
 channelCol = find(strcmpi(channel, {RSK.channels.longName}));
 
 for ndx = profileIdx
     counter = counter + 1;       
     channelData = RSK.profiles.(castdir).data(ndx).values(:, channelCol);
-    channelShifted = shiftarray(channelData, lags(counter));
+    if strcmpi(shiftval, 'nan')
+        channelShifted = shiftarray(channelData, lags(counter), 'nanpad');
+    else
+        channelShifted = shiftarray(channelData, lags(counter), 'zeroOrderhold');
+    end
     RSK.profiles.(castdir).data(ndx).values(:, channelCol) = channelShifted;
-end
+    
+    if strcmpi(shiftval, 'union')
+       if lags(counter)>0 
+           RSK.profiles.(castdir).data(ndx).values = RSK.profiles.(castdir).data(ndx).values(lags(counter)+1:end,:);
+           RSK.profiles.(castdir).data(ndx).tstamp = RSK.profiles.(castdir).data(ndx).tstamp(lags(counter)+1:end);
+       elseif lags(counter) <0 
+           RSK.profiles.(castdir).data(ndx).values = RSK.profiles.(castdir).data(ndx).values(1:end-lags(counter),:);
+           RSK.profiles.(castdir).data(ndx).tstamp = RSK.profiles.(castdir).data(ndx).tstamp(1:end-lags(counter));
+       end
+    end
 
+end
 
 %% Update log
-
-if isempty(profileNum)
-    logprofiles = ['all ' direction 'cast profiles'];
-elseif length(profileIdx) == 1
-    logprofiles = [direction 'cast profile ' num2str(profileIdx, '%1.0f')];
-else 
-    logprofiles = [direction 'cast profiles' num2str(profileIdx(1:end-1), ', %1.0f') ' and ' num2str(profileIdx(end)) ', respectively'];
+if isempty(profileNum) && length(lag) == 1
+    logentry = [channel ' aligned using a ' num2str(lags(1)) ' sample lag on all ' direction 'cast profiles.'];
+    RSK = RSKappendtolog(RSK, logentry);
+else
+    for ndx = 1:length(profileIdx)
+        logentry = [channel ' aligned using a ' num2str(lags(ndx)) ' sample lag on ' direction 'cast profile ' num2str(profileIdx(ndx)) '.'];
+        RSK = RSKappendtolog(RSK, logentry);
+    end
 end
-logentry = sprintf('%s aligned using a %1.0f sample lag on %s .', channel, lag, logprofiles);
-
-RSK = RSKappendtolog(RSK, logentry);
 end
 
