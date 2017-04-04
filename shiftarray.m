@@ -1,4 +1,4 @@
-function out = shiftarray(in, shift)
+function out = shiftarray(in, shift, shiftval)
 
 % shiftarray - Convenience function to shift a time series by a
 % specified number of samples
@@ -13,12 +13,14 @@ function out = shiftarray(in, shift)
 % to the value of the original end point (zero order hold).
 %
 % Inputs:
-%    in - the input time series
+%    in - The input time series
 %
-%    shift - the number of samples to shift by
+%    shift - The number of samples to shift by
+%
+%    shiftval - The value to set the beginning or end values.
 %
 % Outputs:
-%    out - the shifted time series
+%    out - The shifted time series
 %
 % Example: 
 %    conductivityLagged = shiftarray(rsk.data.values(:,1), -3); % shift back by 3 samples
@@ -33,8 +35,12 @@ out = NaN*in;
 
 I = 1:n;
 Ilag = I-shift;
-Ilag(Ilag<1) = 1;
-Ilag(Ilag>n) = n;
-
-out = in(Ilag);
+switch shiftval
+    case 'zeroOrderhold'
+        Ilag(Ilag<1) = 1;
+        Ilag(Ilag>n) = n;
+        out = in(Ilag);
+    case 'nanpad'
+        out(Ilag>=1 & Ilag <=n) = in(Ilag(Ilag>=1 & Ilag <=n));
+end
 end
