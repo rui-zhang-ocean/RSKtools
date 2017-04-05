@@ -57,7 +57,7 @@ function RSK = RSKreadprofiles(RSK, profileNum, direction, latency)
 % Author: RBR Ltd. Ottawa ON, Canada
 % email: support@rbr-global.com
 % Website: www.rbr-global.com
-% Last revision: 2016-06-29
+% Last revision: 2017-04-04
 
 if ~isfield(RSK, 'profiles') 
     error('No profiles events in this RSK');
@@ -75,16 +75,19 @@ elseif nargin == 2
 elseif nargin == 3
     latency = 0;
 end
-if isempty(profileNum) profileNum = 1:nprof; end
-if isempty(direction) direction = 'down'; end
-if isempty(latency) latency = 0; end
+if isempty(profileNum);
+    profileNum = 1:nprof; 
+end
+if isempty(direction) 
+    direction = 'down'; 
+end
+if isempty(latency) 
+    latency = 0; 
+end
 
-nup = length(profileNum);
-ndown = length(profileNum);
 
 if strcmp(direction, 'down') || strcmp(direction, 'both')
-    RSK.profiles.downcast.data(ndown).tstamp = [];
-    RSK.profiles.downcast.data(ndown).values = [];
+    RSK.profiles.downcast.data = [];
     % loop through downcasts
     ii = 1;
     for i=profileNum
@@ -99,8 +102,7 @@ if strcmp(direction, 'down') || strcmp(direction, 'both')
 end
 
 if strcmp(direction, 'up') || strcmp(direction, 'both')
-    RSK.profiles.upcast.data(nup).tstamp = [];
-    RSK.profiles.upcast.data(nup).values = [];
+    RSK.profiles.upcast.data = [];
     % loop through upcasts
     ii = 1;
     for i=profileNum
@@ -114,3 +116,5 @@ if strcmp(direction, 'up') || strcmp(direction, 'both')
 end
 RSK.instrumentChannels = tmp.instrumentChannels;
 RSK.channels = tmp.channels;
+
+end
