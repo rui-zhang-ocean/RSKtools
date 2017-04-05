@@ -127,15 +127,9 @@ switch series
             channel, windowLength, threshold, action);
 
     case 'profile'
-        if isempty(profileNum)
-            logprofiles = ['all ' direction 'cast profiles'];
-        elseif length(profileIdx) == 1
-            logprofiles = [direction 'cast profiles ' num2str(profileIdx, '%1.0f')];
-        else 
-            logprofiles = [direction 'cast profiles' num2str(profileIdx(1:end-1), ', %1.0f') ' and ' num2str(profileIdx(end))];
-        end
+        logprofile = logentryprofiles(direction, profileNum, profileIdx);
         logentry = sprintf('%s de-spiked using a %1.0f sample window and %1.0f sigma threshold on %s. Spikes were treated with %s.',...
-            channel, windowLength, threshold, logprofiles, action);
+            channel, windowLength, threshold, logprofile, action);
 end
 
 RSK = RSKappendtolog(RSK, logentry);
