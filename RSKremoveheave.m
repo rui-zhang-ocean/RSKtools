@@ -1,15 +1,14 @@
-function [RSK, flags] = RSKremoveheave(RSK, varargin)
+function [RSK, flagidx] = RSKremoveheave(RSK, varargin)
 
 % RSKremoveheave - Remove values that have pressure reversal or slowdows during
 %                  the profiling.
 %
-% Syntax:  [RSK, flags] = RSKremoveheave(RSK, [OPTIONS])
+% Syntax:  [RSK, flagidx] = RSKremoveheave(RSK, [OPTIONS])
 % 
 % RSKremoveheave - This function filters the pressure channel with a lowpass
 % boxcar to reduce the effect of noise, then finds samples that have a low
-% profiling velocity or decelerate below a specified threshold and replaces
-% them with a NaN, deletes the value or ignores it. It operates on two
-% scans to determine the velocity and two velocities for the acceleration.
+% profiling velocity and replaces them with a NaN. It operates on two scans
+% to determine the velocity.     
 % 
 % Inputs:
 %   [Required] - RSK - The input RSK structure, with profiles as read using
@@ -25,22 +24,13 @@ function [RSK, flags] = RSKremoveheave(RSK, varargin)
 %                velThreshold - The minimum speed at which the profile must
 %                    be taken. Default is 0.25 m/s
 %
-%                accelThreshold - The minimum acceleration at which the profile must
-%                    be taken. Default '-0.1'.
-%
-%                action - The 'action' to perform on a flagged value. The
-%                    default, 'NaN', is to leave the spike as a missing
-%                    value. Other options include 'remove', removes the
-%                    value and 'nothing' simply returns the same RSK as was
-%                    input and returns a vector of flagged samples.
-%
 %                latitude - Latitude at which the profile was taken.
 %                    Default is 45.
 %
 % Outputs:
 %    RSK - The structure without pressure reversal or slowdowns.
 %
-%    flags - The index of the samples that did not meet the criteria.
+%    flagidx - The index of the samples that did not meet the profiling velocity criteria.
 %
 % Example: 
 %    RSK = RSKopen(RSK)
@@ -50,7 +40,7 @@ function [RSK, flags] = RSKremoveheave(RSK, varargin)
 % Author: RBR Ltd. Ottawa ON, Canada
 % email: support@rbr-global.com
 % Website: www.rbr-global.com
-% Last revision: 2017-02-10
+% Last revision: 2017-04-05
 
 %% Check input and default arguments
 
@@ -71,9 +61,7 @@ p = inputParser;
 addRequired(p, 'RSK', @isstruct);
 addParameter(p, 'direction', 'down', checkDirection);
 addParameter(p, 'profileNum', [], @isnumeric);
-addParameter(p, 'velThreshold', 0.25, @isnumeric);
-addParameter(p, 'accelThreshold', -0.1, @isnumeric);
-addParameter(p, 'action', 'NaN', checkAction);
+addParameter(p, 'threshold', 0.25, @isnumeric);
 addParameter(p, 'latitude', 45, checkLatitude); 
 parse(p, RSK, varargin{:})
 
@@ -81,9 +69,7 @@ parse(p, RSK, varargin{:})
 RSK = p.Results.RSK;
 direction = p.Results.direction;
 profileNum = p.Results.profileNum;
-velThreshold = p.Results.velThreshold;
-accelThreshold = p.Results.accelThreshold;
-action = p.Results.action;
+threshold = p.Results.threshold;
 latitude = p.Results.latitude;
 
 
@@ -94,14 +80,15 @@ castdir = [direction 'cast'];
 
 
 %% Edit one cast at a time.
-
 data = RSK.profiles.(castdir).data;
-pressureCol = strcmpi('pressure', {RSK.channels.longName});
+pCol = strcmpi('pressure', {RSK.channels.longName});
 secondsperday = 86400;
+
 for ndx = profileNum
     %% Filter pressure before taking the diff    
-    smoothPressure = RSKsmooth(RSK, 'pressure', 'direction', direction, 'series', 'profile');    
-    depth = calculatedepth(smoothPressure.profiles.(castdir).data(ndx).values(:,pressureCol), 'latitude', latitude);
+    pressure = RSK.profiles.(castdir).data(ndx).values(:,pCol);
+    pressuresmooth = runavg(pressure, 3, 'nanpad');
+    depth = calculatedepth(pressuresmooth, 'latitude', latitude);
     time = data(ndx).tstamp;
 
     %% Caculate Velocity.
@@ -113,31 +100,15 @@ for ndx = profileNum
     velocity = interp1(midtime, dDdT, time, 'linear', 'extrap');
     switch direction
         case 'up'
-            flagv = velocity > -velThreshold; 
+            flag = velocity > -threshold; 
         case 'down'
-            flagv = velocity < velThreshold;    
+            flag = velocity < threshold;    
     end  
-    
-    %% Calculate Acceleration.
-    if ~strcmpi(minAccel, 'None')
-        d2DdT2 = diff(dDdT) ./ deltaT(1:end-1);
-        acceleration = interp1(midtime(1:end-1), d2DdT2, time, 'linear', 'extrap');
-        flagA = acceleration < accelThreshold; 
-        flagidx = flagA | flagv;
-    else 
-        flagidx = flagv;
-    end
    
     %% Perform the action on flagged scans.
     flagChannels = ~strcmpi('pressure', {RSK.channels.longName});    
-    switch action
-        case 'NaN' 
-            data(ndx).values(flagidx,flagChannels) = NaN;
-        case 'remove'
-            data(ndx).tstamp(flagidx) = [];
-            data(ndx).values(flagidx,:) = [];
-    end                 
-    flags(ndx).index = find(flagidx);
+    data(ndx).values(flag,flagChannels) = NaN;
+    flagidx(ndx).index = find(flag);
 end
 
 RSK.profiles.(castdir).data = data;
