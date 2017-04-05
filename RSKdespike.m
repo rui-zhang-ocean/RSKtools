@@ -134,7 +134,7 @@ switch series
         else 
             logprofiles = [direction 'cast profiles' num2str(profileIdx(1:end-1), ', %1.0f') ' and ' num2str(profileIdx(end))];
         end
-        logentry = sprintf('%s de-spiked using a %1.0f sample window and %1.0f threshold on %s. Spikes were treated with %s.',...
+        logentry = sprintf('%s de-spiked using a %1.0f sample window and %1.0f sigma threshold on %s. Spikes were treated with %s.',...
             channel, windowLength, threshold, logprofiles, action);
 end
 
