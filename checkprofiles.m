@@ -1,9 +1,9 @@
-function profileNum = checkprofiles(RSK, profileNum, direction)
+function profileIdx = checkprofiles(RSK, profileNum, direction)
 
 % checkprofile - check if profiles are present and outputs the profiles
 % if none are provided
 %
-% Syntax:  [profileNum] = checkprofile(RSK, profileNum, direction)
+% Syntax:  [profileIdx] = checkprofile(RSK, profileNum, direction)
 % 
 % A helper function used to check if the profiles field of the RSK
 % structure contains data in the required direction and to establish the
@@ -19,12 +19,12 @@ function profileNum = checkprofiles(RSK, profileNum, direction)
 %      Default is 'down'. 
 %
 % Outputs:
-%    profileNum - An array containing the index of the profiles with data.
+%    profileIdx - An array containing the index of the profiles with data.
 %
 % Author: RBR Ltd. Ottawa ON, Canada
 % email: support@rbr-global.com
 % Website: www.rbr-global.com
-% Last revision: 2017-03-30
+% Last revision: 2017-04-05
 
 isDown = isfield(RSK.profiles.downcast, 'data');
 isUp   = isfield(RSK.profiles.upcast, 'data');
@@ -33,12 +33,16 @@ switch direction
         if ~isUp
             error('Structure does not contain upcasts')
         elseif isempty(profileNum)
-            profileNum = 1:length(RSK.profiles.upcast.data);
+            profileIdx = 1:length(RSK.profiles.upcast.data);
+        else
+            profileIdx = profileNum;
         end
     case 'down'
         if ~isDown
             error('Structure does not contain downcasts')
         elseif isempty(profileNum)
-            profileNum = 1:length(RSK.profiles.downcast.data);
+            profileIdx = 1:length(RSK.profiles.downcast.data);
+        else
+            profileIdx = profileNum;
         end
 end
