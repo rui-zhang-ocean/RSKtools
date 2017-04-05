@@ -21,8 +21,8 @@ function [RSK, flagidx] = RSKremoveheave(RSK, varargin)
 %                direction - 'up' for upcast, 'down' for downcast, or 'both' for
 %                    all. Default is 'down'.
 % 
-%                velThreshold - The minimum speed at which the profile must
-%                    be taken. Default is 0.25 m/s
+%                threshold - The minimum speed at which the profile must be
+%                    taken. Default is 0.25 m/s 
 %
 %                latitude - Latitude at which the profile was taken.
 %                    Default is 45.
@@ -46,9 +46,6 @@ function [RSK, flagidx] = RSKremoveheave(RSK, varargin)
 
 validDirections = {'up', 'down'};
 checkDirection = @(x) any(validatestring(x,validDirections));
-
-validActions = {'NaN', 'remove', 'nothing'};
-checkAction = @(x) any(validatestring(x,validActions));
 
 classes = {'double'};
 attributes = {'>=',-90,'<=',90};
