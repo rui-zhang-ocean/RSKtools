@@ -113,14 +113,8 @@ end
 RSK.profiles.(castdir).data = data;
 
 %% Udate log
-if isempty(profileNum)
-    logprofiles = ['all ' direction 'cast profiles'];
-elseif length(profileNum) == 1
-    logprofiles = [direction 'cast profile ' num2str(profileIdx, '%1.0f')];
-else 
-    logprofiles = [direction 'cast profiles' num2str(profileIdx(1:end-1), ', %1.0f') ' and ' num2str(profileIdx(end))];
-end
-logentry = ['Samples measured at a profiling velocity less than ' num2str(threshold) 'm/s were replaced with NaN on ' logprofiles '.'];
+logprofile = logentryprofiles(direction, profileNum, profileIdx);
+logentry = ['Samples measured at a profiling velocity less than ' num2str(threshold) 'm/s were replaced with NaN on ' logprofile '.'];
 
 RSK = RSKappendtolog(RSK, logentry);
 
