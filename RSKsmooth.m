@@ -133,14 +133,8 @@ for chanName = channel
             logentry = sprintf('%s filtered using a %s filter with a %1.0f sample window.', chanName{1}, filter, windowLength);
 
         case 'profile'
-            if isempty(profileNum)
-                logprofiles = ['all ' direction 'cast profiles'];
-            elseif length(profileIdx) == 1
-                logprofiles = [direction 'cast profiles ' num2str(profileIdx, '%1.0f')];
-            else 
-                logprofiles = [direction 'cast profiles' num2str(profileIdx(1:end-1), ', %1.0f') ' and ' num2str(profileIdx(end))];
-            end
-            logentry = sprintf('%s filtered using a %s filter with a %1.0f sample window on %s.', chanName{1}, filter, windowLength, logprofiles);
+            logprofile = logentryprofiles(direction, profileNum, profileIdx);
+            logentry = sprintf('%s filtered using a %s filter with a %1.0f sample window on %s.', chanName{1}, filter, windowLength, logprofile);
     end
 
     RSK = RSKappendtolog(RSK, logentry);
