@@ -25,7 +25,7 @@ function logprofile = logentryprofiles(direction, profileNum, profileIdx)
 if isempty(profileNum)
     logprofile = ['all ' direction 'cast profiles'];
 elseif length(profileNum) == 1
-    logprofile = [direction 'cast profiles ' num2str(profileIdx, '%1.0f')];
+    logprofile = [direction 'cast profile ' num2str(profileIdx, '%1.0f')];
 else 
     logprofile = [direction 'cast profiles' num2str(profileIdx(1:end-1), ', %1.0f') ' and ' num2str(profileIdx(end))];
 end
