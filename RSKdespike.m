@@ -123,7 +123,7 @@ end
 %% Update log
 switch series
     case 'data'
-        logentry = sprintf('%s de-spiked using a %1.0f sample window and %1.0f threshold. Spikes were treated with %s.',...
+        logentry = sprintf('%s de-spiked using a %1.0f sample window and %1.0f sigma threshold. Spikes were treated with %s.',...
             channel, windowLength, threshold, action);
 
     case 'profile'
