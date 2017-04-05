@@ -152,7 +152,7 @@ function [y, I, windowLength] = despike(x, t, threshold, windowLength, action)
 % the index of the spikes.
 
 y = x;
-[ref, windowLength] = runmed(x, windowLength);
+[ref, windowLength] = runmed(x, windowLength, 'mirrorpad');
 dx = x - ref;
 sd = std(dx, 'omitnan');
 I = find(abs(dx) > threshold*sd);
