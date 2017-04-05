@@ -48,10 +48,6 @@ function RSK = RSKreadprofiles(RSK, profileNum, direction, latency)
 %    % read selective upcasts
 %    rsk = RSKreadprofiles(rsk, [1 3 10], 'up');
 %
-%
-%    % read all casts for a logger with 5 second latency
-%    rsk = RSKreadprofiles(rsk, [], [], 5);
-%
 % See also: RSKreaddata, RSKreadevents, RSKplotprofiles
 %
 % Author: RBR Ltd. Ottawa ON, Canada
@@ -98,7 +94,7 @@ if strcmp(direction, 'down') || strcmp(direction, 'both')
         RSK.profiles.downcast.data(ii).values = tmp.data.values;
         ii = ii + 1;
     end
-    
+    RSK.profiles.downcast.profileIndex = profileNum;
 end
 
 if strcmp(direction, 'up') || strcmp(direction, 'both')
@@ -113,6 +109,7 @@ if strcmp(direction, 'up') || strcmp(direction, 'both')
         RSK.profiles.upcast.data(ii).values = tmp.data.values;
         ii = ii + 1;
     end
+    RSK.profiles.upcast.profileIndex = profileNum;
 end
 RSK.instrumentChannels = tmp.instrumentChannels;
 RSK.channels = tmp.channels;
