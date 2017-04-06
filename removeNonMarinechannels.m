@@ -1,14 +1,13 @@
 function [RSK, isDerived] = removeNonMarinechannels(RSK)
 
-% renameAdditionalTemperatureChannels - Rename temperature channels that
-%          requires a more descriptive name
+% removeNonMarinechannels - Remove channels that are hidden or derived from
+%         RSK channels.
 %
-% Syntax:  [RSK] = renameAdditionalTemperatureChannels(RSK)
+% Syntax:  [RSK, isDerived] = removeNonMarinechannels(RSK)
 %
-% renameAdditionalTemperatureChannels checks for shortnames that correspond
-% to temperature channels that require a more descriptive name because they
-% are not the main temperature channel. These are temp04, temp05, temp10
-% and temp13.
+% removeNonMarinechannels will remove the hidden or derived channels from the channels table
+% and return a logical index vector indicating where they are. They are
+% also removed from instrumentChannels if available.
 %
 % Inputs:
 %    RSK - An RSK structure
@@ -23,15 +22,20 @@ function [RSK, isDerived] = removeNonMarinechannels(RSK)
 % Website: www.rbr-global.com
 % Last revision: 2017-04-06
 
-%% readheaderfull
 if iscompatibleversion(RSK, 1, 8, 9) && ~strcmp(RSK.dbInfo(end).type, 'EP')
     isDerived = logical([RSK.instrumentChannels.channelStatus]);% hidden and derived channels have a non-zero channelStatus
     RSK.instrumentChannels(isDerived) = [];
+    
 else
     results = mksqlite('select isDerived from channels');
-    isDerived = logical([results.isDerived]); % some files may not have channelStatus
+    isDerived = logical([results.isDerived]); 
+    
 end
+
+
 RSK.channels(isDerived) = [];  
+
+
 end
 
 
