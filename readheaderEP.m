@@ -20,10 +20,7 @@ function RSK = readheaderEP(RSK)
 
 
 %% Remove non marine channels
-results = mksqlite('select isDerived from channels');
-isDerived = logical([results.isDerived]); 
-
-RSK.channels(isDerived) = [];  
+[RSK, ~] = removeNonMarinechannels(RSK);
 
 
 %% Tables that could be populated in 'EasyParse'

@@ -53,17 +53,7 @@ if iscompatibleversion(RSK, 1, 13, 4)
 end
 
 
-%% Remove non marine channels
-% channelStatus was instroduced in RSK V 1.8.9.
-if iscompatibleversion(RSK, 1, 8, 9)
-    isDerived = logical([RSK.instrumentChannels.channelStatus]);% hidden and derived channels have a non-zero channelStatus
-    RSK.instrumentChannels(isDerived) = [];
-else
-    results = mksqlite('select isDerived from channels');
-    isDerived = logical([results.isDerived]); % some files may not have channelStatus
-end
-RSK.channels(isDerived) = [];  
-
+[RSK, ~] = removeNonMarinechannels(RSK);
 
 %% Tables that could be populated in 'full'
 tables = mksqlite('SELECT name FROM sqlite_master WHERE type="table"');
