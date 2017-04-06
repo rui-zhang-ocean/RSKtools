@@ -87,7 +87,7 @@ RSK = renameAdditionalTemperatureChannels(RSK);
 RSK = RSKgetprofiles(RSK);
 
 %% Log
-logentry = [fname ' opened using RSKtools v' latestRSKtoolsversion '.'];
+logentry = [fname ' opened using RSKtools v' RSKtoolsversion '.'];
 RSK = RSKappendtolog(RSK, logentry);
 
 
