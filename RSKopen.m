@@ -37,7 +37,7 @@ function [RSK, dbid] = RSKopen(fname)
 % Author: RBR Ltd. Ottawa ON, Canada
 % email: support@rbr-global.com
 % Website: www.rbr-global.com
-% Last revision: 2017-03-31
+% Last revision: 2017-04-06
 
 RSKconstants
 
@@ -85,6 +85,10 @@ RSK = renameAdditionalTemperatureChannels(RSK);
 
 
 RSK = RSKgetprofiles(RSK);
+
+%% Log
+logentry = [fname ' opened using RSKtools v' latestRSKtoolsversion '.'];
+RSK = RSKappendtolog(RSK, logentry);
 
 
 end
