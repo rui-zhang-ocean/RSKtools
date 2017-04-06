@@ -81,30 +81,8 @@ switch RSK.dbInfo(end).type
 end
 
 
-%% Channel name check.
-% Some channels require a more descriptive name if they are present.
-if strcmpi({RSK.channels.shortName}, 'temp04')
-    idx = find(strcmpi({RSK.channels.shortName}, 'temp04'));
-    for ndx = 1:length(idx)
-        RSK.channels(idx(ndx)).longName = ['Temperature' num2str(ndx)];
-    end
-end
+RSK = renameAdditionalTemperatureChannels(RSK);
 
-if any(strcmpi({RSK.channels.shortName}, 'temp05'))   
-    idx = find(strcmpi({RSK.channels.shortName}, 'temp05'));
-    RSK.channels(idx(ndx)).longName = 'Pressure Gauge Temperature';
-elseif any(strcmpi({RSK.channels.shortName}, 'temp10'))
-    idx = strcmpi({RSK.channels.shortName}, 'temp10');
-    RSK.channels(idx).longName = 'Pressure Gauge Temperature';
-end    
-
-if any(strcmpi({RSK.channels.shortName}, 'temp13'))
-    idx = strcmpi({RSK.channels.shortName}, 'temp13');
-    RSK.channels(idx).longName = 'External Cabled Temperature';
-end
-
-
-%% Read in events so that we can get the profile event metadata
 
 RSK = RSKgetprofiles(RSK);
 
