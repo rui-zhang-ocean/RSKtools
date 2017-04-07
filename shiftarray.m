@@ -35,8 +35,8 @@ out = NaN*in;
 
 I = 1:n;
 Ilag = I-shift;
-switch shiftval
-    case 'zeroOrderhold'
+switch lower(shiftval)
+    case 'zeroorderhold'
         Ilag(Ilag<1) = 1;
         Ilag(Ilag>n) = n;
         out = in(Ilag);
