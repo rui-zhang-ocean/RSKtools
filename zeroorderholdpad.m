@@ -1,8 +1,8 @@
-function out = zeroOrderholdpad(in, padSize)
+function out = zeroorderholdpad(in, padSize)
 
-% zeroOrderholdpad - Pad a vector by entering Nan.
+% zeroorderholdpad - Pad a vector by entering Nan.
 %
-% Syntax:  out = zeroOrderholdpad(in, windowLength)
+% Syntax:  out = zeroorderholdpad(in, windowLength)
 % 
 % Pads vector with window length of entries at the beginning and end of the
 % in vector. The added entries are repeated first and last entry.
@@ -17,7 +17,7 @@ function out = zeroOrderholdpad(in, padSize)
 %    out - padded in vector of length length(in)+2*padSize
 %
 % Example: 
-%    out = zeroOrderholdpad([1:10], 3)
+%    out = zeroorderholdpad([1:10], 3)
 % 
 %    out =
 %
@@ -26,7 +26,7 @@ function out = zeroOrderholdpad(in, padSize)
 % Author: RBR Ltd. Ottawa ON, Canada
 % email: support@rbr-global.com
 % Website: www.rbr-global.com
-% Last revision: 2017-04-04
+% Last revision: 2017-04-19
 
 
 if isrow(in)
