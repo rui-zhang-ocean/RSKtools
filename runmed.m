@@ -1,9 +1,9 @@
 
-function [out, windowLength] = runmed(in, windowLength, edgevalues)
+function [out, windowLength] = runmed(in, windowLength, edgepad)
 
 % runmed - Smooth a time series using a running median filter.
 %
-% Syntax:  [out, windowLength] = runmed(in, windowLength, edgevalues)
+% Syntax:  [out, windowLength] = runmed(in, windowLength, edgepad)
 % 
 % runmed is helper function that performs a running median of length
 % windowLength. The time series is mirror padded, nan padded or zero
@@ -15,8 +15,9 @@ function [out, windowLength] = runmed(in, windowLength, edgevalues)
 %    windowLength - The length of the running median. It must be odd, has
 %        one added if it's found to be even. 
 %
-%    edgevalues - Describes how the filter will act at the edges. Options
-%         are 'mirrorpad', 'zeroOrderhold' and 'nanpad'.
+%    edgepad - Describes how the filter will act at the edges. Options
+%         are 'mirror', 'zeroorderhold' and 'nan'. If no string is input
+%         it will be set to 'mirror'.
 %
 % Outputs:
 %    out - the smoothed median time series
@@ -27,7 +28,12 @@ function [out, windowLength] = runmed(in, windowLength, edgevalues)
 % Author: RBR Ltd. Ottawa ON, Canada
 % email: support@rbr-global.com
 % Website: www.rbr-global.com
-% Last revision: 2017-04-04
+% Last revision: 2017-04-19
+
+%% Check and set inputs/outputs
+if nargin == 2
+    edgepad = 'mirror';
+end
 
 n = length(in);
 out = NaN*in;
@@ -40,13 +46,13 @@ end
 
 padsize = (windowLength-1)/2;
 %% Mirror pad the time series
-switch edgevalues
-    case 'mirrorpad'
+switch lower(edgepad)
+    case 'mirror'
         inpadded = mirrorpad(in, padsize);
-    case 'nanpad'
+    case 'nan'
         inpadded = nanpad(in, padsize);
-    case 'zeroOrderhold'
-        inpadded = zeroOrderholdpad(in, padsize);
+    case 'zerorderhold'
+        inpadded = zeroorderholdpad(in, padsize);
 end
 
 %% Running median
