@@ -1,8 +1,8 @@
-function [out, windowLength] = runavg(in, windowLength, edgevalues)
+function [out, windowLength] = runavg(in, windowLength, edgepad)
 
 % runavg - Smooth a time series using a boxcar filter.
 %
-% Syntax:  [out, windowLength] = runavg(in, windowLength, adgevalues)
+% Syntax:  [out, windowLength] = runavg(in, windowLength, edgepad)
 % 
 % runavg performs a running average, also known as boxcar filter, of length
 % windowLength over the time series.
@@ -13,8 +13,8 @@ function [out, windowLength] = runavg(in, windowLength, edgevalues)
 %    windowLength - The length of the running median. It must be odd, will
 %         add one if it is odd.
 %
-%    edgevalues - Describes how the filter will act at the edges. Options
-%         are 'mirrorpad', 'zeroOrderhold' and 'nanpad'.
+%    edgepad - Describes how the filter will act at the edges. Options
+%         are 'mirror', 'zeroorderhold' and 'nan'.
 %
 % Outputs:
 %    out - the smoothed time series
@@ -25,8 +25,12 @@ function [out, windowLength] = runavg(in, windowLength, edgevalues)
 % Author: RBR Ltd. Ottawa ON, Canada
 % email: support@rbr-global.com
 % Website: www.rbr-global.com
-% Last revision: 2017-04-03
+% Last revision: 2017-04-19
 
+%% Check and set inputs/outputs
+if nargin == 2
+    edgepad = 'mirror';
+end
 
 n = length(in);
 out = NaN*in;
@@ -40,12 +44,12 @@ end
 
 padsize = (windowLength-1)/2;
 %% Mirror pad the time series
-switch edgevalues
-    case 'mirrorpad'
+switch edgepad
+    case 'mirror'
         inpadded = mirrorpad(in, padsize);
-    case 'nanpad'
+    case 'nan'
         inpadded = nanpad(in, padsize);
-    case 'zeroOrderhold'
+    case 'zeroorderhold'
         inpadded = zeroOrderholdpad(in, padsize);
 end
 
