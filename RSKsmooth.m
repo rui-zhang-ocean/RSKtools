@@ -105,9 +105,9 @@ for chanName = channel
             in = RSK.data.values(:,channelCol);
             switch filter
                 case 'boxcar'
-                    [out, windowLength] = runavg(in, windowLength, 'mirrorpad');
+                    [out, windowLength] = runavg(in, windowLength);
                 case 'median'
-                    [out, windowLength] = runmed(in, windowLength, 'mirrorpad');
+                    [out, windowLength] = runmed(in, windowLength);
             end      
             RSK.data.values(:,channelCol) = out;
             
@@ -116,9 +116,9 @@ for chanName = channel
                 in = RSK.profiles.(castdir).data(ndx).values(:,channelCol);
                 switch filter
                     case 'boxcar'
-                        [out, windowLength] = runavg(in, windowLength, 'mirrorpad');
+                        [out, windowLength] = runavg(in, windowLength);
                     case 'median'
-                        [out, windowLength] = runmed(in, windowLength, 'mirrorpad');
+                        [out, windowLength] = runmed(in, windowLength);
                 end
                 RSK.profiles.(castdir).data(ndx).values(:,channelCol) = out;
             end
