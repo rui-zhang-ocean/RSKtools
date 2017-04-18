@@ -1,9 +1,9 @@
-function out = shiftarray(in, shift, shiftval)
+function out = shiftarray(in, shift, edgepad)
 
 % shiftarray - Convenience function to shift a time series by a
 % specified number of samples
 %
-% Syntax:  out = shiftarray(in, shift)
+% Syntax:  out = shiftarray(in, shift, edgepad)
 % 
 % Shifts a vector time series by a lag corresponding to an integer
 % number of samples, e.g. for aligning temperature and conductivity
@@ -17,30 +17,45 @@ function out = shiftarray(in, shift, shiftval)
 %
 %    shift - The number of samples to shift by
 %
-%    shiftval - The value to set the beginning or end values.
+%    edgepad - The values to set the beginning or end values. Options are
+%    mirror (default), zeroorderhold and nan.
 %
 % Outputs:
 %    out - The shifted time series
 %
 % Example: 
-%    conductivityLagged = shiftarray(rsk.data.values(:,1), -3); % shift back by 3 samples
+%    shiftedValues = shiftarray(rsk.data.values(:,1), -3); % shift back by 3 samples
 %
 % Author: RBR Ltd. Ottawa ON, Canada
 % email: support@rbr-global.com
 % Website: www.rbr-global.com
-% Last revision: 2017-02-06
+% Last revision: 2017-04-19
+
+
+if nargin == 2
+    edgepad = 'mirror';
+end
 
 n = length(in);
 out = NaN*in;
 
 I = 1:n;
 Ilag = I-shift;
-switch lower(shiftval)
+switch lower(edgepad)
+    case 'mirror'
+        inpad = mirrorpad(in, abs(shift));  
     case 'zeroorderhold'
-        Ilag(Ilag<1) = 1;
-        Ilag(Ilag>n) = n;
-        out = in(Ilag);
-    case 'nanpad'
-        out(Ilag>=1 & Ilag <=n) = in(Ilag(Ilag>=1 & Ilag <=n));
+        inpad = zeroorderholdpad(in, abs(shift));
+    case 'nan'
+        inpad = nanpad(in, abs(shift)); 
 end
+
+if shift>0
+    Ilag = I;
+else
+    Ilag = Ilag-shift;
+end
+
+out = inpad(Ilag);
+
 end
