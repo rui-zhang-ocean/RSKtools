@@ -13,6 +13,9 @@ function RSK = RSKfindprofiles(RSK, varargin)
 %    [Optional] - pressureThreshold - The pressure difference required to detect a
 %                    profile. Standard is 3dbar, or
 %                    (max(pressure)-min(pressure)/4.   
+%               - conductivityThreshold - The conductivity value that indicates the
+%                    sensor is out of water. Typically 0.05 mS/cm is very good. If the
+%                    water is fresh it may be better to use a lower value.
 %
 % Output: 
 %
@@ -33,12 +36,14 @@ function RSK = RSKfindprofiles(RSK, varargin)
 %% Parse Inputs
 p = inputParser;
 addRequired(p, 'RSK', @isstruct);
-addParameter(p, 'profileThreshold', [], @ isnumeric);
+addParameter(p, 'profileThreshold', [], @isnumeric);
+addParameter(p, 'conductivityThreshold', 0.05, @isnumeric);
 parse(p, RSK, varargin{:})
 
 % Assign each argument
 RSK = p.Results.RSK;
 profileThreshold = p.Results.profileThreshold;
+conductivityThreshold = p.Results.conductivityThreshold;
 
 
 %% Check if upcasts is already populated
@@ -68,7 +73,7 @@ end
 
 
 %% Run profile detection
-[wwevt] = detectprofiles(pressure, timestamp, conductivity, profileThreshold);
+[wwevt] = detectprofiles(pressure, timestamp, conductivity, profileThreshold, conductivityThreshold);
 
 
 %% Use the events to establish profile start and end times.
