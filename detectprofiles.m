@@ -1,8 +1,8 @@
-function [wwevt] = detectprofiles(pressure, timestamp, conductivity, profileThreshold)
+function [wwevt] = detectprofiles(pressure, timestamp, conductivity, profileThreshold, conductivityThreshold)
 
 % detectprofiles - implements the logger profile detection.
 %
-% Syntax:  [wwevt] = detectprofiles(pressure, timestamp)
+% Syntax:  [wwevt] = detectprofiles(pressure, timestamp, conductivity, profileThreshold, conductivityThreshold)
 % 
 % detectprofiles is a helper function that implements the algorithm used by
 % the logger to find upcast and downcast events during the pressure time
@@ -22,6 +22,10 @@ function [wwevt] = detectprofiles(pressure, timestamp, conductivity, profileThre
 %    pressureThreshold - The pressure difference required to detect a
 %        profile. Standard is 3dbar, or 1/4(max(pressure)-min(pressure).
 %
+%    conductivityThreshold - The conductivity value that indicates the
+%         sensor is out of water. Typically 0.05 mS/cm is very good. If the
+%         water is fresh it may be better to use a lower value.
+%
 % Outputs:
 %
 %    wwevt - A matrix containing the timestamp in the first column and an
@@ -31,7 +35,7 @@ function [wwevt] = detectprofiles(pressure, timestamp, conductivity, profileThre
 % Author: RBR Ltd. Ottawa ON, Canada
 % email: support@rbr-global.com
 % Website: www.rbr-global.com
-% Last revision: 2017-03-23
+% Last revision: 2017-04-20
 
 %% Set up
 detectcaststate = 0; % 0 unknown, 1 down, 2 up
@@ -50,7 +54,7 @@ while(k<length(timestamp))
     %
     % profile detection part
     evt=0;
-    if hasC && conductivity(k)<0.05
+    if hasC && conductivity(k)<conductivityThreshold
         evt=3;
         minpressure=pressure(k);
     else
