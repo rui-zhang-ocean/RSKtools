@@ -64,7 +64,7 @@ if isempty(results)
     return
 end
 
-results = removeUnusedColumns(results);
+results = removeUnusedDataColumns(results);
 
 
 %% Organise results
@@ -87,19 +87,4 @@ RSK.data=results;
 % NOTE : We no longer automatically derive salinity when you read data from
 % database. Use RSKderivesalinity(RSK) to calculate salinity.
 
-
-    function dataresults = removeUnusedColumns(results)
-    % removeUnusedColumn will remove tstamp_1 and datasetId if they are
-    % present. They are not used and are not in all data tables.
-
-    dataresults = rmfield(results,'tstamp_1');
-
-    names = fieldnames(dataresults);
-    fieldmatch = strcmpi(names, 'datasetid');
-
-    if sum(fieldmatch)
-        dataresults = rmfield(dataresults, names(fieldmatch)); % get rid of the datasetID column
-    end
-
-    end
 end
