@@ -28,25 +28,17 @@ results = mksqlite(sql);
 if isempty(results)
     return
 end
-results = rmfield(results,'tstamp_1'); % get rid of the corrupted one
 
-%% RSK version >= 1.12.2 now has a datasetID column in the data table
-% Look for the presence of that column and extract it from results
-if sum(strcmp('datasetID', fieldnames(results))) > 0
-    datasetID = [results(:).datasetID]';
-    results = rmfield(results, 'datasetID'); % get rid of the datasetID column
-    hasdatasetID = 1;
-else 
-    hasdatasetID = 0;
-end
+results = removeUnusedDataColumns(results);
 
 results = RSKarrangedata(results);
 
-if hasdatasetID
-    results.datasetID = datasetID;
+results.tstamp = RSKtime2datenum(results.tstamp'); % convert unix time to datenum
+
+if ~strcmpi(RSK.dbInfo(end).type, 'EPdesktop')
+    [~, isDerived] = removeNonMarinechannels(RSK);
+    results.values = results.values(:,~isDerived);
 end
 
-results.tstamp = RSKtime2datenum(results.tstamp'); % convert unix time to datenum
 RSK.thumbnailData = results;
-
 end

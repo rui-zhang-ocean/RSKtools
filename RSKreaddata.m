@@ -57,26 +57,14 @@ end
 % Select data schema
 % Determine 'channelXX' column names
 % Build SQL statement from column names
-sql = ['select tstamp/1.0 as tstamp,* from data where tstamp/1.0 between ' num2str(t1) ' and ' num2str(t2) ' order by tstamp'];
+sql = ['select tstamp/1.0 as tstamp,* from data where tstamp between ' num2str(t1) ' and ' num2str(t2) ' order by tstamp'];
 results = mksqlite(sql);
 if isempty(results)
     disp('No data found in that interval')
     return
 end
-results = rmfield(results,'tstamp_1'); % get rid of the corrupted one
 
-%% RSK version >= 1.12.2 now has a datasetID column in the data table
-% Look for the presence of that column and extract it from results
-names = fieldnames(results);
-fieldmatch = strcmpi(names, 'datasetid');
-hasdatasetID = sum(fieldmatch);
-
-if hasdatasetID
-    try
-        results = rmfield(results, names(fieldmatch == 1)); % get rid of the datasetID column
-    catch
-    end
-end
+results = removeUnusedDataColumns(results);
 
 
 %% Organise results
@@ -85,16 +73,8 @@ results = RSKarrangedata(results);
 t=results.tstamp';
 results.tstamp = RSKtime2datenum(t); % convert RSK millis time to datenum
 
-
-%% Remove hidden channels from data
-% channelStatus was instroduced in RSK V 1.8.9.
 if ~strcmpi(RSK.dbInfo(end).type, 'EPdesktop')
-    if iscompatibleversion(RSK, 1, 8, 9)
-        isDerived = logical([RSK.instrumentChannels.channelStatus]);% hidden and derived channels have a non-zero channelStatus
-    else
-        results = mksqlite('select isDerived from channels');
-        isDerived = logical([results.isDerived]); % some files may not have channelStatus
-    end
+    [~, isDerived] = removeNonMarinechannels(RSK);
     results.values = results.values(:,~isDerived);
 end
 
@@ -106,6 +86,5 @@ RSK.data=results;
 % RSK = RSKderivesalinity(RSK); 
 % NOTE : We no longer automatically derive salinity when you read data from
 % database. Use RSKderivesalinity(RSK) to calculate salinity.
-
 
 end
