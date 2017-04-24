@@ -18,12 +18,12 @@ function RSK = readheaderEPdesktop(RSK)
 % Author: RBR Ltd. Ottawa ON, Canada
 % email: support@rbr-global.com
 % Website: www.rbr-global.com
-% Last revision: 2017-03-31
+% Last revision: 2017-04-24
 
 
 %% Tables that are definitely in 'EPdesktop'
 
-RSK.thumbnailData = RSKreadthumbnail;
+RSK.thumbnailData = RSKreadthumbnail(RSK);
 
 
 %% Load sampling details
