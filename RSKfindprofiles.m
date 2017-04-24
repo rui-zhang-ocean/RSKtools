@@ -113,6 +113,14 @@ for ndx = 2:length(wwevt)
         end
     end
 end
+
+% Finish the last profile
+if wwevt(end,2) == 1
+    downend(d) = timestamp(end);
+elseif wwevt(end,2) == 2
+    upend(u) = timestamp(end);
+end
+    
          
 
 %% Put profiling events into RSK profiles field.
