@@ -47,6 +47,11 @@ if hasdatasetID
 end
 
 results.tstamp = RSKtime2datenum(results.tstamp'); % convert unix time to datenum
-RSK.thumbnailData = results;
 
+if ~strcmpi(RSK.dbInfo(end).type, 'EPdesktop')
+    [~, isDerived] = removeNonMarinechannels(RSK);
+    results.values = results.values(:,~isDerived);
+end
+
+RSK.thumbnailData = results;
 end
