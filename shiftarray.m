@@ -29,7 +29,7 @@ function out = shiftarray(in, shift, edgepad)
 % Author: RBR Ltd. Ottawa ON, Canada
 % email: support@rbr-global.com
 % Website: www.rbr-global.com
-% Last revision: 2017-04-19
+% Last revision: 2017-04-25
 
 
 if nargin == 2
