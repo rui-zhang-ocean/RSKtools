@@ -23,7 +23,7 @@ function RSK = RSKsmooth(RSK, channel, varargin)
 %                     or 'profile'. Default is 'data'.
 %
 %                 profileNum - Optional profile number. Default is to
-%                     calculate the lag of all detected profiles.
+%                     operate on all detected profiles.
 %            
 %                 direction - 'up' for upcast, 'down' for downcast, or 'both' for
 %                     all. Default is 'down'.
