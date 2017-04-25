@@ -1,22 +1,26 @@
 function [RSK, flagidx] = RSKremoveheave(RSK, varargin)
 
-% RSKremoveheave - Remove values that have pressure reversal or slowdows during
-%                  the profiling.
+% RSKremoveheave - Remove values exceeding a threshold CTD profiling
+%                  rate.  Variations in profiling rate, such as might
+%                  be caused by profiling from a vessel in wavy
+%                  conditions with a taut wire, can negatively impact
+%                  data quality.  If the heaving is large enough, the
+%                  pressure can even reverse, or loop, causing the CTD
+%                  to sample its own wake.
 %
 % Syntax:  [RSK, flagidx] = RSKremoveheave(RSK, [OPTIONS])
 % 
-% RSKremoveheave - This function filters the pressure channel with a lowpass
-% boxcar to reduce the effect of noise, then finds samples that have a low
-% profiling velocity and replaces them with a NaN. It operates on two scans
-% to determine the velocity.     
+% RSKremoveheave - This function filters the pressure channel with a
+% lowpass boxcar to reduce the effect of noise, then finds the samples
+% that exceed a threshold profiling velocity and replaces them with a
+% NaN. Profiling rate is computed by differencing the depth time series.
 % 
 % Inputs:
 %   [Required] - RSK - The input RSK structure, with profiles as read using
 %                    RSKreadprofiles.
 %
-%   [Optional] - profileNum - Optional profile number to calculate lag.
-%                    Default is to calculate the lag of all detected
-%                    profiles.
+%   [Optional] - profileNum - Optional profile number(s) on which to operate.
+%                    Default is to work on all profiles.
 %
 %                direction - 'up' for upcast, 'down' for downcast, or 'both' for
 %                    all. Default is 'down'.
@@ -24,8 +28,8 @@ function [RSK, flagidx] = RSKremoveheave(RSK, varargin)
 %                threshold - The minimum speed at which the profile must be
 %                    taken. Default is 0.25 m/s 
 %
-%                latitude - Latitude at which the profile was taken.
-%                    Default is 45.
+%                latitude - Latitude at which the profile was taken for depth
+%                           calculation.  Default is 45.
 %
 % Outputs:
 %    RSK - The structure without pressure reversal or slowdowns.
