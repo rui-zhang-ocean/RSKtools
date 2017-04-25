@@ -31,9 +31,11 @@ function [RSK] = RSKalignchannel(RSK, channel, lag, varargin)
 %                  shiftval - The values that will fill the void left
 %                             at the beginning or end of the time series;
 %                             'nan', fills the removed samples of the 
-%                             shifted channel with NaN, 'zeroOrderhold' 
+%                             shifted channel with NaN, 'zeroorderhold' 
 %                             fills the removed samples of the shifted
-%                             channels with the first or last value, and
+%                             channels with the first or last value, 
+%                             'mirror' fills the removed values with the 
+%                             reflection of the original end point, and 
 %                             'union' will remove the values of the OTHER 
 %                             channels that do not align with the shifted 
 %                             channel (note: this will reduce the size of 
@@ -62,14 +64,14 @@ function [RSK] = RSKalignchannel(RSK, channel, lag, varargin)
 % Author: RBR Ltd. Ottawa ON, Canada
 % email: support@rbr-global.com
 % Website: www.rbr-global.com
-% Last revision: 2017-04-04
+% Last revision: 2017-04-25
 
 %% Check input and default arguments
 
 validDirections = {'down', 'up'};
 checkDirection = @(x) any(validatestring(x,validDirections));
 
-validShiftval = {'zeroOrderhold', 'union', 'nan'};
+validShiftval = {'zeroorderhold', 'union', 'nan', 'mirror'};
 checkShiftval = @(x) any(validatestring(x,validShiftval));
 
 
@@ -110,9 +112,12 @@ for ndx = profileIdx
     channelData = RSK.profiles.(castdir).data(ndx).values(:, channelCol);
     if strcmpi(shiftval, 'nan')
         channelShifted = shiftarray(channelData, lags(counter), 'nanpad');
+    elseif strcmpi(shiftval, 'mirror')
+        channelShifted = shiftarray(channelData, lags(counter), 'mirror');
     else
         channelShifted = shiftarray(channelData, lags(counter), 'zeroOrderhold');
     end
+    
     RSK.profiles.(castdir).data(ndx).values(:, channelCol) = channelShifted;
     
     if strcmpi(shiftval, 'union')
