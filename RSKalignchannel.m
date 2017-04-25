@@ -83,7 +83,7 @@ addRequired(p, 'channel', @ischar);
 addRequired(p, 'lag', @isnumeric);
 addParameter(p, 'profileNum', [], @isnumeric);
 addParameter(p, 'direction', 'down', checkDirection);
-addParameter(p, 'shiftval', 'zeroOrderhold', checkShiftval);
+addParameter(p, 'shiftval', 'zeroorderhold', checkShiftval);
 parse(p, RSK, channel, lag, varargin{:})
 
 % Assign each input argument
@@ -110,24 +110,20 @@ channelCol = find(strcmpi(channel, {RSK.channels.longName}));
 for ndx = profileIdx
     counter = counter + 1;       
     channelData = RSK.profiles.(castdir).data(ndx).values(:, channelCol);
-    if strcmpi(shiftval, 'nan')
-        channelShifted = shiftarray(channelData, lags(counter), 'nanpad');
-    elseif strcmpi(shiftval, 'mirror')
-        channelShifted = shiftarray(channelData, lags(counter), 'mirror');
-    else
-        channelShifted = shiftarray(channelData, lags(counter), 'zeroOrderhold');
-    end
-    
-    RSK.profiles.(castdir).data(ndx).values(:, channelCol) = channelShifted;
     
     if strcmpi(shiftval, 'union')
-       if lags(counter)>0 
-           RSK.profiles.(castdir).data(ndx).values = RSK.profiles.(castdir).data(ndx).values(lags(counter)+1:end,:);
-           RSK.profiles.(castdir).data(ndx).tstamp = RSK.profiles.(castdir).data(ndx).tstamp(lags(counter)+1:end);
-       elseif lags(counter) <0 
-           RSK.profiles.(castdir).data(ndx).values = RSK.profiles.(castdir).data(ndx).values(1:end-lags(counter),:);
-           RSK.profiles.(castdir).data(ndx).tstamp = RSK.profiles.(castdir).data(ndx).tstamp(1:end-lags(counter));
-       end
+        channelShifted = shiftarray(channelData, lags(counter), 'zeroorderhold');
+        RSK.profiles.(castdir).data(ndx).values(:, channelCol) = channelShifted;
+        if lags(counter)>0 
+            RSK.profiles.(castdir).data(ndx).values = RSK.profiles.(castdir).data(ndx).values(lags(counter)+1:end,:);
+            RSK.profiles.(castdir).data(ndx).tstamp = RSK.profiles.(castdir).data(ndx).tstamp(lags(counter)+1:end);
+        elseif lags(counter) <0 
+            RSK.profiles.(castdir).data(ndx).values = RSK.profiles.(castdir).data(ndx).values(1:end-lags(counter),:);
+            RSK.profiles.(castdir).data(ndx).tstamp = RSK.profiles.(castdir).data(ndx).tstamp(1:end-lags(counter));
+        end
+    else 
+        channelShifted = shiftarray(channelData, lags(counter), shiftval);
+        RSK.profiles.(castdir).data(ndx).values(:, channelCol) = channelShifted;
     end
 
 end
