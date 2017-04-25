@@ -5,9 +5,9 @@ function [RSK] = RSKalignchannel(RSK, channel, lag, varargin)
 %
 % Syntax:  [RSK] = RSKalignchannel(RSK, channel, lag, [OPTIONS])
 % 
-% Applies the lag to minimize  "spikes". Typically used for conductivity
-% to reverse the effects from temporal C/T mismatches when the
-% sensors are moving through regions of high vertical gradients.
+% Applies a time lag to a specified channel or channels. Typically 
+% used for conductivity to minimize salinity spiking from C/T mismatches
+% when the sensors are moving through regions of high vertical gradients.
 %
 % Inputs: 
 %    [Required] - RSK - The input RSK structure, with profiles as read using
@@ -17,21 +17,20 @@ function [RSK] = RSKalignchannel(RSK, channel, lag, varargin)
 %
 %                 lag - The lag for each profile, or one lag for all.
 %
-%    [Optional] - profileNum - Optional profile number to calculate lag.
-%                     Default is to calculate the lag of all detected
-%                     profiles.
+%    [Optional] - profileNum - Profile(s) to which the lag(s) are applied.
 %
 %                 direction - 'up' for upcast, 'down' for downcast, or 'both' for
 %                     all. Default is 'down'.
 %
-%                  shiftval - The values that will fill the shifted area,
-%                     Options are 'nan', fills the removed samples of
-%                     the shifted channel with NaNs', 'zeroOrderhold' fills
-%                     the removed samples of the shifted channels with the
-%                     first or last value repeated and 'union' will deleted
-%                     the values of the OTHER channels that do not align
-%                     with the shifted channel (note: this will reduce the
-%                     size of your values array by "lag")
+%                  shiftval - The values that will fill the shifted
+%                     area, 'nan', fills the removed samples of the
+%                     shifted channel with NaN, 'zeroOrderhold' fills
+%                     the removed samples of the shifted channels with
+%                     the first or last value repeated and 'union'
+%                     will delete the values of the OTHER channels
+%                     that do not align with the shifted channel
+%                     (note: this will reduce the size of your values
+%                     array by "lag")
 %
 % Outputs:
 %    RSK - The RSK structure with aligned channel values.
