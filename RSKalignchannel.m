@@ -16,19 +16,19 @@ function [RSK] = RSKalignchannel(RSK, channel, lag, varargin)
 %                 channel - Longname of channel to align (e.g. temperature).
 %
 %                 lag - The lag (in samples) to apply to the channel.
-%                       A negative lag shifts the channel backward in
-%                       time (earlier), while a positive lag shifts
-%                       the channel forward in time (later).  To apply
+%                       A negative lag shifts the channel forward in
+%                       time (later), while a positive lag shifts
+%                       the channel backward in time (earlier).  To apply
 %                       a different lag to each profile, specify the
 %                       lags in a vector.
 %
 %    [Optional] - profileNum - Profile(s) to which the lag(s) are applied.
 %                              Default all profiles.    
 %
-%                 direction - 'up' for upcast, 'down' for downcast, or
-%                             'both' for all. Default is 'down'.
-%
-%                  shiftval - The values that will fill the void left
+%                 direction - 'up' for upcast or 'down' for downcast.
+%                             Default is 'down'. 
+% 
+%                  shiftfill - The values that will fill the void left
 %                             at the beginning or end of the time series;
 %                             'nan', fills the removed samples of the 
 %                             shifted channel with NaN, 'zeroorderhold' 
@@ -64,15 +64,15 @@ function [RSK] = RSKalignchannel(RSK, channel, lag, varargin)
 % Author: RBR Ltd. Ottawa ON, Canada
 % email: support@rbr-global.com
 % Website: www.rbr-global.com
-% Last revision: 2017-04-25
+% Last revision: 2017-04-26
 
 %% Check input and default arguments
 
 validDirections = {'down', 'up'};
 checkDirection = @(x) any(validatestring(x,validDirections));
 
-validShiftval = {'zeroorderhold', 'union', 'nan', 'mirror'};
-checkShiftval = @(x) any(validatestring(x,validShiftval));
+validShiftfill = {'zeroorderhold', 'union', 'nan', 'mirror'};
+checkShiftfill = @(x) any(validatestring(x,validShiftfill));
 
 
 %% Parse Inputs
@@ -83,7 +83,7 @@ addRequired(p, 'channel', @ischar);
 addRequired(p, 'lag', @isnumeric);
 addParameter(p, 'profileNum', [], @isnumeric);
 addParameter(p, 'direction', 'down', checkDirection);
-addParameter(p, 'shiftval', 'zeroorderhold', checkShiftval);
+addParameter(p, 'shiftfill', 'zeroorderhold', checkShiftfill);
 parse(p, RSK, channel, lag, varargin{:})
 
 % Assign each input argument
@@ -92,7 +92,7 @@ channel = p.Results.channel;
 lag = p.Results.lag;
 profileNum = p.Results.profileNum;
 direction = p.Results.direction;
-shiftval = p.Results.shiftval;
+shiftfill = p.Results.shiftfill;
 
 %% Determine if the structure has downcasts and upcasts
 profileIdx = checkprofiles(RSK, profileNum, direction);
@@ -111,18 +111,18 @@ for ndx = profileIdx
     counter = counter + 1;       
     channelData = RSK.profiles.(castdir).data(ndx).values(:, channelCol);
     
-    if strcmpi(shiftval, 'union')
+    if strcmpi(shiftfill, 'union')
         channelShifted = shiftarray(channelData, lags(counter), 'zeroorderhold');
         RSK.profiles.(castdir).data(ndx).values(:, channelCol) = channelShifted;
-        if lags(counter)>0 
+        if lags(counter) < 0 
             RSK.profiles.(castdir).data(ndx).values = RSK.profiles.(castdir).data(ndx).values(lags(counter)+1:end,:);
             RSK.profiles.(castdir).data(ndx).tstamp = RSK.profiles.(castdir).data(ndx).tstamp(lags(counter)+1:end);
-        elseif lags(counter) <0 
+        elseif lags(counter) > 0 
             RSK.profiles.(castdir).data(ndx).values = RSK.profiles.(castdir).data(ndx).values(1:end-lags(counter),:);
             RSK.profiles.(castdir).data(ndx).tstamp = RSK.profiles.(castdir).data(ndx).tstamp(1:end-lags(counter));
         end
     else 
-        channelShifted = shiftarray(channelData, lags(counter), shiftval);
+        channelShifted = shiftarray(channelData, lags(counter), shiftfill);
         RSK.profiles.(castdir).data(ndx).values(:, channelCol) = channelShifted;
     end
 

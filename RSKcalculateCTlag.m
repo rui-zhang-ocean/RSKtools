@@ -30,8 +30,7 @@ function lag = RSKcalculateCTlag(RSK, varargin)
 %                     Default is to calculate the lag of all detected
 %                     profiles.
 %
-%                 direction - 'up' for upcast, 'down' for downcast, or 'both' for
-%                     all. Default is 'down'.
+%                 direction - 'up' for upcast or 'down' for downcast. Default is 'down'.
 %
 %                 windowLength - The length of the filter window used for the
 %                     reference salinity. Default is 21 samples.
@@ -56,7 +55,7 @@ function lag = RSKcalculateCTlag(RSK, varargin)
 % Author: RBR Ltd. Ottawa ON, Canada
 % email: support@rbr-global.com
 % Website: www.rbr-global.com
-% Last revision: 2017-04-03
+% Last revision: 2017-04-26
     
     
 %% check if user has the TEOS-10 GSW toolbox installed
