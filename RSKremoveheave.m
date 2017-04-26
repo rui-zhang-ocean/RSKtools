@@ -22,14 +22,14 @@ function [RSK, flagidx] = RSKremoveheave(RSK, varargin)
 %   [Optional] - profileNum - Optional profile number(s) on which to operate.
 %                    Default is to work on all profiles.
 %
-%                direction - 'up' for upcast, 'down' for downcast, or 'both' for
-%                    all. Default is 'down'.
+%                direction - 'up' for upcast or 'down' for downcast.
+%                    Default is 'down'. 
 % 
 %                threshold - The minimum speed at which the profile must be
 %                    taken. Default is 0.25 m/s 
 %
 %                latitude - Latitude at which the profile was taken for depth
-%                           calculation.  Default is 45.
+%                    calculation.  Default is 45.
 %
 % Outputs:
 %    RSK - The structure without pressure reversal or slowdowns.
@@ -88,7 +88,7 @@ secondsperday = 86400;
 for ndx = profileIdx
     %% Filter pressure before taking the diff    
     pressure = RSK.profiles.(castdir).data(ndx).values(:,pCol);
-    pressuresmooth = runavg(pressure, 3, 'nanpad');
+    pressuresmooth = runavg(pressure, 3, 'nan');
     depth = calculatedepth(pressuresmooth, 'latitude', latitude);
     time = data(ndx).tstamp;
 
