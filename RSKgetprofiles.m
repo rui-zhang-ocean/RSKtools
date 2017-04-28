@@ -58,24 +58,10 @@ if exist('events', 'var')
     nup = length(find(events.values(:,2) == eventBeginUpcast));
     if nup>1
         RSK = readeventsprofiles(RSK);
-        %RSK = populateregionProfiles(RSK);
-        return;
     end
 end
 
 
-
-%% Detect profiles
-% if ~isfield(RSK, 'profiles')
-%     warning('No profiles were detected by the logger or Ruskin, run RSKfindprofiles.m to detect profiles');
-% end
-
-% if ~isfield(RSK, 'data');
-%     RSK = RSKreaddata(RSK);
-% end
-   
-% RSK = RSKfindprofiles(RSK);
-% RSK = populateregionProfiles(RSK);
 
 end
 
