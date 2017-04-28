@@ -60,6 +60,9 @@ if any(strcmpi(p.UsingDefaults, 't2'))
     t2 = RSK.epochs.endTime;
 end
 
+t1 = datenum2RSKtime(t1);
+t2 = datenum2RSKtime(t2);
+
 %% Check if file type is skinny
 if strcmp(RSK.dbInfo(end).type, 'skinny')
     error('File must be opened in Ruskin before RSKtools can read the data.');
