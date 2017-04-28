@@ -1,10 +1,11 @@
-function [v, vsnMajor, vsnMinor, vsnPatch]  = RSKver(RSK)
+function [v, vsnMajor, vsnMinor, vsnPatch, RSK]  = RSKver(RSK)
 
 % RSKver - Returns the version of the RSK file.
 %
 % Syntax:  [v, vsnMajor, vsnMinor, vsnPatch] = RSKver(RSK)
 %
-% RSKver will return the most recent version of the RSK file.
+% RSKver will return the most recent version of the RSK file. If it is
+% 1.13.0 it will check if it is a bug and fix it in the database.
 %
 % Inputs:
 %    RSK - Structure containing the logger metadata and thumbnails
@@ -15,11 +16,12 @@ function [v, vsnMajor, vsnMinor, vsnPatch]  = RSKver(RSK)
 %    vsnMajor - The latest version number of category major.
 %    vsnMinor - The latest version number of category minor.
 %    vsnPatch - The latest version number of category patch.
+%    RSK - RSK structure with updated dbInfo if required.
 %
 % Author: RBR Ltd. Ottawa ON, Canada
 % email: support@rbr-global.com
 % Website: www.rbr-global.com
-% Last revision: 2017-03-29
+% Last revision: 2017-04-27
 
 v = RSK.dbInfo(end).version;
 vsn = textscan(v,'%s','delimiter','.');
@@ -36,7 +38,7 @@ else
 end
 
 % Bug in RSK schema 1.13.0
-if  (vsnMajor == 1)&&(vsnMinor == 13)&&(vsnPatch == 0) && length(RSK.dbInfo)>1
+if  (vsnMajor == 1)&&(vsnMinor == 13)&&(vsnPatch == 0) && length(RSK.dbInfo)>1 && strcmpi(RSK.dbInfo(end).type,'full')
     vsnMajorlast = 1;
     vsnMinorlast = 13;
     vsnPatchlast = 0;
@@ -51,6 +53,7 @@ if  (vsnMajor == 1)&&(vsnMinor == 13)&&(vsnPatch == 0) && length(RSK.dbInfo)>1
                     vsnMajorlast = vsnMajor;
                     vsnMinorlast = vsnMinor;
                     vsnPatchlast = vsnPatch;
+                    type = RSK.dbInfo(ndx).type;
             end
         end
     end
@@ -58,6 +61,14 @@ if  (vsnMajor == 1)&&(vsnMinor == 13)&&(vsnPatch == 0) && length(RSK.dbInfo)>1
     vsnMajor = vsnMajorlast;
     vsnMinor = vsnMinorlast;
     vsnPatch = vsnPatchlast;
+    
+    % write fix to file
+    mksqlite('begin');
+    mksqlite(['INSERT INTO `dbInfo` VALUES ("' v '","' type '")']);
+    mksqlite('commit');
+    mksqlite('analyze');
+    
+    RSK.dbInfo = mksqlite('select version,type from dbInfo');
 end
 
 end
