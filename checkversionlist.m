@@ -1,4 +1,4 @@
-function RSK = checkversionlist(RSK);
+function RSK = checkversionlist(RSK)
 % checkversionlist - Checks that the last dbInfo entry is the most recent.
 %
 % Syntax:  [RSK] = checkversionlist(rsk);
@@ -46,7 +46,6 @@ if  (vsnMajor == 1)&&(vsnMinor == 13)&&(vsnPatch == 0) && length(RSK.dbInfo)>1 &
     mksqlite('begin');
     mksqlite(['INSERT INTO `dbInfo` VALUES ("' v '","' type '")']);
     mksqlite('commit');
-    mksqlite('analyze');
-    
+
     RSK.dbInfo = mksqlite('select version,type from dbInfo');
 end
