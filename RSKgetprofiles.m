@@ -18,7 +18,7 @@ function RSK = RSKgetprofiles(RSK)
 % Author: RBR Ltd. Ottawa ON, Canada
 % email: support@rbr-global.com
 % Website: www.rbr-global.com
-% Last revision: 2017-01-18
+% Last revision: 2017-04-28
 
 RSKconstants
 
