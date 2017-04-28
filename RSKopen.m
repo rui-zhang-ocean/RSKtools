@@ -54,6 +54,8 @@ end
 dbid = mksqlite('open',fname);
 
 RSK.dbInfo = mksqlite('select version,type from dbInfo');
+[~, ~, ~, ~, RSK] = RSKver(RSK); % check for 1.13.0 bug and fix.
+
 
 if iscompatibleversion(RSK, latestRSKversionMajor, latestRSKversionMinor, latestRSKversionPatch+1)
     warning(['RSK version ' vsnString ' is newer than your RSKtools version. It is recommended to update RSKtools at https://rbr-global.com/support/matlab-tools']);
