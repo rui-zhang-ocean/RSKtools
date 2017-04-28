@@ -19,7 +19,7 @@ function RSK = checkversionlist(RSK);
 % email: support@rbr-global.com
 % Website: www.rbr-global.com
 % Last revision: 2017-04-27
-[v, vsnMajor, vsnMinor, vsnPatch] = RSKver(RSK);
+[~, vsnMajor, vsnMinor, vsnPatch] = RSKver(RSK);
 
 if  (vsnMajor == 1)&&(vsnMinor == 13)&&(vsnPatch == 0) && length(RSK.dbInfo)>1 && strcmpi(RSK.dbInfo(end).type,'full')
     vsnMajorlast = 1;
@@ -41,9 +41,6 @@ if  (vsnMajor == 1)&&(vsnMinor == 13)&&(vsnPatch == 0) && length(RSK.dbInfo)>1 &
         end
     end
     v = [num2str(vsnMajorlast) '.' num2str(vsnMinorlast) '.' num2str(vsnPatchlast)];
-    vsnMajor = vsnMajorlast;
-    vsnMinor = vsnMinorlast;
-    vsnPatch = vsnPatchlast;
     
     % write fix to file
     mksqlite('begin');
