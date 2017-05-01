@@ -1,24 +1,27 @@
-function RSK = checkversionlist(RSK)
+function [v, vsnMajorlast, vsnMinorlast, vsnPatchlast] = checkversionlist(RSK)
 % checkversionlist - Checks that the last dbInfo entry is the most recent.
 %
-% Syntax:  [RSK] = checkversionlist(rsk);
+% Syntax:  [v, vsnMajorlast, vsnMinorlast, vsnPatchlast] = checkversionlist(RSK);
 %
-% checkversion check to see if the most recent version in dbInfo table is
+% checkversionlist check to see if the most recent version in dbInfo table is
 % 1.13.0. If it is the case it will check if there is a newer version
-% available and update the DATABASE (write to the .rsk file) with a new row
-% containing the correct version and type associated with the file.
+% available, if there is RSKtools will use the correct version and type
+% associated with the file.  
 %
 % Inputs:
 %    RSK - Structure containing the logger metadata and thumbnails
 %          returned by RSKopen.
 %
 % Output:
-%    RSK - RSK structure with updated dbInfo if required.
+%    v - The lastest version of the RSK file.
+%    vsnMajor - The latest version number of category major.
+%    vsnMinor - The latest version number of category minor.
+%    vsnPatch - The latest version number of category patch.
 %
 % Author: RBR Ltd. Ottawa ON, Canada
 % email: support@rbr-global.com
 % Website: www.rbr-global.com
-% Last revision: 2017-04-27
+% Last revision: 2017-05-01
 [~, vsnMajor, vsnMinor, vsnPatch] = RSKver(RSK);
 
 if  (vsnMajor == 1)&&(vsnMinor == 13)&&(vsnPatch == 0) && length(RSK.dbInfo)>1 && strcmpi(RSK.dbInfo(end).type,'full')
@@ -42,14 +45,14 @@ if  (vsnMajor == 1)&&(vsnMinor == 13)&&(vsnPatch == 0) && length(RSK.dbInfo)>1 &
     end
     v = [num2str(vsnMajorlast) '.' num2str(vsnMinorlast) '.' num2str(vsnPatchlast)];
     
-    % write fix to file
-    try
-        mksqlite('begin');
-        mksqlite(['INSERT INTO `dbInfo` VALUES ("' v '","' type '")']);
-        mksqlite('commit');
-    catch
-        mksqlite('rollback');
-    end
-
-    RSK.dbInfo = mksqlite('select version,type from dbInfo');
+% write fix to file
+%     try
+%         mksqlite('begin');
+%         mksqlite(['INSERT INTO `dbInfo` VALUES ("' v '","' type '")']);
+%         mksqlite('commit');
+%     catch
+%         mksqlite('rollback');
+%     end
+%     RSK.dbInfo = mksqlite('select version,type from dbInfo');
+end
 end
