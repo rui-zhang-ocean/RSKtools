@@ -16,12 +16,11 @@ function [v, vsnMajor, vsnMinor, vsnPatch]  = RSKver(RSK)
 %    vsnMajor - The latest version number of category major.
 %    vsnMinor - The latest version number of category minor.
 %    vsnPatch - The latest version number of category patch.
-%    RSK - RSK structure with updated dbInfo if required.
 %
 % Author: RBR Ltd. Ottawa ON, Canada
 % email: support@rbr-global.com
 % Website: www.rbr-global.com
-% Last revision: 2017-04-27
+% Last revision: 2017-05-01
 
 v = RSK.dbInfo(end).version;
 vsn = textscan(v,'%s','delimiter','.');
@@ -36,5 +35,7 @@ else
     vsnMinor = str2double(vsn{1}{2});
     vsnPatch = str2double(vsn{1}{3});
 end
+
+[v, vsnMajor, vsnMinor, vsnPatch] = checkversionlist(RSK);
 
 end
