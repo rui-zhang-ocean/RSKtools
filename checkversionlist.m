@@ -43,9 +43,13 @@ if  (vsnMajor == 1)&&(vsnMinor == 13)&&(vsnPatch == 0) && length(RSK.dbInfo)>1 &
     v = [num2str(vsnMajorlast) '.' num2str(vsnMinorlast) '.' num2str(vsnPatchlast)];
     
     % write fix to file
-    mksqlite('begin');
-    mksqlite(['INSERT INTO `dbInfo` VALUES ("' v '","' type '")']);
-    mksqlite('commit');
+    try
+        mksqlite('begin');
+        mksqlite(['INSERT INTO `dbInfo` VALUES ("' v '","' type '")']);
+        mksqlite('commit');
+    catch
+        mksqlite('rollback');
+    end
 
     RSK.dbInfo = mksqlite('select version,type from dbInfo');
 end
