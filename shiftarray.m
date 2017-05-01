@@ -7,7 +7,7 @@ function out = shiftarray(in, shift, edgepad)
 % 
 % Shifts a vector time series by a lag corresponding to an integer
 % number of samples. Negative shifts correspond to moving the samples
-% forward in time (later), positive to backwardward in time (earlier). To
+% backward in time (earlier), positive to forward in time (later). To
 % conserve the length of the output vector, values at either the
 % beginning or the end are set to a value specified by the argument
 % "edgepad."
@@ -29,7 +29,7 @@ function out = shiftarray(in, shift, edgepad)
 % Author: RBR Ltd. Ottawa ON, Canada
 % email: support@rbr-global.com
 % Website: www.rbr-global.com
-% Last revision: 2017-04-26
+% Last revision: 2017-05-01
 
 
 if nargin == 2
@@ -50,7 +50,7 @@ switch lower(edgepad)
         inpad = nanpad(in, abs(shift)); 
 end
 
-if shift<0
+if shift>0
     Ilag = I;
 else
     Ilag = Ilag-shift;
