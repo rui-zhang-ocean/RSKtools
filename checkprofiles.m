@@ -31,7 +31,7 @@ isUp   = isfield(RSK.profiles.upcast, 'data');
 switch direction
     case 'up'
         if ~isUp
-            error('Structure does not contain upcasts')
+            error('Structure does not contain upcasts data')
         elseif isempty(profileNum)
             profileIdx = 1:length(RSK.profiles.upcast.data);
         else
@@ -39,7 +39,7 @@ switch direction
         end
     case 'down'
         if ~isDown
-            error('Structure does not contain downcasts')
+            error('Structure does not contain downcasts data')
         elseif isempty(profileNum)
             profileIdx = 1:length(RSK.profiles.downcast.data);
         else
