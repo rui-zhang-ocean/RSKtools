@@ -37,7 +37,7 @@ function [RSK, dbid] = RSKopen(fname)
 % Author: RBR Ltd. Ottawa ON, Canada
 % email: support@rbr-global.com
 % Website: www.rbr-global.com
-% Last revision: 2017-03-31
+% Last revision: 2017-05-01
 
 RSKconstants
 
@@ -54,7 +54,6 @@ end
 dbid = mksqlite('open',fname);
 
 RSK.dbInfo = mksqlite('select version,type from dbInfo');
-RSK = checkversionlist(RSK);
 
 if iscompatibleversion(RSK, latestRSKversionMajor, latestRSKversionMinor, latestRSKversionPatch+1)
     warning(['RSK version ' vsnString ' is newer than your RSKtools version. It is recommended to update RSKtools at https://rbr-global.com/support/matlab-tools']);
