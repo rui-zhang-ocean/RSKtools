@@ -16,9 +16,9 @@ function [RSK] = RSKalignchannel(RSK, channel, lag, varargin)
 %                 channel - Longname of channel to align (e.g. temperature).
 %
 %                 lag - The lag (in samples) to apply to the channel.
-%                       A negative lag shifts the channel forward in
-%                       time (later), while a positive lag shifts
-%                       the channel backward in time (earlier).  To apply
+%                       A negative lag shifts the channel backward in
+%                       time (earlier), while a positive lag shifts
+%                       the channel forward in time (later).  To apply
 %                       a different lag to each profile, specify the
 %                       lags in a vector.
 %
@@ -64,7 +64,7 @@ function [RSK] = RSKalignchannel(RSK, channel, lag, varargin)
 % Author: RBR Ltd. Ottawa ON, Canada
 % email: support@rbr-global.com
 % Website: www.rbr-global.com
-% Last revision: 2017-04-26
+% Last revision: 2017-05-01
 
 %% Check input and default arguments
 
@@ -114,10 +114,10 @@ for ndx = profileIdx
     if strcmpi(shiftfill, 'union')
         channelShifted = shiftarray(channelData, lags(counter), 'zeroorderhold');
         RSK.profiles.(castdir).data(ndx).values(:, channelCol) = channelShifted;
-        if lags(counter) < 0 
+        if lags(counter) > 0 
             RSK.profiles.(castdir).data(ndx).values = RSK.profiles.(castdir).data(ndx).values(lags(counter)+1:end,:);
             RSK.profiles.(castdir).data(ndx).tstamp = RSK.profiles.(castdir).data(ndx).tstamp(lags(counter)+1:end);
-        elseif lags(counter) > 0 
+        elseif lags(counter) < 0 
             RSK.profiles.(castdir).data(ndx).values = RSK.profiles.(castdir).data(ndx).values(1:end-lags(counter),:);
             RSK.profiles.(castdir).data(ndx).tstamp = RSK.profiles.(castdir).data(ndx).tstamp(1:end-lags(counter));
         end
