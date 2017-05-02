@@ -11,9 +11,10 @@ function RSK = RSKfindprofiles(RSK, varargin)
 %    [Required] - RSK - Structure containing the logger metadata and thumbnails
 %               
 %    [Optional] - pressureThreshold - The pressure difference required to detect a
-%                    profile. Standard is 3dbar, or
-%                    (max(pressure)-min(pressure)/4.   
-%               - conductivityThreshold - The conductivity value that indicates the
+%                    profile. The logger uses 3dbar, which is the default.
+%                    It may be too large for short profiles.
+%
+%                 conductivityThreshold - The conductivity value that indicates the
 %                    sensor is out of water. Typically 0.05 mS/cm is very good. If the
 %                    water is fresh it may be better to use a lower value.
 %
@@ -30,13 +31,13 @@ function RSK = RSKfindprofiles(RSK, varargin)
 % Author: RBR Ltd. Ottawa ON, Canada
 % email: support@rbr-global.com
 % Website: www.rbr-global.com
-% Last revision: 2017-04-20
+% Last revision: 2017-05-01
 
 
 %% Parse Inputs
 p = inputParser;
 addRequired(p, 'RSK', @isstruct);
-addParameter(p, 'profileThreshold', [], @isnumeric);
+addParameter(p, 'profileThreshold', 3, @isnumeric);
 addParameter(p, 'conductivityThreshold', 0.05, @isnumeric);
 parse(p, RSK, varargin{:})
 
@@ -64,11 +65,6 @@ if isempty(condCol)
     conductivity = [];
 else 
     conductivity = RSK.data.values(:, condCol(1));
-end
-
-% Profile threshold is a quarter of the max range of pressure if none is input.
-if isempty(profileThreshold)
-    profileThreshold = (max(pressure)-min(pressure))/4;
 end
 
 
