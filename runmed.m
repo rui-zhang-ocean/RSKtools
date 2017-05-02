@@ -22,13 +22,12 @@ function [out, windowLength] = runmed(in, windowLength, edgepad)
 % Outputs:
 %    out - the smoothed median time series
 %
-%    windowLength - The length of the running median. Could be different
-%        than the input if it was an even number.
+%    windowLength - The length of the running median. Must be odd.
 %
 % Author: RBR Ltd. Ottawa ON, Canada
 % email: support@rbr-global.com
 % Website: www.rbr-global.com
-% Last revision: 2017-04-19
+% Last revision: 2017-05-01
 
 %% Check and set inputs/outputs
 if nargin == 2
@@ -39,10 +38,8 @@ n = length(in);
 out = NaN*in;
 %% Check windowLength
 if mod(windowLength, 2) == 0
-    warning('windowLength must be odd; adding 1');
-    windowLength = windowLength + 1;
+    error('windowLength must be odd');
 end
-
 
 padsize = (windowLength-1)/2;
 %% Mirror pad the time series
