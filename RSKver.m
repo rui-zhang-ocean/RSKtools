@@ -4,7 +4,8 @@ function [v, vsnMajor, vsnMinor, vsnPatch]  = RSKver(RSK)
 %
 % Syntax:  [v, vsnMajor, vsnMinor, vsnPatch] = RSKver(RSK)
 %
-% RSKver will return the most recent version of the RSK file.
+% RSKver will return the most recent version of the RSK file. If it is
+% 1.13.0 it will check if it is a bug and fix it in the database.
 %
 % Inputs:
 %    RSK - Structure containing the logger metadata and thumbnails
@@ -19,7 +20,7 @@ function [v, vsnMajor, vsnMinor, vsnPatch]  = RSKver(RSK)
 % Author: RBR Ltd. Ottawa ON, Canada
 % email: support@rbr-global.com
 % Website: www.rbr-global.com
-% Last revision: 2017-03-29
+% Last revision: 2017-05-01
 
 v = RSK.dbInfo(end).version;
 vsn = textscan(v,'%s','delimiter','.');
@@ -35,8 +36,35 @@ else
     vsnPatch = str2double(vsn{1}{3});
 end
 
-% Bug in RSK schema 1.13.0
-if  (vsnMajor == 1)&&(vsnMinor == 13)&&(vsnPatch == 0) && length(RSK.dbInfo)>1
+if  (vsnMajor == 1)&&(vsnMinor == 13)&&(vsnPatch == 0) && length(RSK.dbInfo)>1 && strcmpi(RSK.dbInfo(end).type,'full')
+    [v, vsnMajor, vsnMinor, vsnPatch] = checkversionlist(RSK) ;
+end
+end
+
+    function [v, vsnMajorlast, vsnMinorlast, vsnPatchlast] = checkversionlist(RSK)
+    % checkversionlist - Checks that the last dbInfo entry is the most recent.
+    %
+    % Syntax:  [v, vsnMajorlast, vsnMinorlast, vsnPatchlast] = checkversionlist(RSK);
+    %
+    % checkversionlist check to see if the most recent version in dbInfo table is
+    % 1.13.0. If it is the case it will check if there is a newer version
+    % available, if there is RSKtools will use the correct version and type
+    % associated with the file.  
+    %
+    % Inputs:
+    %    RSK - Structure containing the logger metadata and thumbnails
+    %          returned by RSKopen.
+    %
+    % Output:
+    %    v - The lastest version of the RSK file.
+    %    vsnMajor - The latest version number of category major.
+    %    vsnMinor - The latest version number of category minor.
+    %    vsnPatch - The latest version number of category patch.
+    %
+    % Author: RBR Ltd. Ottawa ON, Canada
+    % email: support@rbr-global.com
+    % Website: www.rbr-global.com
+    % Last revision: 2017-05-01
     vsnMajorlast = 1;
     vsnMinorlast = 13;
     vsnPatchlast = 0;
@@ -51,13 +79,19 @@ if  (vsnMajor == 1)&&(vsnMinor == 13)&&(vsnPatch == 0) && length(RSK.dbInfo)>1
                     vsnMajorlast = vsnMajor;
                     vsnMinorlast = vsnMinor;
                     vsnPatchlast = vsnPatch;
+                    type = RSK.dbInfo(ndx).type;
             end
         end
     end
     v = [num2str(vsnMajorlast) '.' num2str(vsnMinorlast) '.' num2str(vsnPatchlast)];
-    vsnMajor = vsnMajorlast;
-    vsnMinor = vsnMinorlast;
-    vsnPatch = vsnPatchlast;
-end
 
-end
+    % write fix to file
+    %     try
+    %         mksqlite('begin');
+    %         mksqlite(['INSERT INTO `dbInfo` VALUES ("' v '","' type '")']);
+    %         mksqlite('commit');
+    %     catch
+    %         mksqlite('rollback');
+    %     end
+    %     RSK.dbInfo = mksqlite('select version,type from dbInfo');
+    end

@@ -1,9 +1,9 @@
-function RSK = RSKreadprofiles(RSK, profileNum, direction, latency)
+function RSK = RSKreadprofiles(RSK, varargin)
 
 % RSKreadprofiles - Read individual profiles (e.g. upcast and
 %                   downcast) from an rsk file.
 %
-% Syntax:  RSK = RSKreadprofiles(RSK, profileNum, direction)
+% Syntax:  RSK = RSKreadprofiles(RSK, profileNum, direction, latency)
 % 
 % Reads profiles, including up and down casts, from the events
 % contained in an rsk file. The profiles are written as fields in a
@@ -26,7 +26,8 @@ function RSK = RSKreadprofiles(RSK, profileNum, direction, latency)
 %                     from the RSK file.
 %
 %    profileNum - vector identifying the profile numbers to read. This
-%          can be used to read only a subset of all the profiles.
+%          can be used to read only a subset of all the profiles. Default
+%          is to read all the profiles.
 %
 %    direction - `up` for upcast, `down` for downcast, or `both` for
 %          all. Default is `down`.
@@ -34,6 +35,7 @@ function RSK = RSKreadprofiles(RSK, profileNum, direction, latency)
 %    latency - the latency, or time lag, in seconds, caused by the slowest
 %          responding sensor. When reading profiles the event times must be
 %          shifted by this value to line up with the data time stamps.
+%          Default is 0.
 %
 % Outputs:
 %    RSK - RSK structure containing individual profiles
@@ -48,68 +50,74 @@ function RSK = RSKreadprofiles(RSK, profileNum, direction, latency)
 %    % read selective upcasts
 %    rsk = RSKreadprofiles(rsk, [1 3 10], 'up');
 %
-% See also: RSKreaddata, RSKreadevents, RSKplotprofiles
+% See also: RSKreaddata, RSKfindprofiles, RSKplotprofiles
 %
 % Author: RBR Ltd. Ottawa ON, Canada
 % email: support@rbr-global.com
 % Website: www.rbr-global.com
-% Last revision: 2017-04-04
+% Last revision: 2017-05-01
 
+%% Parse Inputs
+validDirections = {'down', 'up', 'both'};
+checkDirection = @(x) any(validatestring(x,validDirections));
+
+p = inputParser;
+addRequired(p, 'RSK', @isstruct);
+addOptional(p, 'profileNum', [], @isnumeric);
+addOptional(p, 'direction', 'down', checkDirection);
+addOptional(p, 'latency', 0, @isnumeric);
+parse(p, RSK, varargin{:})
+
+% Assign each input argument
+RSK = p.Results.RSK;
+profileNum = p.Results.profileNum;
+direction = p.Results.direction;
+latency = p.Results.latency;
+
+%%
 if ~isfield(RSK, 'profiles') 
     error('No profiles events in this RSK');
-end
-nprof = min([length(RSK.profiles.downcast.tstart) length(RSK.profiles.upcast.tstart)]);        
-
-if nargin == 1
-    nprof = min([length(RSK.profiles.downcast.tstart) length(RSK.profiles.upcast.tstart)]);
-    profileNum = 1:nprof; % default read all profiles
-    direction = 'down'; % default read downcasts
-    latency = 0;
-elseif nargin == 2
-    direction = 'down';
-    latency = 0;
-elseif nargin == 3
-    latency = 0;
-end
-if isempty(profileNum);
-    profileNum = 1:nprof; 
-end
-if isempty(direction) 
-    direction = 'down'; 
-end
-if isempty(latency) 
-    latency = 0; 
 end
 
 
 if strcmp(direction, 'down') || strcmp(direction, 'both')
+    if isempty(profileNum)
+        profileIdx = 1:min([length(RSK.profiles.downcast.tstart),length(RSK.profiles.downcast.tend)]);
+    else 
+        profileIdx = profileNum;
+    end
     RSK.profiles.downcast.data = [];
     % loop through downcasts
-    ii = 1;
-    for i=profileNum
-        tstart = RSK.profiles.downcast.tstart(i)-latency/86400;
-        tend = RSK.profiles.downcast.tend(i)-latency/86400;
+    downndx = 1;
+    for ndx=profileIdx
+        tstart = RSK.profiles.downcast.tstart(ndx)-latency/86400;
+        tend = RSK.profiles.downcast.tend(ndx)-latency/86400;
         tmp = RSKreaddata(RSK, tstart, tend);
-        RSK.profiles.downcast.data(ii).tstamp = tmp.data.tstamp;
-        RSK.profiles.downcast.data(ii).values = tmp.data.values;
-        ii = ii + 1;
+        RSK.profiles.downcast.data(downndx).tstamp = tmp.data.tstamp;
+        RSK.profiles.downcast.data(downndx).values = tmp.data.values;
+        downndx = downndx + 1;
     end
-    RSK.profiles.downcast.profileIndex = profileNum;
+    RSK.profiles.downcast.profileIndex = profileIdx;
 end
 
 if strcmp(direction, 'up') || strcmp(direction, 'both')
+    if isempty(profileNum)
+        profileIdx = 1:min([length(RSK.profiles.upcast.tstart),length(RSK.profiles.upcast.tend)]);
+    else 
+        profileIdx = profileNum;
+    end
     RSK.profiles.upcast.data = [];
     % loop through upcasts
-    ii = 1;
-    for i=profileNum
-        tstart = RSK.profiles.upcast.tstart(i)-latency/86400;
-        tend = RSK.profiles.upcast.tend(i)-latency/86400;
+    upndx = 1;
+    for ndx=profileIdx
+        tstart = RSK.profiles.upcast.tstart(ndx)-latency/86400;
+        tend = RSK.profiles.upcast.tend(ndx)-latency/86400;
         tmp = RSKreaddata(RSK, tstart, tend);
-        RSK.profiles.upcast.data(ii).tstamp = tmp.data.tstamp;
-        RSK.profiles.upcast.data(ii).values = tmp.data.values;
-        ii = ii + 1;
+        RSK.profiles.upcast.data(upndx).tstamp = tmp.data.tstamp;
+        RSK.profiles.upcast.data(upndx).values = tmp.data.values;
+        upndx = upndx + 1;
     end
-    RSK.profiles.upcast.profileIndex = profileNum;
+    RSK.profiles.upcast.profileIndex = profileIdx;
 end
 RSK.instrumentChannels = tmp.instrumentChannels;
 RSK.channels = tmp.channels;

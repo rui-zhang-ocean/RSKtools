@@ -1,4 +1,4 @@
-function RSK = RSKreaddata(RSK, t1, t2)
+function RSK = RSKreaddata(RSK, varargin)
 
 % RSKreaddata - Reads the data tables from an RBR RSK SQLite file.
 %
@@ -38,7 +38,30 @@ function RSK = RSKreaddata(RSK, t1, t2)
 % Author: RBR Ltd. Ottawa ON, Canada
 % email: support@rbr-global.com
 % Website: www.rbr-global.com
-% Last revision: 2017-03-30
+% Last revision: 2017-04-30
+
+%% Parse Inputs
+
+p = inputParser;
+addRequired(p, 'RSK', @isstruct);
+addOptional(p, 't1', [], @isnumeric);
+addOptional(p, 't2', [], @isnumeric);
+parse(p, RSK, varargin{:})
+
+% Assign each input argument
+RSK = p.Results.RSK;
+t1 = p.Results.t1;
+t2 = p.Results.t2;
+
+if any(strcmpi(p.UsingDefaults, 't1'))
+    t1 = RSK.epochs.startTime;
+end
+if any(strcmpi(p.UsingDefaults, 't2'))
+    t2 = RSK.epochs.endTime;
+end
+
+t1 = datenum2RSKtime(t1);
+t2 = datenum2RSKtime(t2);
 
 %% Check if file type is skinny
 if strcmp(RSK.dbInfo(end).type, 'skinny')
@@ -46,17 +69,7 @@ if strcmp(RSK.dbInfo(end).type, 'skinny')
 end
 
 %% Load data
-if nargin==1 % user wants to read ALL the data
-    t1 = datenum2RSKtime(RSK.epochs.startTime);
-    t2 = datenum2RSKtime(RSK.epochs.endTime);
-else
-    t1 = datenum2RSKtime(t1);
-    t2 = datenum2RSKtime(t2);
-end
 
-% Select data schema
-% Determine 'channelXX' column names
-% Build SQL statement from column names
 sql = ['select tstamp/1.0 as tstamp,* from data where tstamp between ' num2str(t1) ' and ' num2str(t2) ' order by tstamp'];
 results = mksqlite(sql);
 if isempty(results)
@@ -65,7 +78,6 @@ if isempty(results)
 end
 
 results = removeUnusedDataColumns(results);
-
 
 %% Organise results
 results = RSKarrangedata(results);
@@ -77,7 +89,6 @@ if ~strcmpi(RSK.dbInfo(end).type, 'EPdesktop')
     [~, isDerived] = removeNonMarinechannels(RSK);
     results.values = results.values(:,~isDerived);
 end
-
 
 %% Put data into data field of RSK structure.
 RSK.data=results;
