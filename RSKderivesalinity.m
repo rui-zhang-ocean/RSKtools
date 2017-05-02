@@ -28,7 +28,7 @@ function [RSK, salinity] = RSKderivesalinity(RSK, varargin)
 % Author: RBR Ltd. Ottawa ON, Canada
 % email: support@rbr-global.com
 % Website: www.rbr-global.com
-% Last revision: 2017-03-30
+% Last revision: 2017-05-02
 
 
 %% Check input and default arguments
@@ -57,11 +57,12 @@ direction = p.Results.direction;
 %% Determine if the structure has downcasts and upcasts
 
 if strcmpi(series, 'profile')
-    profileNum = [];
-    profileIdx = checkprofiles(RSK, profileNum, direction);
-    castdir = [direction 'cast'];
+    if strcmpi(direction, 'both')
+        direction = {'down', 'up'};
+    else
+        direction = {direction};
+    end
 end
-
 
 %% Check TEOS-10 and CTP data are available.
  
@@ -73,28 +74,12 @@ if length(RSK.channels) < 3 || ~any(strcmpi({RSK.channels.longName}, 'Conductivi
     error('Conductivity, Temperature and Pressure are required to calculate Salinity');
 end
 
-
 %% Calculate Salinity
+
 hasS = any(strcmp({RSK.channels.longName}, 'Salinity'));
-nchannels = length(RSK.channels);
-
 if ~hasS
-    RSK.channels(nchannels+1).longName = 'Salinity';
-    RSK.channels(nchannels+1).units = 'PSU';
-    % update the instrumentChannels info for the new "channel"
-    if isfield(RSK, 'instrumentChannels')
-        if isfield(RSK.instrumentChannels, 'instrumentID')
-            RSK.instrumentChannels(nchannels+1).instrumentID = RSK.instrumentChannels(1).instrumentID;
-        end
-        if isfield(RSK.instrumentChannels, 'channelStatus')
-            RSK.instrumentChannels(nchannels+1).channelStatus = 0;
-        end
-        RSK.instrumentChannels(nchannels+1).channelID = RSK.instrumentChannels(nchannels).channelID+1;
-        RSK.instrumentChannels(nchannels+1).channelOrder = RSK.instrumentChannels(nchannels).channelOrder+1;
-    end
+    RSK = addchannelmetadata(RSK, 'Salinity', 'mS/cm');
 end
-
-
 
 Scol = strcmpi({RSK.channels.longName}, 'Salinity');
 Ccol = strcmpi({RSK.channels.longName}, 'Conductivity');
@@ -107,10 +92,15 @@ switch series
         salinity = gsw_SP_from_C(data.values(:, Ccol), data.values(:, Tcol), data.values(:, Pcol)- 10.1325);
         RSK.data.values(:,Scol) = salinity;
     case 'profile'
-        for ndx = profileIdx
-            data = RSK.profiles.(castdir).data(ndx);
-            salinity = gsw_SP_from_C(data.values(:, Ccol), data.values(:, Tcol), data.values(:, Pcol)- 10.1325);
-            RSK.profiles.(castdir).data(ndx).values(:,Scol) = salinity;
+        for dir = direction
+            profileNum = [];
+            profileIdx = checkprofiles(RSK, profileNum, dir{1});
+            castdir = [dir{1} 'cast'];
+            for ndx = profileIdx
+                data = RSK.profiles.(castdir).data(ndx);
+                salinity = gsw_SP_from_C(data.values(:, Ccol), data.values(:, Tcol), data.values(:, Pcol)- 10.1325);
+                RSK.profiles.(castdir).data(ndx).values(:,Scol) = salinity;
+            end
         end
 end
 

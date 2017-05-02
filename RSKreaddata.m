@@ -53,10 +53,10 @@ RSK = p.Results.RSK;
 t1 = p.Results.t1;
 t2 = p.Results.t2;
 
-if any(strcmpi(p.UsingDefaults, 't1'))
+if isempty(t1)
     t1 = RSK.epochs.startTime;
 end
-if any(strcmpi(p.UsingDefaults, 't2'))
+if isempty(t2)
     t2 = RSK.epochs.endTime;
 end
 
