@@ -1,4 +1,4 @@
-function depth = calculatedepth(pressure, varargin)
+function depth = calculatedepth(pressure, latitude)
 
 % calculatedepth - Calculate depth from pressure
 %
@@ -23,23 +23,10 @@ function depth = calculatedepth(pressure, varargin)
 % Author: RBR Ltd. Ottawa ON, Canada
 % email: support@rbr-global.com
 % Website: www.rbr-global.com
-% Last revision: 2017-01-11
-
-%% Parse Inputs
-
-p = inputParser;
-addOptional(p, 'latitude', 45, @isnumeric);
-parse(p, varargin{:})
-
-% Assign each argument
-latitude = p.Results.latitude;
-
-
+% Last revision: 2017-05-02
 
 %% Check if user has the TEOS-10 GSW toolbox installed
 hasTEOS = exist('gsw_z_from_P') == 2;
-
-
 
 %% Calculate depth
 if hasTEOS
