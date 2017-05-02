@@ -43,14 +43,14 @@ function RSK = RSKsmooth(RSK, channel, varargin)
 % Author: RBR Ltd. Ottawa ON, Canada
 % email: support@rbr-global.com
 % Website: www.rbr-global.com
-% Last revision: 2017-03-22
+% Last revision: 2017-05-01
 
 %% Check input and default arguments
 
 validSeries = {'profile', 'data'};
 checkSeriesName = @(x) any(validatestring(x,validSeries));
 
-validDirections = {'down', 'up'};
+validDirections = {'down', 'up', 'both'};
 checkDirection = @(x) any(validatestring(x,validDirections));
 
 validFilterNames = {'median', 'boxcar'};
@@ -78,15 +78,6 @@ profileNum = p.Results.profileNum;
 direction = p.Results.direction;
 windowLength = p.Results.windowLength;
 
-
-%% Determine if the structure has downcasts and upcasts
-
-if strcmpi(series, 'profile')
-    profileIdx = checkprofiles(RSK, profileNum, direction);
-    castdir = [direction 'cast'];
-end
-
-
 %% Ensure channel is a cell.
 
 if strcmpi(channel, 'all')
@@ -95,6 +86,14 @@ elseif ~iscell(channel)
     channel = {channel};
 end
 
+%% Determine if the structure has downcasts and upcasts
+if strcmpi(series, 'profile')
+    if strcmpi(direction, 'both')
+        direction = {'down', 'up'};
+    else
+        direction = {direction};
+    end
+end
 
 %% Smooth
 
@@ -110,34 +109,33 @@ for chanName = channel
                     [out, windowLength] = runmed(in, windowLength);
             end      
             RSK.data.values(:,channelCol) = out;
-            
+
+            logentry = sprintf('%s filtered using a %s filter with a %1.0f sample window.', chanName{1}, filter, windowLength);
+            RSK = RSKappendtolog(RSK, logentry);
+
         case 'profile'
-            for ndx = profileIdx
-                in = RSK.profiles.(castdir).data(ndx).values(:,channelCol);
-                switch filter
-                    case 'boxcar'
-                        [out, windowLength] = runavg(in, windowLength);
-                    case 'median'
-                        [out, windowLength] = runmed(in, windowLength);
+            for dir = direction
+                if strcmpi(series, 'profile')
+                    profileIdx = checkprofiles(RSK, profileNum, dir{1});
+                    castdir = [dir{1} 'cast'];
                 end
-                RSK.profiles.(castdir).data(ndx).values(:,channelCol) = out;
+                
+                for ndx = profileIdx
+                    in = RSK.profiles.(castdir).data(ndx).values(:,channelCol);
+                    switch filter
+                        case 'boxcar'
+                            [out, windowLength] = runavg(in, windowLength);
+                        case 'median'
+                            [out, windowLength] = runmed(in, windowLength);
+                    end
+                    RSK.profiles.(castdir).data(ndx).values(:,channelCol) = out;
+                end
+
+                logprofile = logentryprofiles(dir{1}, profileNum, profileIdx);
+                logentry = sprintf('%s filtered using a %s filter with a %1.0f sample window on %s.', chanName{1}, filter, windowLength, logprofile);
+                RSK = RSKappendtolog(RSK, logentry);
             end
     end
-end
-
-
-%% Update log
-for chanName = channel
-    switch series
-        case 'data'
-            logentry = sprintf('%s filtered using a %s filter with a %1.0f sample window.', chanName{1}, filter, windowLength);
-
-        case 'profile'
-            logprofile = logentryprofiles(direction, profileNum, profileIdx);
-            logentry = sprintf('%s filtered using a %s filter with a %1.0f sample window on %s.', chanName{1}, filter, windowLength, logprofile);
-    end
-
-    RSK = RSKappendtolog(RSK, logentry);
 end
 
 
