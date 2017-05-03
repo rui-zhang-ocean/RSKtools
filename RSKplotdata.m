@@ -1,8 +1,8 @@
-function RSKplotdata(RSK)
+function RSKplotdata(RSK, varargin)
 
 % RSKplotdata - Plot summaries of logger data
 %
-% Syntax:  RSKplotdata(RSK)
+% Syntax:  RSKplotdata(RSK, channel)
 % 
 % This generates a plot, similar to the thumbnail plot, only using the
 % full 'data' that you read in, rather than just the thumbnail view.
@@ -11,6 +11,8 @@ function RSKplotdata(RSK)
 % 
 % Inputs:
 %    RSK - Structure containing the logger metadata and data
+%
+%    channel - channel to plots, if no value is given it will plot all.
 %
 % Example: 
 %    RSK=RSKopen('sample.rsk');  
@@ -23,9 +25,16 @@ function RSKplotdata(RSK)
 % email: support@rbr-global.com
 % Website: www.rbr-global.com
 
-% FIXMEs:
-% * plot data - needs time axis sorting
-% * doesn't display the date if all data within one day :(
+%% Parse Inputs
+
+p = inputParser;
+addRequired(p, 'RSK', @isstruct);
+addOptional(p, 'channel', [], @ischar);
+parse(p, RSK, varargin{:})
+
+% Assign each input argument
+RSK = p.Results.RSK;
+channel = p.Results.channel;
 
 if isfield(RSK,'data')==0
     disp('You must read a section of data in first!');
@@ -34,14 +43,23 @@ if isfield(RSK,'data')==0
 end
 numchannels = size(RSK.data.values,2);
 
-for n=1:numchannels
-    subplot(numchannels,1,n)
-    plot(RSK.data.tstamp,RSK.data.values(:,n),'-')
-    title(RSK.channels(n).longName);
-    ylabel(RSK.channels(n).units);
-    ax(n)=gca;
+if ~isempty(channel)
+    Ccol = strcmpi({RSK.channels.longName}, channel);
+    plot(RSK.data.tstamp,RSK.data.values(:,Ccol),'-')
+    title(RSK.channels(Ccol).longName);
+    ylabel(RSK.channels(Ccol).units);
+    ax(Ccol)=gca;
     datetick('x')  % doesn't display the date if all data within one day :(
-    
+else
+    for n=1:numchannels
+        subplot(numchannels,1,n)
+        plot(RSK.data.tstamp,RSK.data.values(:,n),'-')
+        title(RSK.channels(n).longName);
+        ylabel(RSK.channels(n).units);
+        ax(n)=gca;
+        datetick('x')  % doesn't display the date if all data within one day :(
+        linkaxes(ax,'x')
+    end
 end
-linkaxes(ax,'x')
+
 shg
