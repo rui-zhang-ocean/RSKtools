@@ -42,8 +42,8 @@ if any(strcmpi(shortName, 'temp13'))
     RSK.channels(idx).longName = 'External Cabled Temperature';
 end
 
-if any(strncmpi(shortName, 'doxy', 4))
-    idx = strncmpi(shortName, 'doxy', 4);
+if any(strncmpi(shortName, 'doxy09', 4))
+    idx = strncmpi(shortName, 'doxy09', 4);
     RSK.channels(idx).longName = 'Dissolved O2';
 end
 end
