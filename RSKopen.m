@@ -81,7 +81,7 @@ switch RSK.dbInfo(end).type
 end
 
 
-RSK = renameAdditionalTemperatureChannels(RSK);
+RSK = renameChannels(RSK);
 
 
 RSK = RSKgetprofiles(RSK);
