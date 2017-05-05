@@ -1,4 +1,4 @@
-function [RSK, depth] = RSKderivedepth(RSK, latitude, varargin)
+function [RSK, depth] = RSKderivedepth(RSK, varargin)
 
 % RSKderivedepth - Calculate depth from pressure and add it or replace it
 % in the data table.
@@ -75,9 +75,8 @@ end
 %% Calculate Depth
 RSK = addchannelmetadata(RSK, 'Depth', 'm');
 
-
-Dcol = strcmpi({RSK.channels.longName}, 'Depth');
-Pcol = strcmpi({RSK.channels.longName}, 'Pressure');
+Dcol = getchannelindex(RSK, 'Depth');
+Pcol = getchannelindex(RSK, 'Pressure');
 
 switch series
     case 'data'

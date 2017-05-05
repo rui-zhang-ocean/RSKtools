@@ -77,11 +77,10 @@ end
 %% Calculate Salinity
 RSK = addchannelmetadata(RSK, 'Salinity', 'mS/cm');
 
-
-Scol = strcmpi({RSK.channels.longName}, 'Salinity');
-Ccol = strcmpi({RSK.channels.longName}, 'Conductivity');
-Tcol = strcmpi({RSK.channels.longName}, 'Temperature');
-Pcol = strcmpi({RSK.channels.longName}, 'Pressure');
+Scol = getchannelindex(RSK, 'Salinity');
+Ccol = getchannelindex(RSK, 'Conductivity');
+Tcol = getchannelindex(RSK, 'Temperature');
+Pcol = getchannelindex(RSK, 'Pressure');
 
 switch series
     case 'data'

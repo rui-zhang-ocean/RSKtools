@@ -1,39 +1,30 @@
-function channelIdx = checkchannels(RSK, channel)
+function channelIdx = getchannelindex(RSK, channel)
 
-% checkchannel - Check if channels longNames are in RSK channels field.
+% getchannelindex - Check if channels longNames are in RSK channels field and
+% return the index.
 %
-% Syntax:  [channelIdx] = checkchannel(RSK, channel)
+% Syntax:  [channelIdx] = getchannelindex(RSK, channel)
 % 
-% A helper function used to check if the channels field in the RSK
-% structure has the channels that are requested.
+% A helper function that outputs the channel index in the RSK. If the
+% channel is not in the RSK it returns an error.
 %
 % Inputs:
 %   RSK - the input RSK structure
 %
-%   channel - The channel longNames to be check.
+%   channel - The channel longName to be check.
 %
 % Outputs:
-%    profileIdx - An array containing the index of the profiles with data.
+%    profileIdx - An array containing the index of channels
 %
 % Author: RBR Ltd. Ottawa ON, Canada
 % email: support@rbr-global.com
 % Website: www.rbr-global.com
-% Last revision: 2017-04-05
+% Last revision: 2017-05-05
 
-if strcmpi(channel, 'all')
-    channel = {RSK.channels.longName};
-elseif ~iscell(channel)
-    channel = {channel};
-end
-
-channelIdx = [];
-for chanName = channel
-    if any(strcmpi(chanName{1}, {RSK.channels.longName}));
-        chanCol = find(strcmpi(chanName{1}, {RSK.channels.longName}));
-        channelIdx = [channelIdx, chanCol(1)];
-    else
-        error(['RSK channels does not contain ' chanName{1}]);
-    end
-end
-    
+if any(strcmpi(channel, {RSK.channels.longName}));
+    chanCol = find(strcmpi(channel, {RSK.channels.longName}));
+    channelIdx = chanCol(1);
+else
+    error(['The is no ' channel ' channel in this file. Try RSKderive(channel).']);
+end 
 end
