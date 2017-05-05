@@ -50,7 +50,7 @@ addRequired(p, 'RSK', @isstruct);
 addOptional(p, 'latitude', 45, @isnumeric);
 addParameter(p, 'series', 'data', checkSeriesName);
 addParameter(p, 'direction', 'down', checkDirection);
-parse(p, RSK, latitude, varargin{:})
+parse(p, RSK, varargin{:})
 
 % Assign each input argument
 RSK = p.Results.RSK;
