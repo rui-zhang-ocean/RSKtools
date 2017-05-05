@@ -86,12 +86,12 @@ for ndx = 2:length(wwevt)
     if wwevt(ndx-1,2) ~= 3
         if wwevt(ndx,2) == 1
             % Upcast end is the sample before a downcast start
-            upend(u) = timestamp(t-1);
+            upend(u) = timestamp(t);
             u = u+1;
 
         elseif wwevt(ndx,2) == 2
             % Downcast end is the sample before a upcast start
-            downend(d) = timestamp(t-1);
+            downend(d) = timestamp(t);
             d = d+1;  
         end
 
@@ -99,12 +99,12 @@ for ndx = 2:length(wwevt)
     if wwevt(ndx,2) == 3
         if wwevt(ndx-1,2) == 1
             % Event 3 ends a downcast if that was the last event
-            downend(d) = timestamp(t-1);
+            downend(d) = timestamp(t);
             d = d+1;
             
          elseif wwevt(ndx-1,2) == 2
              % Event 3 ends a upcast if that was the last event
-            upend(u) = timestamp(t-1);
+            upend(u) = timestamp(t);
             u = u+1;
         end
     end
