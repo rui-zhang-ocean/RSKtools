@@ -46,8 +46,8 @@ direction = p.Results.direction;
 %% Determine if the structure has downcasts and upcasts & set profileNum accordingly
 profileIdx = checkprofiles(RSK, [], direction);
 castdir = [direction 'cast'];
-binCenter = RSK.profiles.(castdir).(channel).binCenter;
-binValues = RSK.profiles.(castdir).(channel).binValues;
+binCenter = RSK.profiles.(castdir).(channel(1:4)).binCenter;
+binValues = RSK.profiles.(castdir).(channel(1:4)).binValues;
 
 t = RSK.profiles.(castdir).tstart;
 b = imagesc(t, binCenter, binValues);
@@ -92,7 +92,7 @@ axis tight
 
 chanCol = strcmpi(channel, {RSK.channels.longName});
 ylabel(cb, RSK.channels(chanCol).units, 'FontSize', 12)
-title(sprintf('%s on %s', RSK.channels(chanCol).longName, date));
+title(sprintf('%s on %s', RSK.channels(chanCol).longName, datestr(t(end))));
 xlabel(sprintf('Time (UTC)'))
 ylabel('Pressure(dbar)')
 set(gca, 'YDir', 'reverse')
