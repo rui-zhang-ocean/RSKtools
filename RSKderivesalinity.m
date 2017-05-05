@@ -75,11 +75,8 @@ if length(RSK.channels) < 3 || ~any(strcmpi({RSK.channels.longName}, 'Conductivi
 end
 
 %% Calculate Salinity
+RSK = addchannelmetadata(RSK, 'Salinity', 'mS/cm');
 
-hasS = any(strcmp({RSK.channels.longName}, 'Salinity'));
-if ~hasS
-    RSK = addchannelmetadata(RSK, 'Salinity', 'mS/cm');
-end
 
 Scol = strcmpi({RSK.channels.longName}, 'Salinity');
 Ccol = strcmpi({RSK.channels.longName}, 'Conductivity');

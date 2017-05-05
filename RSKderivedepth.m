@@ -73,11 +73,8 @@ if ~any(strcmpi({RSK.channels.longName}, 'Pressure'))
 end
 
 %% Calculate Depth
+RSK = addchannelmetadata(RSK, 'Depth', 'm');
 
-hasD = any(strcmp({RSK.channels.longName}, 'Depth'));
-if ~hasD
-    RSK = addchannelmetadata(RSK, 'Depth', 'm');
-end
 
 Dcol = strcmpi({RSK.channels.longName}, 'Depth');
 Pcol = strcmpi({RSK.channels.longName}, 'Pressure');
@@ -101,6 +98,3 @@ switch series
 end
 
 end
-
-
-
