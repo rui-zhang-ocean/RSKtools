@@ -38,7 +38,7 @@ function RSK = RSKreaddata(RSK, varargin)
 % Author: RBR Ltd. Ottawa ON, Canada
 % email: support@rbr-global.com
 % Website: www.rbr-global.com
-% Last revision: 2017-04-30
+% Last revision: 2017-05-05
 
 %% Parse Inputs
 
@@ -62,6 +62,10 @@ end
 
 t1 = datenum2RSKtime(t1);
 t2 = datenum2RSKtime(t2);
+
+if t2 <= t1
+    error('The end time (t2) must be greater (later) than the start time (t1)')
+end
 
 %% Check if file type is skinny
 if strcmp(RSK.dbInfo(end).type, 'skinny')
