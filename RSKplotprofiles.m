@@ -110,21 +110,25 @@ col = col(1);
 % clf
 ax = gca; ax.ColorOrderIndex = 1;
 pmax = 0;
+ii = 1;
 if strcmp(direction, 'up') | strcmp(direction, 'both')
     for i=profileNum
         p = RSK.profiles.upcast.data(i).values(:, pcol) - 10.1325; % FIXME: should read ptAm from rskfile
-        hdls(i) = plot(RSK.profiles.upcast.data(i).values(:, col), p);
+        hdls(ii) = plot(RSK.profiles.upcast.data(i).values(:, col), p);
         hold on
         pmax = max([pmax; p]);
+        ii = ii+1;
     end
 end
 if strcmp(direction, 'both') ax = gca; ax.ColorOrderIndex = 1; end
 if strcmp(direction, 'down') | strcmp(direction, 'both')
+    ii = 1;
     for i=profileNum
         p = RSK.profiles.downcast.data(i).values(:, pcol) - 10.1325; % FIXME: should read pAtm from rskfile
-        hdls(i) = plot(RSK.profiles.downcast.data(i).values(:, col), p);
+        hdls(ii) = plot(RSK.profiles.downcast.data(i).values(:, col), p);
         hold on
         pmax = max([pmax; p]);
+        ii = ii+1;
     end
 end
 grid
