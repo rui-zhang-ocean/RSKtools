@@ -26,6 +26,7 @@ function utime = datenum2unixtime(dnum)
 % Author: RBR Ltd. Ottawa ON, Canada
 % email: support@rbr-global.com
 % Website: www.rbr-global.com
+% Last revision: 2017-05-05
 
 utime = double(86400 * (dnum - datenum('01-Jan-1970')));
 

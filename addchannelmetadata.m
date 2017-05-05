@@ -20,22 +20,24 @@ function RSK = addchannelmetadata(RSK, longName, units)
 % Author: RBR Ltd. Ottawa ON, Canada
 % email: support@rbr-global.com
 % Website: www.rbr-global.com
-% Last revision: 2017-05-02
+% Last revision: 2017-05-05
 
-
-nchannels = length(RSK.channels);
-RSK.channels(nchannels+1).longName = longName;
-RSK.channels(nchannels+1).units = units;
-% update the instrumentChannels info for the new "channel"
-if isfield(RSK, 'instrumentChannels')
-    if isfield(RSK.instrumentChannels, 'instrumentID')
-        RSK.instrumentChannels(nchannels+1).instrumentID = RSK.instrumentChannels(1).instrumentID;
+hasChan = any(strcmp({RSK.channels.longName}, 'Salinity'));
+if ~hasChan
+    nchannels = length(RSK.channels);
+    RSK.channels(nchannels+1).longName = longName;
+    RSK.channels(nchannels+1).units = units;
+    % update the instrumentChannels info for the new "channel"
+    if isfield(RSK, 'instrumentChannels')
+        if isfield(RSK.instrumentChannels, 'instrumentID')
+            RSK.instrumentChannels(nchannels+1).instrumentID = RSK.instrumentChannels(1).instrumentID;
+        end
+        if isfield(RSK.instrumentChannels, 'channelStatus')
+            RSK.instrumentChannels(nchannels+1).channelStatus = 0;
+        end
+        RSK.instrumentChannels(nchannels+1).channelID = RSK.instrumentChannels(nchannels).channelID+1;
+        RSK.instrumentChannels(nchannels+1).channelOrder = RSK.instrumentChannels(nchannels).channelOrder+1;
     end
-    if isfield(RSK.instrumentChannels, 'channelStatus')
-        RSK.instrumentChannels(nchannels+1).channelStatus = 0;
-    end
-    RSK.instrumentChannels(nchannels+1).channelID = RSK.instrumentChannels(nchannels).channelID+1;
-    RSK.instrumentChannels(nchannels+1).channelOrder = RSK.instrumentChannels(nchannels).channelOrder+1;
 end
 
 end
