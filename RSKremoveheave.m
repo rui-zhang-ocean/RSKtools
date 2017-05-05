@@ -28,9 +28,6 @@ function [RSK, flagidx] = RSKremoveheave(RSK, varargin)
 %                threshold - The minimum speed at which the profile must be
 %                    taken. Default is 0.25 m/s 
 %
-%                latitude - Latitude at which the profile was taken for depth
-%                    calculation.  Default is 45.
-%
 % Outputs:
 %    RSK - The structure without pressure reversal or slowdowns.
 %
@@ -44,17 +41,12 @@ function [RSK, flagidx] = RSKremoveheave(RSK, varargin)
 % Author: RBR Ltd. Ottawa ON, Canada
 % email: support@rbr-global.com
 % Website: www.rbr-global.com
-% Last revision: 2017-04-05
+% Last revision: 2017-05-05
 
 %% Check input and default arguments
 
 validDirections = {'up', 'down'};
 checkDirection = @(x) any(validatestring(x,validDirections));
-
-classes = {'double'};
-attributes = {'>=',-90,'<=',90};
-checkLatitude = @(x) any(validateattributes(x, classes, attributes));
-
 
 %% Parse Inputs
 
@@ -63,7 +55,6 @@ addRequired(p, 'RSK', @isstruct);
 addParameter(p, 'direction', 'down', checkDirection);
 addParameter(p, 'profileNum', [], @isnumeric);
 addParameter(p, 'threshold', 0.25, @isnumeric);
-addParameter(p, 'latitude', 45, checkLatitude); 
 parse(p, RSK, varargin{:})
 
 % Assign each argument
@@ -71,14 +62,16 @@ RSK = p.Results.RSK;
 direction = p.Results.direction;
 profileNum = p.Results.profileNum;
 threshold = p.Results.threshold;
-latitude = p.Results.latitude;
-
 
 %% Determine if the structure has downcasts and upcasts
 
 profileIdx = checkprofiles(RSK, profileNum, direction);
 castdir = [direction 'cast'];
 
+Dcol = strcmpi({RSK.channels.longName}, 'Depth');
+if ~any(strcmpi({RSK.channels.longName}, 'Depth'));
+    error('Depth is required, use RSKderivedepth.m')
+end
 
 %% Edit one cast at a time.
 data = RSK.profiles.(castdir).data;
@@ -87,9 +80,8 @@ secondsperday = 86400;
 
 for ndx = profileIdx
     %% Filter pressure before taking the diff    
-    pressure = RSK.profiles.(castdir).data(ndx).values(:,pCol);
-    pressuresmooth = runavg(pressure, 3, 'nan');
-    depth = calculatedepth(pressuresmooth, 'latitude', latitude);
+    d = data(ndx).values(:,Dcol);
+    depth = runavg(d, 3, 'nan');
     time = data(ndx).tstamp;
 
     %% Caculate Velocity.
