@@ -85,12 +85,12 @@ for ndx = 2:length(wwevt)
     t = find(timestamp == wwevt(ndx,1),1);
     if wwevt(ndx-1,2) ~= 3
         if wwevt(ndx,2) == 1
-            % Upcast end is the sample before a downcast start
+            % Upcast end is the sample of a downcast start
             upend(u) = timestamp(t);
             u = u+1;
 
         elseif wwevt(ndx,2) == 2
-            % Downcast end is the sample before a upcast start
+            % Downcast end is the sample of a upcast start
             downend(d) = timestamp(t);
             d = d+1;  
         end
