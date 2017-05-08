@@ -1,23 +1,23 @@
 function [RSK, flagidx] = RSKremoveheave(RSK, varargin)
 
 % RSKremoveheave - Remove values exceeding a threshold CTD profiling
-%                  rate.  Variations in profiling rate, such as might
-%                  be caused by profiling from a vessel in wavy
-%                  conditions with a taut wire, can negatively impact
-%                  data quality.  If the heaving is large enough, the
-%                  pressure can even reverse, or loop, causing the CTD
-%                  to sample its own wake.
-%
+%                  rate. 
 % Syntax:  [RSK, flagidx] = RSKremoveheave(RSK, [OPTIONS])
 % 
 % RSKremoveheave - This function filters the pressure channel with a
 % lowpass boxcar to reduce the effect of noise, then finds the samples
 % that exceed a threshold profiling velocity and replaces them with a
-% NaN. Profiling rate is computed by differencing the depth time series.
+% NaN. Profiling rate is computed by differencing the depth time series. 
+%
+% Variations in profiling rate, such as might be caused by profiling from a
+% vessel in wavy conditions with a taut wire, can negatively impact data
+% quality.  If the heaving is large enough, the pressure can even reverse,
+% or loop, causing the CTD to sample its own wake.
+%
 % 
 % Inputs:
 %   [Required] - RSK - The input RSK structure, with profiles as read using
-%                    RSKreadprofiles.
+%                    RSKreadprofiles and Depth read using RSKderivedepth.
 %
 %   [Optional] - profileNum - Optional profile number(s) on which to operate.
 %                    Default is to work on all profiles.
@@ -69,8 +69,6 @@ profileIdx = checkprofiles(RSK, profileNum, direction);
 castdir = [direction 'cast'];
 
 Dcol = getchannelindex(RSK, 'Depth');
-% error('Depth is required, use RSKderivedepth.m')
-
 
 %% Edit one cast at a time.
 data = RSK.profiles.(castdir).data;
