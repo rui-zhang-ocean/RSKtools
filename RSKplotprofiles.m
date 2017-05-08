@@ -1,4 +1,4 @@
-function hdls = RSKplotprofiles(RSK, profileNum, field, direction)
+function hdls = RSKplotprofiles(RSK, varargin)
 
 % RSKplotprofiles - Plot profiles from an RSK structure output by 
 %                   RSKreadprofiles.
@@ -11,18 +11,20 @@ function hdls = RSKplotprofiles(RSK, profileNum, field, direction)
 % to the line objects.
 %
 % Inputs: 
-%    RSK - Structure containing the logger data read
-%          from the RSK file using RSKreadprofiles.
-% 
-%    profileNum - Optional profile number to plot. Default is to plot 
-%                 all detected profiles.
+%    [Required] - RSK - Structure containing the logger metadata and data
 %
-%    field - Variable to plot (e.g. temperature, salinity, etc).
-%            List of available variables is contained within the
-%            RSK structure (e.g. RSK.channels.longName).   
+%    [Optional] - profileNum - Optional profile number to plot. Default is to plot 
+%                          all detected profiles.
+%
+%                 field - Variable to plot (e.g. temperature, salinity, etc).
+%                          List of available variables is contained within
+%                          the RSK structure (e.g. RSK.channels.longName).
 %            
-%    direction - 'up' for upcast, 'down' for downcast, or 'both' for
-%          all. Default is 'both'.
+%                 direction - 'up' for upcast, 'down' for downcast, or
+%                          'both' for all. Default is 'down'. 
+%
+% Output:
+%     hdls - The line object of the plot.
 %
 % Examples:
 %
@@ -41,91 +43,59 @@ function hdls = RSKplotprofiles(RSK, profileNum, field, direction)
 %      for customization
 %    hdls = RSKplotprofiles(rsk, [1 5 10], 'conductivity');
 %
-% See also: RSKreadprofiles, RSKreaddata, RSKreadevents
+% See also: RSKreadprofiles, RSKreaddata.
 %
 % Author: RBR Ltd. Ottawa ON, Canada
 % email: support@rbr-global.com
 % Website: www.rbr-global.com
-% Last revision: 2017-02-07
+% Last revision: 2017-05-08
 
-if nargin == 1
-    if ~isfield(RSK.profiles.downcast, 'data') error('No downcasts in RSK'); end
-    profileNum = 1:length(RSK.profiles.downcast.data);
-    field = 'temperature';
-    direction = 'down';
-elseif nargin == 2
-    field = 'temperature';
-    direction = 'down';
-elseif nargin == 3
-    direction = 'down';
-end
-if isempty(direction) direction = 'down'; end
-if isempty(field) field = 'temperature'; end
-if isempty(profileNum) 
-    if strcmp(direction, 'down')
-        if ~isfield(RSK.profiles.downcast, 'data')
-            error('No downcasts in RSK');
-        else 
-            profileNum = 1:length(RSK.profiles.downcast.data); 
-        end
-    elseif strcmp(direction, 'up')
-        if ~isfield(RSK.profiles.upcast, 'data')
-            error('No upcasts in RSK');
-        else 
-            profileNum = 1:length(RSK.profiles.upcast.data); 
-        end
-    elseif strcmp(direction, 'both')
-        if ~isfield(RSK.profiles.downcast, 'data')
-            error('No downcasts in RSK');
-        end
-        if ~isfield(RSK.profiles.upcast, 'data')
-            error('No upcasts in RSK');
-        end
-        profileNum = 1:min([length(RSK.profiles.upcast.data) length(RSK.profiles.downcast.data)]); 
-    end
-end
-if strcmp(direction, 'down')
-    if ~isfield(RSK.profiles.downcast, 'data')
-        error('No downcasts in RSK');
-    end
-elseif strcmp(direction, 'up')
-    if ~isfield(RSK.profiles.upcast, 'data')
-        error('No upcasts in RSK');
-    end
-elseif strcmp(direction, 'both')
-    if ~isfield(RSK.profiles.downcast, 'data')
-        error('No downcasts in RSK');
-    end
-    if ~isfield(RSK.profiles.upcast, 'data')
-        error('No upcasts in RSK');
-    end
-end    
+validDirections = {'down', 'up', 'both'};
+checkDirection = @(x) any(validatestring(x,validDirections));
 
-% find column number of field
-pcol = find(strncmpi('pressure', {RSK.channels.longName}, 4));
-pcol = pcol(1); 
-col = find(strncmpi(field, {RSK.channels.longName}, 4));
-col = col(1);
+%% Parse Inputs
+p = inputParser;
+addRequired(p, 'RSK', @isstruct);
+addOptional(p, 'profileNum', [], @isnumeric);
+addOptional(p, 'channel', 'Temperature', @ischar)
+addOptional(p, 'direction', 'down', checkDirection)
+parse(p, RSK, varargin{:})
 
-% clf
-ax = gca; ax.ColorOrderIndex = 1;
+% Assign each input argument
+RSK = p.Results.RSK;
+profileNum = p.Results.profileNum;
+channel = p.Results.channel;
+direction = p.Results.direction;
+
+
+pCol = getchannelindex(RSK, 'Pressure');
+chanCol = getchannelindex(RSK, channel);
+
+ax = gca; 
+ax.ColorOrderIndex = 1;
 pmax = 0;
 ii = 1;
-if strcmp(direction, 'up') | strcmp(direction, 'both')
-    for i=profileNum
-        p = RSK.profiles.upcast.data(i).values(:, pcol) - 10.1325; % FIXME: should read ptAm from rskfile
-        hdls(ii) = plot(RSK.profiles.upcast.data(i).values(:, col), p);
+if strcmp(direction, 'up') || strcmp(direction, 'both')
+    profileIdx = checkprofiles(RSK, profileNum, 'up');
+    for ndx=profileIdx
+        p = RSK.profiles.upcast.data(ndx).values(:, pCol) - 10.1325;
+        hdls(ii) = plot(RSK.profiles.upcast.data(ndx).values(:, chanCol), p);
         hold on
         pmax = max([pmax; p]);
         ii = ii+1;
     end
 end
-if strcmp(direction, 'both') ax = gca; ax.ColorOrderIndex = 1; end
-if strcmp(direction, 'down') | strcmp(direction, 'both')
-    ii = 1;
-    for i=profileNum
-        p = RSK.profiles.downcast.data(i).values(:, pcol) - 10.1325; % FIXME: should read pAtm from rskfile
-        hdls(ii) = plot(RSK.profiles.downcast.data(i).values(:, col), p);
+
+if strcmp(direction, 'both') 
+    ax = gca; 
+    ax.ColorOrderIndex = 1; 
+end
+
+if strcmp(direction, 'down') || strcmp(direction, 'both')
+    profileIdx = checkprofiles(RSK, profileNum, 'down');    
+    for ndx=profileIdx
+        p = RSK.profiles.downcast.data(ndx).values(:, pCol) - 10.1325;
+        hdls(ii) = plot(RSK.profiles.downcast.data(ndx).values(:, chanCol), p);
         hold on
         pmax = max([pmax; p]);
         ii = ii+1;
@@ -133,7 +103,7 @@ if strcmp(direction, 'down') | strcmp(direction, 'both')
 end
 grid
 
-xlab = [RSK.channels(col).longName ' [' RSK.channels(col).units, ']'];
+xlab = [RSK.channels(chanCol).longName ' [' RSK.channels(chanCol).units, ']'];
 ylim([0 pmax])
 set(gca, 'ydir', 'reverse')
 ylabel('Sea pressure [dbar]')
