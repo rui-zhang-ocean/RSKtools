@@ -155,7 +155,7 @@ for ndx = profileIdx
     %  initialize the binned output field         
     for k=1:length(binArray)-1
         kk = Y(1:length(X), ndx) >= binArray(k) & Y(1:length(X), ndx) < binArray(k+1);
-        ind = find(diff(kk)<0);
+        ind = find(diff(kk<0));
         kk(ind:end) = 0;
         binnedValues(k, ndx) = nanmean(X(kk));
         RSK.profiles.(castdir).data(ndx).values = binnedValues(k, ndx);
