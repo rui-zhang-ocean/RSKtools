@@ -21,7 +21,7 @@ function hdls = RSKplotprofiles(RSK, varargin)
 %                          the RSK structure (e.g. RSK.channels.longName).
 %            
 %                 direction - 'up' for upcast, 'down' for downcast, or
-%                          'both' for all. Default is 'both'. 
+%                          'both' for all. Default is 'down'. 
 %
 
 % Examples:
@@ -48,17 +48,15 @@ function hdls = RSKplotprofiles(RSK, varargin)
 % Website: www.rbr-global.com
 % Last revision: 2017-05-08
 
-
 validDirections = {'down', 'up', 'both'};
 checkDirection = @(x) any(validatestring(x,validDirections));
-%% Parse Inputs
 
+%% Parse Inputs
 p = inputParser;
 addRequired(p, 'RSK', @isstruct);
 addOptional(p, 'profileNum', [], @isnumeric);
 addOptional(p, 'channel', 'Temperature', @ischar)
 addOptional(p, 'direction', 'down', checkDirection)
-
 parse(p, RSK, varargin{:})
 
 % Assign each input argument
@@ -68,11 +66,9 @@ channel = p.Results.channel;
 direction = p.Results.direction;
 
 
-% find column number of field
 pCol = getchannelindex(RSK, 'Pressure');
 chanCol = getchannelindex(RSK, channel);
 
-% clf
 ax = gca; 
 ax.ColorOrderIndex = 1;
 pmax = 0;
