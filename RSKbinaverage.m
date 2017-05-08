@@ -27,9 +27,6 @@ function [RSK, binCenter] = RSKbinaverage(RSK, varargin)
 %                binBy - The units of the binSize and boundary. Depth (m)
 %                   or Pressure (dbar). Defaults to 'Pressure'.
 %
-%                numRegimes - Amount of sections with different sizes of bins.
-%                   Default is 1; all bins are the same width.
-%
 %                binSize - Size of bins in each regime. Must have length(binSize) ==
 %                   numRegimes. Default 1.
 %
@@ -103,22 +100,22 @@ end
 Y = NaN(profilelength, length(profileIdx));
 
 
-
 %% Set up pressure/depth of profiles in matrix
-pressureCol = strcmpi('pressure', {RSK.channels.longName});
 k=1;        
 for ndx = profileIdx
-    Pressure = RSK.profiles.(castdir).data(ndx).values(:,pressureCol);
+    Pressure = RSK.profiles.(castdir).data(ndx).values(:,pCol);
     switch binBy
         case 'Pressure'
+            pCol = getchannelindex(RSK, 'Pressure');
+            Pressure = RSK.profiles.(castdir).data(ndx).values(:,pCol);
             Y(1:length(Pressure),k) = Pressure - 10.1325;
         case 'Depth'
-            Y(1:length(Pressure), k) = calculatedepth(Pressure - 10.1325, latitude);
+            dCol = getchannelindex(RSK, 'Depth');
+            Depth = RSK.profiles.(castdir).data(ndx).values(:,dCol);
+            Y(1:length(Depth),k) = Depth - 10.1325;            
     end
     k = k+1;
 end
-
-
 
 %% Set up binArray
 binArray = [];
@@ -158,6 +155,8 @@ for ndx = profileIdx
     %  initialize the binned output field         
     for k=1:length(binArray)-1
         kk = Y(1:length(X), ndx) >= binArray(k) & Y(1:length(X), ndx) < binArray(k+1);
+        ind = find(diff(kk<0));
+        kk(ind:end) = 0;
         binnedValues(k, ndx) = nanmean(X(kk));
         RSK.profiles.(castdir).data(ndx).values = binnedValues(k, ndx);
     end
