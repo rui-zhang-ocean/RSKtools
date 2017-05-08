@@ -40,15 +40,12 @@ function RSK = RSKreaddata(RSK, varargin)
 % Website: www.rbr-global.com
 % Last revision: 2017-04-30
 
-%% Parse Inputs
-
 p = inputParser;
 addRequired(p, 'RSK', @isstruct);
 addOptional(p, 't1', [], @isnumeric);
 addOptional(p, 't2', [], @isnumeric);
 parse(p, RSK, varargin{:})
 
-% Assign each input argument
 RSK = p.Results.RSK;
 t1 = p.Results.t1;
 t2 = p.Results.t2;
@@ -63,13 +60,11 @@ end
 t1 = datenum2RSKtime(t1);
 t2 = datenum2RSKtime(t2);
 
-%% Check if file type is skinny
 if strcmp(RSK.dbInfo(end).type, 'skinny')
     error('File must be opened in Ruskin before RSKtools can read the data.');
 end
 
 %% Load data
-
 sql = ['select tstamp/1.0 as tstamp,* from data where tstamp between ' num2str(t1) ' and ' num2str(t2) ' order by tstamp'];
 results = mksqlite(sql);
 if isempty(results)
