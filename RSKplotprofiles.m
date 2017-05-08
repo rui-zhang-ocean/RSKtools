@@ -27,13 +27,8 @@ function hdls = RSKplotprofiles(RSK, varargin)
 %     hdls - The line object of the plot.
 %
 % Examples:
-%
 %    rsk = RSKopen('profiles.rsk');
-%
-%    % read all profiles
 %    rsk = RSKreadprofiles(rsk);
-%
-%    % plot all profiles
 %    RSKplotprofiles(rsk);
 %
 %    % plot selective downcasts
@@ -41,7 +36,7 @@ function hdls = RSKplotprofiles(RSK, varargin)
 %
 %    % plot conductivity for selective downcasts and output handles
 %      for customization
-%    hdls = RSKplotprofiles(rsk, [1 5 10], 'conductivity');
+%    hdls = RSKplotprofiles(rsk, [1 5 10], 'conductivity'); 
 %
 % See also: RSKreadprofiles, RSKreaddata.
 %
@@ -67,52 +62,44 @@ profileNum = p.Results.profileNum;
 channel = p.Results.channel;
 direction = p.Results.direction;
 
-
 pCol = getchannelindex(RSK, 'Pressure');
 chanCol = getchannelindex(RSK, channel);
 
-ax = gca; 
-ax.ColorOrderIndex = 1;
+if strcmpi(direction, 'both')
+    direction = {'down', 'up'};
+else
+    direction = {direction};
+end
+
 pmax = 0;
 ii = 1;
-if strcmp(direction, 'up') || strcmp(direction, 'both')
-    profileIdx = checkprofiles(RSK, profileNum, 'up');
-    for ndx=profileIdx
-        p = RSK.profiles.upcast.data(ndx).values(:, pCol) - 10.1325;
-        hdls(ii) = plot(RSK.profiles.upcast.data(ndx).values(:, chanCol), p);
-        hold on
-        pmax = max([pmax; p]);
-        ii = ii+1;
-    end
-end
-
-if strcmp(direction, 'both') 
+for dir = direction
     ax = gca; 
     ax.ColorOrderIndex = 1; 
-end
-
-if strcmp(direction, 'down') || strcmp(direction, 'both')
-    profileIdx = checkprofiles(RSK, profileNum, 'down');    
+    profileIdx = checkprofiles(RSK, profileNum, dir{1});
+    castdir = [dir{1} 'cast']; 
     for ndx=profileIdx
-        p = RSK.profiles.downcast.data(ndx).values(:, pCol) - 10.1325;
-        hdls(ii) = plot(RSK.profiles.downcast.data(ndx).values(:, chanCol), p);
+        pressure = RSK.profiles.(castdir).data(ndx).values(:, pCol) - 10.1325;
+        hdls(ii) = plot(RSK.profiles.(castdir).data(ndx).values(:, chanCol), pressure);
         hold on
-        pmax = max([pmax; p]);
+        pmax = max([pmax; pressure]);
         ii = ii+1;
     end
 end
-grid
 
+grid
 xlab = [RSK.channels(chanCol).longName ' [' RSK.channels(chanCol).units, ']'];
 ylim([0 pmax])
 set(gca, 'ydir', 'reverse')
 ylabel('Sea pressure [dbar]')
 xlabel(xlab)
-if strcmp(direction, 'down')
+if strcmpi(direction, 'down')
     title('Downcasts')
-elseif strcmp(direction, 'up')
+elseif strcmpi(direction, 'up')
     title('Upcasts')
-elseif strcmp(direction, 'both')
+elseif size(direction,2)
     title('Downcasts and Upcasts')
 end
 hold off
+
+end
