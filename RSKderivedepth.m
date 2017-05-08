@@ -58,8 +58,6 @@ latitude = p.Results.latitude;
 series = p.Results.series;
 direction = p.Results.direction;
 
-%% Determine if the structure has downcasts and upcasts
-
 if strcmpi(series, 'profile')
     if strcmpi(direction, 'both')
         direction = {'down', 'up'};
@@ -68,15 +66,11 @@ if strcmpi(series, 'profile')
     end
 end
 
-if ~any(strcmpi({RSK.channels.longName}, 'Pressure'))
-    error('Pressure is required to calculate Depth');
-end
+Pcol = getchannelindex(RSK, 'Pressure');
 
 %% Calculate Depth
 RSK = addchannelmetadata(RSK, 'Depth', 'm');
-
 Dcol = getchannelindex(RSK, 'Depth');
-Pcol = getchannelindex(RSK, 'Pressure');
 
 switch series
     case 'data'
