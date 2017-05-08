@@ -16,7 +16,7 @@ function hdls = RSKplotdata(RSK, varargin)
 %                            given it will plot all channels.
 %
 % Output:
-%     hdls - 
+%     hdls - The line object of the plot.
 %
 % Example: 
 %    RSK=RSKopen('sample.rsk');   
@@ -24,12 +24,12 @@ function hdls = RSKplotdata(RSK, varargin)
 %    RSKplotdata(RSK);
 %    RSKplotdata(RSK, 'channel', {'Temperature', 'Conductivity'})
 %
-% See also: RSKplotthumbnail, RSKplotburstdata
+% See also: RSKplotprofiles, RSKplotburstdata
 %
 % Author: RBR Ltd. Ottawa ON, Canada
 % email: support@rbr-global.com
 % Website: www.rbr-global.com
-% Last revision: 2017-05-05
+% Last revision: 2017-05-08
 
 %% Parse Inputs
 

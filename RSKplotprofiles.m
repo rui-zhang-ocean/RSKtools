@@ -23,7 +23,9 @@ function hdls = RSKplotprofiles(RSK, varargin)
 %                 direction - 'up' for upcast, 'down' for downcast, or
 %                          'both' for all. Default is 'down'. 
 %
-
+% Output:
+%     hdls - The line object of the plot.
+%
 % Examples:
 %
 %    rsk = RSKopen('profiles.rsk');
@@ -41,7 +43,7 @@ function hdls = RSKplotprofiles(RSK, varargin)
 %      for customization
 %    hdls = RSKplotprofiles(rsk, [1 5 10], 'conductivity');
 %
-% See also: RSKreadprofiles, RSKreaddata, RSKreadevents
+% See also: RSKreadprofiles, RSKreaddata.
 %
 % Author: RBR Ltd. Ottawa ON, Canada
 % email: support@rbr-global.com
