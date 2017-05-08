@@ -1,4 +1,4 @@
-function [RSK, binCenter] = RSKbinprofile(RSK, varargin)
+function [RSK] = RSKbinprofile(RSK, varargin)
 
 % RSKbinprofile - Bins the all channels and time of by any reference for a
 % profile.
@@ -113,10 +113,13 @@ for ndx = profileIdx
     binnedValues = NaN(length(binArray)-1, size(X,2));
     binCenter = tsmovavg(binArray, 's', 2);
     binCenter = binCenter(2:end); %Starts with NaN.
-    %  initialize the binned output field         
+    %  initialize the binned output field      
     for k=1:length(binArray)-1
         kk = ref >= binArray(k) & ref < binArray(k+1);
-        binnedValues(k,:) = nanmean(X(kk,:));
+        if ~isempty(find(diff(kk)<0,1))
+           kk(ind(1):end) = 0;
+        end
+        binnedValues(k,:) = nanmean(X(kk,:),1);
     end
     
     RSK.profiles.(castdir).data(ndx).values = binnedValues(:,2:end);

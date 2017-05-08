@@ -68,14 +68,12 @@ threshold = p.Results.threshold;
 profileIdx = checkprofiles(RSK, profileNum, direction);
 castdir = [direction 'cast'];
 
-Dcol = strcmpi({RSK.channels.longName}, 'Depth');
-if ~any(strcmpi({RSK.channels.longName}, 'Depth'));
-    error('Depth is required, use RSKderivedepth.m')
-end
+Dcol = getchannelindex(RSK, 'Depth');
+% error('Depth is required, use RSKderivedepth.m')
+
 
 %% Edit one cast at a time.
 data = RSK.profiles.(castdir).data;
-pCol = strcmpi('pressure', {RSK.channels.longName});
 secondsperday = 86400;
 
 for ndx = profileIdx
