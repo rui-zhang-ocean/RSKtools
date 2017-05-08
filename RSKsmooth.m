@@ -98,7 +98,7 @@ end
 %% Smooth
 
 for chanName = channel
-    channelCol = find(strcmpi(chanName, {RSK.channels.longName}));
+    channelCol = getchannelindex(RSK, chanName);
     switch series
         case 'data'
             in = RSK.data.values(:,channelCol);
