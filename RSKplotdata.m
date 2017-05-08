@@ -1,4 +1,4 @@
-function RSKplotdata(RSK, varargin)
+function hdls = RSKplotdata(RSK, varargin)
 
 % RSKplotdata - Plot summaries of logger data
 %
@@ -13,7 +13,10 @@ function RSKplotdata(RSK, varargin)
 %    [Required] - RSK - Structure containing the logger metadata and data
 %
 %    [Optional] - channel - channel to plots, can be multiple in a cell, if no value is
-%                            given it will plot all. 
+%                            given it will plot all channels.
+%
+% Output:
+%     hdls - 
 %
 % Example: 
 %    RSK=RSKopen('sample.rsk');   
@@ -56,7 +59,7 @@ numchannels = length(channel);
 for n=1:numchannels
     subplot(numchannels,1,n)
     Ccol = strcmpi({RSK.channels.longName}, channel(n));
-    plot(RSK.data.tstamp,RSK.data.values(:,Ccol),'-')
+    hdls(n) = plot(RSK.data.tstamp,RSK.data.values(:,Ccol),'-');
     title(RSK.channels(Ccol).longName);
     ylabel(RSK.channels(Ccol).units);
     ax(n)=gca;
