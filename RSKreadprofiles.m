@@ -55,8 +55,7 @@ function RSK = RSKreadprofiles(RSK, varargin)
 % Author: RBR Ltd. Ottawa ON, Canada
 % email: support@rbr-global.com
 % Website: www.rbr-global.com
-% Last revision: 2017-05-01
-
+% Last revision: 2017-05-08
 %% Parse Inputs
 validDirections = {'down', 'up', 'both'};
 checkDirection = @(x) any(validatestring(x,validDirections));
@@ -76,49 +75,39 @@ latency = p.Results.latency;
 
 %%
 if ~isfield(RSK, 'profiles') 
-    error('No profiles events in this RSK');
+    error('No profiles in this RSK, try RSKfindprofiles');
 end
 
+if strcmpi(series, 'profile')
+    if strcmpi(direction, 'both')
+        direction = {'down', 'up'};
+    else
+        direction = {direction};
+    end
+end
 
-if strcmp(direction, 'down') || strcmp(direction, 'both')
+for dir = direction
+    castdir = [dir{1} 'cast'];
+    
     if isempty(profileNum)
-        profileIdx = 1:min([length(RSK.profiles.downcast.tstart),length(RSK.profiles.downcast.tend)]);
+        profileIdx = 1:min([length(RSK.profiles.(castdir).tstart), length(RSK.profiles.(castdir).tend)]);
     else 
         profileIdx = profileNum;
     end
+    
     RSK.profiles.downcast.data = [];
-    % loop through downcasts
-    downndx = 1;
+    castndx = 1;
     for ndx=profileIdx
-        tstart = RSK.profiles.downcast.tstart(ndx)-latency/86400;
-        tend = RSK.profiles.downcast.tend(ndx)-latency/86400;
+        tstart = RSK.profiles.(castdir).tstart(ndx) - latency/86400;
+        tend = RSK.profiles.(castdir).tend(ndx) - latency/86400;
         tmp = RSKreaddata(RSK, tstart, tend);
-        RSK.profiles.downcast.data(downndx).tstamp = tmp.data.tstamp;
-        RSK.profiles.downcast.data(downndx).values = tmp.data.values;
-        downndx = downndx + 1;
+        RSK.profiles.(castdir).data(castndx).tstamp = tmp.data.tstamp;
+        RSK.profiles.(castdir).data(castndx).values = tmp.data.values;
+        castndx = castndx + 1;
     end
-    RSK.profiles.downcast.profileIndex = profileIdx;
+    RSK.profiles.(castdir).profileIndex = profileIdx;
 end
 
-if strcmp(direction, 'up') || strcmp(direction, 'both')
-    if isempty(profileNum)
-        profileIdx = 1:min([length(RSK.profiles.upcast.tstart),length(RSK.profiles.upcast.tend)]);
-    else 
-        profileIdx = profileNum;
-    end
-    RSK.profiles.upcast.data = [];
-    % loop through upcasts
-    upndx = 1;
-    for ndx=profileIdx
-        tstart = RSK.profiles.upcast.tstart(ndx)-latency/86400;
-        tend = RSK.profiles.upcast.tend(ndx)-latency/86400;
-        tmp = RSKreaddata(RSK, tstart, tend);
-        RSK.profiles.upcast.data(upndx).tstamp = tmp.data.tstamp;
-        RSK.profiles.upcast.data(upndx).values = tmp.data.values;
-        upndx = upndx + 1;
-    end
-    RSK.profiles.upcast.profileIndex = profileIdx;
-end
 RSK.instrumentChannels = tmp.instrumentChannels;
 RSK.channels = tmp.channels;
 
