@@ -1,9 +1,9 @@
-function [RSK, samplesinbin, binArray] = RSKbinprofile(RSK, varargin)
+function [RSK, samplesinbin, binArray] = RSKbinaverage(RSK, varargin)
 
-% RSKbinprofile - Bins the all channels and time of by any reference for a
+% RSKbinaverage - Bins the all channels and time of by any reference for a
 % profile.
 %
-% Syntax:  [RSK] = RSKbinprofile(RSK, [OPTIONS])
+% Syntax:  [RSK] = RSKbinaverage(RSK, [OPTIONS])
 % 
 % Based on the regimes specified this function bins the channels in the RSK
 % structure by profile based on any channel
@@ -36,7 +36,6 @@ function [RSK, samplesinbin, binArray] = RSKbinprofile(RSK, varargin)
 %
 %    binCenter - Bin center values
 %
-%
 % Author: RBR Ltd. Ottawa ON, Canada
 % email: support@rbr-global.com
 % Website: www.rbr-global.com
@@ -49,7 +48,6 @@ checkDirection = @(x) any(validatestring(x,validDirections));
 
 
 %% Parse Inputs
-
 p = inputParser;
 addRequired(p, 'RSK', @isstruct);
 addParameter(p, 'profileNum', [], @isnumeric);
@@ -93,30 +91,7 @@ for ndx = profileIdx;
     k = k+1;
 end
 
-% Set up binArray
-binArray = [];
-switch direction
-    case 'up'
-        if isempty(boundary)
-            boundary = [max(nanmax(Y)) floor(min(nanmin(Y)))];
-        else
-            boundary = [boundary floor(min(nanmin(Y)))-binSize(end)];
-        end
-        for nregime = 1:length(boundary)-1
-            binArray = [binArray boundary(nregime):-binSize(nregime):boundary(nregime+1)];
-        end
-
-    case 'down'
-        if isempty(boundary)
-            boundary = [floor(min(nanmin(Y))) max(nanmax(Y))];
-        else
-            boundary = [boundary ceil(max(nanmax(Y)))+binSize(end)];
-        end
-        for nregime = 1:length(boundary)-1
-            binArray = [binArray boundary(nregime):binSize(nregime):boundary(nregime+1)];       
-        end
-end
-binArray = unique(binArray);
+binArray = setupbins(Y, boundary, binSize, direction);
 
 samplesinbin = NaN(profilelength, length(binArray)-1);
 k = 1;
@@ -151,8 +126,36 @@ for ndx = profileIdx
     k = k+1;
 end
 
+% Log
 unit = RSK.channels(chanCol).units;
 logprofile = logentryprofiles(direction, profileNum, profileIdx);
 logentry = sprintf('Binned with respect to %s using [%s] boundaries with %s %s bin size on %s.', binBy, num2str(boundary), num2str(binSize), unit, logprofile);
 RSK = RSKappendtolog(RSK, logentry);
 end
+
+    function [binArray] = setupbins(Y, boundary, binSize, direction)
+    % Set up binArray
+    binArray = [];
+    switch direction
+        case 'up'
+            if isempty(boundary)
+                boundary = [max(nanmax(Y)) floor(min(nanmin(Y)))-binSize];
+            else
+                boundary = [boundary floor(min(nanmin(Y)))-binSize(end)];
+            end
+            binSize = -binSize;
+
+        case 'down'
+            if isempty(boundary)
+                boundary = [floor(min(nanmin(Y))) max(nanmax(Y))+binSize];
+            else
+                boundary = [boundary ceil(max(nanmax(Y)))+binSize(end)];
+            end
+    end
+
+    for nregime = 1:length(boundary)-1
+        binArray = [binArray boundary(nregime):binSize(nregime):boundary(nregime+1)];       
+    end
+
+    binArray = unique(binArray);
+    end
