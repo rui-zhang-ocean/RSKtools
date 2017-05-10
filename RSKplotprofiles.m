@@ -3,7 +3,7 @@ function hdls = RSKplotprofiles(RSK, varargin)
 % RSKplotprofiles - Plot profiles from an RSK structure output by 
 %                   RSKreadprofiles.
 %
-% Syntax:  RSKplotprofiles(RSK, profileNum, field, direction)
+% Syntax:  RSKplotprofiles(RSK, profileNum, channel, direction)
 % 
 % Plots profiles from automatically detected casts. If called with one
 % argument, will default to plotting downcasts of temperature for all
@@ -16,9 +16,7 @@ function hdls = RSKplotprofiles(RSK, varargin)
 %    [Optional] - profileNum - Optional profile number to plot. Default is to plot 
 %                          all detected profiles.
 %
-%                 field - Variable to plot (e.g. temperature, salinity, etc).
-%                          List of available variables is contained within
-%                          the RSK structure (e.g. RSK.channels.longName).
+%                 channel - Variable to plot (e.g. temperature, salinity, etc).
 %            
 %                 direction - 'up' for upcast, 'down' for downcast, or
 %                          'both' for all. Default is 'down'. 
@@ -29,14 +27,9 @@ function hdls = RSKplotprofiles(RSK, varargin)
 % Examples:
 %    rsk = RSKopen('profiles.rsk');
 %    rsk = RSKreadprofiles(rsk);
-%    RSKplotprofiles(rsk);
-%
-%    % plot selective downcasts
-%    RSKplotprofiles(rsk, [1 5 10]);
-%
-%    % plot conductivity for selective downcasts and output handles
+%    % plot selective downcasts and output handles
 %      for customization
-%    hdls = RSKplotprofiles(rsk, [1 5 10], 'conductivity'); 
+%    hdls = RSKplotprofiles(rsk, [1 5 10], 'conductivity');
 %
 % See also: RSKreadprofiles, RSKreaddata.
 %
