@@ -1,4 +1,4 @@
-function [RSK, samplesinbin, binArray] = RSKbinaverage(RSK, varargin)
+function [RSK, samplesinbin] = RSKbinaverage(RSK, varargin)
 
 % RSKbinaverage - Bins the all channels and time of by any reference for a
 % profile.
@@ -39,7 +39,7 @@ function [RSK, samplesinbin, binArray] = RSKbinaverage(RSK, varargin)
 % Author: RBR Ltd. Ottawa ON, Canada
 % email: support@rbr-global.com
 % Website: www.rbr-global.com
-% Last revision: 2017-05-08
+% Last revision: 2017-05-10
 
 %% Check input and default arguments
 
