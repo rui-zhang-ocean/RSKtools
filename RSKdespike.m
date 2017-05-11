@@ -54,7 +54,7 @@ function [RSK, spikeidx] = RSKdespike(RSK, channel, varargin)
 % Author: RBR Ltd. Ottawa ON, Canada
 % email: support@rbr-global.com
 % Website: www.rbr-global.com
-% Last revision: 2017-03-22
+% Last revision: 2017-05-10
 
 
 %% Check input and default arguments
@@ -77,7 +77,7 @@ addRequired(p, 'channel');
 addParameter(p, 'series', 'data', checkSeriesName);
 addParameter(p, 'profileNum', [], @isnumeric);
 addParameter(p, 'threshold', 4, @isnumeric);
-addParameter(p, 'windowLength', 7, @isnumeric);
+addParameter(p, 'windowLength', 3, @isnumeric);
 addParameter(p, 'action', 'NaN', checkAction);
 addParameter(p, 'direction', 'down', checkDirection);% Only needed if series is 'profile'
 parse(p, RSK, channel, varargin{:})
@@ -115,7 +115,7 @@ switch series
                 spikeidx.(castdir).(['profile' num2str(ndx)]) = index;
             end
             
-            logprofile = logentryprofiles(direction, profileNum, profileIdx);
+            logprofile = logentryprofiles(dir{1}, profileNum, profileIdx);
             logentry = sprintf('%s de-spiked using a %1.0f sample window and %1.0f sigma threshold on %s. Spikes were treated with %s.',...
                 channel, windowLength, threshold, logprofile, action);
             RSK = RSKappendtolog(RSK, logentry);
