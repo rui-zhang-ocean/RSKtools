@@ -28,8 +28,8 @@ function [RSK, samplesinbin, binArray] = RSKbinaverage(RSK, varargin)
 %
 %                boundary - First boundary crossed in the direction
 %                   selected of each regime, in same units as binBy. Must
-%                   have length(boundary) == regimes. Default[]; whole
-%                   pressure range.      
+%                   have length(boundary) == length(binSize) or one
+%                   greater. Default[]; whole pressure range.       
 %
 % Outputs:
 %    RSK
@@ -134,24 +134,31 @@ RSK = RSKappendtolog(RSK, logentry);
 end
 
     function [binArray] = setupbins(Y, boundary, binSize, direction)
-    % Set up binArray
+    % Set up binArray. Boundaries are hard set and binSize fills the space
+    % between the boundaries starting in the 
+    
     binArray = [];
-    switch direction
-        case 'up'
-            if isempty(boundary)
-                boundary = [max(nanmax(Y)) floor(min(nanmin(Y)))-binSize];
-            else
-                boundary = [boundary floor(min(nanmin(Y)))-binSize(end)];
-            end
-            binSize = -binSize;
-
-        case 'down'
-            if isempty(boundary)
-                boundary = [floor(min(nanmin(Y))) max(nanmax(Y))+binSize];
-            else
-                boundary = [boundary ceil(max(nanmax(Y)))+binSize(end)];
-            end
+    if length(binSize) > length(boundary)+1 || (length(binSize) < length(boundary)-1 && ~isempty(boundary))
+        disp('Boundary must be of length 0, length(binSize) or length(binSize)+1')
+        return
     end
+    
+    if isempty(boundary)
+        boundary = [ceil(max(nanmax(Y))) floor(min(nanmin(Y)))-binSize];
+    elseif length(boundary) == length(binSize)
+        if strcmp(direction, 'up')
+            boundary = [boundary floor(min(nanmin(Y)))-binSize(end)];
+        else
+            boundary = [boundary ceil(max(nanmax(Y)))+binSize(end)];
+        end
+    elseif length(boundary) == length(binSize)+1
+    end
+    if strcmpi(direction, 'up')
+        binSize = -binSize;
+        boundary  = sort(boundary, 'descend');
+    else
+        boundary = sort(boundary, 'ascend');
+    end  
 
     for nregime = 1:length(boundary)-1
         binArray = [binArray boundary(nregime):binSize(nregime):boundary(nregime+1)];       
