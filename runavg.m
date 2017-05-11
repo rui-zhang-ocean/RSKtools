@@ -1,4 +1,4 @@
-function [out, windowLength] = runavg(in, windowLength, edgepad)
+function [out] = runavg(in, windowLength, edgepad)
 
 % runavg - Smooth a time series using a boxcar filter.
 %

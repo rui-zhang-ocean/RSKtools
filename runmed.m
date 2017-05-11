@@ -1,5 +1,5 @@
 
-function [out, windowLength] = runmed(in, windowLength, edgepad)
+function [out] = runmed(in, windowLength, edgepad)
 
 % runmed - Smooth a time series using a running median filter.
 %
