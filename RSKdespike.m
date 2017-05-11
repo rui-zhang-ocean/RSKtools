@@ -23,7 +23,7 @@ function [RSK, spikeidx] = RSKdespike(RSK, channel, varargin)
 %                    or 'profile'. Default is 'data'.
 %
 %                profileNum - Optional profile number. Default is to
-%                    calculate the lag of all detected profiles.
+%                    despike all profiles.
 %            
 %                direction - 'up' for upcast, 'down' for downcast, or 'both' for
 %                    all. Default is 'down'.
@@ -62,7 +62,7 @@ function [RSK, spikeidx] = RSKdespike(RSK, channel, varargin)
 validSeries = {'profile', 'data'};
 checkSeriesName = @(x) any(validatestring(x,validSeries));
 
-validDirections = {'up', 'down'};
+validDirections = {'up', 'down', 'both'};
 checkDirection = @(x) any(validatestring(x,validDirections));
 
 validActions = {'replace', 'interp', 'NaN'};
@@ -92,72 +92,68 @@ windowLength = p.Results.windowLength;
 threshold = p.Results.threshold;
 action = p.Results.action;
 
-
-%% For Profiles: determine if the structure has downcasts and upcasts & set profileNum accordingly
-
-if strcmp(series, 'profile')
-    profileIdx = checkprofiles(RSK, profileNum, direction);
-    castdir = [direction 'cast'];
+if strcmpi(series, 'profile')
+    if strcmpi(direction, 'both')
+        direction = {'down', 'up'};
+    else
+        direction = {direction};
+    end
 end
 
-
 %% Despike
-
-channelCol = strcmpi(channel, {RSK.channels.longName});
+channelCol = getchannelindex(RSK, channel);
 switch series
     case 'profile'  
-        for ndx = profileIdx
-            x = RSK.profiles.(castdir).data(ndx).values(:,channelCol);
-            xtime = RSK.profiles.(castdir).data(ndx).tstamp;
-            [out, index, windowLength] = despike(x, xtime, threshold, windowLength, action);
-            RSK.profiles.(castdir).data(ndx).values(:,channelCol) = out;
-            spikeidx.(['profile' num2str(ndx)]) = index;
+        for dir = direction
+            profileIdx = checkprofiles(RSK, profileNum, dir{1});
+            castdir = [dir{1} 'cast'];
+            for ndx = profileIdx
+                x = RSK.profiles.(castdir).data(ndx).values(:,channelCol);
+                xtime = RSK.profiles.(castdir).data(ndx).tstamp;
+                [out, index] = despike(x, xtime, threshold, windowLength, action);
+                RSK.profiles.(castdir).data(ndx).values(:,channelCol) = out;
+                spikeidx.(castdir).(['profile' num2str(ndx)]) = index;
+            end
+            
+            logprofile = logentryprofiles(direction, profileNum, profileIdx);
+            logentry = sprintf('%s de-spiked using a %1.0f sample window and %1.0f sigma threshold on %s. Spikes were treated with %s.',...
+                channel, windowLength, threshold, logprofile, action);
+            RSK = RSKappendtolog(RSK, logentry);
         end
     case 'data'
         x = RSK.data.values(:,channelCol);
         xtime = RSK.data.tstamp;
-        [out, spikeidx, windowLength] = despike(x, xtime, threshold, windowLength, action); 
+        [out, spikeidx] = despike(x, xtime, threshold, windowLength, action); 
         RSK.data.values(:,channelCol) = out;
-end
-
-%% Update log
-switch series
-    case 'data'
+        
         logentry = sprintf('%s de-spiked using a %1.0f sample window and %1.0f sigma threshold. Spikes were treated with %s.',...
-            channel, windowLength, threshold, action);
-
-    case 'profile'
-        logprofile = logentryprofiles(direction, profileNum, profileIdx);
-        logentry = sprintf('%s de-spiked using a %1.0f sample window and %1.0f sigma threshold on %s. Spikes were treated with %s.',...
-            channel, windowLength, threshold, logprofile, action);
-end
-
-RSK = RSKappendtolog(RSK, logentry);
-
-end
-
-
-%% Nested Functions
-function [y, I, windowLength] = despike(x, t, threshold, windowLength, action)
-% This helper function replaces the values that are > threshold*standard
-% deviation away from the residual between the original time series and the
-% running median with the median, a NaN or interpolated value using the
-% non-spike values. The output is the x series with spikes fixed and I is
-% the index of the spikes.
-
-y = x;
-[ref, windowLength] = runmed(x, windowLength);
-dx = x - ref;
-sd = std(dx, 'omitnan');
-I = find(abs(dx) > threshold*sd);
-good = find(abs(dx) <= threshold*sd);
-
-switch action
-  case 'replace'
-    y(I) = ref(I);
-  case 'NaN'
-    y(I) = NaN;
-  case 'interp'
-    y(I) = interp1(t(good), x(good), t(I)) ;
+                channel, windowLength, threshold, action);
+        RSK = RSKappendtolog(RSK, logentry);
 end
 end
+
+
+    %% Nested Functions
+    function [y, I] = despike(x, t, threshold, windowLength, action)
+    % This helper function replaces the values that are > threshold*standard
+    % deviation away from the residual between the original time series and the
+    % running median with the median, a NaN or interpolated value using the
+    % non-spike values. The output is the x series with spikes fixed and I is
+    % the index of the spikes.
+
+    y = x;
+    ref = runmed(x, windowLength);
+    dx = x - ref;
+    sd = std(dx, 'omitnan');
+    I = find(abs(dx) > threshold*sd);
+    good = find(abs(dx) <= threshold*sd);
+
+    switch action
+      case 'replace'
+        y(I) = ref(I);
+      case 'NaN'
+        y(I) = NaN;
+      case 'interp'
+        y(I) = interp1(t(good), x(good), t(I)) ;
+    end
+    end
