@@ -41,11 +41,11 @@ function [RSK, flagidx] = RSKremoveheave(RSK, varargin)
 % Author: RBR Ltd. Ottawa ON, Canada
 % email: support@rbr-global.com
 % Website: www.rbr-global.com
-% Last revision: 2017-05-05
+% Last revision: 2017-05-10
 
 %% Check input and default arguments
 
-validDirections = {'up', 'down'};
+validDirections = {'up', 'down', 'both'};
 checkDirection = @(x) any(validatestring(x,validDirections));
 
 %% Parse Inputs
@@ -63,53 +63,53 @@ direction = p.Results.direction;
 profileNum = p.Results.profileNum;
 threshold = p.Results.threshold;
 
-%% Determine if the structure has downcasts and upcasts
-
-profileIdx = checkprofiles(RSK, profileNum, direction);
-castdir = [direction 'cast'];
+if strcmpi(direction, 'both')
+    direction = {'down', 'up'};
+else
+    direction = {direction};
+end
 
 Dcol = getchannelindex(RSK, 'Depth');
 
-%% Edit one cast at a time.
-data = RSK.profiles.(castdir).data;
 secondsperday = 86400;
 
-for ndx = profileIdx
-    %% Filter pressure before taking the diff    
-    d = data(ndx).values(:,Dcol);
-    depth = runavg(d, 3, 'nan');
-    time = data(ndx).tstamp;
+for dir = direction
+    profileIdx = checkprofiles(RSK, profileNum, dir{1});
+    castdir = [dir{1} 'cast'];
+    data = RSK.profiles.(castdir).data;
+    for ndx = profileIdx
+        %% Filter pressure before taking the diff    
+        d = data(ndx).values(:,Dcol);
+        depth = runavg(d, 3, 'nan');
+        time = data(ndx).tstamp;
 
-    %% Caculate Velocity.
-    deltaD = diff(depth);
-    deltaT = diff(time * secondsperday);
-    dDdT = deltaD ./ deltaT;
-    %The descent velocity is measured between time stamps. Must interpolate
-    %to realign, interpolate starting on the second time to use the second
-    %sample of a velocity as the possibly flagged value.
-    midtime = time(2:end) + deltaT/(2*secondsperday);
-    velocity = interp1(midtime, dDdT, time, 'linear', 'extrap');
-    switch direction
-        case 'up'
-            flag = velocity > -threshold; 
-        case 'down'
-            flag = velocity < threshold;    
-    end  
-   
-    %% Perform the action on flagged scans.
-    flagChannels = ~strcmpi('pressure', {RSK.channels.longName});    
-    data(ndx).values(flag,flagChannels) = NaN;
-    flagidx(ndx).index = find(flag);
+        %% Caculate Velocity.
+        deltaD = diff(depth);
+        deltaT = diff(time * secondsperday);
+        dDdT = deltaD ./ deltaT;
+        midtime = time(2:end) + deltaT/(2*secondsperday);
+        velocity = interp1(midtime, dDdT, time, 'linear', 'extrap');
+        switch dir{1}
+            case 'up'
+                flag = velocity > -threshold; 
+            case 'down'
+                flag = velocity < threshold;    
+        end  
+
+        %% Perform the action on flagged scans.
+        flagChannels = ~strcmpi('pressure', {RSK.channels.longName});    
+        data(ndx).values(flag,flagChannels) = NaN;
+        flagidx(ndx).(castdir).index = find(flag);
+    end
+
+    RSK.profiles.(castdir).data = data;
+
+    %% Udate log
+    logprofile = logentryprofiles(dir{1}, profileNum, profileIdx);
+    logentry = ['Samples measured at a profiling velocity less than ' num2str(threshold) 'm/s were replaced with NaN on ' logprofile '.'];
+
+    RSK = RSKappendtolog(RSK, logentry);
 end
-
-RSK.profiles.(castdir).data = data;
-
-%% Udate log
-logprofile = logentryprofiles(direction, profileNum, profileIdx);
-logentry = ['Samples measured at a profiling velocity less than ' num2str(threshold) 'm/s were replaced with NaN on ' logprofile '.'];
-
-RSK = RSKappendtolog(RSK, logentry);
-
 end
 
 
