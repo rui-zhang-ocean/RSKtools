@@ -9,7 +9,7 @@ function [RSK, samplesinbin, binArray] = RSKbinaverage(RSK, varargin)
 % structure by profile based on any channel
 %
 % Note: The boundary takes precendence over the bin size. (Ex.
-% boundary= [5 20], binSize = [10 5]. BinArray will be [5 15 20 25 30...]
+% boundary= [5 20], binSize = [10 20]. BinArray will be [5 15 20 40 60...]
 %
 % Inputs:
 %    
@@ -32,9 +32,9 @@ function [RSK, samplesinbin, binArray] = RSKbinaverage(RSK, varargin)
 %                   greater. Default[]; whole pressure range.       
 %
 % Outputs:
-%    RSK
+%    RSK - The structure with binned data.
 %
-%    binCenter - Bin center values
+%    samplesinbin - The amount of samples in each bin.
 %
 % Author: RBR Ltd. Ottawa ON, Canada
 % email: support@rbr-global.com
@@ -105,8 +105,6 @@ for ndx = profileIdx
     %  initialize the binned output field
     for bin=1:length(binArray)-1
         kk = Y(:,k) >= binArray(bin) & Y(:,k) < binArray(bin+1);
-        % If it moves on the bin above, current bin is closed. If it moves
-        % to bin below, bin can keep being filled when it returns.
         ind = find(diff(kk)<0,1);
         if ~isempty(ind) && Y(ind+1,k) > binArray(bin+1)
            kk(ind+1:end) = 0;
@@ -134,8 +132,9 @@ RSK = RSKappendtolog(RSK, logentry);
 end
 
     function [binArray] = setupbins(Y, boundary, binSize, direction)
-    % Set up binArray. Boundaries are hard set and binSize fills the space
-    % between the boundaries starting in the 
+    % This helper function will set up binArray based on the boundaries and
+    % binSize given. Boundaries are hard set and binSize fills the space
+    % between the boundaries in the same direction as the cast. 
     
     binArray = [];
     if length(binSize) > length(boundary)+1 || (length(binSize) < length(boundary)-1 && ~isempty(boundary))
