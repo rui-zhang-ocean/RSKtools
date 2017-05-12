@@ -22,8 +22,8 @@ function [RSK, flagidx] = RSKremoveheave(RSK, varargin)
 %   [Optional] - profileNum - Optional profile number(s) on which to operate.
 %                    Default is to work on all profiles.
 %
-%                direction - 'up' for upcast or 'down' for downcast.
-%                    Default is 'down'. 
+%                direction - 'up' for upcast,'down' for downcast or 'both'
+%                    for up and downcast. Default is 'down'. 
 % 
 %                threshold - The minimum speed at which the profile must be
 %                    taken. Default is 0.25 m/s 
