@@ -76,7 +76,7 @@ Scol = getchannelindex(RSK, 'Salinity');
 switch series
     case 'data'
         data = RSK.data;
-        if exist('spCol',1)
+        if exist('spCol','var')
             pressure = data.values(:, spCol);
         else
             pressure = data.values(:, pCol) - 10.1325;
@@ -90,7 +90,7 @@ switch series
             castdir = [dir{1} 'cast'];
             for ndx = profileIdx
                 data = RSK.profiles.(castdir).data(ndx);
-                if exist('spCol',1)
+                if exist('spCol', 'var')
                     pressure = data.values(:, spCol);
                 else
                     pressure = data.values(:, pCol) - 10.1325;

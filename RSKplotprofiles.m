@@ -77,7 +77,7 @@ for dir = direction
     profileIdx = checkprofiles(RSK, profileNum, dir{1});
     castdir = [dir{1} 'cast']; 
     for ndx=profileIdx
-        if exist('spCol',1)
+        if exist('spCol','var')
             pressure = RSK.profiles.(castdir).data(ndx).values(:, spCol);
         else
             pressure = RSK.profiles.(castdir).data(ndx).values(:, pCol) - 10.1325;
