@@ -72,7 +72,7 @@ switch series
             for ndx = profileIdx
                 data = RSK.profiles.(castdir).data(ndx);
                 seapressure = data.values(:, Pcol)- 10.1325;
-                RSK.data.values(:,SPcol) = seapressure;
+                RSK.profiles.(castdir).data(ndx).values(:,SPcol) = seapressure;
             end
         end
 end
