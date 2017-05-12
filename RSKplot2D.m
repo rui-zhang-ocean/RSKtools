@@ -75,21 +75,8 @@ b = imagesc(t, binCenter, binValues);
 set(b, 'AlphaData', ~isnan(binValues)) %plot NaN values in white.
 
 % Set colorbar
-chanCol = strcmpi(channel, {RSK.channels.longName});
+setcolormap(channel);
 cb = colorbar;
-if exist('cmocean', 'file')==2 
-    cb = colorbar;
-    cmocean('haline');
-    if strcmpi(channel, 'temperature')
-        cmocean('thermal'); 
-    elseif strcmpi(channel, 'chlorophyll')
-        cmocean('algae'); 
-    elseif strcmpi(channel, 'backscatter')
-        cmocean('matter');
-    elseif strcmpi(channel, 'phycoerythrin')
-        cmocean('turbid');
-    end
-end
 ylabel(cb, RSK.channels(chanCol).units, 'FontSize', 14)
 
 
@@ -108,13 +95,10 @@ set(gcf, 'Renderer', 'painters')
 datetick('x', 'HH', 'keepticks')
 axis tight
 
-
-
-chanCol = strcmpi(channel, {RSK.channels.longName});
 ylabel(cb, RSK.channels(chanCol).units, 'FontSize', 12)
 title(sprintf('%s on %s', RSK.channels(chanCol).longName, datestr(t(end))));
 xlabel(sprintf('Time (UTC)'))
-ylabel('Pressure(dbar)')
+ylabel(sprintf('%s (%s)', RSK.channels(YCol).longName, RSK.channels(YCol).units));
 set(gca, 'YDir', 'reverse')
 set(gcf, 'Renderer', 'painters')
 set(h, 'EdgeColor', 'none');
