@@ -17,42 +17,62 @@ function RSKplot2D(RSK, channel, varargin)
 %                    'all', will despike all channels.
 %
 %   [Optional] - direction - the profile direction to consider. Must be either
-%                   'down' or 'up'. Only needed if series is profile. Defaults to 'down'
+%                   'down' or 'up'. Only needed if series is profile.
+%                   Defaults to 'down'.
 %
+%                reference - The channel that will be plotted as y. Default
+%                   'Pressure', can be 'Depth'.
 %
 % Author: RBR Ltd. Ottawa ON, Canada
 % email: support@rbr-global.com
 % Website: www.rbr-global.com
-% Last revision: 2017-05-04
+% Last revision: 2017-05-10
 
 %% Check input and default arguments
 
 validDirections = {'down', 'up'};
 checkDirection = @(x) any(validatestring(x,validDirections));
 
-
 %% Parse Inputs
 p = inputParser;
 addRequired(p, 'RSK', @isstruct);
 addRequired(p, 'channel');
+addParameter(p, 'profileNum', [], @isnumeric);
 addParameter(p, 'direction', 'down', checkDirection);
+addParameter(p, 'reference', 'Pressure', @ischar);
 parse(p, RSK, channel, varargin{:})
 
 % Assign each argument
 RSK = p.Results.RSK;
 channel = p.Results.channel;
+profileNum = p.Results.profileNum;
 direction = p.Results.direction;
+reference = p.Results.reference;
 
 %% Determine if the structure has downcasts and upcasts & set profileNum accordingly
-profileIdx = checkprofiles(RSK, [], direction);
+profileIdx = checkprofiles(RSK, profileNum, direction);
 castdir = [direction 'cast'];
-binCenter = RSK.profiles.(castdir).(channel(1:4)).binCenter;
-binValues = RSK.profiles.(castdir).(channel(1:4)).binValues;
+
+chanCol = getchannelindex(RSK, channel);
+
+% Check bin center reference column.
+YCol = getchannelindex(RSK, reference);
+for ndx = profileIdx(1:end-1)
+    if RSK.profiles.(castdir).data(ndx).values(:,YCol)==RSK.profiles.(castdir).data(ndx+1).values(:,YCol);
+        binCenter = RSK.profiles.(castdir).data(ndx).values(:,YCol);
+    else 
+        error('The refence channel`s data of all the selected profiles must be identical.')
+    end
+end
+
+binValues = NaN(length(binCenter), length(profileIdx));
+for ndx = profileIdx;
+    binValues(:,ndx) = RSK.profiles.(castdir).data(ndx).values(:,chanCol);
+end
 
 t = RSK.profiles.(castdir).tstart;
 b = imagesc(t, binCenter, binValues);
 set(b, 'AlphaData', ~isnan(binValues)) %plot NaN values in white.
-%daspect([2 80 1]); %There are 2 bins per y unit and approximately 80 profiles per day(x units)
 
 % Set colorbar
 chanCol = strcmpi(channel, {RSK.channels.longName});
