@@ -90,10 +90,10 @@ for dir = direction
     if isempty(profileNum)
         profileIdx = 1:min([length(RSK.profiles.(castdir).tstart), length(RSK.profiles.(castdir).tend)]);
     else 
-        profileIdx = profileNum;
+        profileIdx = sort(profileNum, 'ascend');
     end
     
-    RSK.profiles.downcast.data = [];
+    RSK.profiles.(castdir).data = [];
     castndx = 1;
     for ndx=profileIdx
         tstart = RSK.profiles.(castdir).tstart(ndx) - latency/86400;
