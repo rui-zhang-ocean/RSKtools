@@ -25,6 +25,6 @@ if any(strcmpi(channel, {RSK.channels.longName}));
     chanCol = find(strcmpi(channel, {RSK.channels.longName}));
     channelIdx = chanCol(1);
 else
-    error(['The is no ' channel ' channel in this file. Try RSKderive(channel).']);
+    error(['The is no ' channel ' channel in this file.']);
 end 
 end

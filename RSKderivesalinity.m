@@ -28,19 +28,13 @@ function [RSK, salinity] = RSKderivesalinity(RSK, varargin)
 % Author: RBR Ltd. Ottawa ON, Canada
 % email: support@rbr-global.com
 % Website: www.rbr-global.com
-% Last revision: 2017-05-02
-
-
-%% Check input and default arguments
+% Last revision: 2017-05-08
 
 validSeries = {'profile', 'data'};
 checkSeriesName = @(x) any(validatestring(x,validSeries));
 
-validDirections = {'down', 'up'};
+validDirections = {'down', 'up', 'both'};
 checkDirection = @(x) any(validatestring(x,validDirections));
-
-
-%% Parse Inputs
 
 p = inputParser;
 addRequired(p, 'RSK', @isstruct);
@@ -48,13 +42,9 @@ addParameter(p, 'series', 'data', checkSeriesName)
 addParameter(p, 'direction', 'down', checkDirection);
 parse(p, RSK, varargin{:})
 
-% Assign each input argument
 RSK = p.Results.RSK;
 series = p.Results.series;
 direction = p.Results.direction;
-
-
-%% Determine if the structure has downcasts and upcasts
 
 if strcmpi(series, 'profile')
     if strcmpi(direction, 'both')
@@ -70,17 +60,13 @@ if isempty(which('gsw_SP_from_C'))
     error('RSKtools requires TEOS-10 toolbox to derive salinity. Download it here: http://www.teos-10.org/software.htm');
 end
     
-if length(RSK.channels) < 3 || ~any(strcmpi({RSK.channels.longName}, 'Conductivity')) || ~any(strcmpi({RSK.channels.longName}, 'Temperature')) || ~any(strcmpi({RSK.channels.longName}, 'Pressure'))
-    error('Conductivity, Temperature and Pressure are required to calculate Salinity');
-end
-
-%% Calculate Salinity
-RSK = addchannelmetadata(RSK, 'Salinity', 'mS/cm');
-
-Scol = getchannelindex(RSK, 'Salinity');
 Ccol = getchannelindex(RSK, 'Conductivity');
 Tcol = getchannelindex(RSK, 'Temperature');
 Pcol = getchannelindex(RSK, 'Pressure');
+
+%% Calculate Salinity
+RSK = addchannelmetadata(RSK, 'Salinity', 'mS/cm');
+Scol = getchannelindex(RSK, 'Salinity');
 
 switch series
     case 'data'
