@@ -1,4 +1,4 @@
-function RSKplot2D(RSK, channel, varargin)
+function im = RSKplot2D(RSK, channel, varargin)
 
 % RSKplot2D - Plot profiles in a contour plot
 %
@@ -16,20 +16,24 @@ function RSKplot2D(RSK, channel, varargin)
 %                    salinity, etc). Can be cell array of many channels or
 %                    'all', will despike all channels.
 %
-%   [Optional] - direction - the profile direction to consider. Must be either
-%                   'down' or 'up'. Only needed if series is profile.
-%                   Defaults to 'down'.
+%   [Optional] - profileNum - Optional profile number(s) to plot. Default
+%                    is to use all profiles. 
+%
+%                direction - the profile direction to consider. Must be either
+%                   'down' or 'up'. Defaults to 'down'.
 %
 %                reference - The channel that will be plotted as y. Default
 %                   'Pressure', can be 'Depth'.
 %
+% Output:
+%     im - Image object created, use to set properties.
+%
 % Author: RBR Ltd. Ottawa ON, Canada
 % email: support@rbr-global.com
 % Website: www.rbr-global.com
-% Last revision: 2017-05-10
+% Last revision: 2017-05-12
 
 %% Check input and default arguments
-
 validDirections = {'down', 'up'};
 checkDirection = @(x) any(validatestring(x,validDirections));
 
@@ -71,8 +75,8 @@ for ndx = profileIdx;
 end
 
 t = RSK.profiles.(castdir).tstart;
-b = imagesc(t, binCenter, binValues);
-set(b, 'AlphaData', ~isnan(binValues)) %plot NaN values in white.
+im = imagesc(t, binCenter, binValues);
+set(im, 'AlphaData', ~isnan(binValues)) %plot NaN values in white.
 
 % Set colorbar
 setcolormap(channel);
