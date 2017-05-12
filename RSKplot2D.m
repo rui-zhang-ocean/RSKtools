@@ -65,7 +65,7 @@ for ndx = profileIdx(1:end-1)
     if RSK.profiles.(castdir).data(ndx).values(:,YCol)==RSK.profiles.(castdir).data(ndx+1).values(:,YCol);
         binCenter = RSK.profiles.(castdir).data(ndx).values(:,YCol);
     else 
-        error('The refence channel`s data of all the selected profiles must be identical.')
+        error('The refence channel`s data of all the selected profiles must be identical. Use RSKbinaverage.m')
     end
 end
 
