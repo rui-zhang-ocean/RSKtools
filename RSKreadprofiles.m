@@ -78,12 +78,10 @@ if ~isfield(RSK, 'profiles')
     error('No profiles in this RSK, try RSKfindprofiles');
 end
 
-if strcmpi(series, 'profile')
-    if strcmpi(direction, 'both')
-        direction = {'down', 'up'};
-    else
-        direction = {direction};
-    end
+if strcmpi(direction, 'both')
+    direction = {'down', 'up'};
+else
+    direction = {direction};
 end
 
 for dir = direction
