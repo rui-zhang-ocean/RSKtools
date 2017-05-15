@@ -15,9 +15,9 @@ function [RSK, salinity] = RSKderivesalinity(RSK, varargin)
 % Inputs: 
 %    [Required] - RSK - Structure containing the logger metadata and data
 %
-%               
-%    [Optional] - series - Specifies the series to be filtered. Either 'data'
-%                     or 'profile'. Default is 'data'.
+%                
+%    [Optional] - series - Specifies the series to add channel data to.
+%                     Either 'data' or 'profile'. Default is 'data'.  
 %            
 %                 direction - 'up' for upcast, 'down' for downcast, or 'both' for
 %                     all. Default is 'down'.
