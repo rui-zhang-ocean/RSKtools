@@ -5,8 +5,8 @@ function [RSK, samplesinbin] = RSKbinaverage(RSK, varargin)
 %
 % Syntax:  [RSK] = RSKbinaverage(RSK, [OPTIONS])
 % 
-% Based on the regimes specified this function bins the channels in the RSK
-% structure by profile based on any channel
+% Based on the regimes specified this function quantizes data in each
+% profile using a reference channel
 %
 % Note: The boundary takes precendence over the bin size. (Ex.
 % boundary= [5 20], binSize = [10 20]. BinArray will be [5 15 20 40 60...]
@@ -24,7 +24,7 @@ function [RSK, samplesinbin] = RSKbinaverage(RSK, varargin)
 %                binBy - Any channel in the RSK, could be time.
 %
 %                binSize - Size of bins in each regime. Must have length(binSize) ==
-%                   numRegimes. Default 1.
+%                   numRegimes. Default [1] (units of binBy channel).
 %
 %                boundary - First boundary crossed in the direction
 %                   selected of each regime, in same units as binBy. Must
@@ -39,7 +39,7 @@ function [RSK, samplesinbin] = RSKbinaverage(RSK, varargin)
 % Author: RBR Ltd. Ottawa ON, Canada
 % email: support@rbr-global.com
 % Website: www.rbr-global.com
-% Last revision: 2017-05-10
+% Last revision: 2017-05-15
 
 %% Check input and default arguments
 
