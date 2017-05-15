@@ -15,9 +15,9 @@ function [RSK, salinity] = RSKderivesalinity(RSK, varargin)
 % Inputs: 
 %    [Required] - RSK - Structure containing the logger metadata and data
 %
-%               
-%    [Optional] - series - Specifies the series to be filtered. Either 'data'
-%                     or 'profile'. Default is 'data'.
+%                
+%    [Optional] - series - Specifies the series to add channel data to.
+%                     Either 'data' or 'profile'. Default is 'data'.  
 %            
 %                 direction - 'up' for upcast, 'down' for downcast, or 'both' for
 %                     all. Default is 'down'.
@@ -62,7 +62,12 @@ end
     
 Ccol = getchannelindex(RSK, 'Conductivity');
 Tcol = getchannelindex(RSK, 'Temperature');
-Pcol = getchannelindex(RSK, 'Pressure');
+try 
+    spCol = getchannelindex(RSK, 'Sea Pressure');
+catch
+    pCol = getchannelindex(RSK, 'Pressure');
+end
+
 
 %% Calculate Salinity
 RSK = addchannelmetadata(RSK, 'Salinity', 'mS/cm');
@@ -71,7 +76,12 @@ Scol = getchannelindex(RSK, 'Salinity');
 switch series
     case 'data'
         data = RSK.data;
-        salinity = gsw_SP_from_C(data.values(:, Ccol), data.values(:, Tcol), data.values(:, Pcol)- 10.1325);
+        if exist('spCol','var')
+            pressure = data.values(:, spCol);
+        else
+            pressure = data.values(:, pCol) - 10.1325;
+        end
+        salinity = gsw_SP_from_C(data.values(:, Ccol), data.values(:, Tcol), pressure);
         RSK.data.values(:,Scol) = salinity;
     case 'profile'
         for dir = direction
@@ -80,7 +90,12 @@ switch series
             castdir = [dir{1} 'cast'];
             for ndx = profileIdx
                 data = RSK.profiles.(castdir).data(ndx);
-                salinity = gsw_SP_from_C(data.values(:, Ccol), data.values(:, Tcol), data.values(:, Pcol)- 10.1325);
+                if exist('spCol', 'var')
+                    pressure = data.values(:, spCol);
+                else
+                    pressure = data.values(:, pCol) - 10.1325;
+                end
+                salinity = gsw_SP_from_C(data.values(:, Ccol), data.values(:, Tcol), pressure);
                 RSK.profiles.(castdir).data(ndx).values(:,Scol) = salinity;
             end
         end

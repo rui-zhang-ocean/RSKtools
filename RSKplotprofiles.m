@@ -55,7 +55,12 @@ profileNum = p.Results.profileNum;
 channel = p.Results.channel;
 direction = p.Results.direction;
 
-pCol = getchannelindex(RSK, 'Pressure');
+try 
+    spCol = getchannelindex(RSK, 'Sea Pressure');
+catch
+    pCol = getchannelindex(RSK, 'Pressure');
+end
+
 chanCol = getchannelindex(RSK, channel);
 
 if strcmpi(direction, 'both')
@@ -72,7 +77,11 @@ for dir = direction
     profileIdx = checkprofiles(RSK, profileNum, dir{1});
     castdir = [dir{1} 'cast']; 
     for ndx=profileIdx
-        pressure = RSK.profiles.(castdir).data(ndx).values(:, pCol) - 10.1325;
+        if exist('spCol','var')
+            pressure = RSK.profiles.(castdir).data(ndx).values(:, spCol);
+        else
+            pressure = RSK.profiles.(castdir).data(ndx).values(:, pCol) - 10.1325;
+        end
         hdls(ii) = plot(RSK.profiles.(castdir).data(ndx).values(:, chanCol), pressure);
         hold on
         pmax = max([pmax; pressure]);
