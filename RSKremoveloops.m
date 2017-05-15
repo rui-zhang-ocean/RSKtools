@@ -1,19 +1,13 @@
-function [RSK, flagidx] = RSKremoveheave(RSK, varargin)
+function [RSK, flagidx] = RSKremoveloops(RSK, varargin)
 
-% RSKremoveheave - Remove values exceeding a threshold CTD profiling
+% RSKremoveloop - Remove values exceeding a threshold CTD profiling
 %                  rate. 
-% Syntax:  [RSK, flagidx] = RSKremoveheave(RSK, [OPTIONS])
+% Syntax:  [RSK, flagidx] = RSKremoveloop(RSK, [OPTIONS])
 % 
-% RSKremoveheave - This function filters the pressure channel with a
-% lowpass boxcar to reduce the effect of noise, then finds the samples
-% that exceed a threshold profiling velocity and replaces them with a
-% NaN. Profiling rate is computed by differencing the depth time series. 
-%
-% Variations in profiling rate, such as might be caused by profiling from a
-% vessel in wavy conditions with a taut wire, can negatively impact data
-% quality.  If the heaving is large enough, the pressure can even reverse,
-% or loop, causing the CTD to sample its own wake.
-%
+% This function filters the pressure channel with a lowpass boxcar to
+% reduce the effect of noise, then finds the samples that exceed a
+% threshold profiling velocity and replaces them with a NaN. Profiling rate
+% is computed by differencing the depth time series. 
 % 
 % Inputs:
 %   [Required] - RSK - The input RSK structure, with profiles as read using
@@ -111,6 +105,7 @@ for dir = direction
     RSK = RSKappendtolog(RSK, logentry);
 end
 end
+
 
 
 
