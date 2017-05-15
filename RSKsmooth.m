@@ -115,11 +115,8 @@ for chanName = channel
 
         case 'profile'
             for dir = direction
-                if strcmpi(series, 'profile')
-                    profileIdx = checkprofiles(RSK, profileNum, dir{1});
-                    castdir = [dir{1} 'cast'];
-                end
-                
+                profileIdx = checkprofiles(RSK, profileNum, dir{1});
+                castdir = [dir{1} 'cast'];
                 for ndx = profileIdx
                     in = RSK.profiles.(castdir).data(ndx).values(:,channelCol);
                     switch filter
