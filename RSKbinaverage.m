@@ -5,11 +5,14 @@ function [RSK, samplesinbin] = RSKbinaverage(RSK, varargin)
 %
 % Syntax:  [RSK] = RSKbinaverage(RSK, [OPTIONS])
 % 
-% Based on the regimes specified this function quantizes data in each
-% profile using a reference channel
+% Based on the regimes specified this function averages data in each
+% profile using a averagine intervals defined by the binSizes and
+% boundaries of the reference channel.
 %
 % Note: The boundary takes precendence over the bin size. (Ex.
-% boundary= [5 20], binSize = [10 20]. BinArray will be [5 15 20 40 60...]
+% boundary= [5 20], binSize = [10 20]. BinArray will be [5 15 20 40 60...].
+% They should be ordered in the way the regimes would come up in that
+% profiling direction. 
 %
 % Inputs:
 %    
