@@ -32,18 +32,21 @@ if ~isempty(series)
     elseif strcmpi(series, 'data') && isData
         series = 'data';
     else
-        error('The specified series in not populated in the structure');
+        disp('The specified series in not populated in the structure');
+        return
     end
     
 else
     if isData && isProfile
-        error('Series argument must be specified, both data and profiles are populated with data. Consider removing one of them.');
+        disp('Series argument must be specified, both data and profiles are populated with data. Consider removing one of them.');
+        return
     elseif isData
         series = 'data';
     elseif isProfile
         series = 'profile';
     else
-        error('No data. Use RSKreadprofiles or RSKreaddata.');
+        disp('No data. Use RSKreadprofiles or RSKreaddata.');
+        return
     end
 end
     
