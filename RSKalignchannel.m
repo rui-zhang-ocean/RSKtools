@@ -60,22 +60,16 @@ function [RSK] = RSKalignchannel(RSK, channel, lag, varargin)
 %    rsk = RSKalignchannel(rsk, 'Conductivity', lags);
 %
 %
-%
 % Author: RBR Ltd. Ottawa ON, Canada
 % email: support@rbr-global.com
 % Website: www.rbr-global.com
-% Last revision: 2017-05-01
-
-%% Check input and default arguments
+% Last revision: 2017-05-15
 
 validDirections = {'down', 'up'};
 checkDirection = @(x) any(validatestring(x,validDirections));
 
 validShiftfill = {'zeroorderhold', 'union', 'nan', 'mirror'};
 checkShiftfill = @(x) any(validatestring(x,validShiftfill));
-
-
-%% Parse Inputs
 
 p = inputParser;
 addRequired(p, 'RSK', @isstruct);
@@ -94,12 +88,9 @@ profileNum = p.Results.profileNum;
 direction = p.Results.direction;
 shiftfill = p.Results.shiftfill;
 
-%% Determine if the structure has downcasts and upcasts
 profileIdx = checkprofiles(RSK, profileNum, direction);
 castdir = [direction 'cast'];
 
-
-%% Check to make sure that lags are integers & one value of CTlag or one for each profile
 lags = checklag(lag, profileIdx);
 
 
@@ -139,4 +130,25 @@ else
     end
 end
 end
+
+
+    function lags = checklag(lag, profileIdx)
+
+    % A helper function used to check if the lag values are intergers and
+    % either one for all profiles or one for each profiles.
+
+    if ~isequal(fix(lag),lag),
+        error('Lag values must be integers.')
+    end
+
+    if length(lag) == 1 && length(profileIdx) ~= 1
+        lags = repmat(lag, 1, length(profileIdx));
+    elseif length(lag) > 1 && length(lag) ~= length(profileIdx)
+        error(['Length of lag must match number of profiles or be a ' ...
+               'single value']);
+    else
+        lags = lag;
+    end
+
+    end
 
