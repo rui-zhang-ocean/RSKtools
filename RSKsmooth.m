@@ -5,7 +5,7 @@ function RSK = RSKsmooth(RSK, channel, varargin)
 %
 % Syntax:  [RSK] = RSKsmooth(RSK, channel, [OPTIONS])
 % 
-% RSKsmooth is a lowpass filter function that smooths the selected channel.
+% RSKsmooth applies a lowpass filter function to the selected channel.
 % It replaces every sample with the filter results. The windowLength
 % parameter determines how many samples are used to filter, the sample
 % being evaluated is always in the center of the filtering window. 
@@ -29,8 +29,7 @@ function RSK = RSKsmooth(RSK, channel, varargin)
 %                     all. Default is 'down'.
 %
 %                 windowLength - The total size of the filter window. Must
-%                     be odd. Default is 3; one sample from either side of
-%                     sample being evaluated.
+%                     be odd. Default is 3.
 %
 % Outputs:
 %    RSK - The RSK structure with filtered channel values.
@@ -43,7 +42,7 @@ function RSK = RSKsmooth(RSK, channel, varargin)
 % Author: RBR Ltd. Ottawa ON, Canada
 % email: support@rbr-global.com
 % Website: www.rbr-global.com
-% Last revision: 2017-05-01
+% Last revision: 2017-05-15
 
 %% Check input and default arguments
 
@@ -63,7 +62,7 @@ p = inputParser;
 addRequired(p, 'RSK', @isstruct);
 addRequired(p, 'channel');
 addParameter(p, 'filter', 'boxcar', checkFilter);
-addParameter(p, 'series', 'data', checkSeriesName)
+addParameter(p, 'series', [], checkSeriesName)
 addParameter(p, 'profileNum', [], @isnumeric);
 addParameter(p, 'direction', 'down', checkDirection);
 addParameter(p, 'windowLength', 3, @isnumeric);
@@ -86,6 +85,8 @@ elseif ~iscell(channel)
     channel = {channel};
 end
 
+series = checkseries(RSK, series);
+
 %% Determine if the structure has downcasts and upcasts
 if strcmpi(series, 'profile')
     if strcmpi(direction, 'both')
@@ -104,9 +105,9 @@ for chanName = channel
             in = RSK.data.values(:,channelCol);
             switch filter
                 case 'boxcar'
-                    [out, windowLength] = runavg(in, windowLength);
+                    out = runavg(in, windowLength);
                 case 'median'
-                    [out, windowLength] = runmed(in, windowLength);
+                    out = runmed(in, windowLength);
             end      
             RSK.data.values(:,channelCol) = out;
 
@@ -121,9 +122,9 @@ for chanName = channel
                     in = RSK.profiles.(castdir).data(ndx).values(:,channelCol);
                     switch filter
                         case 'boxcar'
-                            [out, windowLength] = runavg(in, windowLength);
+                            out = runavg(in, windowLength);
                         case 'median'
-                            [out, windowLength] = runmed(in, windowLength);
+                            out= runmed(in, windowLength);
                     end
                     RSK.profiles.(castdir).data(ndx).values(:,channelCol) = out;
                 end
