@@ -37,7 +37,11 @@ function RSK = RSKreadburstdata(RSK, varargin)
 % Author: RBR Ltd. Ottawa ON, Canada
 % email: support@rbr-global.com
 % Website: www.rbr-global.com
+<<<<<<< HEAD
 % Last revision: 2017-05-17
+=======
+% Last revision: 2016-05-16
+>>>>>>> master
 
 p = inputParser;
 addRequired(p, 'RSK', @isstruct);
@@ -55,7 +59,10 @@ end
 if isempty(t2)
     t2 = RSK.epochs.endTime;
 end
+<<<<<<< HEAD
 
+=======
+>>>>>>> master
 t1 = datenum2RSKtime(t1);
 t2 = datenum2RSKtime(t2);
 
@@ -74,4 +81,4 @@ t=results.tstamp';
 results.tstamp = RSKtime2datenum(t); % convert RSK millis time to datenum
 
 RSK.burstdata=results;
-
+end
