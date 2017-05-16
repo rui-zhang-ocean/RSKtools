@@ -4,8 +4,7 @@ function [v, vsnMajor, vsnMinor, vsnPatch]  = RSKver(RSK)
 %
 % Syntax:  [v, vsnMajor, vsnMinor, vsnPatch] = RSKver(RSK)
 %
-% RSKver will return the most recent version of the RSK file. If it is
-% 1.13.0 it will check if it is a bug and fix it in the database.
+% RSKver will return the most recent version of the RSK file.
 %
 % Inputs:
 %    RSK - Structure containing the logger metadata and thumbnails
@@ -20,7 +19,7 @@ function [v, vsnMajor, vsnMinor, vsnPatch]  = RSKver(RSK)
 % Author: RBR Ltd. Ottawa ON, Canada
 % email: support@rbr-global.com
 % Website: www.rbr-global.com
-% Last revision: 2017-05-01
+% Last revision: 2017-05-15
 
 v = RSK.dbInfo(end).version;
 vsn = textscan(v,'%s','delimiter','.');
