@@ -1,4 +1,4 @@
-function RSK = RSKreadburstdata(RSK, t1, t2)
+function RSK = RSKreadburstdata(RSK, varargin)
 
 % RSKreadburstdata - Reads the burst data tables from an RBR RSK
 %                    SQLite file. Use with RSKreadevents to
@@ -37,40 +37,41 @@ function RSK = RSKreadburstdata(RSK, t1, t2)
 % Author: RBR Ltd. Ottawa ON, Canada
 % email: support@rbr-global.com
 % Website: www.rbr-global.com
-% Last revision: 2016-03-02
+% Last revision: 2017-05-17
 
-if nargin==1 % user wants to read ALL the data
-    t1 = datenum2RSKtime(RSK.epochs.startTime);
-    t2 = datenum2RSKtime(RSK.epochs.endTime);
-else
-    t1 = datenum2RSKtime(t1);
-    t2 = datenum2RSKtime(t2);
+p = inputParser;
+addRequired(p, 'RSK', @isstruct);
+addOptional(p, 't1', [], @isnumeric);
+addOptional(p, 't2', [], @isnumeric);
+parse(p, RSK, varargin{:})
+
+RSK = p.Results.RSK;
+t1 = p.Results.t1;
+t2 = p.Results.t2;
+
+if isempty(t1)
+    t1 = RSK.epochs.startTime;
 end
+if isempty(t2)
+    t2 = RSK.epochs.endTime;
+end
+
+t1 = datenum2RSKtime(t1);
+t2 = datenum2RSKtime(t2);
+
 sql = ['select tstamp/1.0 as tstamp,* from burstdata where tstamp/1.0 between ' num2str(t1) ' and ' num2str(t2) ' order by tstamp'];
 results = mksqlite(sql);
 if isempty(results)
     disp('No data found in that interval')
     return
 end
-results = rmfield(results,'tstamp_1'); % get rid of the corrupted one
 
-%% RSK version >= 1.12.2 now has a datasetID column in the data table
-% Look for the presence of that column and extract it from results
-if sum(strcmp('datasetID', fieldnames(results))) > 0
-    datasetID = [results(:).datasetID]';
-    results = rmfield(results, 'datasetID'); % get rid of the datasetID column
-    hasdatasetID = 1;
-else 
-    hasdatasetID = 0;
-end
+results = removeUnusedDataColumns(results);
 
 results = RSKarrangedata(results);
 
 t=results.tstamp';
 results.tstamp = RSKtime2datenum(t); % convert RSK millis time to datenum
 
-if hasdatasetID
-    results.datasetID = datasetID;
-end
 RSK.burstdata=results;
 
