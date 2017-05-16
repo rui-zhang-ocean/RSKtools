@@ -57,7 +57,7 @@ if isempty(results)
     return
 end
 
-results = RSKarrangedata(results);
+results = arrangedata(results);
 
 t=results.tstamp';
 results.tstamp = RSKtime2datenum(t);

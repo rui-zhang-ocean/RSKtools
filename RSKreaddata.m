@@ -72,8 +72,7 @@ if isempty(results)
 end
 
 results = removeUnusedDataColumns(results);
-
-results = RSKarrangedata(results);
+results = arrangedata(results);
 
 t=results.tstamp';
 results.tstamp = RSKtime2datenum(t);

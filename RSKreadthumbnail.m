@@ -30,10 +30,9 @@ if isempty(results)
 end
 
 results = removeUnusedDataColumns(results);
+results = arrangedata(results);
 
-results = RSKarrangedata(results);
-
-results.tstamp = RSKtime2datenum(results.tstamp'); % convert unix time to datenum
+results.tstamp = RSKtime2datenum(results.tstamp');
 
 if ~strcmpi(RSK.dbInfo(end).type, 'EPdesktop')
     [~, isDerived] = removeNonMarinechannels(RSK);
