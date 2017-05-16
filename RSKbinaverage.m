@@ -1,13 +1,12 @@
-function [RSK, samplesinbin] = RSKbinaverage(RSK, varargin)
+function [RSK, binArray] = RSKbinaverage(RSK, varargin)
 
-% RSKbinaverage - Bins the all channels and time of by any reference for a
-% profile.
+% RSKbinaverage - Average the profile data by a quantized reference
+% channel.
 %
 % Syntax:  [RSK] = RSKbinaverage(RSK, [OPTIONS])
 % 
-% Based on the regimes specified this function averages data in each
-% profile using a averagine intervals defined by the binSizes and
-% boundaries of the reference channel.
+% This function averages data in each profile using a averaging intervals
+% defined by the binSizes and boundaries of the binBy channel.
 %
 % Note: The boundary takes precendence over the bin size. (Ex.
 % boundary= [5 20], binSize = [10 20]. BinArray will be [5 15 20 40 60...].
@@ -16,23 +15,27 @@ function [RSK, samplesinbin] = RSKbinaverage(RSK, varargin)
 %
 % Inputs:
 %    
-%   [Required] - RSK - the input RSK structure, with profiles as read using
-%                    RSKreadprofiles.
+%   [Required] - RSK - The input RSK structure, with profiles as read using
+%                      RSKreadprofiles.
 %
-%   [Optional] - profileNum - profiles to bin. Default is to do all profiles.
+%   [Optional] - profileNum - Optional profile number. Default is to
+%                      operate on all detected profiles.
 %            
 %                direction - the profile direction to consider. Must be either
-%                   'down' or 'up'. Defaults to 'down'. 
+%                      'down' or 'up'. Defaults to 'down'. 
 %
-%                binBy - Any channel in the RSK, could be time.
+%                binBy - A reference channel that determines the samples in
+%                       each bin , can be any channel or time. Default is
+%                       Pressure.
 %
-%                binSize - Size of bins in each regime. Must have length(binSize) ==
-%                   numRegimes. Default [1] (units of binBy channel).
+%
+%                binSize - Size of bins in each regime. Default [1] (units 
+%                       of binBy channel). 
 %
 %                boundary - First boundary crossed in the direction
-%                   selected of each regime, in same units as binBy. Must
-%                   have length(boundary) == length(binSize) or one
-%                   greater. Default[]; whole pressure range.       
+%                      selected of each regime, in same units as binBy.
+%                      Must have length(boundary) == length(binSize) or one
+%                      greater. Default[]; whole pressure range.       
 %
 % Outputs:
 %    RSK - The structure with binned data.
@@ -94,7 +97,7 @@ for ndx = profileIdx;
     k = k+1;
 end
 
-binArray = setupbins(Y, boundary, binSize, direction);
+[binArray, boundary] = setupbins(Y, boundary, binSize, direction);
 
 samplesinbin = NaN(profilelength, length(binArray)-1);
 k = 1;
@@ -105,15 +108,10 @@ for ndx = profileIdx
     binCenter = tsmovavg(binArray, 's', 2);
     binCenter = binCenter(2:end); %Starts with NaN.
     
-    %  initialize the binned output field
     for bin=1:length(binArray)-1
-        kk = Y(:,k) >= binArray(bin) & Y(:,k) < binArray(bin+1);
-        ind = find(diff(kk)<0,1);
-        if ~isempty(ind) && Y(ind+1,k) > binArray(bin+1)
-           kk(ind+1:end) = 0;
-        end
-        samplesinbin(:,bin) = kk;
-        binnedValues(bin,:) = nanmean(X(kk,:),1);
+        binidx = findbinindices(Y(:,k), binArray(bin), binArray(bin+1));
+        samplesinbin(:,bin) = binidx;
+        binnedValues(bin,:) = nanmean(X(binidx,:),1);
     end
     
     RSK.profiles.(castdir).data(ndx).values = binnedValues(:,2:end);
@@ -134,10 +132,10 @@ logentry = sprintf('Binned with respect to %s using [%s] boundaries with %s %s b
 RSK = RSKappendtolog(RSK, logentry);
 end
 
-    function [binArray] = setupbins(Y, boundary, binSize, direction)
-    % This helper function will set up binArray based on the boundaries and
-    % binSize given. Boundaries are hard set and binSize fills the space
-    % between the boundaries in the same direction as the cast. 
+    function [binArray, boundary] = setupbins(Y, boundary, binSize, direction)
+    % Set up binArray based on the boundaries any binSize given. Boundaries
+    % are hard set and binSize fills the space between the boundaries in
+    % the same direction as the cast.  
     
     binArray = [];
     if length(binSize) > length(boundary)+1 || (length(binSize) < length(boundary)-1 && ~isempty(boundary))
@@ -146,12 +144,12 @@ end
     end
     
     if isempty(boundary)
-        boundary = [ceil(max(nanmax(Y))) floor(min(nanmin(Y)))-binSize];
+        boundary = [ceil(max(nanmax(Y))) floor(min(nanmin(Y)))];
     elseif length(boundary) == length(binSize)
         if strcmp(direction, 'up')
-            boundary = [boundary floor(min(nanmin(Y)))-binSize(end)];
+            boundary = [boundary floor(min(nanmin(Y)))];
         else
-            boundary = [boundary ceil(max(nanmax(Y)))+binSize(end)];
+            boundary = [boundary ceil(max(nanmax(Y)))];
         end
     elseif length(boundary) == length(binSize)+1
     end
@@ -165,6 +163,20 @@ end
     for nregime = 1:length(boundary)-1
         binArray = [binArray boundary(nregime):binSize(nregime):boundary(nregime+1)];       
     end
-
+    binArray = [binArray, binArray(end)+binSize(end)];
     binArray = unique(binArray);
     end
+
+    
+    function [binidx] = findbinindices(binByvalues, lowerboundary, upperboundary)
+    % Selects the indices of the binBy channel that are within the lower
+    % and upper boundaries of the evaluated bin to establish which values
+    % from the other channel need to be averaged.
+    
+    binidx = binByvalues >= lowerboundary & binByvalues < upperboundary;
+    ind = find(diff(binidx)<0,1);
+    if ~isempty(ind) && binByvalues(ind+1) > upperboundary
+      binidx(ind+1:end) = 0;
+    end
+    end
+    
