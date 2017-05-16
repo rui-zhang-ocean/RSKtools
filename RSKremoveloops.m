@@ -34,7 +34,7 @@ function [RSK, flagidx] = RSKremoveloops(RSK, varargin)
 % Author: RBR Ltd. Ottawa ON, Canada
 % email: support@rbr-global.com
 % Website: www.rbr-global.com
-% Last revision: 2017-05-10
+% Last revision: 2017-05-16
 
 %% Check input and default arguments
 
@@ -64,8 +64,6 @@ end
 
 Dcol = getchannelindex(RSK, 'Depth');
 
-secondsperday = 86400;
-
 for dir = direction
     profileIdx = checkprofiles(RSK, profileNum, dir{1});
     castdir = [dir{1} 'cast'];
@@ -77,11 +75,7 @@ for dir = direction
         time = data(ndx).tstamp;
 
         %% Caculate Velocity.
-        deltaD = diff(depth);
-        deltaT = diff(time * secondsperday);
-        dDdT = deltaD ./ deltaT;
-        midtime = time(2:end) + deltaT/(2*secondsperday);
-        velocity = interp1(midtime, dDdT, time, 'linear', 'extrap');
+        velocity = calculatevelocity(depth, time);
         switch dir{1}
             case 'up'
                 flag = velocity > -threshold; 
@@ -106,8 +100,17 @@ end
 end
 
 
-
-
-
+    function velocity = calculatevelocity(depth, time)
+    % calculate the velocity using midpoints of depth and time.
+    
+    secondsperday = 86400;
+    
+    deltaD = diff(depth);
+    deltaT = diff(time * secondsperday);
+    dDdT = deltaD ./ deltaT;
+    midtime = time(2:end) + deltaT/(2*secondsperday);
+    velocity = interp1(midtime, dDdT, time, 'linear', 'extrap');
+    
+    end
 
 
