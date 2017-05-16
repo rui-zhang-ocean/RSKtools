@@ -10,8 +10,7 @@ function [RSK] = RSKalignchannel(RSK, channel, lag, varargin)
 % the sensors are moving through regions of high vertical gradients.
 %
 % Inputs: 
-%    [Required] - RSK - The input RSK structure, with profiles read using
-%                       RSKreadprofiles.
+%    [Required] - RSK - The input RSK structure.
 %
 %                 channel - Longname of channel to align (e.g. temperature).
 %
@@ -23,23 +22,22 @@ function [RSK] = RSKalignchannel(RSK, channel, lag, varargin)
 %                       lags in a vector.
 %
 %    [Optional] - profileNum - Profile(s) to which the lag(s) are applied.
-%                              Default all profiles.    
+%                        Default all profiles.    
 %
 %                 direction - 'up' for upcast or 'down' for downcast.
-%                             Default is 'down'. 
+%                        Default is 'down'. 
 % 
 %                  shiftfill - The values that will fill the void left
-%                             at the beginning or end of the time series;
-%                             'nan', fills the removed samples of the 
-%                             shifted channel with NaN, 'zeroorderhold' 
-%                             fills the removed samples of the shifted
-%                             channels with the first or last value, 
-%                             'mirror' fills the removed values with the 
-%                             reflection of the original end point, and 
-%                             'union' will remove the values of the OTHER 
-%                             channels that do not align with the shifted 
-%                             channel (note: this will reduce the size of 
-%                             values array by "lag" samples).
+%                        at the beginning or end of the time series; 'nan',
+%                        fills the removed samples of the shifted channel
+%                        with NaN, 'zeroorderhold' fills the removed
+%                        samples of the shifted channels with the first or
+%                        last value, 'mirror' fills the removed values with
+%                        the reflection of the original end point, and
+%                        'union' will remove the values of the OTHER
+%                        channels that do not align with the shifted
+%                        channel (note: this will reduce the size of values
+%                        array by "lag" samples). 
 %
 % Outputs:
 %    RSK - The RSK structure with aligned channel values.

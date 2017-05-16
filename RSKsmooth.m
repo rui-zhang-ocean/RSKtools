@@ -11,7 +11,7 @@ function RSK = RSKsmooth(RSK, channel, varargin)
 % being evaluated is always in the center of the filtering window. 
 %
 % Inputs: 
-%    [Required] - RSK - Structure containing the logger metadata and thumbnails
+%    [Required] - RSK - Structure containing the logger data
 %
 %                 channel - Longname of channel to filter. Can be cell
 %                     array of many channels or 'all'.

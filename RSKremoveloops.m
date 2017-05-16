@@ -10,17 +10,16 @@ function [RSK, flagidx] = RSKremoveloops(RSK, varargin)
 % is computed by differencing the depth time series. 
 % 
 % Inputs:
-%   [Required] - RSK - The input RSK structure, with profiles as read using
-%                    RSKreadprofiles and Depth read using RSKderivedepth.
+%   [Required] - RSK - The input RSK structure.
 %
 %   [Optional] - profileNum - Optional profile number(s) on which to operate.
-%                    Default is to work on all profiles.
+%                      Default is to work on all profiles.
 %
 %                direction - 'up' for upcast,'down' for downcast or 'both'
-%                    for up and downcast. Default is 'down'. 
+%                      for up and downcast. Default is 'down'. 
 % 
 %                threshold - The minimum speed at which the profile must be
-%                    taken. Default is 0.25 m/s 
+%                      taken. Default is 0.25 m/s 
 %
 % Outputs:
 %    RSK - The structure without pressure reversal or slowdowns.
