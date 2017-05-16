@@ -28,7 +28,6 @@ function [RSK, binArray] = RSKbinaverage(RSK, varargin)
 %                       each bin , can be any channel or time. Default is
 %                       Pressure.
 %
-%
 %                binSize - Size of bins in each regime. Default [1] (units 
 %                       of binBy channel). 
 %
@@ -47,13 +46,9 @@ function [RSK, binArray] = RSKbinaverage(RSK, varargin)
 % Website: www.rbr-global.com
 % Last revision: 2017-05-15
 
-%% Check input and default arguments
-
 validDirections = {'down', 'up', 'both'};
 checkDirection = @(x) any(validatestring(x,validDirections));
 
-
-%% Parse Inputs
 p = inputParser;
 addRequired(p, 'RSK', @isstruct);
 addParameter(p, 'profileNum', [], @isnumeric);
