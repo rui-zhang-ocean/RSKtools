@@ -56,7 +56,6 @@ end
 if isempty(t2)
     t2 = RSK.epochs.endTime;
 end
-
 t1 = datenum2RSKtime(t1);
 t2 = datenum2RSKtime(t2);
 
@@ -64,7 +63,7 @@ if strcmp(RSK.dbInfo(end).type, 'skinny')
     error('File must be opened in Ruskin before RSKtools can read the data.');
 end
 
-%% Load data
+
 sql = ['select tstamp/1.0 as tstamp,* from data where tstamp between ' num2str(t1) ' and ' num2str(t2) ' order by tstamp'];
 results = mksqlite(sql);
 if isempty(results)
@@ -74,11 +73,10 @@ end
 
 results = removeUnusedDataColumns(results);
 
-%% Organise results
 results = RSKarrangedata(results);
 
 t=results.tstamp';
-results.tstamp = RSKtime2datenum(t); % convert RSK millis time to datenum
+results.tstamp = RSKtime2datenum(t);
 
 if ~strcmpi(RSK.dbInfo(end).type, 'EPdesktop')
     [~, isDerived] = removeNonMarinechannels(RSK);
