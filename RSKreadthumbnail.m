@@ -21,7 +21,7 @@ function RSK = RSKreadthumbnail(RSK)
 % Author: RBR Ltd. Ottawa ON, Canada
 % email: support@rbr-global.com
 % Website: www.rbr-global.com
-% Last revision: 2016-03-14
+% Last revision: 2016-05-16
 
 sql = ['select tstamp/1.0 as tstamp,* from thumbnailData order by tstamp'];
 results = mksqlite(sql);
