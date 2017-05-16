@@ -56,7 +56,6 @@ end
 if isempty(t2)
     t2 = RSK.epochs.endTime;
 end
-
 t1 = datenum2RSKtime(t1);
 t2 = datenum2RSKtime(t2);
 
@@ -79,12 +78,10 @@ if isempty(results)
 end
 
 results = removeUnusedDataColumns(results);
-
-%% Organise results
-results = RSKarrangedata(results);
+results = arrangedata(results);
 
 t=results.tstamp';
-results.tstamp = RSKtime2datenum(t); % convert RSK millis time to datenum
+results.tstamp = RSKtime2datenum(t);
 
 if ~strcmpi(RSK.dbInfo(end).type, 'EPdesktop')
     [~, isDerived] = removeNonMarinechannels(RSK);

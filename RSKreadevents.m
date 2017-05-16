@@ -18,7 +18,7 @@ function RSK = RSKreadevents(RSK, varargin)
 %
 % Outputs:
 %    RSK - Structure containing the logger metadata, along with the
-%          added {FIXME:'events'} fields. Note that this replaces any
+%          added events fields. Note that this replaces any
 %          previous events that were read this way.
 %
 % Example: 
@@ -51,17 +51,16 @@ end
 t1 = datenum2RSKtime(t1);
 t2 = datenum2RSKtime(t2);
 
-%Does not extract notes because it is never used.
 sql = ['select tstamp/1.0 as tstamp, deploymentID, type, sampleIndex, channelIndex from events where tstamp/1.0 between ' num2str(t1) ' and ' num2str(t2) ' order by tstamp'];
 results = mksqlite(sql);
 if isempty(results)
     return
 end
 
-results = RSKarrangedata(results);
+results = arrangedata(results);
 
 t=results.tstamp';
-results.tstamp = RSKtime2datenum(t); % convert RSK millis time to datenum
+results.tstamp = RSKtime2datenum(t);
 
 RSK.events=results;
 
