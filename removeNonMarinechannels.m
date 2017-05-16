@@ -28,12 +28,13 @@ if iscompatibleversion(RSK, 1, 8, 9) && ~strcmp(RSK.dbInfo(end).type, 'EP')
     
 else
     results = mksqlite('select isDerived from channels');
-    isDerived = logical([results.isDerived]); 
+    isDerived = logical([results.isDerived])'; 
     
 end
 
-
-RSK.channels(isDerived) = [];  
+if length(RSK.channels) == length(isDerived)
+    RSK.channels(isDerived) = [];
+end
 
 
 end
