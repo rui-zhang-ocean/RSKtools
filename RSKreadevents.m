@@ -65,3 +65,5 @@ results.tstamp = RSKtime2datenum(t); % convert RSK millis time to datenum
 
 RSK.events=results;
 
+end
+
