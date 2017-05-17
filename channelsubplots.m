@@ -17,7 +17,7 @@ function hdls = channelsubplots(RSK, field, chanCol)
 %       required if all channel are not ebing plotted.
 %
 % Outputs:
-%    hdls - The line object of the plot. - 
+%    hdls - The line object of the plot.
 %
 % Author: RBR Ltd. Ottawa ON, Canada
 % email: support@rbr-global.com
