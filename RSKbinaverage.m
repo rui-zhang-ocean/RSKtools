@@ -169,9 +169,10 @@ end
     % from the other channel need to be averaged.
     
     binidx = binByvalues >= lowerboundary & binByvalues < upperboundary;
-    ind = find(diff(binidx)<0,1);
-    if ~isempty(ind) && binByvalues(ind+1) > upperboundary
-      binidx(ind+1:end) = 0;
+    ind = find(diff(binidx)<0);
+    if ~isempty(ind) && any(binByvalues(ind+1) > upperboundary)
+        discardedindex = find(binByvalues(ind+1) > upperboundary, 1);
+        binidx(ind(discardedindex)+1:end) = 0;
     end
     end
     
