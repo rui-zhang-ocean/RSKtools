@@ -16,8 +16,8 @@ function hdls = RSKplotburstdata(RSK)
 %     hdls - The line object of the plot.
 %
 % Example: 
-%    RSK=RSKopen('sample.rsk');  
-%    RSK=RSKreadburstdata(RSK);  
+%    RSK = RSKopen('sample.rsk');  
+%    RSK = RSKreadburstdata(RSK);  
 %    RSKplotdata(RSK);  
 %
 % See also: RSKplotthumbnail, RSKplotdata, RSKreadburstdata
@@ -25,6 +25,7 @@ function hdls = RSKplotburstdata(RSK)
 % Author: RBR Ltd. Ottawa ON, Canada
 % email: support@rbr-global.com
 % Website: www.rbr-global.com
+% Last revision: 2017-05-17
 
 field = 'burstdata';
 if ~isfield(RSK, field)
