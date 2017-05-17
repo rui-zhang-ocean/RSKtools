@@ -1,8 +1,8 @@
-function RSKplotburstdata(RSK)
+function hdls = RSKplotburstdata(RSK)
 
 % RSKplotburstdata - Plot summaries of logger burst data
 %
-% Syntax:  RSKplotburstdata(RSK)
+% Syntax:  [hdls] = RSKplotburstdata(RSK)
 % 
 % This generates a plot, similar to the thumbnail plot, only using the
 % full 'burst data' that you read in, rather than just the thumbnail
@@ -11,6 +11,9 @@ function RSKplotburstdata(RSK)
 % 
 % Inputs:
 %    RSK - Structure containing the logger metadata and burst data
+%
+% Output:
+%     hdls - The line object of the plot.
 %
 % Example: 
 %    RSK=RSKopen('sample.rsk');  
@@ -23,25 +26,12 @@ function RSKplotburstdata(RSK)
 % email: support@rbr-global.com
 % Website: www.rbr-global.com
 
-% FIXMEs:
-% * plot data - needs time axis sorting
-% * doesn't display the date if all data within one day :(
-
-if isfield(RSK,'burstdata')==0
+if ~isfield(RSK,'burstdata')
     disp('You must read a section of burst data in first!');
     disp('Use RSKreadburstdata...')
     return
 end
-numchannels = size(RSK.burstdata.values,2);
 
-for n=1:numchannels
-    subplot(numchannels,1,n)
-    plot(RSK.burstdata.tstamp,RSK.burstdata.values(:,n),'-')
-    title(RSK.channels(n).longName);
-    ylabel(RSK.channels(n).units);
-    ax(n)=gca;
-    datetick('x')  % doesn't display the date if all data within one day :(
-    
+hdls = channelsubplots(RSK, 'data');
+
 end
-linkaxes(ax,'x')
-shg

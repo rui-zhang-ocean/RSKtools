@@ -1,8 +1,8 @@
-function RSKplotthumbnail(RSK)
+function hdls = RSKplotthumbnail(RSK)
 
 % RSKplotthumbnail - Plot summaries of logger data thumbnails
 %
-% Syntax:  RSKplotthumbnail(RSK)
+% Syntax:  [hdls] = RSKplotthumbnail(RSK)
 % 
 % This generates a summary plot of the thumbnail data in the RSK
 % structure. This is usually a plot of about 4000 points.  Each time
@@ -13,6 +13,9 @@ function RSKplotthumbnail(RSK)
 % 
 % Inputs:
 %    RSK - Structure containing the logger metadata and thumbnails
+%
+% Output:
+%    hdls - The line object of the plot.
 %
 % Example: 
 %    RSK=RSKopen('sample.rsk');  
@@ -27,13 +30,14 @@ function RSKplotthumbnail(RSK)
 % FIXMEs:
 % * plot data - needs time axis sorting
 % * doesn't display the date if all data within one day :(
+field = 'thumbnailData';
 
-numchannels = size(RSK.thumbnailData.values,2);
-
-for n=1:numchannels
-    subplot(numchannels,1,n)
-    plot(RSK.thumbnailData.tstamp,RSK.thumbnailData.values(:,n),'-')
-    title(RSK.channels(n).longName)
-    datetick('x')
+if ~isfield(RSK,field)
+    disp('You must read a section of thumbnailData in first!');
+    disp('Use RSKreadthumnaildata...')
+    return
 end
-shg
+
+hdls = channelsubplots(RSK, 'data');
+
+end

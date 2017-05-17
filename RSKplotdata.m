@@ -42,7 +42,7 @@ parse(p, RSK, varargin{:})
 RSK = p.Results.RSK;
 channel = p.Results.channel;
 
-if isfield(RSK,'data')==0
+if ~isfield(RSK,'data')
     disp('You must read a section of data in first!');
     disp('Use RSKreaddata...')
     return
@@ -54,18 +54,12 @@ elseif ~iscell(channel)
     channel = {channel};
 end
 
-numchannels = length(channel);
+chanCol = [];
+for chan = channel
+    chanCol = [chanCol getchannelindex(RSK, chan)];
+end  
 
-for n=1:numchannels
-    subplot(numchannels,1,n)
-    Ccol = strcmpi({RSK.channels.longName}, channel(n));
-    hdls(n) = plot(RSK.data.tstamp,RSK.data.values(:,Ccol),'-');
-    title(RSK.channels(Ccol).longName);
-    ylabel(RSK.channels(Ccol).units);
-    ax(n)=gca;
-    datetick('x')
-end
-linkaxes(ax,'x')
-shg
+hdls = channelsubplots(RSK, 'data', chanCol);
+
 end
 
