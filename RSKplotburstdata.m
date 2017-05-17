@@ -26,12 +26,13 @@ function hdls = RSKplotburstdata(RSK)
 % email: support@rbr-global.com
 % Website: www.rbr-global.com
 
-if ~isfield(RSK,'burstdata')
+field = 'burstdata';
+if ~isfield(RSK, field)
     disp('You must read a section of burst data in first!');
     disp('Use RSKreadburstdata...')
     return
 end
 
-hdls = channelsubplots(RSK, 'data');
+hdls = channelsubplots(RSK, field);
 
 end

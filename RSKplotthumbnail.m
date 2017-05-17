@@ -38,6 +38,6 @@ if ~isfield(RSK,field)
     return
 end
 
-hdls = channelsubplots(RSK, 'data');
+hdls = channelsubplots(RSK, field);
 
 end
