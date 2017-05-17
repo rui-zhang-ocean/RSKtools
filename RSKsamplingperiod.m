@@ -2,7 +2,7 @@ function samplingperiod = RSKsamplingperiod(RSK)
 
 % RSKsamplingperiod - Returns the sampling period information
 %
-% Syntax:  [v, vsnMajor, vsnMinor, vsnPatch] = RSKsamplingperiod(RSK)
+% Syntax:  samplingperiod = RSKsamplingperiod(RSK)
 %
 % RSKsamplingperiod will return the sampling period of the file
 %
@@ -11,7 +11,7 @@ function samplingperiod = RSKsamplingperiod(RSK)
 %          returned by RSKopen.
 %
 % Output:
-%    samplingperiod - the sampling period information
+%    samplingperiod - the sampling period in seconds
 %
 % Author: RBR Ltd. Ottawa ON, Canada
 % email: support@rbr-global.com
