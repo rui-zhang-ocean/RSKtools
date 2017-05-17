@@ -125,41 +125,41 @@ unit = RSK.channels(chanCol).units;
 logprofile = logentryprofiles(direction, profileNum, profileIdx);
 logentry = sprintf('Binned with respect to %s using [%s] boundaries with %s %s bin size on %s.', binBy, num2str(boundary), num2str(binSize), unit, logprofile);
 RSK = RSKappendtolog(RSK, logentry);
-end
+
 
     function [binArray, boundary] = setupbins(Y, boundary, binSize, direction)
     % Set up binArray based on the boundaries any binSize given. Boundaries
     % are hard set and binSize fills the space between the boundaries in
     % the same direction as the cast.  
     
-    binArray = [];
-    if length(binSize) > length(boundary)+1 || (length(binSize) < length(boundary)-1 && ~isempty(boundary))
-        disp('Boundary must be of length 0, length(binSize) or length(binSize)+1')
-        return
-    end
-    
-    if isempty(boundary)
-        boundary = [ceil(max(nanmax(Y))) floor(min(nanmin(Y)))];
-    elseif length(boundary) == length(binSize)
-        if strcmp(direction, 'up')
-            boundary = [boundary floor(min(nanmin(Y)))];
-        else
-            boundary = [boundary ceil(max(nanmax(Y)))];
+        binArray = [];
+        if length(binSize) > length(boundary)+1 || (length(binSize) < length(boundary)-1 && ~isempty(boundary))
+            disp('Boundary must be of length 0, length(binSize) or length(binSize)+1')
+            return
         end
-    elseif length(boundary) == length(binSize)+1
-    end
-    if strcmpi(direction, 'up')
-        binSize = -binSize;
-        boundary  = sort(boundary, 'descend');
-    else
-        boundary = sort(boundary, 'ascend');
-    end  
 
-    for nregime = 1:length(boundary)-1
-        binArray = [binArray boundary(nregime):binSize(nregime):boundary(nregime+1)];       
-    end
-    binArray = [binArray, binArray(end)+binSize(end)];
-    binArray = unique(binArray);
+        if isempty(boundary)
+            boundary = [ceil(max(nanmax(Y))) floor(min(nanmin(Y)))];
+        elseif length(boundary) == length(binSize)
+            if strcmp(direction, 'up')
+                boundary = [boundary floor(min(nanmin(Y)))];
+            else
+                boundary = [boundary ceil(max(nanmax(Y)))];
+            end
+        elseif length(boundary) == length(binSize)+1
+        end
+        if strcmpi(direction, 'up')
+            binSize = -binSize;
+            boundary  = sort(boundary, 'descend');
+        else
+            boundary = sort(boundary, 'ascend');
+        end  
+
+        for nregime = 1:length(boundary)-1
+            binArray = [binArray boundary(nregime):binSize(nregime):boundary(nregime+1)];       
+        end
+        binArray = [binArray, binArray(end)+binSize(end)];
+        binArray = unique(binArray);
     end
 
     
@@ -168,11 +168,13 @@ end
     % and upper boundaries of the evaluated bin to establish which values
     % from the other channel need to be averaged.
     
-    binidx = binByvalues >= lowerboundary & binByvalues < upperboundary;
-    ind = find(diff(binidx)<0);
-    if ~isempty(ind) && any(binByvalues(ind+1) > upperboundary)
-        discardedindex = find(binByvalues(ind+1) > upperboundary, 1);
-        binidx(ind(discardedindex)+1:end) = 0;
+        binidx = binByvalues >= lowerboundary & binByvalues < upperboundary;
+        ind = find(diff(binidx)<0);
+        if ~isempty(ind) && any(binByvalues(ind+1) > upperboundary)
+            discardedindex = find(binByvalues(ind+1) > upperboundary, 1);
+            binidx(ind(discardedindex)+1:end) = 0;
+        end
     end
-    end
+    
+end
     
