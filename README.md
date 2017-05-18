@@ -52,6 +52,7 @@ If the [TEOS-10](http://www.teos-10.org/software.htm) matlab toolbox is installe
     - Add filename check to RSKopen
     - Fix bug with dbInfo 1.13.0
     - Add channel argument to RSKplotdata
+    - Fix bug introduced in 1.5.0 in RSKreaddata from dbInfo.version < 1.8.9.
 
 * Version 1.5.0 (2017-03-30)
     - Move salinity derivation from RSKreaddata to RSKderivesalinity
