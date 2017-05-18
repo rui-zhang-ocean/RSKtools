@@ -1,11 +1,11 @@
-function [RSK, isDerived] = removeNonMarinechannels(RSK)
+function [RSK, isDerived] = removeNonMarineChannels(RSK)
 
-% removeNonMarinechannels - Remove channels that are hidden or derived from
+% removeNonMarineChannels - Remove channels that are hidden or derived from
 %         RSK channels.
 %
-% Syntax:  [RSK, isDerived] = removeNonMarinechannels(RSK)
+% Syntax:  [RSK, isDerived] = removeNonMarineChannels(RSK)
 %
-% removeNonMarinechannels will remove the hidden or derived channels from the channels table
+% removeNonMarineChannels will remove the hidden or derived channels from the channels table
 % and return a logical index vector indicating where they are. They are
 % also removed from instrumentChannels if available.
 %
@@ -20,7 +20,7 @@ function [RSK, isDerived] = removeNonMarinechannels(RSK)
 % Author: RBR Ltd. Ottawa ON, Canada
 % email: support@rbr-global.com
 % Website: www.rbr-global.com
-% Last revision: 2017-04-06
+% Last revision: 2017-05-18
 
 if iscompatibleversion(RSK, 1, 8, 9) && ~strcmp(RSK.dbInfo(end).type, 'EP')
     isDerived = logical([RSK.instrumentChannels.channelStatus]);% hidden and derived channels have a non-zero channelStatus
