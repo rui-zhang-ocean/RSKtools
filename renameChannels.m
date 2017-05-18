@@ -22,28 +22,25 @@ function RSK = renameChannels(RSK)
 % Last revision: 2017-05-03
 
 shortName = {RSK.channels.shortName};
-if strcmpi(shortName, 'temp04')
-    idx = find(strcmpi(shortName, 'temp04'));
-    for ndx = 1:length(idx)
-        RSK.channels(idx(ndx)).longName = ['Temperature' num2str(ndx)];
-    end
+
+idx = find(strcmpi(shortName, 'temp04'));
+for ndx = 1:length(idx)
+    RSK.channels(idx(ndx)).longName = ['Temperature' num2str(ndx)];
 end
 
-if any(strcmpi(shortName, 'temp05'))   
-    idx = find(strcmpi(shortName, 'temp05'));
-    RSK.channels(idx(ndx)).longName = 'Pressure Gauge Temperature';
-elseif any(strcmpi(shortName, 'temp10'))
-    idx = strcmpi(shortName, 'temp10');
+idx = (strcmpi(shortName, 'temp05') | strcmpi(shortName, 'temp10'));
+if any(idx)
     RSK.channels(idx).longName = 'Pressure Gauge Temperature';
-end    
+end
 
-if any(strcmpi(shortName, 'temp13'))
-    idx = strcmpi(shortName, 'temp13');
+
+idx = strcmpi(shortName, 'temp13');
+if any(idx)
     RSK.channels(idx).longName = 'External Cabled Temperature';
 end
 
-if any(strncmpi(shortName, 'doxy09', 4))
-    idx = strncmpi(shortName, 'doxy09', 4);
+idx = strcmpi(shortName, 'doxy09');
+if any(idx)
     RSK.channels(idx).longName = 'Dissolved O2';
 end
 end
