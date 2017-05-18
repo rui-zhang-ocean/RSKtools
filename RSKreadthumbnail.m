@@ -35,7 +35,7 @@ results = arrangedata(results);
 results.tstamp = RSKtime2datenum(results.tstamp');
 
 if ~strcmpi(RSK.dbInfo(end).type, 'EPdesktop')
-    [~, isDerived] = removeNonMarinechannels(RSK);
+    [~, isDerived] = removeNonMarineChannels(RSK);
     results.values = results.values(:,~isDerived);
 end
 

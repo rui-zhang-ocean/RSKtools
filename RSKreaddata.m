@@ -78,7 +78,7 @@ t=results.tstamp';
 results.tstamp = RSKtime2datenum(t);
 
 if ~strcmpi(RSK.dbInfo(end).type, 'EPdesktop')
-    [~, isDerived] = removeNonMarinechannels(RSK);
+    [~, isDerived] = removeNonMarineChannels(RSK);
     results.values = results.values(:,~isDerived);
 end
 
@@ -86,7 +86,6 @@ end
 RSK.data=results;
 
 %% Calculate Salinity  
-% RSK = RSKderivesalinity(RSK); 
 % NOTE : We no longer automatically derive salinity when you read data from
 % database. Use RSKderivesalinity(RSK) to calculate salinity.
 
