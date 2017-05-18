@@ -26,7 +26,7 @@ function depth = calculatedepth(pressure, latitude)
 % Last revision: 2017-05-02
 
 %% Check if user has the TEOS-10 GSW toolbox installed
-hasTEOS = exist('gsw_z_from_P') == 2;
+hasTEOS = ~isempty(which('gsw_SP_from_C'));
 
 %% Calculate depth
 if hasTEOS

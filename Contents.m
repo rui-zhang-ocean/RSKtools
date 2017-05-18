@@ -1,5 +1,5 @@
 % RSKTOOLS
-% Version 1.4.6 2017-01-18
+% Version 1.5.1 2017-05-18
 %
 % 1.  This toolbox depends on the presence of a functional mksqlite
 % library.  We have included a couple of versions here for Windows (32 bit/ 64 bit), Linux (64 bit)
@@ -53,18 +53,21 @@
 %
 % User files
 %   RSKopen            - assumes only a single instrument deployment in RSK
-%   RSKreadthumbnail   - 
+%   RSKreadthumbnail   - read thumbnail data from database
 %   RSKplotthumbnail   - plot data
-%   RSKreaddata        - 
+%   RSKreaddata        - read data from database
 %   RSKplotdata        - plot data - needs time axis sorting
 %   RSKgetprofiles     - read profile start and end times from events
 %   RSKreadprofiles    - read profiles from events
 %   RSKplotprofiles    - plot profiles
-%   RSKreadburstdata   - 
+%   RSKreadburstdata   - read burst data from database
 %   RSKplotburstdata   - plot burst data - needs time axis sorting
-%   RSKreadevents      -
+%   RSKreadevents      - read events from database
 %   RSKver             - reads the version of the file
 %   RSKreadgeodata     - read geodata
+%   RSKderivesalinity  - derives salinity from CTP
+%   RSKderiveseapressure - derives sea pressure from pressure
+%   RSKderivedepth     - derives depth from pressure
 %
 %
 % Helper files
@@ -74,11 +77,6 @@
 %   datenum2RSKtime    - Converts Matlab datenums to SQLite times
 %   unixtime2datenum   - Converts unixtimes to Matlab datenums
 %   datenum2unixtime   - Converts Matlab datenums to unixtimes
-%   readheaderEP       - Reads metadata tables in 'EasyParse' files
-%   readheaderEPdesktop- Reads metadata tables in 'EPdesktop' files
-%   readheaderskinny   - Reads metadata tables in 'skinny' files
-%   readheaderlive     - Reads metadata tables in 'live' files
-%   readheaderfull     - Reads metadata tables in 'full' files
 %
 % 
 
