@@ -55,6 +55,14 @@ latitude = p.Results.latitude;
 series = p.Results.series;
 direction = p.Results.direction;
 
+try 
+    SPcol = getchannelindex(RSK, 'Sea Pressure');
+    RSKsp = RSK;
+catch
+    RSKsp = RSKderiveseapressure(RSK, 'series', series, 'direction', direction);
+    SPcol = getchannelindex(RSKsp, 'Sea Pressure');
+end
+
 if strcmpi(series, 'profile')
     if strcmpi(direction, 'both')
         direction = {'down', 'up'};
@@ -62,15 +70,6 @@ if strcmpi(series, 'profile')
         direction = {direction};
     end
 end
-
-try 
-    SPcol = getchannelindex(RSK, 'Sea Pressure');
-    RSKsp = RSK;
-catch
-    RSKsp = RSKderiveseapressure(RSK);
-    SPcol = getchannelindex(RSKsp, 'Sea Pressure');
-end
-
 
 %% Calculate Depth
 RSK = addchannelmetadata(RSK, 'Depth', 'm');
@@ -87,8 +86,7 @@ switch series
             profileIdx = checkprofiles(RSK, profileNum, dir{1});
             castdir = [dir{1} 'cast'];
             for ndx = profileIdx
-                data = RSKsp.profiles.(castdir).data(ndx);
-                depth = calculatedepth(data.values(:,SPcol, latitude));
+RSK.                depth = calculatedepth(data.values(:,SPcol), latitude);
                 RSK.profiles.(castdir).data(ndx).values(:,Dcol) = depth;
             end
         end

@@ -46,14 +46,6 @@ RSK = p.Results.RSK;
 series = p.Results.series;
 direction = p.Results.direction;
 
-if strcmpi(series, 'profile')
-    if strcmpi(direction, 'both')
-        direction = {'down', 'up'};
-    else
-        direction = {direction};
-    end
-end
-
 %% Check TEOS-10 and CTP data are available.
  
 if isempty(which('gsw_SP_from_C'))
@@ -66,11 +58,17 @@ try
     SPcol = getchannelindex(RSK, 'Sea Pressure');
     RSKsp = RSK;
 catch
-    RSKsp = RSKderiveseapressure(RSK);
+    RSKsp = RSKderiveseapressure(RSK, 'series', series, 'direction', direction);
     SPcol = getchannelindex(RSKsp, 'Sea Pressure');
 end
 
-
+if strcmpi(series, 'profile')
+    if strcmpi(direction, 'both')
+        direction = {'down', 'up'};
+    else
+        direction = {direction};
+    end
+end
 %% Calculate Salinity
 RSK = addchannelmetadata(RSK, 'Salinity', 'mS/cm');
 Scol = getchannelindex(RSK, 'Salinity');
