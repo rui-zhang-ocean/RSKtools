@@ -20,7 +20,7 @@ function RSK = readheaderEP(RSK)
 
 
 %% Remove non marine channels
-[RSK, ~] = removeNonMarinechannels(RSK);
+[RSK, ~] = removeNonMarineChannels(RSK);
 
 
 %% Tables that could be populated in 'EasyParse'

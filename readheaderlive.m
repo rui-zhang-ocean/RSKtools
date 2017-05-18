@@ -39,7 +39,7 @@ if iscompatibleversion(RSK, 1, 13, 4)
     RSK.parameterKeys = mksqlite('select * from parameterKeys'); 
 end
 
-[RSK, ~] = removeNonMarinechannels(RSK);
+[RSK, ~] = removeNonMarineChannels(RSK);
 
 
 %% Tables that may or may not be in 'live'
