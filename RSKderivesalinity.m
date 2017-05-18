@@ -28,7 +28,7 @@ function [RSK, salinity] = RSKderivesalinity(RSK, varargin)
 % Author: RBR Ltd. Ottawa ON, Canada
 % email: support@rbr-global.com
 % Website: www.rbr-global.com
-% Last revision: 2017-05-08
+% Last revision: 2017-05-18
 
 validSeries = {'profile', 'data'};
 checkSeriesName = @(x) any(validatestring(x,validSeries));
@@ -63,9 +63,11 @@ end
 Ccol = getchannelindex(RSK, 'Conductivity');
 Tcol = getchannelindex(RSK, 'Temperature');
 try 
-    spCol = getchannelindex(RSK, 'Sea Pressure');
+    SPcol = getchannelindex(RSK, 'Sea Pressure');
+    RSKsp = RSK;
 catch
-    pCol = getchannelindex(RSK, 'Pressure');
+    RSKsp = RSKderiveseapressure(RSK);
+    SPcol = getchannelindex(RSKsp, 'Sea Pressure');
 end
 
 
@@ -75,13 +77,8 @@ Scol = getchannelindex(RSK, 'Salinity');
 
 switch series
     case 'data'
-        data = RSK.data;
-        if exist('spCol','var')
-            pressure = data.values(:, spCol);
-        else
-            pressure = data.values(:, pCol) - 10.1325;
-        end
-        salinity = gsw_SP_from_C(data.values(:, Ccol), data.values(:, Tcol), pressure);
+        data = RSKsp.data;
+        salinity = gsw_SP_from_C(data.values(:, Ccol), data.values(:, Tcol), data.values(:, SPcol));
         RSK.data.values(:,Scol) = salinity;
     case 'profile'
         for dir = direction
@@ -89,13 +86,8 @@ switch series
             profileIdx = checkprofiles(RSK, profileNum, dir{1});
             castdir = [dir{1} 'cast'];
             for ndx = profileIdx
-                data = RSK.profiles.(castdir).data(ndx);
-                if exist('spCol', 'var')
-                    pressure = data.values(:, spCol);
-                else
-                    pressure = data.values(:, pCol) - 10.1325;
-                end
-                salinity = gsw_SP_from_C(data.values(:, Ccol), data.values(:, Tcol), pressure);
+                data = RSKsp.profiles.(castdir).data(ndx);
+                salinity = gsw_SP_from_C(data.values(:, Ccol), data.values(:, Tcol), data.values(:, SPcol));
                 RSK.profiles.(castdir).data(ndx).values(:,Scol) = salinity;
             end
         end
