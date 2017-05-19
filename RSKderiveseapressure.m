@@ -1,13 +1,12 @@
 function [RSK, seapressure] = RSKderiveseapressure(RSK, varargin)
 
-% RSKderiveseapressure - Calculate sea pressur and add it or replace it in the data table
+% RSKderiveseapressure - Calculate sea pressure and add it or replace it in the data table
 %
 % Syntax:  [RSK] = RSKderiveseapressure(RSK, [OPTIONS])
 % 
-% This function derives sea pressure and fills the appropriate fields in
-% channels field and data or profile field. If sea pressure is already
-% calculated, it will recalculate it and overwrite that data 
-% column. 
+% This function derives sea pressure and fills all of data's fields. If sea
+% pressure is already calculated, it will recalculate it and overwrite that
+% data column. 
 %
 % Inputs: 
 %    RSK - Structure containing the logger metadata and data

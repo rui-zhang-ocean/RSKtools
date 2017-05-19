@@ -1,93 +1,49 @@
-function [RSK, depth] = RSKderivedepth(RSK, varargin)
+function [RSK, depth] = RSKderivedepth(RSK, latitude)
 
 % RSKderivedepth - Calculate depth from pressure and add it or replace it
 % in the data table.
 %
-% Syntax:  [RSK, depth] = RSKderivedepth(RSK, latitude, [OPTIONS])
+% Syntax:  [RSK, depth] = RSKderivedepth(RSK, latitude, latitude)
 % 
 % 
 % Calculate depth from pressure. If TEOS-10 toolbox is installed it will
 % use it http://www.teos-10.org/software.htm#1. Otherwise it is calculated
 % using the Saunders & Fofonoff method. 
 %
-%    
-%
 % Inputs: 
 %    [Required] - RSK - Structure containing the logger metadata and data
 %
 %    [Optional] - latitude - Latitude at the location of the pressure measurement in
-%                    decimal degrees north. Default is 45. 
-%             
-%                 series - Specifies the series to be filtered. Either 'data'
-%                     or 'profile'. Default is 'data'.
-%            
-%                 direction - 'up' for upcast, 'down' for downcast, or 'both' for
-%                     all. Default is 'down'.
+%                       decimal degrees north. Default is 45. 
 %
 % Outputs:
-%    RSK - RSK structure containing the salinity data.
+%    RSK - RSK structure containing the depth data.
 %
 %    depth - depth - a vector containing depths in meters.
 %
 % Author: RBR Ltd. Ottawa ON, Canada
 % email: support@rbr-global.com
 % Website: www.rbr-global.com
-% Last revision: 2017-05-01
-
-
-%% Check input and default arguments
-
-validSeries = {'profile', 'data'};
-checkSeriesName = @(x) any(validatestring(x,validSeries));
-
-validDirections = {'down', 'up', 'both'};
-checkDirection = @(x) any(validatestring(x,validDirections));
-
-%% Parse Inputs
+% Last revision: 2017-05-19
 
 p = inputParser;
 addRequired(p, 'RSK', @isstruct);
 addOptional(p, 'latitude', 45, @isnumeric);
-addParameter(p, 'series', 'data', checkSeriesName);
-addParameter(p, 'direction', 'down', checkDirection);
-parse(p, RSK, varargin{:})
+parse(p, RSK, latitude)
 
 % Assign each input argument
 RSK = p.Results.RSK;
 latitude = p.Results.latitude;
-series = p.Results.series;
-direction = p.Results.direction;
 
-if strcmpi(series, 'profile')
-    if strcmpi(direction, 'both')
-        direction = {'down', 'up'};
-    else
-        direction = {direction};
-    end
-end
-
-Pcol = getchannelindex(RSK, 'Pressure');
-
-%% Calculate Depth
 RSK = addchannelmetadata(RSK, 'Depth', 'm');
 Dcol = getchannelindex(RSK, 'Depth');
+[RSKsp, SPcol] = getseapressure(RSK);
 
-switch series
-    case 'data'
-        data = RSK.data;
-        depth = calculatedepth(data.values(:,Pcol) - 10.1325, latitude);
-        RSK.data.values(:,Dcol) = depth;
-    case 'profile'
-        for dir = direction
-            profileNum = [];
-            profileIdx = checkprofiles(RSK, profileNum, dir{1});
-            castdir = [dir{1} 'cast'];
-            for ndx = profileIdx
-                data = RSK.profiles.(castdir).data(ndx);
-                depth = calculatedepth(data.values(:,Pcol) - 10.1325, latitude);
-                RSK.profiles.(castdir).data(ndx).values(:,Dcol) = depth;
-            end
-        end
+dataIdx = setdataindex(RSK);
+for ndx = dataIdx
+    seapressure = RSKsp.data(ndx).values(:, SPcol);
+    depth = calculatedepth(seapressure, latitude);
+    RSK.data(ndx).values(:,Dcol) = depth;
 end
 
 end
