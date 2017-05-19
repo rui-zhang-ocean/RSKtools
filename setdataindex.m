@@ -21,7 +21,7 @@ function dataIdx = setdataindex(RSK, profileNum)
 % Website: www.rbr-global.com
 % Last revision: 2017-05-19
 
-if exist(profileNum, 'var')
+if exist('profileNum', 'var') && ~isempty(profileNum)
     dataIdx = profileNum;
 else
     dataIdx = 1:length(RSK.data);
