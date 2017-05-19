@@ -84,29 +84,32 @@ else
     direction = {direction};
 end
 
+alltstart = [];
+alltend = [];
+
 for dir = direction
     castdir = [dir{1} 'cast'];
-    
-    if isempty(profileNum)
-        profileIdx = 1:min([length(RSK.profiles.(castdir).tstart), length(RSK.profiles.(castdir).tend)]);
-    else 
-        profileIdx = sort(profileNum, 'ascend');
-    end
-    
-    RSK.profiles.(castdir).data = [];
-    castndx = 1;
-    for ndx=profileIdx
-        tstart = RSK.profiles.(castdir).tstart(ndx) - latency/86400;
-        tend = RSK.profiles.(castdir).tend(ndx) - latency/86400;
-        tmp = RSKreaddata(RSK, tstart, tend);
-        RSK.profiles.(castdir).data(castndx).tstamp = tmp.data.tstamp;
-        RSK.profiles.(castdir).data(castndx).values = tmp.data.values;
-        castndx = castndx + 1;
-    end
-    RSK.profiles.(castdir).profileIndex = profileIdx;
+    alltstart = [alltstart; RSK.profiles.(castdir).tstart];
+    alltend = [alltend; RSK.profiles.(castdir).tend];
 end
 
-RSK.instrumentChannels = tmp.instrumentChannels;
-RSK.channels = tmp.channels;
+alltstart = sort(alltstart, 'ascend');
+alltend = sort(alltend, 'ascend');
+
+if isempty(profileNum)
+    profileNum = 1:length(alltstart);
+end
+
+castidx = 1;
+for ndx=profileNum
+    tstart = alltstart(ndx) - latency/86400;
+    tend = alltend(ndx) - latency/86400;
+    tmp = RSKreaddata(RSK, tstart, tend);
+    data(castidx).tstamp = tmp.data.tstamp;
+    data(castidx).values = tmp.data.values;
+    castidx = castidx + 1;
+end
+
+RSK.data = data;
 
 end
