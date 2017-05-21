@@ -37,7 +37,7 @@ function [RSK, dbid] = RSKopen(fname)
 % Author: RBR Ltd. Ottawa ON, Canada
 % email: support@rbr-global.com
 % Website: www.rbr-global.com
-% Last revision: 2017-05-01
+% Last revision: 2017-05-21
 
 RSKconstants
 
@@ -45,7 +45,7 @@ if nargin==0
     fname=uigetfile({'*.rsk','*.RSK'},'Choose an RSK file');
 end
 
-if exist(fullfile(cd, fname),'file') ~= 2
+if exist(fname,'file') ~= 2
     disp('File cannot be found')
     RSK=[];dbid=[];
     return
