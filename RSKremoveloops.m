@@ -31,7 +31,7 @@ function [RSK, flagidx] = RSKremoveloops(RSK, varargin)
 % Author: RBR Ltd. Ottawa ON, Canada
 % email: support@rbr-global.com
 % Website: www.rbr-global.com
-% Last revision: 2017-05-16
+% Last revision: 2017-05-23
 
 p = inputParser;
 addRequired(p, 'RSK', @isstruct);
@@ -67,28 +67,26 @@ for ndx = dataIdx
     flagidx(ndx).index = find(flag);
 end
 
-    RSK.data = data;
+RSK.data = data;
 
-    %% Udate log
-    logdata = logentrydata(RSK, profileNum, dataIdx);
-    logentry = ['Samples measured at a profiling velocity less than ' num2str(threshold) 'm/s were replaced with NaN on ' logdata '.'];
+%% Udate log
+logdata = logentrydata(RSK, profileNum, dataIdx);
+logentry = ['Samples measured at a profiling velocity less than ' num2str(threshold) 'm/s were replaced with NaN on ' logdata '.'];
 
-    RSK = RSKappendtolog(RSK, logentry);
+RSK = RSKappendtolog(RSK, logentry);
 
-end
-
-
+%% Nested function
     function velocity = calculatevelocity(depth, time)
     % calculate the velocity using midpoints of depth and time.
     
-    secondsperday = 86400;
-    
-    deltaD = diff(depth);
-    deltaT = diff(time * secondsperday);
-    dDdT = deltaD ./ deltaT;
-    midtime = time(2:end) + deltaT/(2*secondsperday);
-    velocity = interp1(midtime, dDdT, time, 'linear', 'extrap');
+        secondsperday = 86400;
+
+        deltaD = diff(depth);
+        deltaT = diff(time * secondsperday);
+        dDdT = deltaD ./ deltaT;
+        midtime = time(2:end) + deltaT/(2*secondsperday);
+        velocity = interp1(midtime, dDdT, time, 'linear', 'extrap');
     
     end
 
-
+end
