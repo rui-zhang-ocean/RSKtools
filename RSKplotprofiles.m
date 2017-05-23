@@ -17,9 +17,6 @@ function hdls = RSKplotprofiles(RSK, varargin)
 %                          all detected profiles.
 %
 %                 channel - Variable to plot (e.g. temperature, salinity, etc).
-%            
-%                 direction - 'up' for upcast, 'down' for downcast, or
-%                          'both' for all. Default is 'down'. 
 %
 % Output:
 %     hdls - The line object of the plot.
@@ -29,79 +26,49 @@ function hdls = RSKplotprofiles(RSK, varargin)
 %    rsk = RSKreadprofiles(rsk);
 %    % plot selective downcasts and output handles
 %      for customization
-%    hdls = RSKplotprofiles(rsk, [1 5 10], 'conductivity');
+%    hdls = RSKplotprofiles(rsk, 'profileNum', [1 5 10], 'channel', 'conductivity');
 %
 % See also: RSKreadprofiles, RSKreaddata.
 %
 % Author: RBR Ltd. Ottawa ON, Canada
 % email: support@rbr-global.com
 % Website: www.rbr-global.com
-% Last revision: 2017-05-08
+% Last revision: 2017-05-23
 
-validDirections = {'down', 'up', 'both'};
-checkDirection = @(x) any(validatestring(x,validDirections));
-
-%% Parse Inputs
 p = inputParser;
 addRequired(p, 'RSK', @isstruct);
 addOptional(p, 'profileNum', [], @isnumeric);
 addOptional(p, 'channel', 'Temperature', @ischar)
-addOptional(p, 'direction', 'down', checkDirection)
 parse(p, RSK, varargin{:})
 
 % Assign each input argument
 RSK = p.Results.RSK;
 profileNum = p.Results.profileNum;
 channel = p.Results.channel;
-direction = p.Results.direction;
 
-try 
-    spCol = getchannelindex(RSK, 'Sea Pressure');
-catch
-    pCol = getchannelindex(RSK, 'Pressure');
-end
-
+[RSKsp, SPcol] = getseapressure(RSK);
 chanCol = getchannelindex(RSK, channel);
-
-if strcmpi(direction, 'both')
-    direction = {'down', 'up'};
-else
-    direction = {direction};
-end
+dataIdx = setdataindex(RSK, profileNum);
 
 pmax = 0;
 ii = 1;
-for dir = direction
-    ax = gca; 
-    ax.ColorOrderIndex = 1; 
-    profileIdx = checkprofiles(RSK, profileNum, dir{1});
-    castdir = [dir{1} 'cast']; 
-    for ndx=profileIdx
-        if exist('spCol','var')
-            pressure = RSK.profiles.(castdir).data(ndx).values(:, spCol);
-        else
-            pressure = RSK.profiles.(castdir).data(ndx).values(:, pCol) - 10.1325;
-        end
-        hdls(ii) = plot(RSK.profiles.(castdir).data(ndx).values(:, chanCol), pressure);
-        hold on
-        pmax = max([pmax; pressure]);
-        ii = ii+1;
-    end
+for ndx=dataIdx
+    seapressure = RSKsp.data(ndx).values(:, SPcol);
+    hdls(ii) = plot(RSK.data(ndx).values(:, chanCol), seapressure);
+    hold on
+    pmax = max([pmax; seapressure]);
+    ii = ii+1;
 end
 
+ax = gca; 
+ax.ColorOrderIndex = 1; 
 grid
-xlab = [RSK.channels(chanCol).longName ' [' RSK.channels(chanCol).units, ']'];
+xlab = [RSK.channels(chanCol).longName ' [' RSK.channels(chanCol).units ']'];
 ylim([0 pmax])
 set(gca, 'ydir', 'reverse')
 ylabel('Sea pressure [dbar]')
 xlabel(xlab)
-if strcmpi(direction, 'down')
-    title('Downcasts')
-elseif strcmpi(direction, 'up')
-    title('Upcasts')
-elseif size(direction,2)
-    title('Downcasts and Upcasts')
-end
+title('Profile')
 hold off
 
 end
