@@ -58,7 +58,7 @@ function [RSK] = RSKalignchannel(RSK, channel, lag, varargin)
 % Author: RBR Ltd. Ottawa ON, Canada
 % email: support@rbr-global.com
 % Website: www.rbr-global.com
-% Last revision: 2017-05-15
+% Last revision: 2017-05-23
 
 validShiftfill = {'zeroorderhold', 'union', 'nan', 'mirror'};
 checkShiftfill = @(x) any(validatestring(x,validShiftfill));
@@ -130,7 +130,7 @@ end
         if length(lag) == 1 && length(dataIdx) ~= 1
             lags = repmat(lag, 1, length(dataIdx));
         elseif length(lag) > 1 && length(lag) ~= length(dataIdx)
-            error(['Length of lag must match number of profiles or be a ' ...
+            error(['Length of lag must equal the number of profiles or be a ' ...
                    'single value']);
         else
             lags = lag;
