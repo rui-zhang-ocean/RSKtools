@@ -18,11 +18,13 @@ function logdata = logentrydata(RSK, profileNum, dataIdx)
 % email: support@rbr-global.com
 % Website: www.rbr-global.com
 % Last revision: 2017-05-19
+
 if size(RSK.data,2) == 1 || isempty(profileNum)
-    logdata = 'all data.';
+    logdata = 'all data';
 elseif length(profileNum) == 1 && size(RSK.data,2) > 1 
-    logdata = ['data field ' num2str(profileIdx, '%1.0f') '.'];
+    logdata = ['data field ' num2str(dataIdx, '%1.0f')];
 else 
-    logdata = ['data field ' num2str(dataIdx(1:end-1), ', %1.0f') ' and ' num2str(dataIdx(end)) '.'];
+    logdata = ['data field ' num2str(dataIdx(1:end-1), ', %1.0f') ' and ' num2str(dataIdx(end))];
 end
+
 end
