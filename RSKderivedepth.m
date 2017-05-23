@@ -1,9 +1,9 @@
-function [RSK, depth] = RSKderivedepth(RSK, latitude)
+function [RSK, depth] = RSKderivedepth(RSK, varargin)
 
 % RSKderivedepth - Calculate depth from pressure and add it or replace it
 % in the data table.
 %
-% Syntax:  [RSK, depth] = RSKderivedepth(RSK, latitude, latitude)
+% Syntax:  [RSK, depth] = RSKderivedepth(RSK, latitude)
 % 
 % 
 % Calculate depth from pressure. If TEOS-10 toolbox is installed it will
@@ -24,12 +24,12 @@ function [RSK, depth] = RSKderivedepth(RSK, latitude)
 % Author: RBR Ltd. Ottawa ON, Canada
 % email: support@rbr-global.com
 % Website: www.rbr-global.com
-% Last revision: 2017-05-19
+% Last revision: 2017-05-23
 
 p = inputParser;
 addRequired(p, 'RSK', @isstruct);
 addOptional(p, 'latitude', 45, @isnumeric);
-parse(p, RSK, latitude)
+parse(p, RSK, varargin{:})
 
 % Assign each input argument
 RSK = p.Results.RSK;
