@@ -1,5 +1,5 @@
 % RSKTOOLS
-% Version 1.5.1 2017-05-18
+% Version 1.5.2 2017-05-23
 %
 % 1.  This toolbox depends on the presence of a functional mksqlite
 % library.  We have included a couple of versions here for Windows (32 bit/ 64 bit), Linux (64 bit)

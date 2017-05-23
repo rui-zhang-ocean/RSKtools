@@ -5,12 +5,9 @@ function [RSK, depth] = RSKderivedepth(RSK, varargin)
 %
 % Syntax:  [RSK, depth] = RSKderivedepth(RSK, latitude, [OPTIONS])
 % 
-% 
 % Calculate depth from pressure. If TEOS-10 toolbox is installed it will
 % use it http://www.teos-10.org/software.htm#1. Otherwise it is calculated
 % using the Saunders & Fofonoff method. 
-%
-%    
 %
 % Inputs: 
 %    [Required] - RSK - Structure containing the logger metadata and data
@@ -58,6 +55,14 @@ latitude = p.Results.latitude;
 series = p.Results.series;
 direction = p.Results.direction;
 
+try 
+    SPcol = getchannelindex(RSK, 'Sea Pressure');
+    RSKsp = RSK;
+catch
+    RSKsp = RSKderiveseapressure(RSK, 'series', series, 'direction', direction);
+    SPcol = getchannelindex(RSKsp, 'Sea Pressure');
+end
+
 if strcmpi(series, 'profile')
     if strcmpi(direction, 'both')
         direction = {'down', 'up'};
@@ -66,16 +71,14 @@ if strcmpi(series, 'profile')
     end
 end
 
-Pcol = getchannelindex(RSK, 'Pressure');
-
 %% Calculate Depth
 RSK = addchannelmetadata(RSK, 'Depth', 'm');
 Dcol = getchannelindex(RSK, 'Depth');
 
 switch series
     case 'data'
-        data = RSK.data;
-        depth = calculatedepth(data.values(:,Pcol) - 10.1325, latitude);
+        data = RSKsp.data;
+        depth = calculatedepth(data.values(:,SPcol), latitude);
         RSK.data.values(:,Dcol) = depth;
     case 'profile'
         for dir = direction
@@ -83,8 +86,7 @@ switch series
             profileIdx = checkprofiles(RSK, profileNum, dir{1});
             castdir = [dir{1} 'cast'];
             for ndx = profileIdx
-                data = RSK.profiles.(castdir).data(ndx);
-                depth = calculatedepth(data.values(:,Pcol) - 10.1325, latitude);
+RSK.                depth = calculatedepth(data.values(:,SPcol), latitude);
                 RSK.profiles.(castdir).data(ndx).values(:,Dcol) = depth;
             end
         end

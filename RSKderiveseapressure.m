@@ -1,8 +1,8 @@
-function [RSK, salinity] = RSKderiveseapressure(RSK, varargin)
+function [RSK, seapressure] = RSKderiveseapressure(RSK, varargin)
 
-% RSKderiveseapressure - Calculate sea pressur and add it or replace it in the data table
+% RSKderiveseapressure - Calculate sea pressure and add or replace it in the data table
 %
-% Syntax:  [RSK] = RSKderiveseapressure(RSK, [OPTIONS])
+% Syntax:  [RSK, seapressure] = RSKderiveseapressure(RSK, [OPTIONS])
 % 
 % This function derives sea pressure and fills the appropriate fields in
 % channels field and data or profile field. If sea pressure is already
@@ -51,18 +51,17 @@ if strcmpi(series, 'profile')
     end
 end
 
-%% Check TEOS-10 and CTP data are available.
-
+pAtm = getatmosphericpressure(RSK);
 Pcol = getchannelindex(RSK, 'Pressure');
 
-%% Calculate Salinity
+%% Calculate Sea Pressure
 RSK = addchannelmetadata(RSK, 'Sea Pressure', 'dbar');
 SPcol = getchannelindex(RSK, 'Sea Pressure');
 
 switch series
     case 'data'
         data = RSK.data;
-        seapressure = data.values(:, Pcol)- 10.1325;
+        seapressure = data.values(:, Pcol) - pAtm;
         RSK.data.values(:,SPcol) = seapressure;
     case 'profile'
         for dir = direction
@@ -71,7 +70,7 @@ switch series
             castdir = [dir{1} 'cast'];
             for ndx = profileIdx
                 data = RSK.profiles.(castdir).data(ndx);
-                seapressure = data.values(:, Pcol)- 10.1325;
+                seapressure = data.values(:, Pcol) - pAtm;
                 RSK.profiles.(castdir).data(ndx).values(:,SPcol) = seapressure;
             end
         end
