@@ -14,7 +14,7 @@ eventBeginUpcast = 33;
 eventBeginDowncast = 34;
 eventEndcast = 35;
 
-RSKtoolsversion = '1.5.0';
+RSKtoolsversion = '1.5.2';
 RSKtoolsversionMajor = 1;
 RSKtoolsversionMinor = 5;
 RSKtoolsversionPatch = 2;
