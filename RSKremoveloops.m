@@ -13,10 +13,7 @@ function [RSK, flagidx] = RSKremoveloops(RSK, varargin)
 %   [Required] - RSK - The input RSK structure.
 %
 %   [Optional] - profileNum - Optional profile number(s) on which to operate.
-%                      Default is to work on all profiles.
-%
-%                direction - 'up' for upcast,'down' for downcast or 'both'
-%                      for up and downcast. Default is 'down'. 
+%                      Default is to work on all data's fields.
 % 
 %                threshold - The minimum speed at which the profile must be
 %                      taken. Default is 0.25 m/s 
@@ -36,67 +33,48 @@ function [RSK, flagidx] = RSKremoveloops(RSK, varargin)
 % Website: www.rbr-global.com
 % Last revision: 2017-05-16
 
-%% Check input and default arguments
-
-validDirections = {'up', 'down', 'both'};
-checkDirection = @(x) any(validatestring(x,validDirections));
-
-%% Parse Inputs
-
 p = inputParser;
 addRequired(p, 'RSK', @isstruct);
-addParameter(p, 'direction', 'down', checkDirection);
 addParameter(p, 'profileNum', [], @isnumeric);
 addParameter(p, 'threshold', 0.25, @isnumeric);
 parse(p, RSK, varargin{:})
 
 % Assign each argument
 RSK = p.Results.RSK;
-direction = p.Results.direction;
 profileNum = p.Results.profileNum;
 threshold = p.Results.threshold;
 
-if strcmpi(direction, 'both')
-    direction = {'down', 'up'};
-else
-    direction = {direction};
-end
-
 Dcol = getchannelindex(RSK, 'Depth');
 
-for dir = direction
-    profileIdx = checkprofiles(RSK, profileNum, dir{1});
-    castdir = [dir{1} 'cast'];
-    data = RSK.profiles.(castdir).data;
-    for ndx = profileIdx
-        %% Filter pressure before taking the diff    
-        d = data(ndx).values(:,Dcol);
-        depth = runavg(d, 3, 'nan');
-        time = data(ndx).tstamp;
+dataIdx = setdataindex(RSK, profileNum);
+for ndx = dataIdx
+    %% Filter pressure before taking the diff    
+    d = RSK.data(ndx).values(:,Dcol);
+    depth = runavg(d, 3, 'nan');
+    time = RSK.data(ndx).tstamp;
 
-        %% Caculate Velocity.
-        velocity = calculatevelocity(depth, time);
-        switch dir{1}
-            case 'up'
-                flag = velocity > -threshold; 
-            case 'down'
-                flag = velocity < threshold;    
-        end  
+    %% Caculate Velocity.
+    velocity = calculatevelocity(depth, time);
+    if getcastdirection(depth, 'up')
+            flag = velocity > -threshold; 
+    else % if down
+            flag = velocity < threshold;    
+    end  
 
-        %% Perform the action on flagged scans.
-        flagChannels = ~strcmpi('pressure', {RSK.channels.longName});    
-        data(ndx).values(flag,flagChannels) = NaN;
-        flagidx(ndx).(castdir).index = find(flag);
-    end
+    %% Perform the action on flagged scans.
+    flagChannels = ~strcmpi('pressure', {RSK.channels.longName});    
+    data(ndx).values(flag,flagChannels) = NaN;
+    flagidx(ndx).index = find(flag);
+end
 
-    RSK.profiles.(castdir).data = data;
+    RSK.data = data;
 
     %% Udate log
-    logprofile = logentryprofiles(dir{1}, profileNum, profileIdx);
-    logentry = ['Samples measured at a profiling velocity less than ' num2str(threshold) 'm/s were replaced with NaN on ' logprofile '.'];
+    logdata = logentrydata(RSK, profileNum, dataIdx);
+    logentry = ['Samples measured at a profiling velocity less than ' num2str(threshold) 'm/s were replaced with NaN on ' logdata '.'];
 
     RSK = RSKappendtolog(RSK, logentry);
-end
+
 end
 
 
