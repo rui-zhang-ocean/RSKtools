@@ -45,7 +45,7 @@ if nargin==0
     fname=uigetfile({'*.rsk','*.RSK'},'Choose an RSK file');
 end
 
-if exist(fname,'file') ~= 2
+if isempty(dir(fname))
     disp('File cannot be found')
     RSK=[];dbid=[];
     return
