@@ -37,15 +37,13 @@ checkDirection = @(x) any(validatestring(x,validDirections));
 
 p = inputParser;
 addRequired(p, 'RSK', @isstruct);
-addParameter(p, 'series', [], checkSeriesName)
+addParameter(p, 'series', 'data', checkSeriesName)
 addParameter(p, 'direction', 'down', checkDirection);
 parse(p, RSK, varargin{:})
 
 RSK = p.Results.RSK;
 series = p.Results.series;
 direction = p.Results.direction;
-
-series = checkseries(RSK, series);
 
 if strcmpi(series, 'profile')
     if strcmpi(direction, 'both')
