@@ -80,9 +80,7 @@ for chanName = channel
     logdata = logentrydata(RSK, profileNum, dataIdx);
     logentry = sprintf('%s filtered using a %s filter with a %1.0f sample window on %s.', chanName{1}, filter, windowLength, logdata);
     RSK = RSKappendtolog(RSK, logentry);
-    end
 end
-
 
 end
 
