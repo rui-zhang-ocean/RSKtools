@@ -82,5 +82,7 @@ RSK = renameChannels(RSK);
 
 RSK = RSKgetprofiles(RSK);
 
-
+%% Log
+logentry = [fname ' opened using RSKtools v' RSKtoolsversion '.'];
+RSK = RSKappendtolog(RSK, logentry);
 end
