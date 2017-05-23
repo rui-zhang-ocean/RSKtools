@@ -13,6 +13,8 @@ function hdls = RSKplotdata(RSK, varargin)
 %    [Optional] - channel - channel to plots, can be multiple in a cell, if no value is
 %                       given it will plot all channels.
 %
+%                  profileNum - number indicating the profile to plot.
+%
 % Output:
 %     hdls - The line object of the plot.
 %
@@ -33,15 +35,22 @@ function hdls = RSKplotdata(RSK, varargin)
 p = inputParser;
 addRequired(p, 'RSK', @isstruct);
 addParameter(p, 'channel', 'all');
+addParameter(p, 'profileNum', 1);
 parse(p, RSK, varargin{:})
 
 RSK = p.Results.RSK;
 channel = p.Results.channel;
+profileNum = p.Results.profileNum;
 
 if ~isfield(RSK,'data')
     disp('You must read a section of data in first!');
     disp('Use RSKreaddata...')
     return
+end
+
+if size(RSK.data,2) > 1 
+    disp('Use RSKplotprofile...');
+    return   
 end
 
 chanCol = [];
