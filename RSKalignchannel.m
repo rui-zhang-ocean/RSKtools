@@ -18,7 +18,7 @@ function [RSK] = RSKalignchannel(RSK, channel, lag, varargin)
 %                       A negative lag shifts the channel backward in
 %                       time (earlier), while a positive lag shifts
 %                       the channel forward in time (later).  To apply
-%                       a different lag to each profile, specify the
+%                       a different lag to each data field, specify the
 %                       lags in a vector.
 %
 %    [Optional] - profileNum - Profile(s) to which the lag(s) are applied.
@@ -59,9 +59,6 @@ function [RSK] = RSKalignchannel(RSK, channel, lag, varargin)
 % email: support@rbr-global.com
 % Website: www.rbr-global.com
 % Last revision: 2017-05-15
-
-validDirections = {'down', 'up'};
-checkDirection = @(x) any(validatestring(x,validDirections));
 
 validShiftfill = {'zeroorderhold', 'union', 'nan', 'mirror'};
 checkShiftfill = @(x) any(validatestring(x,validShiftfill));
@@ -110,12 +107,12 @@ end
 %% Update log
 if length(lag) == 1
     logdata = logentrydata(RSK, profileNum, dataIdx);
-    logentry = [channel ' aligned using a ' num2str(lags(1)) ' sample lag on ' logdata '.'];
+    logentry = [channel ' aligned using a ' num2str(lags(1)) ' sample lag and ' shiftfill ' shiftfill on ' logdata '.'];
     RSK = RSKappendtolog(RSK, logentry);
 else
     for ndx = 1:length(dataIdx)
         logdata = logentrydata(RSK, profileNum, dataIdx);
-        logentry = [channel ' aligned using a ' num2str(lags(ndx)) ' sample lag on data field ' num2str(dataIdx(ndx)) '.'];
+        logentry = [channel ' aligned using a ' num2str(lags(ndx)) ' sample lag and ' shiftfill ' shiftfill on data field ' num2str(dataIdx(ndx)) '.'];
         RSK = RSKappendtolog(RSK, logentry);
     end
 end
