@@ -37,8 +37,8 @@ function hdls = RSKplotprofiles(RSK, varargin)
 
 p = inputParser;
 addRequired(p, 'RSK', @isstruct);
-addOptional(p, 'profileNum', [], @isnumeric);
-addOptional(p, 'channel', 'Temperature', @ischar)
+addParameter(p, 'profileNum', [], @isnumeric);
+addParameter(p, 'channel', 'Temperature', @ischar)
 parse(p, RSK, varargin{:})
 
 % Assign each input argument
