@@ -1,4 +1,3 @@
-
 function RSK = RSKsmooth(RSK, channel, varargin)
 
 % RSKsmooth - Applies a low pass filter on specified channels.
