@@ -47,21 +47,18 @@ threshold = p.Results.threshold;
 Dcol = getchannelindex(RSK, 'Depth');
 
 dataIdx = setdataindex(RSK, profileNum);
-for ndx = dataIdx
-    %% Filter pressure before taking the diff    
+for ndx = dataIdx 
     d = RSK.data(ndx).values(:,Dcol);
     depth = runavg(d, 3, 'nan');
     time = RSK.data(ndx).tstamp;
 
-    %% Caculate Velocity.
     velocity = calculatevelocity(depth, time);
     if getcastdirection(depth, 'up')
             flag = velocity > -threshold; 
-    else % if down
+    else
             flag = velocity < threshold;    
     end  
 
-    %% Perform the action on flagged scans.
     flagChannels = ~strcmpi('pressure', {RSK.channels.longName});    
     data(ndx).values(flag,flagChannels) = NaN;
     flagidx(ndx).index = find(flag);
@@ -69,7 +66,6 @@ end
 
 RSK.data = data;
 
-%% Udate log
 logdata = logentrydata(RSK, profileNum, dataIdx);
 logentry = ['Samples measured at a profiling velocity less than ' num2str(threshold) 'm/s were replaced with NaN on ' logdata '.'];
 
