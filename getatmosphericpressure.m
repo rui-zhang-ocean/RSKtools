@@ -20,8 +20,8 @@ function pAtm = getatmosphericpressure(RSK)
 pAtm = [];
 
 if isfield(RSK, 'parameterKeys')
-    atmrow = find(strcmpi({RSK.parameterKeys.key}, 'ATMOSPHERE'));
-    pAtm = str2double(RSK.parameterKeys(atmrow(end)).value);
+    atmrow = strcmpi({RSK.parameterKeys.key}, 'ATMOSPHERE');
+    pAtm = str2double(RSK.parameterKeys(atmrow).value);
 elseif isfield(RSK, 'parameters')
     pAtm = RSK.parameters.atmosphere;
 end
