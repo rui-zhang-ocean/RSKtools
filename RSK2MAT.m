@@ -37,7 +37,10 @@ function [RBR] = RSK2MAT(RSK)
 if strcmpi(RSK.dbInfo(1).type, 'EasyParse');
     error('RSK2MAT is not compatible with files that are from Ruskin Mobile . File should be opened in Ruskin Desktop first.')
 end
-
+if size(RSK.data,2) > 1
+    disp('Use RSKreaddata to have one data field.')
+    return
+end
 
 %% Firmware Version location is dependant on the rsk file version
 [firmwareV, ~, ~]  = RSKfirmwarever(RSK);
