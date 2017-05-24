@@ -37,8 +37,9 @@ function [RSK, spikeidx] = RSKdespike(RSK, channel, varargin)
 % Outputs:
 %    RSK - The RSK structure with de-spiked series.
 %
-%    spikeidx - A structure containing the index of the spikes; if profiles
-%        were despiked, spikeidx is a structure with a field for each profile.
+%    spikeidx - A structure containing the index of the spikes; if maany
+%                    data fields were despiked, spikeidx is a structure
+%                    with a field for each profile. 
 %
 % Example: 
 %    [RSK, spikesidx] = RSKdespike(RSK,  'Pressure')
@@ -62,7 +63,6 @@ addParameter(p, 'windowLength', 3, @isnumeric);
 addParameter(p, 'action', 'NaN', checkAction);
 parse(p, RSK, channel, varargin{:})
 
-% Assign each argument
 RSK = p.Results.RSK;
 channel = p.Results.channel;
 profileNum = p.Results.profileNum;
@@ -88,8 +88,6 @@ logdata = logentrydata(RSK, profileNum, dataIdx);
 logentry = sprintf('%s de-spiked using a %1.0f sample window and %1.0f sigma threshold on %s. Spikes were treated with %s.',...
     channel, windowLength, threshold, logdata, action);
 RSK = RSKappendtolog(RSK, logentry);
-
-
 
 
     %% Nested Functions
