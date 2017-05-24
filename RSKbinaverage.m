@@ -44,9 +44,9 @@ function [RSK, binArray] = RSKbinaverage(RSK, varargin)
 % Author: RBR Ltd. Ottawa ON, Canada
 % email: support@rbr-global.com
 % Website: www.rbr-global.com
-% Last revision: 2017-05-15
+% Last revision: 2017-05-24
 
-validDirections = {'down', 'up', 'both'};
+validDirections = {'down', 'up'};
 checkDirection = @(x) any(validatestring(x,validDirections));
 
 p = inputParser;
@@ -66,42 +66,34 @@ binBy = p.Results.binBy;
 binSize = p.Results.binSize;
 boundary = p.Results.boundary;
 
-%% Determine if the structure has downcasts and upcasts & set profileNum accordingly
-profileIdx = checkprofiles(RSK, profileNum, direction);
-castdir = [direction 'cast'];
-
 %% Find max profile length
-profilelength = 0;
-for ndx = profileIdx
-    if size(RSK.profiles.(castdir).data(ndx).tstamp,1) > profilelength
-        profilelength = size(RSK.profiles.(castdir).data(ndx).tstamp,1);
-    end
-end
-Y = NaN(profilelength, length(profileIdx));
+dataIdx = setdataindex(RSK, profileNum);
+
+alltstamp = {RSK.data(dataIdx).tstamp};
+maxlength = max(cellfun('size', alltstamp, 1));
+Y = NaN(maxlength, length(dataIdx));
 
 k=1;
-for ndx = profileIdx;
+for ndx = dataIdx;
     if strcmpi(binBy, 'Time')
-        ref = RSK.profiles.(castdir).data(ndx).tstamp;
+        ref = RSK.data(ndx).tstamp;
         Y(1:length(ref),k) = ref-ref(1);
     else
         chanCol = getchannelindex(RSK, binBy);
-        ref = RSK.profiles.(castdir).data(ndx).values(:,chanCol);
+        ref = RSK.data(ndx).values(:,chanCol);
         Y(1:length(ref),k) = ref;
     end
     k = k+1;
 end
 
-[binArray, boundary] = setupbins(Y, boundary, binSize, direction);
+[binArray, binCenter, boundary] = setupbins(Y, boundary, binSize, direction);
 
-samplesinbin = NaN(profilelength, length(binArray)-1);
+samplesinbin = NaN(maxlength, length(binArray)-1);
 k = 1;
-for ndx = profileIdx
+for ndx = dataIdx
     % Binning
-    X = [RSK.profiles.(castdir).data(ndx).tstamp, RSK.profiles.(castdir).data(ndx).values];
+    X = [RSK.data(ndx).tstamp, RSK.data(ndx).values];
     binnedValues = NaN(length(binArray)-1, size(X,2));
-    binCenter = tsmovavg(binArray, 's', 2);
-    binCenter = binCenter(2:end); %Starts with NaN.
     
     for bin=1:length(binArray)-1
         binidx = findbinindices(Y(:,k), binArray(bin), binArray(bin+1));
@@ -109,25 +101,25 @@ for ndx = profileIdx
         binnedValues(bin,:) = nanmean(X(binidx,:),1);
     end
     
-    RSK.profiles.(castdir).data(ndx).values = binnedValues(:,2:end);
-    RSK.profiles.(castdir).data(ndx).samplesinbin = samplesinbin;
+    RSK.data(ndx).values = binnedValues(:,2:end);
+    RSK.data(ndx).samplesinbin = samplesinbin;
     if strcmpi(binBy, 'Time')
-        RSK.profiles.(castdir).data(ndx).tstamp = binCenter;
+        RSK.data(ndx).tstamp = binCenter;
     else
-        RSK.profiles.(castdir).data(ndx).tstamp = binnedValues(:,1);
-        RSK.profiles.(castdir).data(ndx).values(:,chanCol) = binCenter;
+        RSK.data(ndx).tstamp = binnedValues(:,1);
+        RSK.data(ndx).values(:,chanCol) = binCenter;
     end
     k = k+1;
 end
 
 % Log
 unit = RSK.channels(chanCol).units;
-logprofile = logentryprofiles(direction, profileNum, profileIdx);
-logentry = sprintf('Binned with respect to %s using [%s] boundaries with %s %s bin size on %s.', binBy, num2str(boundary), num2str(binSize), unit, logprofile);
+logdata = logentrydata(RSK, profileNum, dataIdx);
+logentry = sprintf('Binned with respect to %s using [%s] boundaries with %s %s bin size on %s.', binBy, num2str(boundary), num2str(binSize), unit, logdata);
 RSK = RSKappendtolog(RSK, logentry);
 
 
-    function [binArray, boundary] = setupbins(Y, boundary, binSize, direction)
+    function [binArray, binCenter, boundary] = setupbins(Y, boundary, binSize, direction)
     % Set up binArray based on the boundaries any binSize given. Boundaries
     % are hard set and binSize fills the space between the boundaries in
     % the same direction as the cast.  
@@ -160,6 +152,9 @@ RSK = RSKappendtolog(RSK, logentry);
         end
         binArray = [binArray, binArray(end)+binSize(end)];
         binArray = unique(binArray);
+        
+        binCenter = tsmovavg(binArray, 's', 2);
+        binCenter = binCenter(2:end);
     end
 
     

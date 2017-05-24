@@ -19,9 +19,6 @@ function im = RSKplot2D(RSK, channel, varargin)
 %   [Optional] - profileNum - Optional profile number(s) to plot. Default
 %                    is to use all profiles. 
 %
-%                direction - the profile direction to consider. Must be either
-%                   'down' or 'up'. Defaults to 'down'.
-%
 %                reference - The channel that will be plotted as y. Default
 %                   'Pressure', can be 'Depth'.
 %
@@ -31,18 +28,13 @@ function im = RSKplot2D(RSK, channel, varargin)
 % Author: RBR Ltd. Ottawa ON, Canada
 % email: support@rbr-global.com
 % Website: www.rbr-global.com
-% Last revision: 2017-05-12
-
-%% Check input and default arguments
-validDirections = {'down', 'up'};
-checkDirection = @(x) any(validatestring(x,validDirections));
+% Last revision: 2017-05-24
 
 %% Parse Inputs
 p = inputParser;
 addRequired(p, 'RSK', @isstruct);
 addRequired(p, 'channel');
 addParameter(p, 'profileNum', [], @isnumeric);
-addParameter(p, 'direction', 'down', checkDirection);
 addParameter(p, 'reference', 'Pressure', @ischar);
 parse(p, RSK, channel, varargin{:})
 
@@ -50,31 +42,29 @@ parse(p, RSK, channel, varargin{:})
 RSK = p.Results.RSK;
 channel = p.Results.channel;
 profileNum = p.Results.profileNum;
-direction = p.Results.direction;
 reference = p.Results.reference;
 
 %% Determine if the structure has downcasts and upcasts & set profileNum accordingly
-profileIdx = checkprofiles(RSK, profileNum, direction);
-castdir = [direction 'cast'];
+dataIdx = setdataindex(RSK, profileNum);
 
 chanCol = getchannelindex(RSK, channel);
 
 % Check bin center reference column.
 YCol = getchannelindex(RSK, reference);
-for ndx = profileIdx(1:end-1)
-    if RSK.profiles.(castdir).data(ndx).values(:,YCol)==RSK.profiles.(castdir).data(ndx+1).values(:,YCol);
-        binCenter = RSK.profiles.(castdir).data(ndx).values(:,YCol);
+for ndx = dataIdx(1:end-1)
+    if RSK.data(ndx).values(:,YCol)==RSK.data(ndx+1).values(:,YCol);
+        binCenter = RSK.data(ndx).values(:,YCol);
     else 
         error('The refence channel`s data of all the selected profiles must be identical. Use RSKbinaverage.m')
     end
 end
 
-binValues = NaN(length(binCenter), length(profileIdx));
-for ndx = profileIdx;
-    binValues(:,ndx) = RSK.profiles.(castdir).data(ndx).values(:,chanCol);
+binValues = NaN(length(binCenter), length(dataIdx));
+for ndx = dataIdx;
+    binValues(:,ndx) = RSK.data(ndx).values(:,chanCol);
 end
 
-t = RSK.profiles.(castdir).tstart;
+t = cellfun( @(x)  min(x), {RSK.data(dataIdx).tstamp});
 im = imagesc(t, binCenter, binValues);
 set(im, 'AlphaData', ~isnan(binValues)) %plot NaN values in white.
 
@@ -93,9 +83,6 @@ text(t(1), p(2)-0.5, sprintf('[%s - %s]', datestr(t(1), 'mmmm dd HH:MM'), datest
 
 % Adjust axes
 set(gcf, 'Position', [1 1 800 450]);
-ax = gca;
-set(ax, 'YDir', 'reverse', 'FontSize', 14)
-set(gcf, 'Renderer', 'painters')
 datetick('x', 'HH', 'keepticks')
 axis tight
 
