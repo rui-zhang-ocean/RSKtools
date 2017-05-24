@@ -19,6 +19,7 @@ function [RSK, seapressure] = RSKderiveseapressure(RSK, varargin)
 % Website: www.rbr-global.com
 % Last revision: 2017-05-19
 
+pAtm = getatmosphericpressure(RSK);
 Pcol = getchannelindex(RSK, 'Pressure');
 
 %% Calculate Salinity
@@ -28,7 +29,7 @@ SPcol = getchannelindex(RSK, 'Sea Pressure');
 
 dataIdx = setdataindex(RSK);
 for ndx = dataIdx
-    seapressure = RSK.data(ndx).values(:, Pcol)- 10.1325;
+    seapressure = RSK.data(ndx).values(:, Pcol)- pAtm;
     RSK.data(ndx).values(:,SPcol) = seapressure;
 end
 
