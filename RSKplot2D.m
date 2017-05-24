@@ -4,9 +4,8 @@ function im = RSKplot2D(RSK, channel, varargin)
 %
 % Syntax:  RSKplot2D(RSK, channel, direction)
 % 
-% This generates a plot of the profiles over time. It bins the
-% data for any specified channel.
-% 
+% This generates a plot of the profiles over time.
+%
 % Inputs:
 %    
 %   [Required] - RSK - the input RSK structure, with profiles as read using
