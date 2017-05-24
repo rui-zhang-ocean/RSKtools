@@ -48,7 +48,7 @@ if ~isfield(RSK,'data')
     return
 end
 
-if size(RSK.data,2) > 1 
+if size(RSK.data,2) > 1 && size(profileNum, 2) > 1
     disp('Use RSKplotprofile...');
     return   
 end
@@ -65,7 +65,7 @@ else
     end
 end
 
-hdls = channelsubplots(RSK, 'data', chanCol);
+hdls = channelsubplots(RSK, 'data', 'chanCol', chanCol, 'dataNum', profileNum);
 
 end
 
