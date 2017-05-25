@@ -1,8 +1,8 @@
-function dataresults = removeUnusedDataColumns(results)
-% removeUnusedDataColumn -  remove tstamp_1 and datasetId if they are
+function dataresults = removeunuseddatacolumns(results)
+% removeunuseddatacolumn -  remove tstamp_1 and datasetId if they are
 %        present. They are not used and are not in all data tables.
 %
-% Syntax:  [dataresults] = removeUnusedDataColumns(results)
+% Syntax:  [dataresults] = removeunuseddatacolumns(results)
 %
 % Inputs:
 %    results - the output from the sql call to the data table
@@ -13,7 +13,7 @@ function dataresults = removeUnusedDataColumns(results)
 % Author: RBR Ltd. Ottawa ON, Canada
 % email: support@rbr-global.com
 % Website: www.rbr-global.com
-% Last revision: 2017-04-24
+% Last revision: 2017-05-25
 
 dataresults = rmfield(results,'tstamp_1');
 
