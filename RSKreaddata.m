@@ -38,7 +38,7 @@ function RSK = RSKreaddata(RSK, varargin)
 % Author: RBR Ltd. Ottawa ON, Canada
 % email: support@rbr-global.com
 % Website: www.rbr-global.com
-% Last revision: 2017-04-30
+% Last revision: 2017-05-25
 
 p = inputParser;
 addRequired(p, 'RSK', @isstruct);
@@ -71,14 +71,14 @@ if isempty(results)
     return
 end
 
-results = removeUnusedDataColumns(results);
+results = removeuseddatacolumns(results);
 results = arrangedata(results);
 
 t=results.tstamp';
 results.tstamp = RSKtime2datenum(t);
 
 if ~strcmpi(RSK.dbInfo(end).type, 'EPdesktop')
-    [~, isDerived] = removeNonMarineChannels(RSK);
+    [~, isDerived] = removenonmarinechannels(RSK);
     results.values = results.values(:,~isDerived);
 end
 
