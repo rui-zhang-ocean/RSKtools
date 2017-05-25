@@ -45,6 +45,7 @@ profileNum = p.Results.profileNum;
 if ~isfield(RSK,'data')
     disp('You must read a section of data in first!');
     disp('Use RSKreaddata...')
+    hdls = [];
     return
 end
 
