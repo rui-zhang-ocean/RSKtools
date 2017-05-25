@@ -42,7 +42,7 @@ if iscompatibleversion(RSK, 1, 13, 8)
     RSK = readsamplingdetails(RSK);
 end
 
-[RSK, ~] = removeNonMarineChannels(RSK);
+[RSK, ~] = removenonmarinechannels(RSK);
 
 %% Tables that could be populated in 'full'
 tables = mksqlite('SELECT name FROM sqlite_master WHERE type="table"');

@@ -34,7 +34,7 @@ if iscompatibleversion(RSK, 1, 13, 8)
     RSK = readsamplingdetails(RSK);
 end
 
-[RSK, ~] = removeNonMarineChannels(RSK);
+[RSK, ~] = removenonmarinechannels(RSK);
 
 
 %% Tables that may or may not be in 'live'
