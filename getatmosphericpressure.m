@@ -15,15 +15,20 @@ function pAtm = getatmosphericpressure(RSK)
 % Author: RBR Ltd. Ottawa ON, Canada
 % email: support@rbr-global.com
 % Website: www.rbr-global.com
-% Last revision: 2017-05-18
+% Last revision: 2017-05-24
+
+pAtm = [];
 
 if isfield(RSK, 'parameterKeys')
-    atmrow = find(strcmpi({RSK.parameterKeys.key}, 'ATMOSPHERE'));
-    pAtm = str2double(RSK.parameterKeys(atmrow(end)).value);
+    atmrow = strcmpi({RSK.parameterKeys.key}, 'ATMOSPHERE');
+    pAtm = str2double(RSK.parameterKeys(atmrow).value);
 elseif isfield(RSK, 'parameters')
     pAtm = RSK.parameters.atmosphere;
-else
+end
+
+if isempty(pAtm)
     pAtm = 10.1325;
 end
+
 end
     

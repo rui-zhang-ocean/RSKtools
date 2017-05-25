@@ -21,10 +21,7 @@ function RSK = readheaderfull(RSK)
 % Author: RBR Ltd. Ottawa ON, Canada
 % email: support@rbr-global.com
 % Website: www.rbr-global.com
-% Last revision: 2017-03-31
-
-%% Set up version variables
-[~, vsnMajor, vsnMinor, vsnPatch] = RSKver(RSK);
+% Last revision: 2017-05-24
 
 %% Tables that are definitely in 'full'
 
@@ -34,26 +31,18 @@ RSK.ranging = mksqlite('select * from ranging');
 
 RSK.instrumentChannels = mksqlite('select * from instrumentChannels');
 
-RSK.parameters = mksqlite('select * from parameters');
-
 % RSK = RSKreadcalibrations(RSK);
 % NOTE : We no longer automatically read the calibrations table when
 % opening a file with RSKopen. Use RSKreadcalibrations(RSK) to load the
 % calibrations data.
 
-%% Load sampling details
+RSK = readparameters(RSK);
+
 if iscompatibleversion(RSK, 1, 13, 8)
     RSK = readsamplingdetails(RSK);
 end
 
-
-%% Load parameter keys
-if iscompatibleversion(RSK, 1, 13, 4)
-    RSK.parameterKeys = mksqlite('select * from parameterKeys'); 
-end
-
-
-[RSK, ~] = removeNonMarineChannels(RSK);
+[RSK, ~] = removenonmarinechannels(RSK);
 
 %% Tables that could be populated in 'full'
 tables = mksqlite('SELECT name FROM sqlite_master WHERE type="table"');

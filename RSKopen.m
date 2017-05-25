@@ -80,7 +80,7 @@ switch RSK.dbInfo(end).type
 end
 
 
-RSK = renameChannels(RSK);
+RSK = renamechannels(RSK);
 
 
 RSK = RSKgetprofiles(RSK);

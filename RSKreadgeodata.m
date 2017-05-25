@@ -45,7 +45,7 @@ elseif strcmpi(p.UsingDefaults, 'UTCdelta')
         UTCdelta = tmp.UTCdelta;
         RSK.epochs.UTCdelta = UTCdelta;
     catch
-        warning('No UTCdelta value, the timestamps in geodata cannot be adjust to the logger time, will use 0');
+        disp('No UTCdelta value, the timestamps in geodata cannot be adjust to the logger time, will use 0');
         UTCdelta = 0;
     end
 end  
