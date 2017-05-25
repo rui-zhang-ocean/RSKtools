@@ -42,8 +42,8 @@ function RSK = RSKreaddata(RSK, varargin)
 
 p = inputParser;
 addRequired(p, 'RSK', @isstruct);
-addOptional(p, 't1', [], @isnumeric);
-addOptional(p, 't2', [], @isnumeric);
+addParameter(p, 't1', [], @isnumeric);
+addparameter(p, 't2', [], @isnumeric);
 parse(p, RSK, varargin{:})
 
 RSK = p.Results.RSK;
@@ -77,14 +77,14 @@ if isempty(results)
     return
 end
 
-results = removeUnusedDataColumns(results);
+results = removeunuseddatacolumns(results);
 results = arrangedata(results);
 
 t=results.tstamp';
 results.tstamp = RSKtime2datenum(t);
 
 if ~strcmpi(RSK.dbInfo(end).type, 'EPdesktop')
-    [~, isDerived] = removeNonMarinechannels(RSK);
+    [~, isDerived] = removenonmarinechannels(RSK);
     results.values = results.values(:,~isDerived);
 end
 
