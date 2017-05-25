@@ -55,16 +55,11 @@ if size(RSK.data,2) > 1 && size(profileNum, 2) > 1
 end
 
 chanCol = [];
-if strcmpi(channel, 'all')
-    chanCol = 1:length(RSK.channels);
-else
-    if ~iscell(channel)
-        channel = {channel};
-    end
-    for chan = channel
-        chanCol = [chanCol getchannelindex(RSK, chan{1})];
-    end
+channels = cellchannelnames(RSK, channel);
+for chan = channels
+    chanCol = [chanCol getchannelindex(RSK, chan{1})];
 end
+
 
 hdls = channelsubplots(RSK, 'data', 'chanCol', chanCol, 'dataNum', profileNum);
 

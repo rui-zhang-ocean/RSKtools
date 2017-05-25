@@ -57,14 +57,10 @@ windowLength = p.Results.windowLength;
 
 %% Ensure channel is a cell.
 
-if strcmpi(channel, 'all')
-    channel = {RSK.channels.longName};
-elseif ~iscell(channel)
-    channel = {channel};
-end
+channels = cellchannelnames(RSK, channel);
 
 dataIdx = setdataindex(RSK, profileNum);
-for chanName = channel
+for chanName = channels
     channelCol = getchannelindex(RSK, chanName);
     for ndx = dataIdx
         in = RSK.data(ndx).values(:,channelCol);
