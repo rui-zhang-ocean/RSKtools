@@ -48,7 +48,7 @@ switch edgepad
     case 'nan'
         inpadded = nanpad(in, padsize);
     case 'zeroorderhold'
-        inpadded = zeroOrderholdpad(in, padsize);
+        inpadded = zeroorderholdpad(in, padsize);
 end
 
 for ndx = 1:n
