@@ -59,12 +59,10 @@ for ndx = dataIdx
             flag = velocity < threshold;    
     end  
 
-    flagChannels = ~strcmpi('pressure', {RSK.channels.longName});    
-    data(ndx).values(flag,flagChannels) = NaN;
+    flagChannels = ~strcmpi('Depth', {RSK.channels.longName});    
+    RSK.data(ndx).values(flag,flagChannels) = NaN;
     flagidx(ndx).index = find(flag);
 end
-
-RSK.data = data;
 
 logdata = logentrydata(RSK, profileNum, dataIdx);
 logentry = ['Samples measured at a profiling velocity less than ' num2str(threshold) 'm/s were replaced with NaN on ' logdata '.'];
