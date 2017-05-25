@@ -77,7 +77,7 @@ if isempty(results)
     return
 end
 
-results = removeuseddatacolumns(results);
+results = removeunuseddatacolumns(results);
 results = arrangedata(results);
 
 t=results.tstamp';
