@@ -1,4 +1,4 @@
-function [RSK, spikeidx] = RSKdespike(RSK, channel, varargin)
+function [RSK, spike] = RSKdespike(RSK, channel, varargin)
 
 % RSKdespike - De-spike a time series by comparing it to a reference time
 %              series
@@ -37,8 +37,8 @@ function [RSK, spikeidx] = RSKdespike(RSK, channel, varargin)
 % Outputs:
 %    RSK - The RSK structure with de-spiked series.
 %
-%    spikeidx - A structure containing the index of the spikes; if maany
-%                    data fields were despiked, spikeidx is a structure
+%    spike - A structure containing the index of the spikes; if many
+%                    data fields were despiked, spike is a structure
 %                    with a field for each profile. 
 %
 % Example: 
@@ -80,7 +80,7 @@ for ndx = dataIdx
     xtime = RSK.data(ndx).tstamp;
     [out, index] = despike(x, xtime, threshold, windowLength, action);
     RSK.data(ndx).values(:,channelCol) = out;
-    spikeidx(k).index = index;
+    spike(k).index = index;
     k = k+1;
 end
 
