@@ -59,7 +59,7 @@ end
 normcoeff = (coeff/sum(coeff));
 
 for ndx = 1:n
-    out(ndx) = nansum(inpadded(ndx:ndx+(windowLength-1)).*normcoeff);
+    out(ndx) = nansum(inpadded(ndx:ndx+(windowLength-1)).*normcoeff');
 end
 
 end
