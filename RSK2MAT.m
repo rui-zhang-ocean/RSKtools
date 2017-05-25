@@ -17,7 +17,7 @@ function [RBR] = RSK2MAT(RSK)
 %
 % Inputs:
 %    RSK - Structure containing the logger metadata, along with the
-%          added 'data' fields.
+%          added 'data' field.
 %
 % Outputs:
 %    RBR - Structure containing the logger data and some metadata in the
@@ -31,7 +31,7 @@ function [RBR] = RSK2MAT(RSK)
 % Author: RBR Ltd. Ottawa ON, Canada
 % email: support@rbr-global.com
 % Website: www.rbr-global.com
-% Last revision: 2017-03-30
+% Last revision: 2017-05-24
 
 %% Notify user that RSK2MAT doesn't work for file that were previously EasyParse
 if strcmpi(RSK.dbInfo(1).type, 'EasyParse');
