@@ -62,7 +62,7 @@ p = inputParser;
 addRequired(p, 'RSK', @isstruct);
 addRequired(p, 'channel');
 addParameter(p, 'filter', 'boxcar', checkFilter);
-addParameter(p, 'series', [], checkSeriesName)
+addParameter(p, 'series', 'data', checkSeriesName)
 addParameter(p, 'profileNum', [], @isnumeric);
 addParameter(p, 'direction', 'down', checkDirection);
 addParameter(p, 'windowLength', 3, @isnumeric);
@@ -79,13 +79,7 @@ windowLength = p.Results.windowLength;
 
 %% Ensure channel is a cell.
 
-if strcmpi(channel, 'all')
-    channel = {RSK.channels.longName};
-elseif ~iscell(channel)
-    channel = {channel};
-end
-
-series = checkseries(RSK, series);
+channels = cellchannelnames(RSK, channel);
 
 %% Determine if the structure has downcasts and upcasts
 if strcmpi(series, 'profile')
@@ -98,18 +92,18 @@ end
 
 %% Smooth
 
-for chanName = channel
-    channelCol = getchannelindex(RSK, chanName);
+for chanName = channels
+    chanCol = getchannelindex(RSK, chanName);
     switch series
         case 'data'
-            in = RSK.data.values(:,channelCol);
+            in = RSK.data.values(:,chanCol);
             switch filter
                 case 'boxcar'
                     out = runavg(in, windowLength);
                 case 'median'
                     out = runmed(in, windowLength);
             end      
-            RSK.data.values(:,channelCol) = out;
+            RSK.data.values(:,chanCol) = out;
 
             logentry = sprintf('%s filtered using a %s filter with a %1.0f sample window.', chanName{1}, filter, windowLength);
             RSK = RSKappendtolog(RSK, logentry);
@@ -119,14 +113,14 @@ for chanName = channel
                 profileIdx = checkprofiles(RSK, profileNum, dir{1});
                 castdir = [dir{1} 'cast'];
                 for ndx = profileIdx
-                    in = RSK.profiles.(castdir).data(ndx).values(:,channelCol);
+                    in = RSK.profiles.(castdir).data(ndx).values(:,chanCol);
                     switch filter
                         case 'boxcar'
                             out = runavg(in, windowLength);
                         case 'median'
                             out= runmed(in, windowLength);
                     end
-                    RSK.profiles.(castdir).data(ndx).values(:,channelCol) = out;
+                    RSK.profiles.(castdir).data(ndx).values(:,chanCol) = out;
                 end
 
                 logprofile = logentryprofiles(dir{1}, profileNum, profileIdx);
