@@ -44,16 +44,11 @@ if ~isfield(RSK,'data')
     return
 end
 
+channels = cellchannelnames(RSK, channel);
+
 chanCol = [];
-if strcmpi(channel, 'all')
-    chanCol = 1:length(RSK.channels);
-else
-    if ~iscell(channel)
-        channel = {channel};
-    end
-    for chan = channel
-        chanCol = [chanCol getchannelindex(RSK, chan{1})];
-    end
+for chan = channels
+    chanCol = [chanCol getchannelindex(RSK, chan{1})];
 end
 
 hdls = channelsubplots(RSK, 'data', chanCol);
