@@ -13,11 +13,11 @@ function RSK = RSKsmooth(RSK, channel, varargin)
 % Inputs: 
 %    [Required] - RSK - Structure containing the logger data
 %
-%                 channel - Longname of channel to filter. Can be cell
-%                     array of many channels or 'all'.
+%                 channel - Longname of channel to filter. Can be a single
+%                       channel, cell array of many channels or 'all'.
 %               
 %    [Optional] - filter - The type of smoothing filter that will be used.
-%                     Either median or boxcar. Default is boxcar.
+%                     Either median, boxcar or triangle. Default is boxcar.
 %
 %                 series - Specifies the series to be filtered. Either 'data'
 %                     or 'profile'. Default is 'data'.
@@ -52,7 +52,7 @@ checkSeriesName = @(x) any(validatestring(x,validSeries));
 validDirections = {'down', 'up', 'both'};
 checkDirection = @(x) any(validatestring(x,validDirections));
 
-validFilterNames = {'median', 'boxcar'};
+validFilterNames = {'median', 'boxcar', 'triangle'};
 checkFilter = @(x) any(validatestring(x,validFilterNames));
 
 
@@ -102,6 +102,8 @@ for chanName = channels
                     out = runavg(in, windowLength);
                 case 'median'
                     out = runmed(in, windowLength);
+                case 'triangle'
+                    out = runtriang(in, windowLength);
             end      
             RSK.data.values(:,chanCol) = out;
 
@@ -119,6 +121,8 @@ for chanName = channels
                             out = runavg(in, windowLength);
                         case 'median'
                             out= runmed(in, windowLength);
+                        case 'triangle'
+                            out = runtriang(in, windowLength);  
                     end
                     RSK.profiles.(castdir).data(ndx).values(:,chanCol) = out;
                 end
