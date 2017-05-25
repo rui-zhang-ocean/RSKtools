@@ -21,7 +21,7 @@ function RSK = RSKreadthumbnail(RSK)
 % Author: RBR Ltd. Ottawa ON, Canada
 % email: support@rbr-global.com
 % Website: www.rbr-global.com
-% Last revision: 2017-05-16
+% Last revision: 2017-05-25
 
 sql = ['select tstamp/1.0 as tstamp,* from thumbnailData order by tstamp'];
 results = mksqlite(sql);
@@ -29,13 +29,13 @@ if isempty(results)
     return
 end
 
-results = removeUnusedDataColumns(results);
+results = removeunuseddatacolumns(results);
 results = arrangedata(results);
 
 results.tstamp = RSKtime2datenum(results.tstamp');
 
 if ~strcmpi(RSK.dbInfo(end).type, 'EPdesktop')
-    [~, isDerived] = removeNonMarinechannels(RSK);
+    [~, isDerived] = removenonmarinechannels(RSK);
     results.values = results.values(:,~isDerived);
 end
 

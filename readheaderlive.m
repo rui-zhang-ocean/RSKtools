@@ -20,7 +20,7 @@ function RSK = readheaderlive(RSK)
 % Author: RBR Ltd. Ottawa ON, Canada
 % email: support@rbr-global.com
 % Website: www.rbr-global.com
-% Last revision: 2017-04-06
+% Last revision: 2017-05-24
 
 
 %% Tables that are definitely in 'live'
@@ -28,18 +28,13 @@ RSK.appSettings = mksqlite('select * from appSettings');
 
 RSK.instrumentChannels = mksqlite('select * from instrumentChannels');
 
-RSK.parameters = mksqlite('select * from parameters');
-
+RSK = readparameters(RSK);
 
 if iscompatibleversion(RSK, 1, 13, 8)
     RSK = readsamplingdetails(RSK);
 end
 
-if iscompatibleversion(RSK, 1, 13, 4)
-    RSK.parameterKeys = mksqlite('select * from parameterKeys'); 
-end
-
-[RSK, ~] = removeNonMarinechannels(RSK);
+[RSK, ~] = removenonmarinechannels(RSK);
 
 
 %% Tables that may or may not be in 'live'

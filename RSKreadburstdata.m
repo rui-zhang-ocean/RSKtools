@@ -37,8 +37,7 @@ function RSK = RSKreadburstdata(RSK, varargin)
 % Author: RBR Ltd. Ottawa ON, Canada
 % email: support@rbr-global.com
 % Website: www.rbr-global.com
-% Last revision: 2016-05-16
-
+% Last revision: 2016-05-25
 
 p = inputParser;
 addRequired(p, 'RSK', @isstruct);
@@ -66,7 +65,7 @@ if isempty(results)
     return
 end
 
-results = removeUnusedDataColumns(results);
+results = removeunuseddatacolumns(results);
 results = arrangedata(results);
 
 t=results.tstamp';
