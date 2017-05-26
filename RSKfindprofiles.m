@@ -71,6 +71,10 @@ end
 %% Run profile detection
 [wwevt] = detectprofiles(pressure, timestamp, conductivity, profileThreshold, conductivityThreshold);
 
+if size(wwevt,1) < 2
+    disp('No profiles were detected in this dataset with the given parameters.')
+    return
+end
 
 %% Use the events to establish profile start and end times.
 % Event 1 is a downcast start
