@@ -38,12 +38,12 @@ function RSK = RSKreaddata(RSK, varargin)
 % Author: RBR Ltd. Ottawa ON, Canada
 % email: support@rbr-global.com
 % Website: www.rbr-global.com
-% Last revision: 2017-05-05
+% Last revision: 2017-05-25
 
 p = inputParser;
 addRequired(p, 'RSK', @isstruct);
 addParameter(p, 't1', [], @isnumeric);
-addparameter(p, 't2', [], @isnumeric);
+addParameter(p, 't2', [], @isnumeric);
 parse(p, RSK, varargin{:})
 
 RSK = p.Results.RSK;
