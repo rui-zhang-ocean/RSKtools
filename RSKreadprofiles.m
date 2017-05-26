@@ -91,16 +91,19 @@ alltend = sort(alltend, 'ascend');
 
 if isempty(profileNum)
     profileNum = 1:length(alltstart);
+elseif max(profileNum) > length(alltstart)
+    disp('The profileNum selected is greater than the total amount of profiles in this file.');
+    return
 end
 
-castidx = 1;
+dataIdx = 1;
 for ndx=profileNum
     tstart = alltstart(ndx) - latency/86400;
     tend = alltend(ndx) - latency/86400;
-    tmp = RSKreaddata(RSK, tstart, tend);
-    data(castidx).tstamp = tmp.data.tstamp;
-    data(castidx).values = tmp.data.values;
-    castidx = castidx + 1;
+    tmp = RSKreaddata(RSK, 't1', tstart, 't2', tend);
+    data(dataIdx).tstamp = tmp.data.tstamp;
+    data(dataIdx).values = tmp.data.values;
+    dataIdx = dataIdx + 1;
 end
 
 RSK.data = data;

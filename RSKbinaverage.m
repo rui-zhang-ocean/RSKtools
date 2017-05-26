@@ -21,15 +21,16 @@ function [RSK, binArray] = RSKbinaverage(RSK, varargin)
 %   [Optional] - profileNum - Optional profile number. Default is to
 %                      operate on all detected profiles.
 %            
-%                direction - the profile direction to consider. Must be either
-%                      'down' or 'up'. Defaults to 'down'. 
+%                direction - the profile cast direction of the data fields
+%                      selected. Must be either 'down' or 'up'. Defaults to
+%                      'down'.  
 %
 %                binBy - A reference channel that determines the samples in
-%                       each bin , can be any channel or time. Default is
-%                       Pressure.
+%                      each bin , can be any channel or time. Default is
+%                      Pressure.
 %
 %                binSize - Size of bins in each regime. Default [1] (units 
-%                       of binBy channel). 
+%                      of binBy channel). 
 %
 %                boundary - First boundary crossed in the direction
 %                      selected of each regime, in same units as binBy.
@@ -119,6 +120,8 @@ logentry = sprintf('Binned with respect to %s using [%s] boundaries with %s %s b
 RSK = RSKappendtolog(RSK, logentry);
 
 
+
+%% Nested functions
     function [binArray, binCenter, boundary] = setupbins(Y, boundary, binSize, direction)
     % Set up binArray based on the boundaries any binSize given. Boundaries
     % are hard set and binSize fills the space between the boundaries in
