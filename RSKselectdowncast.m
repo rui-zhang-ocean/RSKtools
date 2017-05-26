@@ -24,10 +24,10 @@ function [RSKdown, downidx] = RSKselectdowncast(RSK)
 Pcol = getchannelindex(RSK, 'Pressure');
 ndata = length(RSK.data);
 
-downidx = NaN(ndata, 1);
+downidx = NaN(1, ndata);
 for ndx = 1:ndata
     pressure = RSK.data(ndx).values(:, Pcol);
-    downidx(ndx) = getcastdirection(pressure, 'down');
+    downidx(1, ndx) = getcastdirection(pressure, 'down');
 end
 
 RSKdown.data = RSK.data(logical(downidx));
