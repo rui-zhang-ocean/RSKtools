@@ -16,7 +16,7 @@ function RSK = RSKsmooth(RSK, channel, varargin)
 %                       array of many channels or 'all'.
 %               
 %    [Optional] - filter - The type of smoothing filter that will be used.
-%                       Either median or boxcar. Default is boxcar.
+%                       Either median, boxcar or triangle. Default is boxcar.
 %
 %                 profileNum - Optional profile number. Default is to
 %                       operate on all of data's fields.
@@ -37,7 +37,7 @@ function RSK = RSKsmooth(RSK, channel, varargin)
 % Website: www.rbr-global.com
 % Last revision: 2017-05-19
 
-validFilterNames = {'median', 'boxcar'};
+validFilterNames = {'median', 'boxcar', 'triangle'};
 checkFilter = @(x) any(validatestring(x,validFilterNames));
 
 p = inputParser;
@@ -57,10 +57,10 @@ windowLength = p.Results.windowLength;
 
 %% Ensure channel is a cell.
 
-channels = cellchannelnames(RSK, channel);
+channelcell = cellchannelnames(RSK, channel);
 
 dataIdx = setdataindex(RSK, profileNum);
-for chanName = channels
+for chanName = channelcell
     channelCol = getchannelindex(RSK, chanName);
     for ndx = dataIdx
         in = RSK.data(ndx).values(:,channelCol);
@@ -69,6 +69,8 @@ for chanName = channels
                 out = runavg(in, windowLength);
             case 'median'
                 out = runmed(in, windowLength);
+            case 'triangle'
+                out = runtriang(in, windowLength);
         end      
         RSK.data(ndx).values(:,channelCol) = out;
     end
