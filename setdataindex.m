@@ -24,11 +24,11 @@ function dataIdx = setdataindex(RSK, profileNum)
 ndata = length(RSK.data);
 
 if exist('profileNum', 'var') && ~isempty(profileNum)
-    if max(profileNum) > length(ndata)
+    if max(profileNum) > ndata
         error('The profileNum selected is greater than the total amount of profiles in this file.');
     else
         dataIdx = profileNum;
     end
 else
-    dataIdx = 1:length(ndata);
+    dataIdx = 1:ndata;
 end
