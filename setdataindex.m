@@ -19,10 +19,16 @@ function dataIdx = setdataindex(RSK, profileNum)
 % Author: RBR Ltd. Ottawa ON, Canada
 % email: support@rbr-global.com
 % Website: www.rbr-global.com
-% Last revision: 2017-05-19
+% Last revision: 2017-05-26
+
+ndata = length(RSK.data);
 
 if exist('profileNum', 'var') && ~isempty(profileNum)
-    dataIdx = profileNum;
+    if max(profileNum) > length(ndata)
+        error('The profileNum selected is greater than the total amount of profiles in this file.');
+    else
+        dataIdx = profileNum;
+    end
 else
-    dataIdx = 1:length(RSK.data);
+    dataIdx = 1:length(ndata);
 end

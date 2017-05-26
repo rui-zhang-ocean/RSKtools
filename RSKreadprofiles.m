@@ -91,7 +91,7 @@ alltend = sort(alltend, 'ascend');
 
 if isempty(profileNum)
     profileNum = 1:length(alltstart);
-elseif max(profileNum) > length(alltstart)
+elseif max(profileNum > length(alltstart))
     disp('The profileNum selected is greater than the total amount of profiles in this file.');
     return
 end
