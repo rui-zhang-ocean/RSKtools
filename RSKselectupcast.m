@@ -1,4 +1,4 @@
-function [RSKup, upidx] = RSKselectupcast(RSK)
+function [RSK, upidx] = RSKselectupcast(RSK)
 
 % RSKselectupcast - Selects the datafields that have a decreasing pressure.
 %
@@ -11,7 +11,7 @@ function [RSKup, upidx] = RSKselectupcast(RSK)
 %    RSK - The input RSK structure
 %
 % Outputs:
-%    RSKup - The RSK structure only containing upcasts.
+%    RSK - The RSK structure only containing upcasts.
 %
 %    upidx - The index of the data fields from the input RSK structure
 %          are upcasts.
@@ -30,6 +30,6 @@ for ndx = 1:ndata
     upidx(1, ndx) = getcastdirection(pressure, 'up');
 end
 
-RSKup.data = RSK.data(logical(upidx));
+RSK.data = RSK.data(logical(upidx));
 
 end
