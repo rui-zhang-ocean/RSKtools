@@ -11,7 +11,6 @@ function pAtm = getatmosphericpressure(RSK)
 % Outputs:
 %    pAtm - Atmospheric pressure in dbar
 %
-%
 % Author: RBR Ltd. Ottawa ON, Canada
 % email: support@rbr-global.com
 % Website: www.rbr-global.com

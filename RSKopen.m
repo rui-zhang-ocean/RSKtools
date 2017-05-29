@@ -52,15 +52,12 @@ end
 
 dbid = mksqlite('open',fname);
 
-%% Check version 
 RSK.dbInfo = mksqlite('select version,type from dbInfo');
 
 if iscompatibleversion(RSK, latestRSKversionMajor, latestRSKversionMinor, latestRSKversionPatch+1)
     warning(['RSK version ' vsnString ' is newer than your RSKtools version. It is recommended to update RSKtools at https://rbr-global.com/support/matlab-tools']);
 end
 
-
-%% Read tables
 RSK = readstandardtables(RSK);
 
 switch RSK.dbInfo(end).type
@@ -84,10 +81,6 @@ RSK = renamechannels(RSK);
 
 
 RSK = RSKgetprofiles(RSK);
-
-%% Log
-logentry = [fname ' opened using RSKtools v' RSKtoolsversion '.'];
-RSK = RSKappendtolog(RSK, logentry);
 
 
 end

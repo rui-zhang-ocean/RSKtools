@@ -1,4 +1,4 @@
-function [RSK, spikeidx] = RSKdespike(RSK, channel, varargin)
+function [RSK, spike] = RSKdespike(RSK, channel, varargin)
 
 % RSKdespike - De-spike a time series by comparing it to a reference time
 %              series
@@ -19,14 +19,8 @@ function [RSK, spikeidx] = RSKdespike(RSK, channel, varargin)
 %                channel - Longname of channel to despike (e.g. temperature,
 %                    salinity, etc).
 %
-%   [Optional] - series - Specifies the series to be filtered. Either 'data'
-%                    or 'profile'. Default is 'data'.
-%
-%                profileNum - Optional profile number. Default is to
+%   [Optional] - profileNum - Optional profile number. Default is to
 %                    despike all profiles.
-%            
-%                direction - 'up' for upcast, 'down' for downcast, or 'both' for
-%                    all. Default is 'down'.
 %
 %                threshold - The number of standard deviations to use for
 %                    the spike criterion. Default value is 4.
@@ -43,8 +37,9 @@ function [RSK, spikeidx] = RSKdespike(RSK, channel, varargin)
 % Outputs:
 %    RSK - The RSK structure with de-spiked series.
 %
-%    spikeidx - A structure containing the index of the spikes; if profiles
-%        were despiked, spikeidx is a structure with a field for each profile.
+%    spike - A structure containing the index of the spikes; if many
+%                    data fields were despiked, spike is a structure
+%                    with a field for each profile. 
 %
 % Example: 
 %    [RSK, spikesidx] = RSKdespike(RSK,  'Pressure')
@@ -54,83 +49,45 @@ function [RSK, spikeidx] = RSKdespike(RSK, channel, varargin)
 % Author: RBR Ltd. Ottawa ON, Canada
 % email: support@rbr-global.com
 % Website: www.rbr-global.com
-% Last revision: 2017-05-10
-
-
-%% Check input and default arguments
-
-validSeries = {'profile', 'data'};
-checkSeriesName = @(x) any(validatestring(x,validSeries));
-
-validDirections = {'up', 'down', 'both'};
-checkDirection = @(x) any(validatestring(x,validDirections));
+% Last revision: 2017-05-24
 
 validActions = {'replace', 'interp', 'NaN'};
 checkAction = @(x) any(validatestring(x,validActions));
 
-
-%% Parse Inputs
-
 p = inputParser;
 addRequired(p, 'RSK', @isstruct);
 addRequired(p, 'channel');
-addParameter(p, 'series', 'data', checkSeriesName);
 addParameter(p, 'profileNum', [], @isnumeric);
 addParameter(p, 'threshold', 4, @isnumeric);
 addParameter(p, 'windowLength', 3, @isnumeric);
 addParameter(p, 'action', 'NaN', checkAction);
-addParameter(p, 'direction', 'down', checkDirection);% Only needed if series is 'profile'
 parse(p, RSK, channel, varargin{:})
 
-% Assign each argument
 RSK = p.Results.RSK;
 channel = p.Results.channel;
-series = p.Results.series;
-direction = p.Results.direction;
 profileNum = p.Results.profileNum;
 windowLength = p.Results.windowLength;
 threshold = p.Results.threshold;
 action = p.Results.action;
 
-if strcmpi(series, 'profile')
-    if strcmpi(direction, 'both')
-        direction = {'down', 'up'};
-    else
-        direction = {direction};
-    end
-end
 
 %% Despike
 channelCol = getchannelindex(RSK, channel);
-switch series
-    case 'profile'  
-        for dir = direction
-            profileIdx = checkprofiles(RSK, profileNum, dir{1});
-            castdir = [dir{1} 'cast'];
-            for ndx = profileIdx
-                x = RSK.profiles.(castdir).data(ndx).values(:,channelCol);
-                xtime = RSK.profiles.(castdir).data(ndx).tstamp;
-                [out, index] = despike(x, xtime, threshold, windowLength, action);
-                RSK.profiles.(castdir).data(ndx).values(:,channelCol) = out;
-                spikeidx.(castdir).(['profile' num2str(ndx)]) = index;
-            end
-            
-            logprofile = logentryprofiles(dir{1}, profileNum, profileIdx);
-            logentry = sprintf('%s de-spiked using a %1.0f sample window and %1.0f sigma threshold on %s. Spikes were treated with %s.',...
-                channel, windowLength, threshold, logprofile, action);
-            RSK = RSKappendtolog(RSK, logentry);
-        end
-    case 'data'
-        x = RSK.data.values(:,channelCol);
-        xtime = RSK.data.tstamp;
-        [out, spikeidx] = despike(x, xtime, threshold, windowLength, action); 
-        RSK.data.values(:,channelCol) = out;
-        
-        logentry = sprintf('%s de-spiked using a %1.0f sample window and %1.0f sigma threshold. Spikes were treated with %s.',...
-                channel, windowLength, threshold, action);
-        RSK = RSKappendtolog(RSK, logentry);
+dataIdx = setdataindex(RSK, profileNum);
+k = 1;
+for ndx = dataIdx
+    x = RSK.data(ndx).values(:,channelCol);
+    xtime = RSK.data(ndx).tstamp;
+    [out, index] = despike(x, xtime, threshold, windowLength, action);
+    RSK.data(ndx).values(:,channelCol) = out;
+    spike(k).index = index;
+    k = k+1;
 end
-end
+
+logdata = logentrydata(RSK, profileNum, dataIdx);
+logentry = sprintf('%s de-spiked using a %1.0f sample window and %1.0f sigma threshold on %s. Spikes were treated with %s.',...
+    channel, windowLength, threshold, logdata, action);
+RSK = RSKappendtolog(RSK, logentry);
 
 
     %% Nested Functions
@@ -141,19 +98,20 @@ end
     % non-spike values. The output is the x series with spikes fixed and I is
     % the index of the spikes.
 
-    y = x;
-    ref = runmed(x, windowLength);
-    dx = x - ref;
-    sd = std(dx, 'omitnan');
-    I = find(abs(dx) > threshold*sd);
-    good = find(abs(dx) <= threshold*sd);
+        y = x;
+        ref = runmed(x, windowLength);
+        dx = x - ref;
+        sd = std(dx, 'omitnan');
+        I = find(abs(dx) > threshold*sd);
+        good = find(abs(dx) <= threshold*sd);
 
-    switch action
-      case 'replace'
-        y(I) = ref(I);
-      case 'NaN'
-        y(I) = NaN;
-      case 'interp'
-        y(I) = interp1(t(good), x(good), t(I)) ;
+        switch action
+          case 'replace'
+            y(I) = ref(I);
+          case 'NaN'
+            y(I) = NaN;
+          case 'interp'
+            y(I) = interp1(t(good), x(good), t(I)) ;
+        end
     end
-    end
+end

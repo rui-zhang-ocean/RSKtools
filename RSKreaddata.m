@@ -42,8 +42,8 @@ function RSK = RSKreaddata(RSK, varargin)
 
 p = inputParser;
 addRequired(p, 'RSK', @isstruct);
-addOptional(p, 't1', [], @isnumeric);
-addOptional(p, 't2', [], @isnumeric);
+addParameter(p, 't1', [], @isnumeric);
+addParameter(p, 't2', [], @isnumeric);
 parse(p, RSK, varargin{:})
 
 RSK = p.Results.RSK;

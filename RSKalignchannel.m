@@ -18,15 +18,12 @@ function [RSK] = RSKalignchannel(RSK, channel, lag, varargin)
 %                       A negative lag shifts the channel backward in
 %                       time (earlier), while a positive lag shifts
 %                       the channel forward in time (later).  To apply
-%                       a different lag to each profile, specify the
+%                       a different lag to each data field, specify the
 %                       lags in a vector.
 %
 %    [Optional] - profileNum - Profile(s) to which the lag(s) are applied.
 %                        Default all profiles.    
 %
-%                 direction - 'up' for upcast or 'down' for downcast.
-%                        Default is 'down'. 
-% 
 %                  shiftfill - The values that will fill the void left
 %                        at the beginning or end of the time series; 'nan',
 %                        fills the removed samples of the shifted channel
@@ -61,10 +58,7 @@ function [RSK] = RSKalignchannel(RSK, channel, lag, varargin)
 % Author: RBR Ltd. Ottawa ON, Canada
 % email: support@rbr-global.com
 % Website: www.rbr-global.com
-% Last revision: 2017-05-15
-
-validDirections = {'down', 'up'};
-checkDirection = @(x) any(validatestring(x,validDirections));
+% Last revision: 2017-05-23
 
 validShiftfill = {'zeroorderhold', 'union', 'nan', 'mirror'};
 checkShiftfill = @(x) any(validatestring(x,validShiftfill));
@@ -74,7 +68,6 @@ addRequired(p, 'RSK', @isstruct);
 addRequired(p, 'channel', @ischar);
 addRequired(p, 'lag', @isnumeric);
 addParameter(p, 'profileNum', [], @isnumeric);
-addParameter(p, 'direction', 'down', checkDirection);
 addParameter(p, 'shiftfill', 'zeroorderhold', checkShiftfill);
 parse(p, RSK, channel, lag, varargin{:})
 
@@ -83,70 +76,65 @@ RSK = p.Results.RSK;
 channel = p.Results.channel;
 lag = p.Results.lag;
 profileNum = p.Results.profileNum;
-direction = p.Results.direction;
 shiftfill = p.Results.shiftfill;
 
-profileIdx = checkprofiles(RSK, profileNum, direction);
-castdir = [direction 'cast'];
-
-lags = checklag(lag, profileIdx);
-
-
-%% Apply lag
-counter = 0;
+dataIdx = setdataindex(RSK, profileNum);
+lags = checklag(lag, dataIdx);
 channelCol = find(strcmpi(channel, {RSK.channels.longName}));
 
-for ndx = profileIdx
+counter = 0;
+for ndx = dataIdx
     counter = counter + 1;       
-    channelData = RSK.profiles.(castdir).data(ndx).values(:, channelCol);
+    channelData = RSK.data(ndx).values(:, channelCol);
     
     if strcmpi(shiftfill, 'union')
         channelShifted = shiftarray(channelData, lags(counter), 'zeroorderhold');
-        RSK.profiles.(castdir).data(ndx).values(:, channelCol) = channelShifted;
+        RSK.data(ndx).values(:, channelCol) = channelShifted;
         if lags(counter) > 0 
-            RSK.profiles.(castdir).data(ndx).values = RSK.profiles.(castdir).data(ndx).values(lags(counter)+1:end,:);
-            RSK.profiles.(castdir).data(ndx).tstamp = RSK.profiles.(castdir).data(ndx).tstamp(lags(counter)+1:end);
+            RSK.data(ndx).values = RSK.data(ndx).values(lags(counter)+1:end,:);
+            RSK.data(ndx).tstamp = RSK.data(ndx).tstamp(lags(counter)+1:end);
         elseif lags(counter) < 0 
-            RSK.profiles.(castdir).data(ndx).values = RSK.profiles.(castdir).data(ndx).values(1:end-lags(counter),:);
-            RSK.profiles.(castdir).data(ndx).tstamp = RSK.profiles.(castdir).data(ndx).tstamp(1:end-lags(counter));
+            RSK.data(ndx).values = RSK.data(ndx).values(1:end-lags(counter),:);
+            RSK.data(ndx).tstamp = RSK.data(ndx).tstamp(1:end-lags(counter));
         end
     else 
         channelShifted = shiftarray(channelData, lags(counter), shiftfill);
-        RSK.profiles.(castdir).data(ndx).values(:, channelCol) = channelShifted;
+        RSK.data(ndx).values(:, channelCol) = channelShifted;
     end
 
 end
 
 %% Update log
-if isempty(profileNum) && length(lag) == 1
-    logentry = [channel ' aligned using a ' num2str(lags(1)) ' sample lag on all ' direction 'cast profiles.'];
+if length(lag) == 1
+    logdata = logentrydata(RSK, profileNum, dataIdx);
+    logentry = [channel ' aligned using a ' num2str(lags(1)) ' sample lag and ' shiftfill ' shiftfill on ' logdata '.'];
     RSK = RSKappendtolog(RSK, logentry);
 else
-    for ndx = 1:length(profileIdx)
-        logentry = [channel ' aligned using a ' num2str(lags(ndx)) ' sample lag on ' direction 'cast profile ' num2str(profileIdx(ndx)) '.'];
+    for ndx = 1:length(dataIdx)
+        logdata = logentrydata(RSK, profileNum, dataIdx);
+        logentry = [channel ' aligned using a ' num2str(lags(ndx)) ' sample lag and ' shiftfill ' shiftfill on data field ' num2str(dataIdx(ndx)) '.'];
         RSK = RSKappendtolog(RSK, logentry);
     end
 end
-end
 
 
-    function lags = checklag(lag, profileIdx)
-
+%% Nested function
+    function lags = checklag(lag, dataIdx)
     % A helper function used to check if the lag values are intergers and
     % either one for all profiles or one for each profiles.
 
-    if ~isequal(fix(lag),lag),
-        error('Lag values must be integers.')
-    end
+        if ~isequal(fix(lag),lag),
+            error('Lag values must be integers.')
+        end
 
-    if length(lag) == 1 && length(profileIdx) ~= 1
-        lags = repmat(lag, 1, length(profileIdx));
-    elseif length(lag) > 1 && length(lag) ~= length(profileIdx)
-        error(['Length of lag must match number of profiles or be a ' ...
-               'single value']);
-    else
-        lags = lag;
-    end
+        if length(lag) == 1 && length(dataIdx) ~= 1
+            lags = repmat(lag, 1, length(dataIdx));
+        elseif length(lag) > 1 && length(lag) ~= length(dataIdx)
+            error(['Length of lag must equal the number of profiles or be a ' ...
+                   'single value']);
+        else
+            lags = lag;
+        end
 
     end
-
+end

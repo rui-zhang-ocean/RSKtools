@@ -31,8 +31,7 @@ function RSK = RSKfindprofiles(RSK, varargin)
 % Author: RBR Ltd. Ottawa ON, Canada
 % email: support@rbr-global.com
 % Website: www.rbr-global.com
-% Last revision: 2017-05-01
-
+% Last revision: 2017-05-29
 
 %% Parse Inputs
 p = inputParser;
@@ -46,30 +45,28 @@ RSK = p.Results.RSK;
 profileThreshold = p.Results.profileThreshold;
 conductivityThreshold = p.Results.conductivityThreshold;
 
-
 %% Check if upcasts is already populated
 if isfield(RSK, 'profiles')
     error('Profiles are already found, get data using RSKreadprofiles.m');
 end
 
-
 %% Set up values
-pressureCol = find(strcmpi('pressure', {RSK.channels.longName}));
-condCol = find(strcmpi('conductivity', {RSK.channels.longName}));
-pressure = RSK.data.values(:, pressureCol(1));
+Pcol = getchannelindex(RSK, 'Pressure');
+pressure = RSK.data.values(:, Pcol);
 timestamp = RSK.data.tstamp;
 
 % If conductivity is present it will be used to detect when the logger is
 % out of the water.
-if isempty(condCol)
+try
+    Ccol = getchannelindex(RSK, 'Conductivity');
+    conductivity = RSK.data.values(:, Ccol);
+catch
     conductivity = [];
-else 
-    conductivity = RSK.data.values(:, condCol(1));
 end
-
 
 %% Run profile detection
 [wwevt] = detectprofiles(pressure, timestamp, conductivity, profileThreshold, conductivityThreshold);
+
 
 if size(wwevt,1) < 2
     disp('No profiles were detected in this dataset with the given parameters.')
