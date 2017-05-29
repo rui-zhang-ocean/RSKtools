@@ -26,8 +26,6 @@ function RSK = readheaderlive(RSK)
 %% Tables that are definitely in 'live'
 RSK.appSettings = mksqlite('select * from appSettings');
 
-RSK.instrumentChannels = mksqlite('select * from instrumentChannels');
-
 RSK = readparameters(RSK);
 
 if iscompatibleversion(RSK, 1, 13, 8)

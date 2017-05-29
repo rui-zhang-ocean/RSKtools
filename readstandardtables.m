@@ -21,7 +21,7 @@ function RSK = readstandardtables(RSK)
 % Last revision: 2017-03-31
 
 %% Tables that are definitely in all files
-RSK.channels = mksqlite('select shortName,longName,units from channels');
+RSK = readchannels(RSK);
 
 RSK.epochs = mksqlite('select deploymentID,startTime/1.0 as startTime, endTime/1.0 as endTime from epochs');
 RSK.epochs.startTime = RSKtime2datenum(RSK.epochs.startTime);

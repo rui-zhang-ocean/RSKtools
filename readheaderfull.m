@@ -29,8 +29,6 @@ RSK.appSettings = mksqlite('select * from appSettings');
 
 RSK.ranging = mksqlite('select * from ranging');
 
-RSK.instrumentChannels = mksqlite('select * from instrumentChannels');
-
 % RSK = RSKreadcalibrations(RSK);
 % NOTE : We no longer automatically read the calibrations table when
 % opening a file with RSKopen. Use RSKreadcalibrations(RSK) to load the
