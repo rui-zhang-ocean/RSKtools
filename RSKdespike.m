@@ -23,7 +23,7 @@ function [RSK, spike] = RSKdespike(RSK, channel, varargin)
 %                    despike all profiles.
 %
 %                threshold - The number of standard deviations to use for
-%                    the spike criterion. Default value is 4.
+%                    the spike criterion. Default value is 2.
 %
 %                windowLength - The total size of the filter window. Must
 %                    be odd. Default is 3.
@@ -44,7 +44,7 @@ function [RSK, spike] = RSKdespike(RSK, channel, varargin)
 % Example: 
 %    [RSK, spikesidx] = RSKdespike(RSK,  'Pressure')
 %   OR
-%    [RSK, spikesidx] = RSKdespike(RSK, 'Temperature', 'threshold',2, 'windowLength',10, 'action','NaN');
+%    [RSK, spikesidx] = RSKdespike(RSK, 'Temperature', 'threshold',4, 'windowLength',10, 'action','NaN');
 %
 % Author: RBR Ltd. Ottawa ON, Canada
 % email: support@rbr-global.com
@@ -58,7 +58,7 @@ p = inputParser;
 addRequired(p, 'RSK', @isstruct);
 addRequired(p, 'channel');
 addParameter(p, 'profileNum', [], @isnumeric);
-addParameter(p, 'threshold', 4, @isnumeric);
+addParameter(p, 'threshold', 2, @isnumeric);
 addParameter(p, 'windowLength', 3, @isnumeric);
 addParameter(p, 'action', 'NaN', checkAction);
 parse(p, RSK, channel, varargin{:})
