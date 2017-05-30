@@ -7,13 +7,13 @@ function castidx = getdataindex(RSK, varargin)
 % A helper function used to select the data fields that are selected.
 %
 % Inputs:
-%   RSK - Structure containing the logger data read
-%         from the RSK file.
+%   [Required] - RSK - Structure containing the logger data read
+%                      from the RSK file.
 %
-%   profile - Optional profile number. Default is to use all of data's
-%         elements.
+%   [Optional] - profile - Optional profile number. Default is to use all of data's
+%                      elements.
 %
-%   direction - Optional cast direction.
+%                direction - Optional cast direction.
 %            
 % Outputs:
 %    castidx - An array containing the index of data's elements.
@@ -25,8 +25,8 @@ function castidx = getdataindex(RSK, varargin)
 
 p = inputParser;
 addRequired(p, 'RSK', @isstruct);
-addParameter(p, 'profile', [], @isnumeric);
-addParameter(p, 'direction', []);
+addOptional(p, 'profile', [], @isnumeric);
+addOptional(p, 'direction', [], @isstr);
 parse(p, RSK, varargin{:})
 
 RSK = p.Results.RSK;
@@ -34,6 +34,10 @@ profile = p.Results.profile;
 direction = p.Results.direction;
 
 
+if size(RSK.data,2) == 1
+    castidx = 1;
+    return
+end
 
 profilecast = size(RSK.profiles.order,2);
 ndata = length(RSK.data);
