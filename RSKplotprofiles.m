@@ -3,20 +3,24 @@ function hdls = RSKplotprofiles(RSK, varargin)
 % RSKplotprofiles - Plot profiles from an RSK structure output by 
 %                   RSKreadprofiles.
 %
-% Syntax:  RSKplotprofiles(RSK, profileNum, channel, direction)
+% Syntax:  [hdls] = RSKplotprofiles(RSK, [OPTIONS])
 % 
 % Plots profiles from automatically detected casts. If called with one
 % argument, will default to plotting downcasts of temperature for all
-% profiles in the structure.  Optionally outputs an array of handles
+% elements in the data field.  Optionally outputs an array of handles
 % to the line objects.
 %
 % Inputs: 
 %    [Required] - RSK - Structure containing the logger metadata and data
 %
-%    [Optional] - profileNum - Optional profile number to plot. Default is to plot 
-%                          all detected profiles.
+%    [Optional] - profile - Optional profile number to plot. Default is to plot 
+%                        all detected profiles.
 %
-%                 channel - Variable to plot (e.g. temperature, salinity, etc).
+%                 channel - Variable to plot (e.g. temperature, salinity,
+%                        etc). Default is 'Temperature'.
+% 
+%                 direction - 'up' for upcast, 'down' for downcast or
+%                        'both'. Default is 'down'.
 %
 % Output:
 %     hdls - The line object of the plot.
@@ -26,39 +30,48 @@ function hdls = RSKplotprofiles(RSK, varargin)
 %    rsk = RSKreadprofiles(rsk);
 %    % plot selective downcasts and output handles
 %      for customization
-%    hdls = RSKplotprofiles(rsk, 'profileNum', [1 5 10], 'channel', 'conductivity');
+%    hdls = RSKplotprofiles(rsk, 'profile', [1 5 10], 'channel', 'conductivity');
 %
 % See also: RSKreadprofiles, RSKreaddata.
 %
 % Author: RBR Ltd. Ottawa ON, Canada
 % email: support@rbr-global.com
 % Website: www.rbr-global.com
-% Last revision: 2017-05-23
+% Last revision: 2017-05-30
+
+validDirections = {'down', 'up', 'both'};
+checkDirection = @(x) any(validatestring(x,validDirections));
 
 p = inputParser;
 addRequired(p, 'RSK', @isstruct);
-addParameter(p, 'profileNum', [], @isnumeric);
+addParameter(p, 'profile', [], @isnumeric);
 addParameter(p, 'channel', 'Temperature', @ischar)
+addParameter(p, 'direction', 'down', checkDirection);
 parse(p, RSK, varargin{:})
 
 % Assign each input argument
 RSK = p.Results.RSK;
-profileNum = p.Results.profileNum;
+profile = p.Results.profile;
 channel = p.Results.channel;
+direction = p.Results.direction;
+
+
 
 [RSKsp, SPcol] = getseapressure(RSK);
 chanCol = getchannelindex(RSK, channel);
-dataIdx = setdataindex(RSK, profileNum);
+castidx = getdataindex(RSK, profile, direction);
 
 pmax = 0;
 ii = 1;
-for ndx=dataIdx
+for ndx = castidx
     seapressure = RSKsp.data(ndx).values(:, SPcol);
     hdls(ii) = plot(RSK.data(ndx).values(:, chanCol), seapressure);
     hold on
     pmax = max([pmax; seapressure]);
     ii = ii+1;
 end
+
+
 
 ax = gca; 
 ax.ColorOrderIndex = 1; 

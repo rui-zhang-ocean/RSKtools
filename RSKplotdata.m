@@ -13,7 +13,11 @@ function hdls = RSKplotdata(RSK, varargin)
 %    [Optional] - channel - channel to plots, can be multiple in a cell, if no value is
 %                       given it will plot all channels.
 %
-%                  profileNum - number indicating the profile to plot.
+%                  profile - number indicating the profile to plot. Default
+%                       is 1.
+% 
+%                 direction - 'up' for upcast, 'down' for downcast. Default
+%                       is 'down'. 
 %
 % Output:
 %     hdls - The line object of the plot.
@@ -30,17 +34,24 @@ function hdls = RSKplotdata(RSK, varargin)
 % Author: RBR Ltd. Ottawa ON, Canada
 % email: support@rbr-global.com
 % Website: www.rbr-global.com
-% Last revision: 2017-05-17
+% Last revision: 2017-05-30
+
+validDirections = {'down', 'up'};
+checkDirection = @(x) any(validatestring(x,validDirections));
 
 p = inputParser;
 addRequired(p, 'RSK', @isstruct);
 addParameter(p, 'channel', 'all');
-addParameter(p, 'profileNum', 1);
+addParameter(p, 'profile', 1);
+addParameter(p, 'direction', [], checkDirection);
 parse(p, RSK, varargin{:})
 
 RSK = p.Results.RSK;
 channel = p.Results.channel;
-profileNum = p.Results.profileNum;
+profile = p.Results.profile;
+direction = p.Results.direction;
+
+
 
 if ~isfield(RSK,'data')
     disp('You must read a section of data in first!');
@@ -49,18 +60,22 @@ if ~isfield(RSK,'data')
     return
 end
 
-if size(RSK.data,2) > 1 && size(profileNum, 2) > 1
-    disp('Use RSKplotprofile...');
-    return   
+castidx = getdataindex(RSK, profile, direction);
+if size(castidx,2) ~= 1 
+    disp('RSKplotdata can only plot one cast, use RSKplotprofiles...');
+    return
 end
+    
+
 
 chanCol = [];
-channels = cellchannelnames(RSK, channel);
-for chan = channels
-    chanCol = [chanCol getchannelindex(RSK, chan{1})];
+if ~strcmp(channel, 'all')
+    channels = cellchannelnames(RSK, channel);
+    for chan = channels
+        chanCol = [chanCol getchannelindex(RSK, chan{1})];
+    end
 end
-
-hdls = channelsubplots(RSK, 'data', 'chanCol', chanCol, 'dataNum', profileNum);
+hdls = channelsubplots(RSK, 'data', 'chanCol', chanCol, 'castidx', castidx);
 
 end
 
