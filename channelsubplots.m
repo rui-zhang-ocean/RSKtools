@@ -17,9 +17,9 @@ function hdls = channelsubplots(RSK, field, varargin)
 %   [Optional] - chanCol - The column number of the channels to be plotted.
 %                      Only required if all channel are not ebing plotted.
 %
-%                dataNum - The data field that will be used to make the
-%                      plot. Note: To compare data fields use
-%                      RSKplotprofiles. 
+%                castidx - The element of data that will be used to make
+%                      the plot. The default is 1. Note: To compare data
+%                      fields use RSKplotprofiles. 
 %
 % Outputs:
 %    hdls - The line object of the plot.
@@ -33,24 +33,25 @@ p = inputParser;
 addRequired(p, 'RSK', @isstruct);
 addRequired(p, 'field', @isstr)
 addParameter(p, 'chanCol', [], @isnumeric);
-addParameter(p, 'dataNum', 1);
+addParameter(p, 'castidx', 1);
 parse(p, RSK, field, varargin{:})
 
 RSK = p.Results.RSK;
 field = p.Results.field;
 chanCol = p.Results.chanCol;
-dataNum = p.Results.dataNum;
+castidx = p.Results.castidx;
+
+
 
 if isempty(chanCol)
-    chanCol = 1:size(RSK.(field).values,2);
+    chanCol = 1:size(RSK.(field)(castidx).values,2);
 end
-
 numchannels = length(chanCol);
 
 n = 1;
 for chan = chanCol
     subplot(numchannels,1,n)
-    hdls(n) = plot(RSK.(field)(dataNum).tstamp, RSK.(field)(dataNum).values(:,chan),'-');
+    hdls(n) = plot(RSK.(field)(castidx).tstamp, RSK.(field)(castidx).values(:,chan),'-');
     title(RSK.channels(chan).longName);
     ylabel(RSK.channels(chan).units);
     ax(n)=gca;
