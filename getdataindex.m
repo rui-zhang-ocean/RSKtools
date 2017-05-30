@@ -1,4 +1,4 @@
-function castIdx = getdataindex(RSK, profile)
+function castidx = getdataindex(RSK, profile)
 
 % checkprofile - Determines which of data's elements are selected
 %
@@ -14,7 +14,7 @@ function castIdx = getdataindex(RSK, profile)
 %         elements.
 %            
 % Outputs:
-%    castIdx - An array containing the index of data's elements.
+%    castidx - An array containing the index of data's elements.
 %
 % Author: RBR Ltd. Ottawa ON, Canada
 % email: support@rbr-global.com
@@ -28,9 +28,15 @@ if exist('profile', 'var') && ~isempty(profile)
     if max(profile) > ndata
         error('The profileNum selected is greater than the total amount of profiles in this file.');
     end
-    if 
-        dataIdx = profile;
+    
+    if profilecasts == 2
+        castidx = [(profile*2)-1 profile*2];
+        castidx = sort(castidx);
+    else
+        castidx = profile;
     end
 else
-    dataIdx = 1:ndata;
+    castidx = 1:ndata;
+end
+
 end
