@@ -23,10 +23,12 @@ function castidx = getdataindex(RSK, varargin)
 % Website: www.rbr-global.com
 % Last revision: 2017-05-30
 
+validationFcn = @(x) isnumeric(x) && isempty(x);
+
 p = inputParser;
 addRequired(p, 'RSK', @isstruct);
 addOptional(p, 'profile', [], @isnumeric);
-addOptional(p, 'direction', [], @isstr);
+addOptional(p, 'direction', [], validationFcn);
 parse(p, RSK, varargin{:})
 
 RSK = p.Results.RSK;
