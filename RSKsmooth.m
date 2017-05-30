@@ -48,12 +48,13 @@ addParameter(p, 'profileNum', [], @isnumeric);
 addParameter(p, 'windowLength', 3, @isnumeric);
 parse(p, RSK, channel, varargin{:})
 
-% Assign each input argument
 RSK = p.Results.RSK;
 channel = p.Results.channel;
 filter = p.Results.filter;
 profileNum = p.Results.profileNum;
 windowLength = p.Results.windowLength;
+
+
 
 channelcell = cellchannelnames(RSK, channel);
 
