@@ -28,13 +28,12 @@ Pcol = getchannelindex(RSK, 'Pressure');
 RSK = addchannelmetadata(RSK, 'Sea Pressure', 'dbar');
 SPcol = getchannelindex(RSK, 'Sea Pressure');
 
-dataIdx = setdataindex(RSK);
-for ndx = dataIdx
+castidx = getdataindex(RSK);
+for ndx = castidx
     seapressure = RSK.data(ndx).values(:, Pcol)- pAtm;
     RSK.data(ndx).values(:,SPcol) = seapressure;
 end
 
 end
- %fix me: seapressure is the last one calculate only.
 
 

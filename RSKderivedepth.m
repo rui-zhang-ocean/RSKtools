@@ -39,8 +39,8 @@ RSK = addchannelmetadata(RSK, 'Depth', 'm');
 Dcol = getchannelindex(RSK, 'Depth');
 [RSKsp, SPcol] = getseapressure(RSK);
 
-dataIdx = setdataindex(RSK);
-for ndx = dataIdx
+castidx = getdataindex(RSK);
+for ndx = castidx
     seapressure = RSKsp.data(ndx).values(:, SPcol);
     depth = calculatedepth(seapressure, latitude);
     RSK.data(ndx).values(:,Dcol) = depth;

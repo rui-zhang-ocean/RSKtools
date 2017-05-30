@@ -1,3 +1,4 @@
+
 function [RSK, salinity] = RSKderivesalinity(RSK)
 
 % RSKderivesalinity - Calculate salinity and add it or replace it in the data table
@@ -20,7 +21,7 @@ function [RSK, salinity] = RSKderivesalinity(RSK)
 % Author: RBR Ltd. Ottawa ON, Canada
 % email: support@rbr-global.com
 % Website: www.rbr-global.com
-% Last revision: 2017-05-19
+% Last revision: 2017-05-30
 
 if isempty(which('gsw_SP_from_C'))
     error('RSKtools requires TEOS-10 toolbox to derive salinity. Download it here: http://www.teos-10.org/software.htm');
@@ -34,8 +35,8 @@ Tcol = getchannelindex(RSK, 'Temperature');
 RSK = addchannelmetadata(RSK, 'Salinity', 'mS/cm');
 Scol = getchannelindex(RSK, 'Salinity');
 
-dataIdx = setdataindex(RSK);
-for ndx = dataIdx
+castidx = getdataindex(RSK);
+for ndx = castidx
     salinity = gsw_SP_from_C(RSK.data(ndx).values(:, Ccol), RSK.data(ndx).values(:, Tcol), RSKsp.data(ndx).values(:,SPcol));
     RSK.data(ndx).values(:,Scol) = salinity;
 end
