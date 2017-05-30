@@ -12,7 +12,7 @@ function [RSKsp, SPcol] = getseapressure(RSK)
 % Outputs:
 %    RSKsp - RSK structure containing the sea pressure data
 %
-%    SPcol
+%    SPcol - Channel index for sea pressure.
 %
 % Author: RBR Ltd. Ottawa ON, Canada
 % email: support@rbr-global.com
