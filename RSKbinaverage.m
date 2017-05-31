@@ -1,7 +1,7 @@
 function [RSK, binArray] = RSKbinaverage(RSK, varargin)
 
 % RSKbinaverage - Average the profile data by a quantized reference
-% channel.
+%                 channel.
 %
 % Syntax:  [RSK] = RSKbinaverage(RSK, [OPTIONS])
 % 
@@ -18,8 +18,8 @@ function [RSK, binArray] = RSKbinaverage(RSK, varargin)
 %   [Required] - RSK - The input RSK structure, with profiles as read using
 %                      RSKreadprofiles.
 %
-%   [Optional] - profileNum - Optional profile number. Default is to
-%                      operate on all detected profiles.
+%   [Optional] - profile - Optional profile number. Default is to operate
+%                      on all detected profiles. 
 %            
 %                direction - the profile cast direction of the data fields
 %                      selected. Must be either 'down' or 'up'. Defaults to
@@ -45,37 +45,35 @@ function [RSK, binArray] = RSKbinaverage(RSK, varargin)
 % Author: RBR Ltd. Ottawa ON, Canada
 % email: support@rbr-global.com
 % Website: www.rbr-global.com
-% Last revision: 2017-05-24
+% Last revision: 2017-05-31
 
 validDirections = {'down', 'up'};
 checkDirection = @(x) any(validatestring(x,validDirections));
 
 p = inputParser;
 addRequired(p, 'RSK', @isstruct);
-addParameter(p, 'profileNum', [], @isnumeric);
+addParameter(p, 'profile', [], @isnumeric);
 addParameter(p, 'direction', 'down', checkDirection);
 addParameter(p, 'binBy', 'Pressure', @ischar);
 addParameter(p, 'binSize', 1, @isnumeric);
 addParameter(p, 'boundary', [], @isnumeric);
 parse(p, RSK, varargin{:})
 
-% Assign each argument
 RSK = p.Results.RSK;
-profileNum = p.Results.profileNum;
+profile = p.Results.profile;
 direction = p.Results.direction;
 binBy = p.Results.binBy;
 binSize = p.Results.binSize;
 boundary = p.Results.boundary;
 
-%% Find max profile length
-dataIdx = setdataindex(RSK, profileNum);
 
-alltstamp = {RSK.data(dataIdx).tstamp};
+
+castidx = getdataindex(RSK, profile, direction);
+alltstamp = {RSK.data(castidx).tstamp};
 maxlength = max(cellfun('size', alltstamp, 1));
-Y = NaN(maxlength, length(dataIdx));
-
+Y = NaN(maxlength, length(castidx));
 k=1;
-for ndx = dataIdx;
+for ndx = castidx;
     if strcmpi(binBy, 'Time')
         ref = RSK.data(ndx).tstamp;
         Y(1:length(ref),k) = ref-ref(1);
@@ -87,12 +85,12 @@ for ndx = dataIdx;
     k = k+1;
 end
 
-[binArray, binCenter, boundary] = setupbins(Y, boundary, binSize, direction);
 
+
+[binArray, binCenter, boundary] = setupbins(Y, boundary, binSize, direction);
 samplesinbin = NaN(maxlength, length(binArray)-1);
 k = 1;
-for ndx = dataIdx
-    % Binning
+for ndx = castidx
     X = [RSK.data(ndx).tstamp, RSK.data(ndx).values];
     binnedValues = NaN(length(binArray)-1, size(X,2));
     
@@ -113,9 +111,10 @@ for ndx = dataIdx
     k = k+1;
 end
 
-% Log
+
+
 unit = RSK.channels(chanCol).units;
-logdata = logentrydata(RSK, profileNum, dataIdx);
+logdata = logentrydata(RSK, profile, direction);
 logentry = sprintf('Binned with respect to %s using [%s] boundaries with %s %s bin size on %s.', binBy, num2str(boundary), num2str(binSize), unit, logdata);
 RSK = RSKappendtolog(RSK, logentry);
 
