@@ -19,16 +19,29 @@ function RSK = readregionprofiles(RSK)
 % Website: www.rbr-global.com
 % Last revision: 2017-05-31
 
-RSK.region = mksqlite('select regionID, type, tstamp1/1.0 as tstamp1, tstamp2/1.0 as tstamp2 from region');
+tables = mksqlite('SELECT name FROM sqlite_master WHERE type="table"');
 
-
-
-if strcmpi(RSK.regionCast(1).type, 'down')
-    firstdir = 'downcast';
-    lastdir = 'upcast';
+if any(strcmpi({tables.name}, 'regionCast')) && any(strcmpi({tables.name}, 'region'))
+    RSK.region = mksqlite('select regionID, type, tstamp1/1.0 as tstamp1, tstamp2/1.0 as tstamp2 from region');
+    RSK.regionCast = mksqlite('select * from regionCast');
 else
-    firstdir = 'upcast';
-    lastdir = 'downcast';
+    return
+end
+
+
+
+if ~isempty(RSK.regionCast)
+    if strcmpi(RSK.regionCast(1).type, 'down')
+        firstdir = 'downcast';
+        lastdir = 'upcast';
+    else
+        firstdir = 'upcast';
+        lastdir = 'downcast';
+    end
+else
+    RSK = rmfield(RSK, 'regionCast');
+    RSK = rmfield(RSK, 'region');
+    return
 end
 
 
