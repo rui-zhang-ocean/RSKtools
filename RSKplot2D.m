@@ -8,18 +8,21 @@ function im = RSKplot2D(RSK, channel, varargin)
 %
 % Inputs:
 %    
-%   [Required] - RSK - the input RSK structure, with profiles as read using
-%                    RSKreadprofiles.
+%   [Required] - RSK - The input RSK structure, with profiles as read using
+%                      RSKreadprofiles.
 %
 %                channel - Longname of channel to plot (e.g. temperature,
-%                    salinity, etc). Can be cell array of many channels or
-%                    'all', will despike all channels.
+%                      salinity, etc). Can be cell array of many channels or
+%                      'all', will despike all channels.
 %
-%   [Optional] - profileNum - Optional profile number(s) to plot. Default
-%                    is to use all profiles. 
+%   [Optional] - profile - Optional profile number(s) to plot. Default
+%                      is to use all profiles. 
+%
+%                 direction - 'up' for upcast, 'down' for downcast. Default
+%                      is down.
 %
 %                reference - The channel that will be plotted as y. Default
-%                   'Pressure', can be 'Depth'.
+%                      'Pressure', can be 'Depth'.
 %
 % Output:
 %     im - Image object created, use to set properties.
@@ -27,60 +30,58 @@ function im = RSKplot2D(RSK, channel, varargin)
 % Author: RBR Ltd. Ottawa ON, Canada
 % email: support@rbr-global.com
 % Website: www.rbr-global.com
-% Last revision: 2017-05-24
+% Last revision: 2017-05-31
 
-%% Parse Inputs
+validDirections = {'down', 'up'};
+checkDirection = @(x) any(validatestring(x,validDirections));
+
 p = inputParser;
 addRequired(p, 'RSK', @isstruct);
 addRequired(p, 'channel');
-addParameter(p, 'profileNum', [], @isnumeric);
+addParameter(p, 'profile', [], @isnumeric);
+addParameter(p, 'direction', [], checkDirection);
 addParameter(p, 'reference', 'Pressure', @ischar);
 parse(p, RSK, channel, varargin{:})
 
-% Assign each argument
 RSK = p.Results.RSK;
 channel = p.Results.channel;
-profileNum = p.Results.profileNum;
+profile = p.Results.profile;
+direction = p.Results.direction;
 reference = p.Results.reference;
 
-%% Determine if the structure has downcasts and upcasts & set profileNum accordingly
-dataIdx = setdataindex(RSK, profileNum);
 
+
+castidx = getdataindex(RSK, profile, direction);
 chanCol = getchannelindex(RSK, channel);
-
-% Check bin center reference column.
 YCol = getchannelindex(RSK, reference);
-for ndx = dataIdx(1:end-1)
-    if RSK.data(ndx).values(:,YCol)==RSK.data(ndx+1).values(:,YCol);
-        binCenter = RSK.data(ndx).values(:,YCol);
+for ndx = 1:length(castidx)-1
+    if RSK.data(castidx(ndx)).values(:,YCol)==RSK.data(castidx(ndx+1)).values(:,YCol);
+        binCenter = RSK.data(castidx(ndx)).values(:,YCol);
     else 
         error('The refence channel`s data of all the selected profiles must be identical. Use RSKbinaverage.m')
     end
 end
 
-binValues = NaN(length(binCenter), length(dataIdx));
-for ndx = dataIdx;
-    binValues(:,ndx) = RSK.data(ndx).values(:,chanCol);
+binValues = NaN(length(binCenter), length(castidx));
+for ndx = 1:length(castidx)
+    binValues(:,ndx) = RSK.data(castidx(ndx)).values(:,chanCol);
 end
 
-t = cellfun( @(x)  min(x), {RSK.data(dataIdx).tstamp});
+
+
+t = cellfun( @(x)  min(x), {RSK.data(castidx).tstamp});
 im = imagesc(t, binCenter, binValues);
 set(im, 'AlphaData', ~isnan(binValues)) %plot NaN values in white.
 
-% Set colorbar
+
+
 setcolormap(channel);
 cb = colorbar;
 ylabel(cb, RSK.channels(chanCol).units, 'FontSize', 14)
-
-
-% Set titles with positions
 h = title(sprintf('%s', RSK.channels(chanCol).longName), 'FontSize', 16);
 p = get(h,'Position');
 set(h, 'Position', [t(end) p(2) p(3)], 'HorizontalAlignment', 'right')
 text(t(1), p(2)-0.5, sprintf('[%s - %s]', datestr(t(1), 'mmmm dd HH:MM'), datestr(t(end),'mmmm dd HH:MM')), 'FontSize', 14);
-
-
-% Adjust axes
 set(gcf, 'Position', [1 1 800 450]);
 datetick('x', 'HH', 'keepticks')
 axis tight
