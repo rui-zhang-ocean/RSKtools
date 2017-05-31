@@ -9,6 +9,7 @@ function RSK = RSKreadgeodata(RSK, varargin)
 % Inputs:
 %    RSK - Structure containing the logger metadata and thumbnails
 %          returned by RSKopen.
+%
 %    UTCdelta - The offset of the timestamp. If a value is entered it will
 %          be used. Otherwise it will use the one given in the epochs
 %          table, if there is none it will use 0.
@@ -22,19 +23,16 @@ function RSK = RSKreadgeodata(RSK, varargin)
 % Website: www.rbr-global.com
 % Last revision: 2017-01-18
 
-%% Parse Inputs
 p = inputParser;
 addRequired(p, 'RSK', @isstruct);
 addParameter(p, 'UTCdelta', 0);
 parse(p, RSK, varargin{:})
 
-% Assign each input argument
 RSK = p.Results.RSK;
 UTCdelta = p.Results.UTCdelta;
 
 
 
-%% Read geodata
 RSK.geodata = mksqlite('select tstamp/1.0 as tstamp, latitude, longitude, accuracy, accuracyType from geodata');
 if isempty(RSK.geodata)
     RSK = rmfield(RSK, 'geodata');
@@ -52,6 +50,5 @@ end
 for ndx = 1:length(RSK.geodata)
     RSK.geodata(ndx).tstamp = RSKtime2datenum(RSK.geodata(ndx).tstamp + UTCdelta);
 end
-
 
 end
