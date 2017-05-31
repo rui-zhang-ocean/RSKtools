@@ -28,32 +28,11 @@ end
 
 
 
-try
-    RSK.regionCast = mksqlite('select * from regionCast');
-catch
-    RSK.regionCast = [];
-end
-
-if ~isempty(RSK.regionCast);
-    RSK = readregionprofiles(RSK);
-    return;
-else
-    RSK = rmfield(RSK, 'regionCast');
-end
+RSK = readregionprofiles(RSK);
 
 
-
-try 
-    tmp = RSKreadevents(RSK);
-    events = tmp.events;
-catch
-end
-
-if exist('events', 'var')
-    nup = length(find(events.values(:,2) == eventBeginUpcast));
-    if nup>1
-        RSK = readeventsprofiles(RSK);
-    end
+if ~isfield(RSK, 'profiles')
+    RSK = readeventsprofiles(RSK);
 end
 
 end
