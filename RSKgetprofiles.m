@@ -18,36 +18,31 @@ function RSK = RSKgetprofiles(RSK)
 % Author: RBR Ltd. Ottawa ON, Canada
 % email: support@rbr-global.com
 % Website: www.rbr-global.com
-% Last revision: 2017-04-28
+% Last revision: 2017-05-31
 
 RSKconstants
 
-%% Check if upcasts is already populated
 if isfield(RSK, 'profiles')
     error('Profiles are already found, get data using RSKreadprofiles.m');
 end
 
 
 
-%% Check region/regionCast for profiles
 try
     RSK.regionCast = mksqlite('select * from regionCast');
 catch
     RSK.regionCast = [];
 end
 
-hasCast = ~isempty(RSK.regionCast);
-
-if  hasCast
+if ~isempty(RSK.regionCast);
     RSK = readregionprofiles(RSK);
     return;
-elseif ~hasCast
+else
     RSK = rmfield(RSK, 'regionCast');
 end
 
 
 
-%% Check events table for profiles
 try 
     tmp = RSKreadevents(RSK);
     events = tmp.events;
@@ -60,8 +55,6 @@ if exist('events', 'var')
         RSK = readeventsprofiles(RSK);
     end
 end
-
-
 
 end
 
