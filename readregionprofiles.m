@@ -17,11 +17,11 @@ function RSK = readregionprofiles(RSK)
 % Author: RBR Ltd. Ottawa ON, Canada
 % email: support@rbr-global.com
 % Website: www.rbr-global.com
-% Last revision: 2017-01-18
+% Last revision: 2017-05-31
 
-%% Load tables
 RSK.region = mksqlite('select regionID, type, tstamp1/1.0 as tstamp1, tstamp2/1.0 as tstamp2 from region');
-RSK.regionCast = mksqlite('select * from regionCast');
+
+
 
 if strcmpi(RSK.regionCast(1).type, 'down')
     firstdir = 'downcast';
@@ -31,8 +31,8 @@ else
     lastdir = 'downcast';
 end
 
-%% Fill in profiles field
-%Fill RSK.profiles, one profile at a time
+
+
 for ndx = 1:length(RSK.regionCast)/2
     nregionCast = (ndx*2)-1;
     regionID = RSK.regionCast(nregionCast).regionID;
