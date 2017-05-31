@@ -1,7 +1,7 @@
 function RSK = readeventsprofiles(RSK)
 
 % readeventsprofiles - Uses the events table to read profiles start and end
-% time
+%                      time
 %
 % Syntax:  [RSK] = readeventsprofiles(RSK)
 %
@@ -21,14 +21,10 @@ function RSK = readeventsprofiles(RSK)
 
 RSKconstants
 
-try 
-    tmp = RSKreadevents(RSK);
-    events = tmp.events;
-catch
-    warning('No events');
-end
+tmp = RSKreadevents(RSK);
 
-if exist('events', 'var')
+if isfield(tmp, 'events')
+    events = tmp.events;
     nup = length(find(events.values(:,2) == eventBeginUpcast));
     ndown = length(find(events.values(:,2) == eventBeginDowncast));
     
@@ -38,7 +34,6 @@ if exist('events', 'var')
         idown = find(events.values(:,2) == eventBeginDowncast);
         iend = find(events.values(:,2) == eventEndcast);
         
-        % which is first?
         if (idown(1) < iup(1)) 
             idownend = iend(1:2:end);
             iupend = iend(2:2:end);
@@ -51,7 +46,7 @@ if exist('events', 'var')
         RSK.profiles.downcast.tend = events.tstamp(idownend);
         RSK.profiles.upcast.tstart = events.tstamp(iup);
         RSK.profiles.upcast.tend = events.tstamp(iupend);
-        
     end
 end
+
 end
