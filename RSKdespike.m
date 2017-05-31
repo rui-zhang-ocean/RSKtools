@@ -17,29 +17,33 @@ function [RSK, spike] = RSKdespike(RSK, channel, varargin)
 %   [Required] - RSK - The input RSK structure
 %
 %                channel - Longname of channel to despike (e.g. temperature,
-%                    salinity, etc).
+%                      salinity, etc).
 %
-%   [Optional] - profileNum - Optional profile number. Default is to
-%                    despike all profiles.
+%   [Optional] - profile - Optional profile number. Default is to
+%                      despike all profiles.
+%
+%                direction - 'up' for upcast, 'down' for downcast, or
+%                      `both` for all. Default all directions that are
+%                      available.
 %
 %                threshold - The number of standard deviations to use for
-%                    the spike criterion. Default value is 2.
+%                      the spike criterion. Default value is 2.
 %
 %                windowLength - The total size of the filter window. Must
-%                    be odd. Default is 3.
+%                      be odd. Default is 3.
 %
 %                action - The action to perform on a spike. The default,
-%                    'NaN' to leave the spike as a missing value. Can also
-%                    be 'replace' is to replace it with the reference
-%                    value or 'interp' to interpolate based on 'good' 
-%                    values.
+%                      'NaN' to leave the spike as a missing value. Can
+%                      also be 'replace' is to replace it with the reference
+%                      value or 'interp' to interpolate based on 'good'
+%                      values. 
 %
 % Outputs:
 %    RSK - The RSK structure with de-spiked series.
 %
-%    spike - A structure containing the index of the spikes; if many
-%                    data fields were despiked, spike is a structure
-%                    with a field for each profile. 
+%    spike - A structure containing the index of the spikes; if many data
+%           fields were despiked, spike is a structure with a field for
+%           each profile.  
 %
 % Example: 
 %    [RSK, spikesidx] = RSKdespike(RSK,  'Pressure')
@@ -49,15 +53,19 @@ function [RSK, spike] = RSKdespike(RSK, channel, varargin)
 % Author: RBR Ltd. Ottawa ON, Canada
 % email: support@rbr-global.com
 % Website: www.rbr-global.com
-% Last revision: 2017-05-24
+% Last revision: 2017-05-31
 
 validActions = {'replace', 'interp', 'NaN'};
 checkAction = @(x) any(validatestring(x,validActions));
 
+validDirections = {'down', 'up', 'both'};
+checkDirection = @(x) any(validatestring(x,validDirections));
+
 p = inputParser;
 addRequired(p, 'RSK', @isstruct);
 addRequired(p, 'channel');
-addParameter(p, 'profileNum', [], @isnumeric);
+addParameter(p, 'profile', [], @isnumeric);
+addParameter(p, 'direction', [], checkDirection);
 addParameter(p, 'threshold', 2, @isnumeric);
 addParameter(p, 'windowLength', 3, @isnumeric);
 addParameter(p, 'action', 'NaN', checkAction);
@@ -65,17 +73,18 @@ parse(p, RSK, channel, varargin{:})
 
 RSK = p.Results.RSK;
 channel = p.Results.channel;
-profileNum = p.Results.profileNum;
+profile = p.Results.profile;
+direction = p.Results.direction;
 windowLength = p.Results.windowLength;
 threshold = p.Results.threshold;
 action = p.Results.action;
 
 
-%% Despike
+
 channelCol = getchannelindex(RSK, channel);
-dataIdx = setdataindex(RSK, profileNum);
+castidx = getdataindex(RSK, profile, direction);
 k = 1;
-for ndx = dataIdx
+for ndx = castidx
     x = RSK.data(ndx).values(:,channelCol);
     xtime = RSK.data(ndx).tstamp;
     [out, index] = despike(x, xtime, threshold, windowLength, action);
@@ -84,10 +93,14 @@ for ndx = dataIdx
     k = k+1;
 end
 
-logdata = logentrydata(RSK, profileNum, dataIdx);
-logentry = sprintf('%s de-spiked using a %1.0f sample window and %1.0f sigma threshold on %s. Spikes were treated with %s.',...
-    channel, windowLength, threshold, logdata, action);
+
+
+
+logdata = logentrydata(RSK, profile, direction);
+logentry = sprintf(['%s de-spiked using a %1.0f sample window and %1.0f sigma threshold on %s. '...
+           'Spikes were treated with %s.'], channel, windowLength, threshold, logdata, action);
 RSK = RSKappendtolog(RSK, logentry);
+
 
 
     %% Nested Functions

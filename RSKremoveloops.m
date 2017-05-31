@@ -1,8 +1,8 @@
 function [RSK, flagidx] = RSKremoveloops(RSK, varargin)
 
-% RSKremoveloop - Remove values exceeding a threshold CTD profiling
+% RSKremoveloops - Remove values exceeding a threshold CTD profiling
 %                  rate. 
-% Syntax:  [RSK, flagidx] = RSKremoveloop(RSK, [OPTIONS])
+% Syntax:  [RSK, flagidx] = RSKremoveloops(RSK, [OPTIONS])
 % 
 % This function filters the pressure channel with a lowpass boxcar to
 % reduce the effect of noise, then finds the samples that exceed a
@@ -12,8 +12,11 @@ function [RSK, flagidx] = RSKremoveloops(RSK, varargin)
 % Inputs:
 %   [Required] - RSK - The input RSK structure.
 %
-%   [Optional] - profileNum - Optional profile number(s) on which to operate.
-%                      Default is to work on all data's fields.
+%   [Optional] - profile - Optional profile number. Default is to operate
+%                      on all of data's elements. 
+%
+%                 direction - 'up' for upcast, 'down' for downcast, or
+%                      `both` for all. Default all directions available.
 % 
 %                threshold - The minimum speed at which the profile must be
 %                      taken. Default is 0.25 m/s 
@@ -31,23 +34,28 @@ function [RSK, flagidx] = RSKremoveloops(RSK, varargin)
 % Author: RBR Ltd. Ottawa ON, Canada
 % email: support@rbr-global.com
 % Website: www.rbr-global.com
-% Last revision: 2017-05-23
+% Last revision: 2017-05-31
+
+validDirections = {'down', 'up', 'both'};
+checkDirection = @(x) any(validatestring(x,validDirections));
 
 p = inputParser;
 addRequired(p, 'RSK', @isstruct);
-addParameter(p, 'profileNum', [], @isnumeric);
+addParameter(p, 'profile', [], @isnumeric);
+addParameter(p, 'direction', [], checkDirection);
 addParameter(p, 'threshold', 0.25, @isnumeric);
 parse(p, RSK, varargin{:})
 
-% Assign each argument
 RSK = p.Results.RSK;
-profileNum = p.Results.profileNum;
+profile = p.Results.profile;
+direction = p.Results.direction;
 threshold = p.Results.threshold;
 
-Dcol = getchannelindex(RSK, 'Depth');
 
-dataIdx = setdataindex(RSK, profileNum);
-for ndx = dataIdx 
+
+Dcol = getchannelindex(RSK, 'Depth');
+castidx = getdataindex(RSK, profile, direction);
+for ndx = castidx
     d = RSK.data(ndx).values(:,Dcol);
     depth = runavg(d, 3, 'nan');
     time = RSK.data(ndx).tstamp;
@@ -64,10 +72,14 @@ for ndx = dataIdx
     flagidx(ndx).index = find(flag);
 end
 
-logdata = logentrydata(RSK, profileNum, dataIdx);
+
+
+logdata = logentrydata(RSK, profile, direction);
 logentry = ['Samples measured at a profiling velocity less than ' num2str(threshold) 'm/s were replaced with NaN on ' logdata '.'];
 
 RSK = RSKappendtolog(RSK, logentry);
+
+
 
 %% Nested function
     function velocity = calculatevelocity(depth, time)

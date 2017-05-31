@@ -18,8 +18,11 @@ function RSK = RSKsmooth(RSK, channel, varargin)
 %    [Optional] - filter - The type of smoothing filter that will be used.
 %                       Either median, boxcar or triangle. Default is boxcar.
 %
-%                 profileNum - Optional profile number. Default is to
-%                       operate on all of data's fields.
+%                 profile - Optional profile number. Default is to operate
+%                       on all of data's elements. 
+%
+%                 direction - 'up' for upcast, 'down' for downcast, or
+%                       `both` for all. Default all directions available.
 %
 %                 windowLength - The total size of the filter window. Must
 %                       be odd. Default is 3.
@@ -29,39 +32,44 @@ function RSK = RSKsmooth(RSK, channel, varargin)
 %
 % Example: 
 %    rsk = RSKopen('file.rsk');
-%    rsk = RSKreadprofiles(rsk, 1:10); % read first 10 downcasts
+%    rsk = RSKreadprofiles(rsk, 'profile', 1:10); % read first 10 downcasts
 %    rsk = RSKsmooth(rsk, {'Temperature', 'Salinity'}, 'windowLength', 17);
 %
 % Author: RBR Ltd. Ottawa ON, Canada
 % email: support@rbr-global.com
 % Website: www.rbr-global.com
-% Last revision: 2017-05-19
+% Last revision: 2017-05-30
 
 validFilterNames = {'median', 'boxcar', 'triangle'};
 checkFilter = @(x) any(validatestring(x,validFilterNames));
+
+validDirections = {'down', 'up', 'both'};
+checkDirection = @(x) any(validatestring(x,validDirections));
 
 p = inputParser;
 addRequired(p, 'RSK', @isstruct);
 addRequired(p, 'channel');
 addParameter(p, 'filter', 'boxcar', checkFilter);
-addParameter(p, 'profileNum', [], @isnumeric);
+addParameter(p, 'profile', [], @isnumeric);
+addParameter(p, 'direction', [], checkDirection);
 addParameter(p, 'windowLength', 3, @isnumeric);
 parse(p, RSK, channel, varargin{:})
 
 RSK = p.Results.RSK;
 channel = p.Results.channel;
 filter = p.Results.filter;
-profileNum = p.Results.profileNum;
+profile = p.Results.profile;
+direction = p.Results.direction;
 windowLength = p.Results.windowLength;
 
 
 
 channelcell = cellchannelnames(RSK, channel);
 
-dataIdx = setdataindex(RSK, profileNum);
+castidx = getdataindex(RSK, profile, direction);
 for chanName = channelcell
     channelCol = getchannelindex(RSK, chanName);
-    for ndx = dataIdx
+    for ndx = castidx
         in = RSK.data(ndx).values(:,channelCol);
         switch filter
             case 'boxcar'
@@ -73,7 +81,7 @@ for chanName = channelcell
         end      
         RSK.data(ndx).values(:,channelCol) = out;
     end
-    logdata = logentrydata(RSK, profileNum, dataIdx);
+    logdata = logentrydata(RSK, profile, direction);
     logentry = sprintf('%s filtered using a %s filter with a %1.0f sample window on %s.', chanName{1}, filter, windowLength, logdata);
     RSK = RSKappendtolog(RSK, logentry);
 end

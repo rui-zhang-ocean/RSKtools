@@ -19,23 +19,26 @@ function lag = RSKcalculateCTlag(RSK, varargin)
 %
 % Inputs:
 %    [Required] - RSK - The input RSK structure, with profiles as read using
-%                     RSKreadprofiles.
+%                       RSKreadprofiles.
 %
 %    [Optional] - pressureRange - Set the limits of the pressure range used
-%                     to obtain the lag. Specify as a two-element vector,
-%                     [pressureMin, pressureMax]. Default is [0,
-%                     max(Pressure)]
+%                       to obtain the lag. Specify as a two-element vector,
+%                       [pressureMin, pressureMax]. Default is [0,
+%                       max(Pressure)]
 %
-%                 profileNum - Optional profile number to calculate lag.
-%                     Default is to calculate the lag of all detected
-%                     profiles.
+%                 profile - Optional profile number. Default is to
+%                       calculate the lag of all available
+%                       profiles.
+%
+%                 direction - 'up' for upcast, 'down' for downcast, or
+%                       `both` for all. Default all directions available.
 %
 %                 windowLength - The length of the filter window used for the
-%                     reference salinity. Default is 21 samples.
+%                       reference salinity. Default is 21 samples.
 %
 % Outputs:
 %    lag - The optimal lags of conductivity for each profile.  These
-%        can serve as inputs into RSKalignchannel.m.
+%          can serve as inputs into RSKalignchannel.m.
 %
 % Examples:
 %    rsk = RSKopen('file.rsk');
@@ -50,47 +53,50 @@ function lag = RSKcalculateCTlag(RSK, varargin)
 % Author: RBR Ltd. Ottawa ON, Canada
 % email: support@rbr-global.com
 % Website: www.rbr-global.com
-% Last revision: 2017-05-23
-    
-    
-%% check if user has the TEOS-10 GSW toolbox installed
+% Last revision: 2017-05-31
 
 hasTEOS = exist('gsw_SP_from_C', 'file') == 2;
 if ~hasTEOS
     error('Error: Must install TEOS-10 toolbox'); 
 end
 
-%% Parse Inputs
 
-P = inputParser;
-addRequired(P,'RSK', @isstruct);
-addParameter(P, 'pressureRange', [], @isvector);
-addParameter(P,'profileNum', [])   
-addParameter(P,'windowLength', 21, @isnumeric)
-parse(P,RSK,varargin{:})
 
-% Assign each input argument
-RSK = P.Results.RSK;
-pressureRange = P.Results.pressureRange;
-profileNum = P.Results.profileNum;
-windowLength = P.Results.windowLength;
+validDirections = {'down', 'up', 'both'};
+checkDirection = @(x) any(validatestring(x,validDirections));
 
-%% find column number of channels
+p = inputParser;
+addRequired(p,'RSK', @isstruct);
+addParameter(p, 'pressureRange', [], @isvector);
+addParameter(p,'profile', []) 
+addParameter(p, 'direction', [], checkDirection);
+addParameter(p,'windowLength', 21, @isnumeric)
+parse(p, RSK, varargin{:})
+
+RSK = p.Results.RSK;
+pressureRange = p.Results.pressureRange;
+profile = p.Results.profile;
+direction = p.Results.direction;
+windowLength = p.Results.windowLength;
+
+
+
 Pcol = getchannelindex(RSK, 'pressure');
 Ccol = getchannelindex(RSK, 'conductivity');
 Tcol = getchannelindex(RSK, 'temperature');
 
-%% Calculate Optimal Lag
+
+
 bestlag = [];
-dataIdx = setdataindex(RSK, profileNum);
-for ndx = dataIdx
-    disp(['Processing profile: ' num2str(ndx)])
+castidx = getdataindex(RSK, profile, direction);
+for ndx = castidx
+    disp(['Processing profile: ' num2str(ndx)]) %fixme, processing cast/ data element.
     C = RSK.data(ndx).values(:, Ccol);
     T = RSK.data(ndx).values(:, Tcol);
     P = RSK.data(ndx).values(:, Pcol);
     
     if ~isempty(pressureRange)
-        selectValues = (P >= pressureRange(1) & P<= pressureRange(2)); 
+        selectValues = (P >= pressureRange(1) & P <= pressureRange(2)); 
         C = C(selectValues);
         T = T(selectValues);
         P = P(selectValues);
