@@ -23,7 +23,7 @@ function castidx = getdataindex(RSK, varargin)
 % Website: www.rbr-global.com
 % Last revision: 2017-05-30
 
-validationFcn = @(x) isnumeric(x) && isempty(x);
+validationFcn = @(x) isstr(x) || isempty(x);
 
 p = inputParser;
 addRequired(p, 'RSK', @isstruct);
