@@ -102,14 +102,14 @@ else
     castidx = 1:length(alltstart);
 end
 
-dataIdx = 1;
+k = 1;
 data(length(castidx)).tstamp = [];
 data(length(castidx)).values = [];
 for ndx = castidx
     tmp = RSKreaddata(RSK, 't1', alltstart(ndx), 't2', alltend(ndx));
-    data(dataIdx).tstamp = tmp.data.tstamp;
-    data(dataIdx).values = tmp.data.values;
-    dataIdx = dataIdx + 1;
+    data(k).tstamp = tmp.data.tstamp;
+    data(k).values = tmp.data.values;
+    k = k + 1;
 end
 
 RSK.data = data;
