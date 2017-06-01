@@ -23,7 +23,7 @@ function castidx = getdataindex(RSK, varargin)
 % Website: www.rbr-global.com
 % Last revision: 2017-05-30
 
-validationFcn = @(x) isstr(x) || isempty(x);
+validationFcn = @(x) ischar(x) || isempty(x);
 
 p = inputParser;
 addRequired(p, 'RSK', @isstruct);
@@ -54,7 +54,7 @@ if isempty(profile) && isempty(direction)
     castidx = 1:ndata;
 elseif ~isempty(profile)
     if max(profile) > ndata/profilecast
-        error('The profileNum selected is greater than the total amount of profiles in this file.');
+        error('The profile requested is greater than the total amount of profiles in this file.');
     end
     
     if profilecast == 2
@@ -64,7 +64,7 @@ elseif ~isempty(profile)
         elseif strcmp(RSK.profiles.order{1}, direction)
             castidx = (profile*2)-1;
         else
-            castidx = (profile*2);
+            castidx = profile*2;
         end
     else
         castidx = profile;
