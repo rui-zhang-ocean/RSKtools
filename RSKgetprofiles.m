@@ -20,8 +20,6 @@ function RSK = RSKgetprofiles(RSK)
 % Website: www.rbr-global.com
 % Last revision: 2017-05-31
 
-RSKconstants
-
 if isfield(RSK, 'profiles')
     error('Profiles are already found, get data using RSKreadprofiles.m');
 end
@@ -29,6 +27,7 @@ end
 
 
 RSK = readregionprofiles(RSK);
+
 
 
 if ~isfield(RSK, 'profiles')
