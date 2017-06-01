@@ -1,8 +1,8 @@
-function hdls = RSKplotdata(RSK, varargin)
+function handles = RSKplotdata(RSK, varargin)
 
 % RSKplotdata - Plot summaries of logger data
 %
-% Syntax:  [hdls] = RSKplotdata(RSK, [OPTIONS])
+% Syntax:  [handles] = RSKplotdata(RSK, [OPTIONS])
 % 
 % This generates a plot, similar to the thumbnail plot, only using the
 % full 'data' that you read in.
@@ -20,7 +20,7 @@ function hdls = RSKplotdata(RSK, varargin)
 %                       is 'down'. 
 %
 % Output:
-%     hdls - The line object of the plot.
+%     handles - The line object of the plot.
 %
 % Example: 
 %    RSK = RSKopen('sample.rsk');   
@@ -56,7 +56,7 @@ direction = p.Results.direction;
 if ~isfield(RSK,'data')
     disp('You must read a section of data in first!');
     disp('Use RSKreaddata...')
-    hdls = [];
+    handles = [];
     return
 end
 
@@ -75,7 +75,7 @@ if ~strcmp(channel, 'all')
         chanCol = [chanCol getchannelindex(RSK, chan{1})];
     end
 end
-hdls = channelsubplots(RSK, 'data', 'chanCol', chanCol, 'castidx', castidx);
+handles = channelsubplots(RSK, 'data', 'chanCol', chanCol, 'castidx', castidx);
 
 end
 

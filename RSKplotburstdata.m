@@ -1,8 +1,8 @@
-function hdls = RSKplotburstdata(RSK)
+function handles = RSKplotburstdata(RSK)
 
 % RSKplotburstdata - Plot summaries of logger burst data
 %
-% Syntax:  [hdls] = RSKplotburstdata(RSK)
+% Syntax:  [handles] = RSKplotburstdata(RSK)
 % 
 % This generates a plot, similar to the thumbnail plot, only using the
 % full 'burst data' that you read in, rather than just the thumbnail
@@ -13,7 +13,7 @@ function hdls = RSKplotburstdata(RSK)
 %    RSK - Structure containing the logger metadata and burst data
 %
 % Output:
-%     hdls - The line object of the plot.
+%     handles - The line object of the plot.
 %
 % Example: 
 %    RSK = RSKopen('sample.rsk');  
@@ -25,7 +25,7 @@ function hdls = RSKplotburstdata(RSK)
 % Author: RBR Ltd. Ottawa ON, Canada
 % email: support@rbr-global.com
 % Website: www.rbr-global.com
-% Last revision: 2017-05-17
+% Last revision: 2017-06-01
 
 field = 'burstdata';
 if ~isfield(RSK, field)
@@ -34,6 +34,6 @@ if ~isfield(RSK, field)
     return
 end
 
-hdls = channelsubplots(RSK, field);
+handles = channelsubplots(RSK, field);
 
 end

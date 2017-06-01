@@ -1,8 +1,8 @@
-function hdls = RSKplotthumbnail(RSK)
+function handles = RSKplotthumbnail(RSK)
 
 % RSKplotthumbnail - Plot summaries of logger data thumbnails
 %
-% Syntax:  [hdls] = RSKplotthumbnail(RSK)
+% Syntax:  [handles] = RSKplotthumbnail(RSK)
 % 
 % This generates a summary plot of the thumbnail data in the RSK
 % structure. This is usually a plot of about 4000 points.  Each time
@@ -13,7 +13,7 @@ function hdls = RSKplotthumbnail(RSK)
 %    RSK - Structure containing the logger metadata and thumbnails
 %
 % Output:
-%    hdls - The line object of the plot.
+%    handles - The line object of the plot.
 %
 % Example: 
 %    RSK = RSKopen('sample.rsk');  
@@ -24,7 +24,7 @@ function hdls = RSKplotthumbnail(RSK)
 % Author: RBR Ltd. Ottawa ON, Canada
 % email: support@rbr-global.com
 % Website: www.rbr-global.com
-% Last revision: 2017-05-17
+% Last revision: 2017-06-01
 
 field = 'thumbnailData';
 
@@ -34,6 +34,6 @@ if ~isfield(RSK,field)
     return
 end
 
-hdls = channelsubplots(RSK, field);
+handles = channelsubplots(RSK, field);
 
 end

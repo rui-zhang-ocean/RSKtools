@@ -1,9 +1,9 @@
-function hdls = RSKplotprofiles(RSK, varargin)
+function handles = RSKplotprofiles(RSK, varargin)
 
 % RSKplotprofiles - Plot profiles from an RSK structure output by 
 %                   RSKreadprofiles.
 %
-% Syntax:  [hdls] = RSKplotprofiles(RSK, [OPTIONS])
+% Syntax:  [handles] = RSKplotprofiles(RSK, [OPTIONS])
 % 
 % Plots profiles from automatically detected casts. If called with one
 % argument, will default to plotting downcasts of temperature for all
@@ -23,7 +23,7 @@ function hdls = RSKplotprofiles(RSK, varargin)
 %                        'both'. Default is 'down'.
 %
 % Output:
-%     hdls - The line object of the plot.
+%     handles - The line object of the plot.
 %
 % Examples:
 %    rsk = RSKopen('profiles.rsk');
@@ -65,7 +65,7 @@ pmax = 0;
 ii = 1;
 for ndx = castidx
     seapressure = RSKsp.data(ndx).values(:, SPcol);
-    hdls(ii) = plot(RSK.data(ndx).values(:, chanCol), seapressure);
+    handles(ii) = plot(RSK.data(ndx).values(:, chanCol), seapressure);
     hold on
     pmax = max([pmax; seapressure]);
     ii = ii+1;
