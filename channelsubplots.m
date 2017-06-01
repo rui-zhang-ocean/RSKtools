@@ -1,9 +1,9 @@
-function hdls = channelsubplots(RSK, field, varargin)
+function handles = channelsubplots(RSK, field, varargin)
 
 % channelsubplots - plots each channel specified in a different subplot for
 % the field chosen.
 %
-% Syntax:  [hdls] = channelsubplots(RSK, field, [OPTIONS])
+% Syntax:  [handles] = channelsubplots(RSK, field, [OPTIONS])
 % 
 % Generate and plots to a subplot for each channel in the chosen field. If
 % data has many fields and none are specified, the first one is selected. 
@@ -22,12 +22,12 @@ function hdls = channelsubplots(RSK, field, varargin)
 %                      fields use RSKplotprofiles. 
 %
 % Outputs:
-%    hdls - The line object of the plot.
+%    handles - The line object of the plot.
 %
 % Author: RBR Ltd. Ottawa ON, Canada
 % email: support@rbr-global.com
 % Website: www.rbr-global.com
-% Last revision: 2017-05-24
+% Last revision: 2017-06-01
 
 p = inputParser;
 addRequired(p, 'RSK', @isstruct);
@@ -51,7 +51,7 @@ numchannels = length(chanCol);
 n = 1;
 for chan = chanCol
     subplot(numchannels,1,n)
-    hdls(n) = plot(RSK.(field)(castidx).tstamp, RSK.(field)(castidx).values(:,chan),'-');
+    handles(n) = plot(RSK.(field)(castidx).tstamp, RSK.(field)(castidx).values(:,chan),'-');
     title(RSK.channels(chan).longName);
     ylabel(RSK.channels(chan).units);
     ax(n)=gca;
