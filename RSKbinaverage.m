@@ -66,7 +66,7 @@ binBy = p.Results.binBy;
 binSize = p.Results.binSize;
 boundary = p.Results.boundary;
 
-
+binbytime = strcmpi(binBy, 'Time');
 
 castidx = getdataindex(RSK, profile, direction);
 alltstamp = {RSK.data(castidx).tstamp};
@@ -74,7 +74,7 @@ maxlength = max(cellfun('size', alltstamp, 1));
 Y = NaN(maxlength, length(castidx));
 k=1;
 for ndx = castidx;
-    if strcmpi(binBy, 'Time')
+    if binbytime
         ref = RSK.data(ndx).tstamp;
         Y(1:length(ref),k) = ref-ref(1);
     else
@@ -102,7 +102,7 @@ for ndx = castidx
     
     RSK.data(ndx).values = binnedValues(:,2:end);
     RSK.data(ndx).samplesinbin = samplesinbin;
-    if strcmpi(binBy, 'Time')
+    if binbytime
         RSK.data(ndx).tstamp = binCenter;
     else
         RSK.data(ndx).tstamp = binnedValues(:,1);
