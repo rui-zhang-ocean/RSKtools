@@ -52,7 +52,6 @@ end
 
 if isempty(profile) && isempty(direction)
     castidx = 1:ndata;
-    
 elseif ~isempty(profile)
     if max(profile) > ndata/profilecast
         error('The profileNum selected is greater than the total amount of profiles in this file.');

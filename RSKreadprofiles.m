@@ -82,7 +82,7 @@ alltend = sort(alltend);
 RSK.profiles.order = direction;
 profilecast = size(RSK.profiles.order, 2);
 if profilecast == 2 && (alltstart(1) == RSK.profiles.upcast.tstart(1))
-        RSK.profiles.order = {'up', 'down'};
+    RSK.profiles.order = {'up', 'down'};
 end
 
 
