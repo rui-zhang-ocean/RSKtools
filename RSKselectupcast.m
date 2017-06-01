@@ -30,6 +30,7 @@ for ndx = 1:ndata
     upidx(1, ndx) = getcastdirection(pressure, 'up');
 end
 
+RSK.profiles.originalindex = RSK.profiles.originalindex(logical(upidx));
 RSK.data = RSK.data(logical(upidx));
 
 end

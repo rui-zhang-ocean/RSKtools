@@ -2,7 +2,7 @@ function [RSK, downidx] = RSKselectdowncast(RSK)
 
 % RSKselectdowncast - Selects the datafields that have a increasing pressure.
 %
-% Syntax:  [RSKdown, isDown] = RSKselectdowncast(RSK)
+% Syntax:  [RSK, isDown] = RSKselectdowncast(RSK)
 %
 % This function only keeps the downcasts in the RSK and returns the index of
 % the downcasts from the input RSK structure.
@@ -30,6 +30,7 @@ for ndx = 1:ndata
     downidx(1, ndx) = getcastdirection(pressure, 'down');
 end
 
+RSK.profiles.originalindex = RSK.profiles.originalindex(logical(downidx));
 RSK.data = RSK.data(logical(downidx));
 
 end
