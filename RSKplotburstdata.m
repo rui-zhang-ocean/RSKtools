@@ -1,4 +1,4 @@
-function handles = RSKplotburstdata(RSK)
+function handles = RSKplotburstdata(RSK, varargin)
 
 % RSKplotburstdata - Plot summaries of logger burst data
 %
@@ -10,7 +10,10 @@ function handles = RSKplotburstdata(RSK)
 % names, so you can get an idea of how to do better processing.
 % 
 % Inputs:
-%    RSK - Structure containing the logger metadata and burst data
+%    [Required] - RSK - Structure containing the logger metadata and burst data
+%
+%    [Optional] - channel - channel to plots, can be multiple in a cell, if no value is
+%                       given it will plot all channels.
 %
 % Output:
 %     handles - The line object of the plot.
@@ -25,7 +28,17 @@ function handles = RSKplotburstdata(RSK)
 % Author: RBR Ltd. Ottawa ON, Canada
 % email: support@rbr-global.com
 % Website: www.rbr-global.com
-% Last revision: 2017-06-01
+% Last revision: 2017-06-02
+
+p = inputParser;
+addRequired(p, 'RSK', @isstruct);
+addParameter(p, 'channel', 'all');
+parse(p, RSK, varargin{:})
+
+RSK = p.Results.RSK;
+channel = p.Results.channel;
+
+
 
 field = 'burstdata';
 if ~isfield(RSK, field)
@@ -34,6 +47,16 @@ if ~isfield(RSK, field)
     return
 end
 
-handles = channelsubplots(RSK, field);
+
+
+chanCol = [];
+if ~strcmp(channel, 'all')
+    channels = cellchannelnames(RSK, channel);
+    for chan = channels
+        chanCol = [chanCol getchannelindex(RSK, chan{1})];
+    end
+end
+
+handles = channelsubplots(RSK, field, 'chanCol', chanCol);
 
 end
