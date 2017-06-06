@@ -1,4 +1,4 @@
-function handles = RSKplotthumbnail(RSK)
+function handles = RSKplotthumbnail(RSK, varargin)
 
 % RSKplotthumbnail - Plot summaries of logger data thumbnails
 %
@@ -10,7 +10,10 @@ function handles = RSKplotthumbnail(RSK)
 % even though the dataset is down-sampled.
 % 
 % Inputs:
-%    RSK - Structure containing the logger metadata and thumbnails
+%    [Required] - RSK - Structure containing the logger metadata and thumbnails
+%
+%    [Optional] - channel - channel to plots, can be multiple in a cell, if no value is
+%                       given it will plot all channels.
 %
 % Output:
 %    handles - The line object of the plot.
@@ -24,16 +27,35 @@ function handles = RSKplotthumbnail(RSK)
 % Author: RBR Ltd. Ottawa ON, Canada
 % email: support@rbr-global.com
 % Website: www.rbr-global.com
-% Last revision: 2017-06-01
+% Last revision: 2017-06-02
+
+p = inputParser;
+addRequired(p, 'RSK', @isstruct);
+addParameter(p, 'channel', 'all');
+parse(p, RSK, varargin{:})
+
+RSK = p.Results.RSK;
+channel = p.Results.channel;
+
 
 field = 'thumbnailData';
-
 if ~isfield(RSK,field)
     disp('You must read a section of thumbnailData in first!');
     disp('Use RSKreadthumnaildata...')
     return
 end
 
-handles = channelsubplots(RSK, field);
+
+
+chanCol = [];
+if ~strcmp(channel, 'all')
+    channels = cellchannelnames(RSK, channel);
+    for chan = channels
+        chanCol = [chanCol getchannelindex(RSK, chan{1})];
+    end
+end
+
+handles = channelsubplots(RSK, field, 'chanCol', chanCol);
+
 
 end
