@@ -101,6 +101,7 @@ if ~isempty(profile)
     end
 else
     castidx = 1:length(alltstart);
+    RSK.profiles.originalindex = 1:length(alltstart);
 end
 
 k = 1;
