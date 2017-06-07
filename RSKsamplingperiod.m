@@ -16,7 +16,7 @@ function samplingperiod = RSKsamplingperiod(RSK)
 % Author: RBR Ltd. Ottawa ON, Canada
 % email: support@rbr-global.com
 % Website: www.rbr-global.com
-% Last revision: 2017-03-31
+% Last revision: 2017-06-07
 
 mode = RSK.schedules.mode;
 if iscompatibleversion(RSK, 1, 13, 8)
@@ -29,7 +29,7 @@ if iscompatibleversion(RSK, 1, 13, 8)
         samplingperiod = RSK.(mode).samplingPeriod/1000;
     end
 else
-    samplingperiod = RSK.schedules.samplingPeriod/1000;
+    samplingperiod = RSK.schedules(end).samplingPeriod/1000;
 end
 
 end
