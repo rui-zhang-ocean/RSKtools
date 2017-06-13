@@ -29,7 +29,7 @@ function out = shiftarray(in, shift, edgepad)
 % Author: RBR Ltd. Ottawa ON, Canada
 % email: support@rbr-global.com
 % Website: www.rbr-global.com
-% Last revision: 2017-05-01
+% Last revision: 2017-06-13
 
 
 if nargin == 2
@@ -48,6 +48,8 @@ switch lower(edgepad)
         inpad = zeroorderholdpad(in, abs(shift));
     case 'nan'
         inpad = nanpad(in, abs(shift)); 
+    otherwise
+        error('edgepad argument is not recognized. Must be `mirror`, `nan` or `zeroorderhold`');
 end
 
 if shift>0
