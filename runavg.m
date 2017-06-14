@@ -24,7 +24,7 @@ function [out] = runavg(in, windowLength, edgepad)
 % Author: RBR Ltd. Ottawa ON, Canada
 % email: support@rbr-global.com
 % Website: www.rbr-global.com
-% Last revision: 2017-05-01
+% Last revision: 2017-06-13
 
 %% Check and set inputs/outputs
 if nargin == 2
@@ -41,15 +41,8 @@ if mod(windowLength, 2) == 0
 end
 
 padsize = (windowLength-1)/2;
-%% Mirror pad the time series
-switch edgepad
-    case 'mirror'
-        inpadded = mirrorpad(in, padsize);
-    case 'nan'
-        inpadded = nanpad(in, padsize);
-    case 'zeroorderhold'
-        inpadded = zeroorderholdpad(in, padsize);
-end
+
+inpadded = padseries(in, padsize, edgepad);
 
 for ndx = 1:n
     out(ndx) = nanmean(inpadded(ndx:ndx+(windowLength-1)));
