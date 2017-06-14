@@ -4,18 +4,18 @@ function inpadded = padseries(in, padsize, edgepad)
 %
 % Syntax:  [inpadded] = padseries(in, padsize, edgepad)
 % 
-% padseries add values to either side of the in vector
+% padseries add values to either side of the 'in' vector
 %
 % Inputs:
 %    in - time series
 %
 %    padsize - The amount of values added to either end of the vector.
 %
-%    edgepad - Describes how the filter will act at the edges. Options
+%    edgepad - Describes what values will be added at the edges. Options
 %         are 'mirror', 'zeroorderhold' and 'nan'.
 %
 % Outputs:
-%    out - the smoothed time series
+%    inpadded - the series with length 2*padsize+length(in).
 %
 % Author: RBR Ltd. Ottawa ON, Canada
 % email: support@rbr-global.com
