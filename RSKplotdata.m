@@ -17,7 +17,7 @@ function handles = RSKplotdata(RSK, varargin)
 %                       is 1.
 % 
 %                 direction - 'up' for upcast, 'down' for downcast. Default
-%                       is 'down'. 
+%                       is the first string in RSK.profiles.order.
 %
 % Output:
 %     handles - The line object of the plot.
@@ -34,7 +34,7 @@ function handles = RSKplotdata(RSK, varargin)
 % Author: RBR Ltd. Ottawa ON, Canada
 % email: support@rbr-global.com
 % Website: www.rbr-global.com
-% Last revision: 2017-05-30
+% Last revision: 2017-06-19
 
 validDirections = {'down', 'up'};
 checkDirection = @(x) any(validatestring(x,validDirections));
@@ -43,7 +43,7 @@ p = inputParser;
 addRequired(p, 'RSK', @isstruct);
 addParameter(p, 'channel', 'all');
 addParameter(p, 'profile', 1);
-addParameter(p, 'direction', 'down', checkDirection);
+addParameter(p, 'direction', [], checkDirection);
 parse(p, RSK, varargin{:})
 
 RSK = p.Results.RSK;
@@ -60,7 +60,12 @@ if ~isfield(RSK,'data')
     return
 end
 
+
 castidx = getdataindex(RSK, profile, direction);
+if any(strcmp(p.UsingDefaults, 'direction')) && length(RSK.profiles.order) ~= 1
+    direction = RSK.profiles.order{1};
+    castidx = getdataindex(RSK, profile, direction);
+end
 if size(castidx,2) ~= 1 
     disp('RSKplotdata can only plot one cast, use RSKplotprofiles...');
     return
