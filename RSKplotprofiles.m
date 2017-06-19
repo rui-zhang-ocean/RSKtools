@@ -37,7 +37,7 @@ function handles = RSKplotprofiles(RSK, varargin)
 % Author: RBR Ltd. Ottawa ON, Canada
 % email: support@rbr-global.com
 % Website: www.rbr-global.com
-% Last revision: 2017-05-30
+% Last revision: 2017-06-19
 
 validDirections = {'down', 'up', 'both'};
 checkDirection = @(x) any(validatestring(x,validDirections));
@@ -45,7 +45,7 @@ checkDirection = @(x) any(validatestring(x,validDirections));
 p = inputParser;
 addRequired(p, 'RSK', @isstruct);
 addParameter(p, 'profile', [], @isnumeric);
-addParameter(p, 'channel', 'Temperature', @ischar)
+addParameter(p, 'channel', 'all', @ischar)
 addParameter(p, 'direction', 'down', checkDirection);
 parse(p, RSK, varargin{:})
 
@@ -58,30 +58,39 @@ direction = p.Results.direction;
 
 
 [RSKsp, SPcol] = getseapressure(RSK);
-chanCol = getchannelindex(RSK, channel);
+if strcmp(channel, 'all')
+    chanCol = 1:length({RSK.channels.longName});
+else
+    chanCol = getchannelindex(RSK, channel);
+end
+numchannels = length(chanCol);
 castidx = getdataindex(RSK, profile, direction);
 
+
 pmax = 0;
-ii = 1;
-for ndx = castidx
-    seapressure = RSKsp.data(ndx).values(:, SPcol);
-    handles(ii) = plot(RSK.data(ndx).values(:, chanCol), seapressure);
-    hold on
-    pmax = max([pmax; seapressure]);
-    ii = ii+1;
+n = 1;
+for chan = chanCol
+    subplot(1,numchannels,n)
+    ii = 1;
+    for ndx = castidx
+        seapressure = RSKsp.data(ndx).values(:, SPcol);
+        handles(ii,n) = plot(RSK.data(ndx).values(:, chan), seapressure);
+        hold on
+        pmax = max([pmax; seapressure]);
+        ii = ii+1;
+    end
+    ylim([0 pmax])
+    title(RSK.channels(chan).longName);
+    xlabel(RSK.channels(chan).units);
+    ylabel('Sea pressure [dbar]')
+    set(gca, 'ydir', 'reverse')
+    ax(n)=gca;
+    ax(n).ColorOrderIndex = 1; 
+    n = n+1 ;
+    grid
 end
-
-
-
-ax = gca; 
-ax.ColorOrderIndex = 1; 
-grid
-xlab = [RSK.channels(chanCol).longName ' [' RSK.channels(chanCol).units ']'];
-ylim([0 pmax])
-set(gca, 'ydir', 'reverse')
-ylabel('Sea pressure [dbar]')
-xlabel(xlab)
-title('Profile')
+linkaxes(ax,'y')
+shg
 hold off
 
 end
