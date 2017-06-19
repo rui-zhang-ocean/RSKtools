@@ -1,20 +1,22 @@
 function castidx = getdataindex(RSK, varargin)
 
-% checkprofile - Determines which of data's elements are selected
+% getdataindex - Determines which element in the data field is being
+% selected
 %
-% Syntax:  [castIdx] = getdataindex(RSK, profile)
+% Syntax:  [castIdx] = getdataindex(RSK, [OPTIONS])
 % 
-% A helper function used to select the data elements that are selected
+% A helper function used to select the data elements that are specified
 % based on profile number and direction.
 %
 % Inputs:
 %   [Required] - RSK - Structure containing the logger data read
 %                      from the RSK file.
 %
-%   [Optional] - profile - Optional profile number. Default is to use all of data's
-%                      elements.
+%   [Optional] - profile - Optional profile number. Default is to use all
+%                      profiles available.
 %
-%                direction - Optional cast direction.
+%                direction - Optional cast direction. Default is to use all
+%                      directions available.
 %            
 % Outputs:
 %    castidx - An array containing the index of data's elements.
@@ -22,7 +24,7 @@ function castidx = getdataindex(RSK, varargin)
 % Author: RBR Ltd. Ottawa ON, Canada
 % email: support@rbr-global.com
 % Website: www.rbr-global.com
-% Last revision: 2017-05-30
+% Last revision: 2017-06-19
 
 validationFcn = @(x) ischar(x) || isempty(x);
 
