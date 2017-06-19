@@ -13,7 +13,7 @@ function handles = RSKplotdata(RSK, varargin)
 %    [Optional] - channel - channel to plots, can be multiple in a cell, if no value is
 %                       given it will plot all channels.
 %
-%                  profile - number indicating the profile to plot. Default
+%                 profile - number indicating the profile to plot. Default
 %                       is 1.
 % 
 %                 direction - 'up' for upcast, 'down' for downcast. Default
@@ -43,7 +43,7 @@ p = inputParser;
 addRequired(p, 'RSK', @isstruct);
 addParameter(p, 'channel', 'all');
 addParameter(p, 'profile', 1);
-addParameter(p, 'direction', [], checkDirection);
+addParameter(p, 'direction', 'down', checkDirection);
 parse(p, RSK, varargin{:})
 
 RSK = p.Results.RSK;

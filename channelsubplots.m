@@ -15,7 +15,7 @@ function handles = channelsubplots(RSK, field, varargin)
 %                      burstdata', thumbnailData', or 'data'.
 %
 %   [Optional] - chanCol - The column number of the channels to be plotted.
-%                      Only required if all channel are not ebing plotted.
+%                      Only required if all channel are not being plotted.
 %
 %                castidx - The element of data that will be used to make
 %                      the plot. The default is 1. Note: To compare data
