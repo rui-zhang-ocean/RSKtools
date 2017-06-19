@@ -4,7 +4,8 @@ function castidx = getdataindex(RSK, varargin)
 %
 % Syntax:  [castIdx] = getdataindex(RSK, profile)
 % 
-% A helper function used to select the data fields that are selected.
+% A helper function used to select the data elements that are selected
+% based on profile number and direction.
 %
 % Inputs:
 %   [Required] - RSK - Structure containing the logger data read
@@ -38,6 +39,9 @@ direction = p.Results.direction;
 
 if size(RSK.data,2) == 1
     castidx = 1;
+    if ~isempty(profile) && profile ~= 1  
+        error('The profile requested is greater than the total amount of profiles in this file.');
+    end 
     return
 end
 
