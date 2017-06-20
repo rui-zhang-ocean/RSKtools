@@ -1,30 +1,36 @@
 function logdata = logentrydata(RSK, profile, direction)
 
-% logentrydata - creates a log entry describing the data used in the fields
+%LOGENTRYDATA - Create part of a log entry to describe data elements used.
 %
-% Syntax:  [logdata] = logentrydata(RSK, profileNum, dataIdx)
+% Syntax:  [logdata] = logentrydata(RSK, profile, direction)
 %
-% This function creates a log entry describing which profiles were changed.
+% This function creates a log entry explaining the casts described by the
+% profile and direction arguments.
 %
 % Inputs:
 %    RSK - The input RSK structure
 %
-%    profile - The input given to specify which profiles to use.
+%    profile - Profile number. Default is to use all profiles.
 %
-%    direction - The direction of the profiles.
+%    direction - Cast direction. Default is to use all available
+%          directions.
 %
 % Outputs:
-%    logdata - a string describing which data fields were modified.
+%    logdata - String describing the data elements used.
+%
+% See also: RSKsmooth, RSKdespike.
 %
 % Author: RBR Ltd. Ottawa ON, Canada
 % email: support@rbr-global.com
 % Website: www.rbr-global.com
-% Last revision: 2017-05-31
+% Last revision: 2017-06-20
 
 if size(RSK.data, 2) == 1
     logdata = 'the data';
     return
 end
+
+
 
 profilecast = size(RSK.profiles.order, 2);
 if isempty(profile)
