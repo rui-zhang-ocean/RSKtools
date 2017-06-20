@@ -13,7 +13,7 @@ function channelIdx = getchannelindex(RSK, channel)
 %   channel - LongName as written in RSK.channels.
 %
 % Outputs:
-%    profileIdx - Array containing the index of channels.
+%    channelIdx - Array containing the index of channels.
 %
 % See also: RSKplotdata, RSKsmooth, RSKderivedepth.
 %
