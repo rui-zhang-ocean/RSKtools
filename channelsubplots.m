@@ -1,21 +1,22 @@
 function handles = channelsubplots(RSK, field, varargin)
 
-% channelsubplots - plots each channel specified in a different subplot for
-% the field chosen.
+% channelsubplots - Plots each channel specified in a different subplot.
 %
 % Syntax:  [handles] = channelsubplots(RSK, field, [OPTIONS])
 % 
-% Generate and plots to a subplot for each channel in the chosen field. If
-% data has many fields and none are specified, the first one is selected. 
+% Generate and plots in a subplot each channel in the chosen data element.
+% If data has many fields and none are specified, the first one is
+% selected.  
 %
 % Inputs:
-%   [Required] - RSK - Structure create from an rsk file.
+%   [Required] - RSK - Structure create from an .rsk file.
 %
 %                field - The source of the data to plot. Can be
 %                      burstdata', thumbnailData', or 'data'.
 %
 %   [Optional] - chanCol - The column number of the channels to be plotted.
-%                      Only required if all channel are not being plotted.
+%                      Only required if a selection of channels are being
+%                      plotted.
 %
 %                castidx - The element of data that will be used to make
 %                      the plot. The default is 1. Note: To compare data
@@ -27,7 +28,7 @@ function handles = channelsubplots(RSK, field, varargin)
 % Author: RBR Ltd. Ottawa ON, Canada
 % email: support@rbr-global.com
 % Website: www.rbr-global.com
-% Last revision: 2017-06-01
+% Last revision: 2017-06-19
 
 p = inputParser;
 addRequired(p, 'RSK', @isstruct);
