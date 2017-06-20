@@ -31,22 +31,19 @@ function [RBR] = RSK2MAT(RSK)
 % Author: RBR Ltd. Ottawa ON, Canada
 % email: support@rbr-global.com
 % Website: www.rbr-global.com
-% Last revision: 2017-05-24
+% Last revision: 2017-06-20
 
-%% Notify user that RSK2MAT doesn't work for file that were previously EasyParse
 if strcmpi(RSK.dbInfo(1).type, 'EasyParse');
     error('RSK2MAT is not compatible with files that are from Ruskin Mobile . File should be opened in Ruskin Desktop first.')
 end
 if size(RSK.data,2) > 1
-    disp('Use RSKreaddata to have one data field.')
+    disp('RSM2MAT is not compatible with casts, use RSKreaddata to have one data field.')
     return
 end
 
-%% Firmware Version location is dependant on the rsk file version
+%% Set up metadata
 [firmwareV, ~, ~]  = RSKfirmwarever(RSK);
 
-
-%% Set up metadata
 RBR.name = ['RBR ' RSK.instruments.model ' ' firmwareV ' ' num2str(RSK.instruments.serialID)];
 
 % Sample period
