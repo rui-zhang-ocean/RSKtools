@@ -74,12 +74,11 @@ end
 
 
 chanCol = [];
-if ~strcmp(channel, 'all')
-    channels = cellchannelnames(RSK, channel);
-    for chan = channels
-        chanCol = [chanCol getchannelindex(RSK, chan{1})];
-    end
+channels = cellchannelnames(RSK, channel);
+for chan = channels
+    chanCol = [chanCol getchannelindex(RSK, chan{1})];
 end
+
 handles = channelsubplots(RSK, 'data', 'chanCol', chanCol, 'castidx', castidx);
 
 end

@@ -55,18 +55,16 @@ direction = p.Results.direction;
 
 
 
-[RSKsp, SPcol] = getseapressure(RSK);
-if strcmp(channel, 'all')
-    chanCol = 1:length({RSK.channels.longName});
-else
-    chanCol = [];
-    channels = cellchannelnames(RSK, channel);
-    for chan = channels
-        chanCol = [chanCol getchannelindex(RSK, chan{1})];
-    end
+chanCol = [];
+channels = cellchannelnames(RSK, channel);
+for chan = channels
+    chanCol = [chanCol getchannelindex(RSK, chan{1})];
 end
+
 numchannels = length(chanCol);
 castidx = getdataindex(RSK, profile, direction);
+[RSKsp, SPcol] = getseapressure(RSK);
+
 
 
 pmax = 0;
