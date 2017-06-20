@@ -4,8 +4,8 @@ function chanNames = cellchannelnames(RSK, channel)
 %
 % Syntax:  [chanNames] = cellchannelnames(RSK, channel)
 %
-% Sets up channel names into a cell to facilitate iterating through many
-% different channels for other functions. If the channel entry is 'all',
+% Set up channel names into a cell to facilitate iterating through many
+% different channels for other functions. If the channel argument is 'all',
 % all the channels.longName in the structure are put into a cell. If there
 % is only one channel name it simply puts it in a cell and if there is a
 % few channel names they are kept in a cell.
