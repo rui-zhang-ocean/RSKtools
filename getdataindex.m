@@ -1,30 +1,30 @@
 function castidx = getdataindex(RSK, varargin)
 
-% getdataindex - Determines which element in the data field is being
-% selected
+%GETDATAINDEX - Returns the index of data elements requested.
 %
 % Syntax:  [castIdx] = getdataindex(RSK, [OPTIONS])
 % 
-% A helper function used to select the data elements that are specified
-% based on profile number and direction.
+% Selects the data elements that fufill the requirements described by the
+% profile number and direction arguments.
 %
 % Inputs:
-%   [Required] - RSK - Structure containing the logger data read
-%                      from the RSK file.
+%   [Required] - RSK - Structure containing the logger data
 %
-%   [Optional] - profile - Optional profile number. Default is to use all
-%                      profiles available.
-%
-%                direction - Optional cast direction. Default is to use all
-%                      directions available.
+%   [Optional] - profile - Profile number. Default is to use all profiles
+%                      available
+% 
+%                direction - Cast direction. Default is to use all
+%                      directions available. 
 %            
 % Outputs:
-%    castidx - An array containing the index of data's elements.
+%    castidx - Array containing the index of data's elements.
+%
+% See also: RSKplotprofile, RSKsmooth, RSKdespike.
 %
 % Author: RBR Ltd. Ottawa ON, Canada
 % email: support@rbr-global.com
 % Website: www.rbr-global.com
-% Last revision: 2017-06-19
+% Last revision: 2017-06-20
 
 validationFcn = @(x) ischar(x) || isempty(x);
 
@@ -42,7 +42,7 @@ direction = p.Results.direction;
 if size(RSK.data,2) == 1
     castidx = 1;
     if ~isempty(profile) && profile ~= 1  
-        error('The profile requested is greater than the total amount of profiles in this file.');
+        error('The profile requested is greater than the total amount of profiles in this RSK structure.');
     end 
     return
 end
@@ -60,7 +60,7 @@ if isempty(profile) && isempty(direction)
     castidx = 1:ndata;
 elseif ~isempty(profile)
     if max(profile) > ndata/profilecast
-        error('The profile requested is greater than the total amount of profiles in this file.');
+        error('The profile requested is greater than the total amount of profiles in this RSK structure.');
     end
     
     if profilecast == 2
