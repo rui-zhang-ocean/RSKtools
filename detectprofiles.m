@@ -1,46 +1,44 @@
-function [wwevt] = detectprofiles(pressure, timestamp, conductivity, profileThreshold, conductivityThreshold)
+function wwevt = detectprofiles(pressure, timestamp, conductivity, profileThreshold, conductivityThreshold)
 
-% detectprofiles - implements the logger profile detection.
+%DETECTPROFILES - Implement the logger profile detection algorithm.
 %
 % Syntax:  [wwevt] = detectprofiles(pressure, timestamp, conductivity, profileThreshold, conductivityThreshold)
 % 
-% detectprofiles is a helper function that implements the algorithm used by
-% the logger to find upcast and downcast events during the pressure time
-% series. If conductivity is also input the algorithm can detect when the
-% logger is out of the water, the out of water times will not be included
-% in the profiles.
+% Implements the algorithm used by the logger to find upcast and downcast
+% events using the pressure reversals during the time series. The algorithm
+% uses conductivity (if available) to detect when the logger is out of the
+% water, the out of water times will not be included in the profiles. 
 %
 % Inputs:
+%    pressure - Time series
+%
+%    timestamp - Time associated with the pressure time series.
+%
+%    conductivity - Time series. Optional, if no conductivity data use [].
 %    
-%    pressure - The pressure time series.
+%    pressureThreshold - Pressure difference required to detect a
+%               profile. Standard is 3dbar, or 1/4(max(pressure)-min(pressure).
 %
-%    timestamp - The time associated with the pressure time series.
-%
-%    conductivity - A optional input, checked that the logger is in the
-%        water before detecting a profile. If no conductivity channel use [].
-%    
-%    pressureThreshold - The pressure difference required to detect a
-%        profile. Standard is 3dbar, or 1/4(max(pressure)-min(pressure).
-%
-%    conductivityThreshold - The conductivity value that indicates the
-%         sensor is out of water. Typically 0.05 mS/cm is very good. If the
-%         water is fresh it may be better to use a lower value.
+%    conductivityThreshold - Conductivity value that indicates the
+%               sensor is out of water. Typically 0.05 mS/cm is very good. If the
+%               water is fresh it may be better to use a lower value.
 %
 % Outputs:
-%
 %    wwevt - A matrix containing the timestamp in the first column and an
 %            event index describing the start of a event (1=downcast,
 %            2=upcast, 3=outofwater)
 %
+% See also: RSKfindprofiles.
+%
 % Author: RBR Ltd. Ottawa ON, Canada
 % email: support@rbr-global.com
 % Website: www.rbr-global.com
-% Last revision: 2017-04-20
+% Last revision: 2017-06-20
 
 %% Set up
 detectcaststate = 0; % 0 unknown, 1 down, 2 up
-evt = 0; % 0 nothing new 1 we are descending 2 profile detect
 hasC = ~isempty(conductivity);
+
 
 
 %% The Profile Detection
@@ -53,7 +51,7 @@ wwevt = zeros(1,2);
 while(k<length(timestamp))
     %
     % profile detection part
-    evt=0;
+    evt=0; % 0 nothing new 1 we are descending 2 we are ascending
     if hasC && conductivity(k)<conductivityThreshold
         evt=3;
         minpressure=pressure(k);
@@ -111,6 +109,8 @@ while(k<length(timestamp))
         end
     end
 
+    
+    
     if evt == 1
         % downcast detected
         profiletime = timestamp(klast:k);
