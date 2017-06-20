@@ -2,13 +2,13 @@
 
 Current stable version: 1.5.3 (2017-06-07)
 
-RSKtools is a simple Matlab toolbox to open RSK SQLite files generated
+RSKtools is a simple Matlab toolbox designed to open RSK SQLite files generated 
 by RBR instruments. This repository is for the development version of
 the toolbox -- for the "officially" distributed version go to:
 
 [http://www.rbr-global.com/support/matlab-tools](http://www.rbr-global.com/support/matlab-tools)
 
-Please note, RSktools requires MATLAB R2013b or later.
+Please note, RSKtools requires MATLAB R2013b or later.
 
 ## What does RSKtools do?
 
