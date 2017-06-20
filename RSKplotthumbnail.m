@@ -2,7 +2,7 @@ function handles = RSKplotthumbnail(RSK, varargin)
 
 % RSKplotthumbnail - Plot summaries of logger data thumbnails
 %
-% Syntax:  [handles] = RSKplotthumbnail(RSK)
+% Syntax:  [handles] = RSKplotthumbnail(RSK, [OPTIONS])
 % 
 % This generates a summary plot of the thumbnail data in the RSK
 % structure. This is usually a plot of about 4000 points.  Each time
@@ -10,10 +10,10 @@ function handles = RSKplotthumbnail(RSK, varargin)
 % even though the dataset is down-sampled.
 % 
 % Inputs:
-%    [Required] - RSK - Structure containing the logger metadata and thumbnails
+%    [Required] - RSK - Structure containing the logger metadata and thumbnail
 %
-%    [Optional] - channel - channel to plots, can be multiple in a cell, if no value is
-%                       given it will plot all channels.
+%    [Optional] - channel - Channel to plots, can be multiple in a cell, if
+%                       no value is given it will plot all channels.
 %
 % Output:
 %    handles - The line object of the plot.
@@ -27,7 +27,7 @@ function handles = RSKplotthumbnail(RSK, varargin)
 % Author: RBR Ltd. Ottawa ON, Canada
 % email: support@rbr-global.com
 % Website: www.rbr-global.com
-% Last revision: 2017-06-02
+% Last revision: 2017-06-19
 
 p = inputParser;
 addRequired(p, 'RSK', @isstruct);
@@ -41,7 +41,7 @@ channel = p.Results.channel;
 field = 'thumbnailData';
 if ~isfield(RSK,field)
     disp('You must read a section of thumbnailData in first!');
-    disp('Use RSKreadthumnaildata...')
+    disp('Use RSKreadthumbnail...')
     return
 end
 
