@@ -1,21 +1,22 @@
 function depth = calculatedepth(pressure, latitude)
 
-% calculatedepth - Calculate depth from pressure
+%CALCULATEDEPTH - Calculate depth from pressure.
 %
-% Syntax:  depth = calculatedepth(pressure, latitude)
+% Syntax:  [depth] = calculatedepth(pressure, latitude)
 % 
-% Calculate depth from pressure. If TEOS-10 toolbox is installed it will
-% use it http://www.teos-10.org/software.htm#1. Otherwise it is calculated
-% using the Saunders & Fofonoff method. 
-%
+% Calculate depth using pressure data and latitude. If TEOS-10 toolbox is
+% installed it will use it. The toolbox can be found at
+% http://www.teos-10.org/software.htm#1. Otherwise it is calculated using
+% the Saunders & Fofonoff method.  
+% 
 % Inputs:
-%    pressure - a vector of pressure values in dbar
+%    pressure - Vector of pressure values in dbar
 %
-%    latitude - Latitude at the location of the pressure measurement in
-%        decimal degrees north. Default is 45.
+%    latitude - Location of the pressure measurement in decimal degrees
+%               north. 
 %
 % Outputs:
-%    depth - a vector containing depths in meters
+%    depth - Vector containing depths in meters.
 %
 % Example: 
 %    depth = calculatedepth(pressure, 52)
@@ -33,7 +34,6 @@ if hasTEOS
     depth = -gsw_z_from_p(pressure, latitude);  
     
 else
-    % Use Saunders and Fofonoff's method.
     x = (sin(latitude/57.29578)).^2;
     gr = 9.780318*(1.0 + (5.2788e-3 + 2.36e-5*x).*x) + 1.092e-6.*pressure;
     depth = (((-1.82e-15*pressure + 2.279e-10).*pressure - 2.2512e-5).*pressure + 9.72659).*pressure;
