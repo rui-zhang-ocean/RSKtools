@@ -72,7 +72,7 @@
 %
 % Helper files
 %   mksqlite           - The library for SQLite files (the .RSK file format)
-%   RSKarrangedata     - Rearranges a structure into a cell array for convenience
+%   arrangedata        - Rearranges a structure into a cell array for convenience
 %   RSKtime2datenum    - Converts SQLite times to Matlab datenums 
 %   datenum2RSKtime    - Converts Matlab datenums to SQLite times
 %   unixtime2datenum   - Converts unixtimes to Matlab datenums
