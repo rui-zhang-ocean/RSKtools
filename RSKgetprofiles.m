@@ -6,7 +6,7 @@ function RSK = RSKgetprofiles(RSK)
 % 
 % RSKgetprofiles finds the profiles start and end times by first looking at
 % the region table (Ruskin generated) then at the events table (logger
-% generated) if neither are populated it will detect them.
+% generated).
 %
 % Inputs: 
 %    RSK - the input RSK structure, with profile events
