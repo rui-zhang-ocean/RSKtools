@@ -62,7 +62,7 @@ end
 
 
 castidx = getdataindex(RSK, profile, direction);
-if any(strcmp(p.UsingDefaults, 'direction')) && isfield(RSK, 'profiles')
+if isfield(RSK, 'profiles') && any(strcmp(p.UsingDefaults, 'direction'))
     direction = RSK.profiles.order{1};
     castidx = getdataindex(RSK, profile, direction);
 end
