@@ -1,15 +1,13 @@
 function inpadded = padseries(in, padsize, edgepad)
 
-% padseries - add padsize amount of values of either side of the in vector
+%PADSERIES - Add padsize amount of values of either side of the in vector.
 %
 % Syntax:  [inpadded] = padseries(in, padsize, edgepad)
-% 
-% padseries add values to either side of the 'in' vector
 %
 % Inputs:
-%    in - time series
+%    in - Vector
 %
-%    padsize - The amount of values added to either end of the vector.
+%    padsize - Amount of values added to either edge of the vector.
 %
 %    edgepad - Describes what values will be added at the edges. Options
 %         are 'mirror', 'zeroorderhold' and 'nan'.
@@ -17,10 +15,12 @@ function inpadded = padseries(in, padsize, edgepad)
 % Outputs:
 %    inpadded - the series with length 2*padsize+length(in).
 %
+% See also: runavg, runmed, runtriang.
+%
 % Author: RBR Ltd. Ottawa ON, Canada
 % email: support@rbr-global.com
 % Website: www.rbr-global.com
-% Last revision: 2017-06-14
+% Last revision: 2017-06-20
 
 switch edgepad
     case 'mirror'
