@@ -1,20 +1,20 @@
-function out = nanpad(in, padSize)
+function out = nanpad(in, padsize)
 
-% nanpad - Pad a vector by entering Nan.
+%NANPAD - Pad a vector with NaNs.
 %
-% Syntax:  out = nanpad(in, windowLength)
+% Syntax:  [out] = nanpad(in, padsize)
 % 
-% Pads vector with padSize of entries at the beginning and end of the
-% in vector. The added entries are NaN
+% Pads in vector with padsize of entries at the beginning and end of the
+% in vector. The added entries are NaNs.
 %
 % Inputs:
-%    in - a vector
+%    in - Vector
 %
-%    padSize - The length of the padding on each side of the vector.
+%    padSize - Length of the padding on each side of the vector.
 %         Must be <= length(in).
 %
 % Outputs:
-%    out - padded in vector of length length(in)+2*padSize
+%    out - Padded in vector of length length(in)+2*padSize
 %
 % Example: 
 %    out = nanpad([1:10], 3)
@@ -23,17 +23,19 @@ function out = nanpad(in, padSize)
 %
 %    [NaN NaN NaN 1 2 3 4 5 6 7 8 9 10 NaN NaN NaN]
 %
+% See also: padseries, shiftarray.
+%
 % Author: RBR Ltd. Ottawa ON, Canada
 % email: support@rbr-global.com
 % Website: www.rbr-global.com
-% Last revision: 2017-04-03
+% Last revision: 2017-06-20
 
 
 if isrow(in)
-    pad = NaN(1,padSize);
+    pad = NaN(1,padsize);
     out = [pad in pad];
 elseif iscolumn(in)
-    pad = NaN(padSize,1);
+    pad = NaN(padsize,1);
     out = [pad; in; pad];
 else
     error('in must be a row or column vector.')
