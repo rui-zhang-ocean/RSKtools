@@ -1,6 +1,6 @@
 function RSK = RSKfindprofiles(RSK, varargin)
 
-% RSKfindprofiles - finds profiles in the rsk pressure data if profile events are non exist.
+%RSKfindprofiles - Find profiles in the rsk pressure data if profile events are non exist.
 %
 % Syntax:  [RSK] = RSKfindprofiles(RSK, varargin)
 % 
