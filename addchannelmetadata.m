@@ -22,7 +22,7 @@ function RSK = addchannelmetadata(RSK, longName, units)
 % Website: www.rbr-global.com
 % Last revision: 2017-06-20
 
-hasChan = any(strcmp({RSK.channels.longName}, longName));
+hasChan = any(strcmpi({RSK.channels.longName}, longName));
 
 if ~hasChan
     nchannels = length(RSK.channels);
