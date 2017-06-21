@@ -1,29 +1,28 @@
 function RSK = readheaderEPdesktop(RSK)
 
-% readheaderEPdesktop - read tables that are populated in an 'EPdesktop' file.
+%READHEADEREPDESKTOP - Read tables that are populated in a 'EPdesktop' file.
 %
-% Syntax:  [RSK] = readheaderEPdesktop(RSK)
+% Syntax:  [RSK] = READHEADEREPDESKTOP(RSK)
 %
-% readheaderEPdesktop is a RSKtools helper function that opens the
-% non-standard populated tables of 'EPdesktop' files. 
-% This table is thumbnailData. If data is available it
-% will open appSettings, parameters, parameterKeys and geodata. 
+% Opens the non-standard populated tables of 'EPdesktop' files, this table 
+% is thumbnailData. If metadata is present, it will also read the
+% appSettings, parameters, parameterKeys and geodata tables.  
 %
 % Inputs:
-%    RSK - 'EPdesktop' file opened using RSKopen.m
+%    RSK - 'EPdesktop' file opened using RSKopen.m.
 %
 % Outputs:
-%    RSK - Structure containing the logger metadata and thumbnail
+%    RSK - Structure containing logger metadata and thumbnail.
+%
+% See also: RSKopen.
 %
 % Author: RBR Ltd. Ottawa ON, Canada
 % email: support@rbr-global.com
 % Website: www.rbr-global.com
-% Last revision: 2017-05-24
-
+% Last revision: 2017-06-21
 
 %% Tables that are definitely in 'EPdesktop'
-
-RSK.thumbnailData = RSKreadthumbnail(RSK);
+RSK = RSKreadthumbnail(RSK);
 
 if iscompatibleversion(RSK, 1, 13, 8)
     RSK = readsamplingdetails(RSK);
@@ -34,6 +33,8 @@ if ~strcmpi(RSK.dbInfo(1).type, 'EasyParse')
         RSK = readparameters(RSK);
     end
 end
+
+
 
 %% Tables that may or may not be in file
 tables = mksqlite('SELECT name FROM sqlite_master WHERE type="table"');
