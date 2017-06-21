@@ -28,9 +28,7 @@ RSK.appSettings = mksqlite('select * from appSettings');
 
 RSK = readparameters(RSK);
 
-if iscompatibleversion(RSK, 1, 13, 8)
-    RSK = readsamplingdetails(RSK);
-end
+RSK = readsamplingdetails(RSK);
 
 [RSK, ~] = removenonmarinechannels(RSK);
 

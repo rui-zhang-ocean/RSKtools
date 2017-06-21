@@ -33,9 +33,7 @@ RSK.ranging = mksqlite('select * from ranging');
 % opening a file with RSKopen. Use RSKreadcalibrations(RSK) to load the
 % calibrations data.
 
-if iscompatibleversion(RSK, 1, 13, 8)
-    RSK = readsamplingdetails(RSK);
-end
+RSK = readsamplingdetails(RSK);
 
 [RSK, ~] = removenonmarinechannels(RSK);
 

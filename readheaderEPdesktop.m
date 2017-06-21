@@ -24,9 +24,7 @@ function RSK = readheaderEPdesktop(RSK)
 %% Tables that are definitely in 'EPdesktop'
 RSK = RSKreadthumbnail(RSK);
 
-if iscompatibleversion(RSK, 1, 13, 8)
-    RSK = readsamplingdetails(RSK);
-end
+RSK = readsamplingdetails(RSK);
 
 if ~strcmpi(RSK.dbInfo(1).type, 'EasyParse')
     if ~strcmpi(RSK.dbInfo(1).type, 'skinny')
