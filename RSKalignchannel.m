@@ -48,10 +48,10 @@ function RSK = RSKalignchannel(RSK, channel, lag, varargin)
 %    rsk = RSKalignchannel(rsk, 'temperature', 2, 'profile', 1:4);
 %
 %   2. Oxygen channel of first 4 profiles with profile-specific lags.
-%    rsk = RSKalignchannel(rsk, 'Dissolved O', [2 1 -1 0], 'profile',1:4);
+%    rsk = RSKalignchannel(rsk, 'Dissolved O2', [2 1 -1 0], 'profile',1:4);
 %
 %   3. Conductivity channel from all downcasts with optimal lag calculated 
-%      with RSKgetCTlag.m.
+%      with RSKcalculateCTlag.m.
 %    lags = RSKcalculateCTlag(rsk);
 %    rsk = RSKalignchannel(rsk, 'Conductivity', lags);
 %
