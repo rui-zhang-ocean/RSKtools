@@ -1,9 +1,8 @@
 function out = shiftarray(in, shift, edgepad)
 
-% shiftarray - Convenience function to shift a time series by a
-% specified number of samples.
+%SHIFTARRAY - Shift a time series by a specified number of samples. 
 %
-% Syntax:  out = shiftarray(in, shift, edgepad)
+% Syntax:  [out] = SHIFTARRAY(in, shift, edgepad)
 % 
 % Shifts a vector time series by a lag corresponding to an integer
 % number of samples. Negative shifts correspond to moving the samples
@@ -13,28 +12,29 @@ function out = shiftarray(in, shift, edgepad)
 % "edgepad."
 %
 % Inputs:
-%    in - The input time series.
+%    in - Time series.
 %
-%    shift - The number of samples to shift by.
+%    shift - Number of samples to shift by.
 %
-%    edgepad - The values to set the beginning or end values. Options are
-%    'mirror' (default), 'zeroorderhold', and 'nan'.
+%    edgepad - Values to set the beginning or end values. Options are
+%         'mirror' (default), 'zeroorderhold', and 'nan'.n
 %
 % Outputs:
 %    out - The shifted time series.
 %
 % Example: 
-%    shiftedValues = shiftarray(rsk.data.values(:,1), -3); % shift back by 3 samples
+%    shiftedValues = SHIFTARRAY(rsk.data.values(:,1), -3); % shift back by 3 samples
 %
 % Author: RBR Ltd. Ottawa ON, Canada
 % email: support@rbr-global.com
 % Website: www.rbr-global.com
-% Last revision: 2017-06-13
-
+% Last revision: 2017-06-21
 
 if nargin == 2
     edgepad = 'mirror';
 end
+
+
 
 n = length(in);
 out = NaN*in;
@@ -51,6 +51,8 @@ switch lower(edgepad)
     otherwise
         error('edgepad argument is not recognized. Must be `mirror`, `nan` or `zeroorderhold`');
 end
+
+
 
 if shift>0
     Ilag = I;
