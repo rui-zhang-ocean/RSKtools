@@ -1,32 +1,30 @@
-function [RSK, binArray] = RSKbinaverage(RSK, varargin)
+function [RSK, samplesinbin] = RSKbinaverage(RSK, varargin)
 
-% RSKbinaverage - Average the profile data by a quantized reference
-%                 channel.
+%RSKbinaverage - Average the profile data by a quantized reference channel.
 %
-% Syntax:  [RSK] = RSKbinaverage(RSK, [OPTIONS])
+% Syntax:  [RSK, samplesinbin] = RSKbinaverage(RSK, [OPTIONS])
 % 
-% This function averages data in each profile using a averaging intervals
-% defined by the binSizes and boundaries of the binBy channel.
+% Averages data in each profile using averaging intervals defined by the
+% binSizes and boundaries of the binBy channel. 
 %
 % Note: The boundary takes precendence over the bin size. (Ex.
 % boundary= [5 20], binSize = [10 20]. BinArray will be [5 15 20 40 60...].
-% They should be ordered in the way the regimes would come up in that
-% profiling direction. 
+% They should be ordered in the way the regimes would come up in the given
+% profiling direction.
 %
 % Inputs:
 %    
-%   [Required] - RSK - The input RSK structure, with profiles as read using
-%                      RSKreadprofiles.
+%   [Required] - RSK - Structure, with profiles as read using
+%                      RSKreadprofiles. 
 %
-%   [Optional] - profile - Optional profile number. Default is to operate
-%                      on all detected profiles. 
+%   [Optional] - profile - Profile number. Default is to operate on all
+%                      detected profiles.  
 %            
-%                direction - the profile cast direction of the data fields
-%                      selected. Must be either 'down' or 'up'. Defaults to
-%                      'down'.  
+%                direction - Cast direction of the data fields selected.
+%                      Must be either 'down' or 'up'. Defaults to 'down'.
 %
-%                binBy - A reference channel that determines the samples in
-%                      each bin , can be any channel or time. Default is
+%                binBy - Reference channel that determines the samples in
+%                      each bin, can be any channel or time. Default is
 %                      Pressure.
 %
 %                binSize - Size of bins in each regime. Default [1] (units 
@@ -38,14 +36,14 @@ function [RSK, binArray] = RSKbinaverage(RSK, varargin)
 %                      greater. Default[]; whole pressure range.       
 %
 % Outputs:
-%    RSK - The structure with binned data.
+%    RSK - Structure with binned data
 %
-%    samplesinbin - The amount of samples in each bin.
+%    samplesinbin - Amount of samples in each bin.
 %
 % Author: RBR Ltd. Ottawa ON, Canada
 % email: support@rbr-global.com
 % Website: www.rbr-global.com
-% Last revision: 2017-05-31
+% Last revision: 2017-06-21
 
 validDirections = {'down', 'up'};
 checkDirection = @(x) any(validatestring(x,validDirections));
@@ -65,6 +63,8 @@ direction = p.Results.direction;
 binBy = p.Results.binBy;
 binSize = p.Results.binSize;
 boundary = p.Results.boundary;
+
+
 
 binbytime = strcmpi(binBy, 'Time');
 
