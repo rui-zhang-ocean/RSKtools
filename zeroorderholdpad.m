@@ -1,20 +1,20 @@
-function out = zeroorderholdpad(in, padSize)
+function out = zeroorderholdpad(in, padsize)
 
-% zeroorderholdpad - Pad a vector by entering Nan.
+%ZEROORDERHOLDPAD - Pad a vector by entering zero-order hold values.
 %
-% Syntax:  out = zeroorderholdpad(in, windowLength)
+% Syntax:  [out] = ZEROORDERHOLDPAD(in, padsize)
 % 
-% Pads vector with window length of entries at the beginning and end of the
-% in vector. The added entries are repeated first and last entry.
+% Pads vector with padsize of entries at the beginning and end of the in
+% vector. The added entries are repeated first and last entry. 
 %
 % Inputs:
-%    in - a vector
+%    in - Vector
 %
-%    padSize - The length of the padding on each side of the vector.
+%    padsize - Length of the padding on each side of the vector.
 %         Must be <= length(in).
 %
 % Outputs:
-%    out - padded in vector of length length(in)+2*padSize
+%    out - Padded in vector of length length(in)+2*padsize.
 %
 % Example: 
 %    out = zeroorderholdpad([1:10], 3)
@@ -26,18 +26,18 @@ function out = zeroorderholdpad(in, padSize)
 % Author: RBR Ltd. Ottawa ON, Canada
 % email: support@rbr-global.com
 % Website: www.rbr-global.com
-% Last revision: 2017-04-19
-
+% Last revision: 2017-06-21
 
 if isrow(in)
-    pre = repmat(in(1), [1,padSize]);
-    post = repmat(in(end), [1,padSize]);
+    pre = repmat(in(1), [1,padsize]);
+    post = repmat(in(end), [1,padsize]);
     out = [pre in post];
 elseif iscolumn(in)
-    pre = repmat(in(1), [padSize,1]);
-    post = repmat(in(end), [padSize,1]);
+    pre = repmat(in(1), [padsize,1]);
+    post = repmat(in(end), [padsize,1]);
     out = [pre; in; post];
 else
     error('in must be a row or column vector.')
 end
+
 end
