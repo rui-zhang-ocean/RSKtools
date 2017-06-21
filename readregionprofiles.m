@@ -1,23 +1,24 @@
 function RSK = readregionprofiles(RSK)
 
-% readregionprofiles - Uses the events table to read profiles start and end
-% time
+%READREGIONPROFILES - Read profiles start and end times from regions table.
 %
-% Syntax:  [RSK] = readregionprofiles(RSK)
+% Syntax:  [RSK] = READREGIONPROFILES(RSK)
 %
-% This is a helper function that will read in profiles start and end times
-% using the region and regionCast tables.
+% Reads in profiles start and end time by combining information in the
+% region and regionCast tables and adds it to the RSK structure.
 %
 % Inputs:
-%    RSK - a RSK structure opened with RSKgetprofiles.m
+%    RSK - Structure containing logger metadata.
 %
 % Outputs:
-%    RSK - Structure containing populated profiles
+%    RSK - Structure containing populated profiles, if available.
+%
+% See also: RSKgetprofiles.
 %
 % Author: RBR Ltd. Ottawa ON, Canada
 % email: support@rbr-global.com
 % Website: www.rbr-global.com
-% Last revision: 2017-05-31
+% Last revision: 2017-06-21
 
 tables = mksqlite('SELECT name FROM sqlite_master WHERE type="table"');
 
