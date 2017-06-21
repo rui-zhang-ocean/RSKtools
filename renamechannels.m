@@ -1,25 +1,25 @@
 function RSK = renamechannels(RSK)
 
-% renamechannels - Rename channels that require a more descriptive name
+%RENAMECHANNELS - Rename channels that require a more descriptive name.
 %
-% Syntax:  [RSK] = renamechannels(RSK)
+% Syntax:  [RSK] = RENAMECHANNELS(RSK)
 %
-% renamechannels checks for shortnames that correspond to temperature
-% channels that require a more descriptive name because they are not the
-% main temperature channel. These are doxy, temp04, temp05, temp10 and
-% temp13. 
-%
+% Checks for shortnames that correspond to channels that require a more
+% descriptive name and replaces the longName. These are doxy, temp04,
+% temp05, temp10, temp13 and pres08. 
+% 
 % Inputs:
-%    RSK - An RSK structure
+%    RSK - Structure containing metadata.
 %
 % Outputs:
-%    RSK - An RSK structure with decriptive unique channel names if
-%      required.
+%    RSK - Structure with decriptive unique channel names if required. 
+%
+% See also: RSKopen.
 %
 % Author: RBR Ltd. Ottawa ON, Canada
 % email: support@rbr-global.com
 % Website: www.rbr-global.com
-% Last revision: 2017-05-25
+% Last revision: 2017-06-21
 
 shortName = {RSK.channels.shortName};
 
