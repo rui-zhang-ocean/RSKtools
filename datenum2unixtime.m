@@ -2,7 +2,7 @@ function utime = datenum2unixtime(dnum)
 
 %DATENUM2UNIXTIME - Convert MATLAB datenum format to unix time
 %
-% Syntax:  [utime] = datenum2unixtime(dnum)
+% Syntax:  [utime] = DATENUM2UNIXTIME(dnum)
 % 
 % Converts MATLAB datenum format to "unix time", (i.e. POSIX time,
 % the number of seconds since 1970-01-01 00:00:00.000).
@@ -15,8 +15,12 @@ function utime = datenum2unixtime(dnum)
 %
 % Example: 
 %    datenum2unixtime(datenum('01-Jan-2015'))
+% 
+%    ans =
 %
-% See also: unixtime2datenum, RSKtime2datenum, datenum2RSKtime
+%    1.4201e+09
+%
+% See also: unixtime2datenum, RSKtime2datenum, datenum2RSKtime.
 %
 % Author: RBR Ltd. Ottawa ON, Canada
 % email: support@rbr-global.com

@@ -2,7 +2,7 @@ function castdir = getcastdirection(pressure, direction)
 
 %GETCASTDIRECTION - Check if pressure array that is in the given direction.
 %
-% Syntax:  [castdir] = getcastdirection(pressure, direction)
+% Syntax:  [castdir] = GETCASTDIRECTION(pressure, direction)
 %
 % Inputs:
 %    pressure - Time series of pressure

@@ -2,9 +2,9 @@ function chanNames = cellchannelnames(RSK, channel)
 
 %CELLCHANNELNAMES - Make a cell of the channel names.
 %
-% Syntax:  [chanNames] = cellchannelnames(RSK, channel)
+% Syntax:  [chanNames] = CELLCHANNELNAMES(RSK, channel)
 %
-% Set up channel names into a cell to facilitate iterating through many
+% Sets up channel names into a cell to facilitate iterating through many
 % different channels for other functions. If the channel argument is 'all',
 % all the channels.longName in the structure are put into a cell. If there
 % is only one channel name it simply puts it in a cell and if there is a
@@ -23,7 +23,7 @@ function chanNames = cellchannelnames(RSK, channel)
 % Author: RBR Ltd. Ottawa ON, Canada
 % email: support@rbr-global.com
 % Website: www.rbr-global.com
-% Last revision: 2017-06-20
+% Last revision: 2017-06-21
 
 if strcmpi(channel, 'all')
     chanNames = {RSK.channels.longName};

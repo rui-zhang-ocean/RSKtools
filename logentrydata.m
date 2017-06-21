@@ -2,7 +2,7 @@ function logdata = logentrydata(RSK, profile, direction)
 
 %LOGENTRYDATA - Create part of a log entry to describe data elements used.
 %
-% Syntax:  [logdata] = logentrydata(RSK, profile, direction)
+% Syntax:  [logdata] = LOGENTRYDATA(RSK, profile, direction)
 %
 % Creates a log entry explaining the casts described by the profile and
 % direction arguments. 

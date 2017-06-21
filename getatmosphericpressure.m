@@ -2,7 +2,7 @@ function pAtm = getatmosphericpressure(RSK)
 
 %GETATMOSPHERICPRESSURE - Return the atmospheric pressure stored in RSK file.
 %
-% Syntax:  [pAtm] = getatmosphericpressure(RSK)
+% Syntax:  [pAtm] = GETATMOSPHERICPRESSURE(RSK)
 %
 % Uses the parameterKeys or parameters field to find the atmospheric
 % pressure, if it is not there or there is no parameters field a default

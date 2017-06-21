@@ -2,7 +2,7 @@ function RSK = addchannelmetadata(RSK, longName, units)
 
 %ADDCHANNELMETADATA - Add the metadata for a new channel.
 %
-% Syntax:  [RSK] = addchannelmetadata(RSK, longName, units)
+% Syntax:  [RSK] = ADDCHANNELMETADATA(RSK, longName, units)
 % 
 % Adds all the metadata associated with a new channel in the fields
 % channels and instrumentsChannels of the RSK structure.
@@ -17,10 +17,12 @@ function RSK = addchannelmetadata(RSK, longName, units)
 % Outputs:
 %    RSK - RSK structure containing new channel metadata.
 %
+% See also: RSKderivedepth, RSKderiveseapressure, RSKderivesalinity.
+%
 % Author: RBR Ltd. Ottawa ON, Canada
 % email: support@rbr-global.com
 % Website: www.rbr-global.com
-% Last revision: 2017-06-20
+% Last revision: 2017-06-21
 
 hasChan = any(strcmpi({RSK.channels.longName}, longName));
 

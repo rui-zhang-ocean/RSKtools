@@ -2,7 +2,7 @@ function   check = iscompatibleversion(RSK, minimumvsnMajor, minimumvsnMinor, mi
 
 %ISCOMPATIBLEVERSION - Find if version is equal or greater than minimum given.
 %
-% Syntax:  [check] = iscompatibleversion(RSK, minimumvsnMajor, minimumvsnMinor, minimumvsnPatch)
+% Syntax:  [check] = ISCOMPATIBLEVERSION(RSK, minimumvsnMajor, minimumvsnMinor, minimumvsnPatch)
 %
 % Returns a logical index that describes if the RSK version is equal to or
 % greater than the specific minimum version required.

@@ -2,7 +2,7 @@ function out = nanpad(in, padsize)
 
 %NANPAD - Pad a vector with NaNs.
 %
-% Syntax:  [out] = nanpad(in, padsize)
+% Syntax:  [out] = NANPAD(in, padsize)
 % 
 % Pads in vector with padsize of entries at the beginning and end of the
 % in vector. The added entries are NaNs.
@@ -17,7 +17,7 @@ function out = nanpad(in, padsize)
 %    out - Padded in vector of length length(in)+2*padSize
 %
 % Example: 
-%    out = nanpad([1:10], 3)
+%    out = NANPAD([1:10], 3)
 % 
 %    out =
 %

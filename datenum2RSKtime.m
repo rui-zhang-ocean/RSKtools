@@ -2,7 +2,7 @@ function rtime = datenum2RSKtime(dnum)
 
 %DATENUM2RSKTIME - Convert MATLAB datenum format to RSK logger time.
 %
-% Syntax:  [rtime] = datenum2RSKtime(dnum)
+% Syntax:  [rtime] = DATENUM2RSKTIME(dnum)
 % 
 % Converts MATLAB datenum format to 'rtime', as recorded by the logger.
 %
@@ -15,8 +15,12 @@ function rtime = datenum2RSKtime(dnum)
 %
 % Example: 
 %    datenum2RSKtime(datenum('01-Jan-2015'))
+% 
+%    ans =
 %
-% See also: RSKtime2datenum, unixtime2datenum, datenum2unixtime
+%    1.4201e+12
+%
+% See also: RSKtime2datenum, unixtime2datenum, datenum2unixtime.
 %
 % Author: RBR Ltd. Ottawa ON, Canada
 % email: support@rbr-global.com

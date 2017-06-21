@@ -1,8 +1,8 @@
 function castidx = getdataindex(RSK, varargin)
 
-%GETDATAINDEX - Returns the index of data elements requested.
+%GETDATAINDEX - Return the index of data elements requested.
 %
-% Syntax:  [castIdx] = getdataindex(RSK, [OPTIONS])
+% Syntax:  [castIdx] = GETDATAINDEX(RSK, [OPTIONS])
 % 
 % Selects the data elements that fufill the requirements described by the
 % profile number and direction arguments.
@@ -11,7 +11,7 @@ function castidx = getdataindex(RSK, varargin)
 %   [Required] - RSK - Structure containing the logger data
 %
 %   [Optional] - profile - Profile number. Default is to use all profiles
-%                      available
+%                      available.
 % 
 %                direction - Cast direction. Default is to use all
 %                      directions available. 
@@ -88,8 +88,6 @@ else
         castidx = 1:ndata;
     end
 end
-
-        
-        
+     
 end
 

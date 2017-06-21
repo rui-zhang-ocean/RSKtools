@@ -2,7 +2,7 @@ function out = mirrorpad(in, padsize)
 
 %MIRRORPAD - Pad a vector by mirroring edge elements.
 %
-% Syntax:  [out] = mirrorpad(in, padsize)
+% Syntax:  [out] = MIRRORPAD(in, padsize)
 % 
 % Pads vector with window length of entries at the beginning and end of the
 % in vector. The added entries are mirrors of in. 

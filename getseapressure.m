@@ -2,7 +2,7 @@ function [RSK, SPcol] = getseapressure(RSK)
 
 %GETSEAPRESSURE - Add sea pressure to RSK and return the column index.
 %
-% Syntax:  [RSK, SPcol] = getseapressure(RSK)
+% Syntax:  [RSK, SPcol] = GETSEAPRESSURE(RSK)
 %
 % Finds the column index of sea pressure if it exists, if not it derives
 % sea pressure and adds it to the RSK structure.

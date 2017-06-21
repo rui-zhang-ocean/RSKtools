@@ -2,7 +2,7 @@ function wwevt = detectprofiles(pressure, timestamp, conductivity, profileThresh
 
 %DETECTPROFILES - Implement the logger profile detection algorithm.
 %
-% Syntax:  [wwevt] = detectprofiles(pressure, timestamp, conductivity, profileThreshold, conductivityThreshold)
+% Syntax:  [wwevt] = DETECTPROFILES(pressure, timestamp, conductivity, profileThreshold, conductivityThreshold)
 % 
 % Implements the algorithm used by the logger to find upcast and downcast
 % events using the pressure reversals during the time series. The algorithm
@@ -12,10 +12,10 @@ function wwevt = detectprofiles(pressure, timestamp, conductivity, profileThresh
 % Inputs:
 %    pressure - Time series
 %
-%    timestamp - Time associated with the pressure time series.
+%    timestamp - Time associated with the pressure time series
 %
-%    conductivity - Time series. Optional, if no conductivity data use [].
-%    
+%    conductivity - Time series. Optional, if no conductivity data use []
+%   
 %    pressureThreshold - Pressure difference required to detect a
 %               profile. Standard is 3dbar, or 1/4(max(pressure)-min(pressure).
 %
@@ -26,7 +26,7 @@ function wwevt = detectprofiles(pressure, timestamp, conductivity, profileThresh
 % Outputs:
 %    wwevt - A matrix containing the timestamp in the first column and an
 %            event index describing the start of a event (1=downcast,
-%            2=upcast, 3=outofwater)
+%            2=upcast, 3=outofwater).
 %
 % See also: RSKfindprofiles.
 %

@@ -2,7 +2,7 @@ function data = arrangedata(results_struct)
 
 %ARRANGEDATA - Clean data structures during reading.
 % 
-% Syntax:  [data] = arrangedata(results_struct)
+% Syntax:  [data] = ARRANGEDATA(results_struct)
 % 
 % Arranges data read from an RSK SQLite database, and cleans it by setting
 % zeros for empty values (usually occurs at the beginning of profiling runs
@@ -21,7 +21,7 @@ function data = arrangedata(results_struct)
 % Author: RBR Ltd. Ottawa ON, Canada
 % email: support@rbr-global.com
 % Website: www.rbr-global.com
-% Last revision: 2017-06-20
+% Last revision: 2017-06-21
 
 s = struct2cell(results_struct);
 data.tstamp = [s{1,:}]';

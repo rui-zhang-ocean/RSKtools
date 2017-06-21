@@ -2,7 +2,7 @@ function channelIdx = getchannelindex(RSK, channel)
 
 %GETCHANNELINDEX - Return index of channels.
 %
-% Syntax:  [channelIdx] = getchannelindex(RSK, channel)
+% Syntax:  [channelIdx] = GETCHANNELINDEX(RSK, channel)
 % 
 % Finds the channel index in the RSK of the channel longNames given. If the
 % channel is not in the RSK it returns an error.

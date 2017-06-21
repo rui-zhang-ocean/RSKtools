@@ -2,9 +2,9 @@ function depth = calculatedepth(pressure, latitude)
 
 %CALCULATEDEPTH - Calculate depth from pressure.
 %
-% Syntax:  [depth] = calculatedepth(pressure, latitude)
+% Syntax:  [depth] = CALCULATEDEPTH(pressure, latitude)
 % 
-% Calculate depth using pressure data and latitude. If TEOS-10 toolbox is
+% Calculates depth using pressure data and latitude. If TEOS-10 toolbox is
 % installed it will use it. The toolbox can be found at
 % http://www.teos-10.org/software.htm#1. Otherwise it is calculated using
 % the Saunders & Fofonoff method.  

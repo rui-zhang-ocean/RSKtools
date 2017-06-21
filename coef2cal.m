@@ -2,7 +2,7 @@ function RSK = coef2cal(RSK)
 
 %COEF2CAL - Combine the coefficients field to the calibrations field.
 %
-% Syntax: [RSK] = coef2cal(RSK)
+% Syntax: [RSK] = COEF2CAL(RSK)
 %
 % Pivots the coefficients table to combine it with the calibrations table. 
 %
@@ -18,7 +18,7 @@ function RSK = coef2cal(RSK)
 % Author: RBR Ltd. Ottawa ON, Canada
 % email: support@rbr-global.com
 % Website: www.rbr-global.com
-% Last revision: 2016-06-20
+% Last revision: 2017-06-21
 
 if ~iscompatibleversion(RSK, 1, 13, 4)
     return
