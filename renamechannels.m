@@ -43,4 +43,9 @@ idx = strcmpi(shortName, 'doxy09');
 if any(idx)
     RSK.channels(idx).longName = 'Dissolved O2';
 end
+
+idx = strcmpi(shortName, 'pres08');
+if any(idx)
+    RSK.channels(idx).longName = 'Sea Pressure';
+end
 end
