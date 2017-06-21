@@ -3,7 +3,7 @@ function RSK = RSKreadthumbnail(RSK)
 % RSKreadthumbnail - Internal function to read thumbnail data from
 %                    an opened RSK file.
 %
-% Syntax:  results = RSKreadthumbnail
+% Syntax:  results = RSKreadthumbnail(RSK)
 % 
 % Reads thumbnail data from an opened RSK SQLite file, called from
 % within RSKopen.
@@ -21,7 +21,7 @@ function RSK = RSKreadthumbnail(RSK)
 % Author: RBR Ltd. Ottawa ON, Canada
 % email: support@rbr-global.com
 % Website: www.rbr-global.com
-% Last revision: 2017-05-25
+% Last revision: 2017-06-21
 
 sql = ['select tstamp/1.0 as tstamp,* from thumbnailData order by tstamp'];
 results = mksqlite(sql);
