@@ -12,7 +12,7 @@ function RSK = readheaderfull(RSK)
 % Note: Only marine channels will be displayed.
 %
 % Inputs:
-%    RSK - 'full' file opened using RSKopen.m
+%    RSK - Structure of 'full' file opened using RSKopen.m
 %
 % Outputs:
 %    RSK - Structure containing logger metadata and thumbnails

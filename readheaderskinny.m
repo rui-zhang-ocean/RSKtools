@@ -11,7 +11,7 @@ function RSK = readheaderskinny(RSK)
 % opened in Ruskin in order to read the data.
 %
 % Inputs:
-%    RSK - 'skinny' file opened using RSKopen.m.
+%    RSK - Structure of 'skinny' file opened using RSKopen.m.
 %
 % Outputs:
 %    RSK - Structure containing logger metadata and thumbnail.

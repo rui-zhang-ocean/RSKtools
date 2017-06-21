@@ -9,7 +9,7 @@ function RSK = readheaderEPdesktop(RSK)
 % appSettings, parameters, parameterKeys and geodata tables.  
 %
 % Inputs:
-%    RSK - 'EPdesktop' file opened using RSKopen.m.
+%    RSK - Structure of 'EPdesktop' file opened using RSKopen.m.
 %
 % Outputs:
 %    RSK - Structure containing logger metadata and thumbnail.

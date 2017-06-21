@@ -11,7 +11,7 @@ function RSK = readheaderlive(RSK)
 % Note: Only marine channels will be displayed.
 %
 % Inputs:
-%    RSK - 'live' file opened using RSKopen.m.
+%    RSK - Structure of 'live' file opened using RSKopen.m.
 %
 % Outputs:
 %    RSK - Structure containing logger metadata and thumbnail.

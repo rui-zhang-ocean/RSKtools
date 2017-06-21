@@ -8,7 +8,7 @@ function RSK = readheaderEP(RSK)
 % they are present and populated and adds them to the RSK structure.
 %
 % Inputs:
-%    RSK - 'EasyParse' file opened using RSKopen.m.
+%    RSK - Structure of 'EasyParse' file opened using RSKopen.m.
 %
 % Outputs:
 %    RSK - Structure containing the logger metadata.
