@@ -1,50 +1,48 @@
+function RSK = RSKalignchannel(RSK, channel, lag, varargin)
 
-function [RSK] = RSKalignchannel(RSK, channel, lag, varargin)
-
-% RSKalignchannel - Align a channel using a specified lag.
+%RSKalignchannel - Align a channel using a specified lag.
 %
 % Syntax:  [RSK] = RSKalignchannel(RSK, channel, lag, [OPTIONS])
 % 
-% Applies a time lag to a specified channel. Typically used for
+% Applies a sample lag to a specified channel. Typically used for
 % conductivity to minimize salinity spiking from C/T mismatches when
 % the sensors are moving through regions of high vertical gradients.
 %
 % Inputs: 
-%    [Required] - RSK - The input RSK structure.
+%    [Required] - RSK - Input RSK structure
 %
-%                 channel - Longname of channel to align (e.g. temperature).
+%                 channel - Longname of channel to align (e.g. temperature)
 %
-%                 lag - The lag (in samples) to apply to the channel.
-%                       A negative lag shifts the channel backward in
-%                       time (earlier), while a positive lag shifts
-%                       the channel forward in time (later).  To apply
-%                       a different lag to each data field, specify the
-%                       lags in a vector.
+%                 lag - The lag (in samples) to apply to the channel. A
+%                       negative lag shifts the channel backward in time
+%                       (earlier), while a positive lag shifts the channel
+%                       forward in time (later). To apply a different lag
+%                       to each data element, specify the lags in a vector.
 %
-%    [Optional] - profile - Optional profile number. Default is to operate
+%    [Optional] - profile - Profile number. Default is to operate
 %                       on all of data's elements. 
 %
 %                 direction - 'up' for upcast, 'down' for downcast, or
 %                       `both` for all. Default all directions available.
 %
-%                  shiftfill - The values that will fill the void left
-%                        at the beginning or end of the time series; 'nan',
-%                        fills the removed samples of the shifted channel
-%                        with NaN, 'zeroorderhold' fills the removed
-%                        samples of the shifted channels with the first or
-%                        last value, 'mirror' fills the removed values with
-%                        the reflection of the original end point, and
-%                        'union' will remove the values of the OTHER
-%                        channels that do not align with the shifted
-%                        channel (note: this will reduce the size of values
-%                        array by "lag" samples). 
+%                  shiftfill - Values that will fill the void left at the
+%                        beginning or end of the time series; 'nan', fills
+%                        the removed samples of the shifted channel with
+%                        NaN, 'zeroorderhold' fills the removed samples of
+%                        the shifted channels with the first or last value,
+%                        'mirror' fills the removed values with the
+%                        reflection of the original end point, and 'union'
+%                        will remove the values of the OTHER channels that
+%                        do not align with the shifted channel (note: this
+%                        will reduce the size of values array by "lag"
+%                        samples).  
 %
 % Outputs:
-%    RSK - The RSK structure with aligned channel values.
+%    RSK - Structure with aligned channel values.
 %
 % Example: 
 %    rsk = RSKopen('file.rsk');
-%    rsk = RSKreadprofiles(rsk, 1:10); % read first 10 downcasts
+%    rsk = RSKreadprofiles(rsk, 'profile', 1:10, 'direction', 'down'); % read first 10 downcasts
 %
 %   1. Temperature channel of first four profiles with the same lag value.
 %    rsk = RSKalignchannel(rsk, 'temperature', 2, 'profile', 1:4);
@@ -54,14 +52,15 @@ function [RSK] = RSKalignchannel(RSK, channel, lag, varargin)
 %
 %   3. Conductivity channel from all downcasts with optimal lag calculated 
 %      with RSKgetCTlag.m.
-%    lags = RSKgetCTlag(rsk)
+%    lags = RSKcalculateCTlag(rsk);
 %    rsk = RSKalignchannel(rsk, 'Conductivity', lags);
 %
+% See also: RSKcalculateCTlag.
 %
 % Author: RBR Ltd. Ottawa ON, Canada
 % email: support@rbr-global.com
 % Website: www.rbr-global.com
-% Last revision: 2017-05-31
+% Last revision: 2017-06-21
 
 validShiftfill = {'zeroorderhold', 'union', 'nan', 'mirror'};
 checkShiftfill = @(x) any(validatestring(x,validShiftfill));
@@ -110,11 +109,10 @@ for ndx =  castidx
         channelShifted = shiftarray(channelData, lags(counter), shiftfill);
         RSK.data(ndx).values(:, channelCol) = channelShifted;
     end
-
 end
 
 
-
+%% Log entry
 if length(lag) == 1
     logdata = logentrydata(RSK, profile, direction);
     logentry = [channel ' aligned using a ' num2str(lags(1)) ' sample lag and ' shiftfill ' shiftfill on ' logdata '.'];
@@ -131,8 +129,8 @@ end
 
 %% Nested function
     function lags = checklag(lag, castidx)
-    % A helper function used to check if the lag values are intergers and
-    % either one for all profiles or one for each profiles.
+    % Checks if the lag values are intergers and either: one for all
+    % profiles or one for each profiles. 
 
         if ~isequal(fix(lag),lag),
             error('Lag values must be integers.')
@@ -146,6 +144,6 @@ end
         else
             lags = lag;
         end
-
     end
+
 end
