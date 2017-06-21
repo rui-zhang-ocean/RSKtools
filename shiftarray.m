@@ -25,6 +25,8 @@ function out = shiftarray(in, shift, edgepad)
 % Example: 
 %    shiftedValues = SHIFTARRAY(rsk.data.values(:,1), -3); % shift back by 3 samples
 %
+% See also: RSKalignchannel.
+%
 % Author: RBR Ltd. Ottawa ON, Canada
 % email: support@rbr-global.com
 % Website: www.rbr-global.com
