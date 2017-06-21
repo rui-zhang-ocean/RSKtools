@@ -5,12 +5,12 @@ function handles = RSKplotburstdata(RSK, varargin)
 % Syntax:  [handles] = RSKplotburstdata(RSK)
 % 
 % This generates a plot, similar to the thumbnail plot, only using the
-% full 'burst data' that you read in, rather than just the thumbnail
+% full 'burstData' that you read in, rather than just the thumbnail
 % view.  It tries to be intelligent about the subplots and channel
 % names, so you can get an idea of how to do better processing.
 % 
 % Inputs:
-%    [Required] - RSK - Structure containing the logger metadata and burst data
+%    [Required] - RSK - Structure containing the logger metadata and burstData
 %
 %    [Optional] - channel - channel to plots, can be multiple in a cell, if no value is
 %                       given it will plot all channels.
@@ -21,7 +21,7 @@ function handles = RSKplotburstdata(RSK, varargin)
 % Example: 
 %    RSK = RSKopen('sample.rsk');  
 %    RSK = RSKreadburstdata(RSK);  
-%    RSKplotdata(RSK);  
+%    RSKplotburstdata(RSK);  
 %
 % See also: RSKplotthumbnail, RSKplotdata, RSKreadburstdata
 %
@@ -40,7 +40,7 @@ channel = p.Results.channel;
 
 
 
-field = 'burstdata';
+field = 'burstData';
 if ~isfield(RSK, field)
     disp('You must read a section of burst data in first!');
     disp('Use RSKreadburstdata...')

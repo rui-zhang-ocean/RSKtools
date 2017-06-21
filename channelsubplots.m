@@ -31,7 +31,7 @@ function handles = channelsubplots(RSK, field, varargin)
 % Website: www.rbr-global.com
 % Last revision: 2017-06-19
 
-validFields = {'burstdata', 'thumbnailData', 'data'};
+validFields = {'burstData', 'thumbnailData', 'data'};
 checkField = @(x) any(validatestring(x,validFields));
 
 p = inputParser;

@@ -1,6 +1,6 @@
 function RSK = RSKreadburstdata(RSK, varargin)
 
-% RSKreadburstdata - Reads the burst data tables from an RBR RSK
+% RSKreadburstdata - Read the burst data tables from an RBR RSK
 %                    SQLite file. Use with RSKreadevents to
 %                    separate bursts.
 %
@@ -25,19 +25,19 @@ function RSK = RSKreadburstdata(RSK, varargin)
 %
 % Outputs:
 %    RSK - Structure containing the logger metadata, along with the
-%          added {FIXME:'burstdata'} fields. Note that this replaces
+%          added burstData fields. Note that this replaces
 %          any previous data that was read this way.
 %
 % Example: 
 %    RSK = RSKopen('sample.rsk');  
 %    RSK = RSKreadburstdata(RSK);
 %
-% See also: RSKopen, RSKreaddata, RSKreadevents
+% See also: RSKopen, RSKreaddata, RSKreadevents.
 %
 % Author: RBR Ltd. Ottawa ON, Canada
 % email: support@rbr-global.com
 % Website: www.rbr-global.com
-% Last revision: 2016-05-25
+% Last revision: 2017-06-21
 
 
 p = inputParser;
@@ -59,7 +59,7 @@ end
 t1 = datenum2RSKtime(t1);
 t2 = datenum2RSKtime(t2);
 
-sql = ['select tstamp/1.0 as tstamp,* from burstdata where tstamp/1.0 between ' num2str(t1) ' and ' num2str(t2) ' order by tstamp'];
+sql = ['select tstamp/1.0 as tstamp,* from burstData where tstamp/1.0 between ' num2str(t1) ' and ' num2str(t2) ' order by tstamp'];
 results = mksqlite(sql);
 if isempty(results)
     disp('No data found in that interval')
@@ -72,5 +72,5 @@ results = arrangedata(results);
 t=results.tstamp';
 results.tstamp = RSKtime2datenum(t); % convert RSK millis time to datenum
 
-RSK.burstdata=results;
+RSK.burstData=results;
 end
