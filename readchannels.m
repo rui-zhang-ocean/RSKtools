@@ -5,7 +5,7 @@ function RSK = readchannels(RSK)
 % Syntax:  [RSK] = READCHANNELS(RSK)
 %
 % If available, uses the instrumentChannels table to read the channels with
-% matching channelID otherwise, directly reads the metadata from the
+% matching channelID. Otherwise, directly reads the metadata from the
 % channels table.
 %
 % Inputs:
