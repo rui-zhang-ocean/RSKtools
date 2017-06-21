@@ -1,6 +1,6 @@
 function RSK = readsamplingdetails(RSK)
 
-%READSAMPLINGDETAILS - Reads the sampling details of a file.
+%READSAMPLINGDETAILS - Read the sampling details of a file.
 %
 % Syntax:  [RSK] = READSAMPLINGDETAILS(RSK)
 %
@@ -23,8 +23,6 @@ function RSK = readsamplingdetails(RSK)
 % Last revision: 2017-06-21
 
 mode = RSK.schedules.mode;
-
-
 
 if iscompatibleversion(RSK, 1, 13, 8)
     if strcmpi(mode, 'ddsampling')
