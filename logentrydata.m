@@ -4,8 +4,8 @@ function logdata = logentrydata(RSK, profile, direction)
 %
 % Syntax:  [logdata] = logentrydata(RSK, profile, direction)
 %
-% This function creates a log entry explaining the casts described by the
-% profile and direction arguments.
+% Creates a log entry explaining the casts described by the profile and
+% direction arguments. 
 %
 % Inputs:
 %    RSK - The input RSK structure
