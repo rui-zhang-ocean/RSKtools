@@ -1,50 +1,49 @@
-function [out] = runavg(in, windowLength, edgepad)
+function out = runavg(in, windowLength, edgepad)
 
-% runavg - Smooth a time series using a boxcar filter.
+%RUNAVG - Smooth a time series using a boxcar filter.
 %
-% Syntax:  [out, windowLength] = runavg(in, windowLength, edgepad)
+% Syntax:  [out] = RUNAVG(in, windowLength, edgepad)
 % 
-% runavg performs a running average, also known as boxcar filter, of length
-% windowLength over the time series.
+% Performs a running average, also known as boxcar filter, of length
+% windowLength over the time series. 
 %
 % Inputs:
-%    in - time series
+%    in - Time series
 %
-%    windowLength - The length of the running median. It must be odd, will
-%         add one if it is odd.
+%    windowLength - Length of the running median. It must be odd.
 %
 %    edgepad - Describes how the filter will act at the edges. Options
-%         are 'mirror', 'zeroorderhold' and 'nan'.
+%         are 'mirror', 'zeroorderhold' and 'nan'. Default is 'mirror'.
 %
 % Outputs:
-%    out - the smoothed time series
+%    out - Smoothed time series.
 %
-%    windowLength - The length of the running median. Must be odd.
+% See also: RSKsmooth.
 %
 % Author: RBR Ltd. Ottawa ON, Canada
 % email: support@rbr-global.com
 % Website: www.rbr-global.com
-% Last revision: 2017-06-13
+% Last revision: 2017-06-21
 
-%% Check and set inputs/outputs
 if nargin == 2
     edgepad = 'mirror';
 end
 
-n = length(in);
-out = NaN*in;
-
-
-%% Check windowLength
 if mod(windowLength, 2) == 0
     error('windowLength must be odd');
 end
 
-padsize = (windowLength-1)/2;
 
+
+padsize = (windowLength-1)/2;
 inpadded = padseries(in, padsize, edgepad);
 
+
+
+n = length(in);
+out = NaN*in;
 for ndx = 1:n
     out(ndx) = nanmean(inpadded(ndx:ndx+(windowLength-1)));
 end
+
 end
