@@ -2,7 +2,7 @@ function RSK = RSKreaddata(RSK, varargin)
 
 %RSKreaddata - Read the data tables from an RBR RSK SQLite file.
 %
-% Syntax:  RSK = RSKreaddata(RSK, [OPTIONS])
+% Syntax:  [RSK] = RSKreaddata(RSK, [OPTIONS])
 % 
 % Reads the actual data tables from the RSK file previously opened
 % with RSKopen(). Will either read the entire data structre, or a subset
@@ -66,7 +66,7 @@ t1 = datenum2RSKtime(t1);
 t2 = datenum2RSKtime(t2);
 
 if t2 <= t1
-    error('The end time (t2) must be greater (later) than the start time (t1)')
+    error('The end time (t2) must be greater (later) than the start time (t1).')
 end
 
 
@@ -82,7 +82,7 @@ end
 sql = ['select tstamp/1.0 as tstamp,* from data where tstamp between ' num2str(t1) ' and ' num2str(t2) ' order by tstamp'];
 results = mksqlite(sql);
 if isempty(results)
-    disp('No data found in that interval')
+    disp('No data found in that interval.')
     return
 end
 
