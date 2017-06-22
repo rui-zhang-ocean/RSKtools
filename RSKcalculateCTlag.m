@@ -1,59 +1,59 @@
 function lag = RSKcalculateCTlag(RSK, varargin)
 
-% RSKcalculateCTlag - Calculate a conductivity lag by minimizing salinity
-%                     spikes.
-%
+%RSKcalculateCTlag - Calculate a conductivity lag.
+% 
 % Syntax: [lag] = RSKcalculateCTlag(RSK, [OPTIONS])
 %
-% Calculates the optimal conductivity time shift relative to
-% temperature to minimize salinity spiking.  The shift is made in
-% time, but if temperature is not shifted then it is effectively
-% aligned to temperature.  The optimal lag is determined by
-% constructing a smoothed reference salinity by running the calculated
-% salinity through a boxcar filter, then comparing the standard
-% deviations of the residuals for a range of lags from -20 to +20
-% samples. A pressure range can be determined to align with respect to a
-% certain range of values (avoids large effects from surface anomalies).
+% Calculates the optimal conductivity time shift relative to temperature to
+% minimize salinity spiking.  The shift is made in time, but if temperature
+% is not shifted then it is effectively aligned to temperature.  The
+% optimal lag is determined by constructing a smoothed reference salinity
+% by running the calculated salinity through a boxcar filter, then
+% comparing the standard deviations of the residuals for a range of lags
+% from -20 to +20 samples. A pressure range can be determined to align with
+% respect to a certain range of values (used to avoid large effects from
+% surface anomalies). 
 %
-% Requires the TEOS-10 GSW toobox to compute salinity.
+% Note: Requires the TEOS-10 GSW toobox to compute salinity.
 %
 % Inputs:
-%    [Required] - RSK - The input RSK structure, with profiles as read using
-%                       RSKreadprofiles.
+%    [Required] - RSK - Structure, with profiles as read using
+%                       RSKreadprofiles 
 %
-%    [Optional] - pressureRange - Set the limits of the pressure range used
-%                       to obtain the lag. Specify as a two-element vector,
+%    [Optional] - pressureRange - Limits of the pressure range used to
+%                       obtain the lag. Specify as a two-element vector, 
 %                       [pressureMin, pressureMax]. Default is [0,
-%                       max(Pressure)]
+%                       max(Pressure)].
 %
-%                 profile - Optional profile number. Default is to
-%                       calculate the lag of all available
-%                       profiles.
+%                 profile - Profile number. Default is all available
+%                       profiles
 %
 %                 direction - 'up' for upcast, 'down' for downcast, or
 %                       `both` for all. Default all directions available.
 %
-%                 windowLength - The length of the filter window used for the
+%                 windowLength - Length of the filter window used for the
 %                       reference salinity. Default is 21 samples.
 %
 % Outputs:
-%    lag - The optimal lags of conductivity for each profile.  These
+%    lag - Optimal lags of conductivity for each profile.  These
 %          can serve as inputs into RSKalignchannel.m.
 %
 % Examples:
 %    rsk = RSKopen('file.rsk');
-%    rsk = RSKreadprofiles(rsk, 1:10); % read first 10 downcasts
+%    rsk = RSKreadprofiles(rsk, 'profile', 1:10, 'direction', 'down'); % read first 10 downcasts
 %
 %   1. All downcast profiles with default smoothing
 %    lag = RSKcalculateCTlag(rsk);
 %
 %   2. Specified profiles (first 4), reference salinity found with 13 pt boxcar.
-%    lag = RSKcalculateCTlag(rsk, 'profileNum',1:4, 'windowLength',13);
+%    lag = RSKcalculateCTlag(rsk, 'profile',1:4, 'windowLength',13);
+%
+% See also: RSKalignchannel.
 %
 % Author: RBR Ltd. Ottawa ON, Canada
 % email: support@rbr-global.com
 % Website: www.rbr-global.com
-% Last revision: 2017-05-31
+% Last revision: 2017-06-22
 
 hasTEOS = exist('gsw_SP_from_C', 'file') == 2;
 if ~hasTEOS
@@ -68,7 +68,7 @@ checkDirection = @(x) any(validatestring(x,validDirections));
 p = inputParser;
 addRequired(p,'RSK', @isstruct);
 addParameter(p, 'pressureRange', [], @isvector);
-addParameter(p,'profile', []) 
+addParameter(p,'profile', [], @isnumeric) 
 addParameter(p, 'direction', [], checkDirection);
 addParameter(p,'windowLength', 21, @isnumeric)
 parse(p, RSK, varargin{:})
@@ -81,16 +81,16 @@ windowLength = p.Results.windowLength;
 
 
 
-Pcol = getchannelindex(RSK, 'pressure');
 Ccol = getchannelindex(RSK, 'conductivity');
 Tcol = getchannelindex(RSK, 'temperature');
+Pcol = getchannelindex(RSK, 'pressure');
 
 
 
 bestlag = [];
 castidx = getdataindex(RSK, profile, direction);
 for ndx = castidx
-    disp(['Processing profile: ' num2str(ndx)]) %fixme, processing cast/ data element.
+    disp(['Processing cast: ' num2str(ndx)]) 
     C = RSK.data(ndx).values(:, Ccol);
     T = RSK.data(ndx).values(:, Tcol);
     P = RSK.data(ndx).values(:, Pcol);
