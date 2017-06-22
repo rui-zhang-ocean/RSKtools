@@ -1,4 +1,4 @@
-% RSKconstants - A collection of constants to be used in RSKtools
+%RSKconstants - A collection of constants to be used in RSKtools
 %
 % Author: RBR Ltd. Ottawa ON, Canada
 % email: support@rbr-global.com
@@ -18,3 +18,5 @@ RSKtoolsversion = '1.5.3';
 RSKtoolsversionMajor = 1;
 RSKtoolsversionMinor = 5;
 RSKtoolsversionPatch = 3;
+
+defaultpAtm = 10.1325;
