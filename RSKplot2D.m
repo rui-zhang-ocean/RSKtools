@@ -1,36 +1,37 @@
 function im = RSKplot2D(RSK, channel, varargin)
 
-% RSKplot2D - Plot profiles in a contour plot
+%RSKplot2D - Plot profiles in a 2D plot.
 %
-% Syntax:  RSKplot2D(RSK, channel, direction)
+% Syntax:  [im] = RSKplot2D(RSK, channel, [OPTIONS])
 % 
-% This generates a plot of the profiles over time.
+% Generates a plot of the profiles over time. The x axis is time, the
+% y axis is a reference channel. The reference channel must have indentical
+% entries across all casts being plotted. Use RSKbinaverage.m. 
 %
 % Inputs:
-%    
-%   [Required] - RSK - The input RSK structure, with profiles as read using
-%                      RSKreadprofiles.
+%   [Required] - RSK - Structure, with profiles as read using RSKreadprofiles.
 %
 %                channel - Longname of channel to plot (e.g. temperature,
-%                      salinity, etc). Can be cell array of many channels or
-%                      'all', will despike all channels.
+%                      salinity, etc).
 %
-%   [Optional] - profile - Optional profile number(s) to plot. Default
-%                      is to use all profiles. 
+%   [Optional] - profile - Profile numbers to plot. Default is to use all
+%                      available profiles.  
 %
 %                 direction - 'up' for upcast, 'down' for downcast. Default
 %                      is down.
 %
-%                reference - The channel that will be plotted as y. Default
-%                      'Pressure', can be 'Depth'.
+%                 reference - Channel that will be plotted as y. Default
+%                      'Pressure', can be any other channel.
 %
 % Output:
 %     im - Image object created, use to set properties.
 %
+% See also: RSKbinaverage, RSKplotprofiles.
+%
 % Author: RBR Ltd. Ottawa ON, Canada
 % email: support@rbr-global.com
 % Website: www.rbr-global.com
-% Last revision: 2017-05-31
+% Last revision: 2017-06-22
 
 validDirections = {'down', 'up'};
 checkDirection = @(x) any(validatestring(x,validDirections));
@@ -58,7 +59,7 @@ for ndx = 1:length(castidx)-1
     if RSK.data(castidx(ndx)).values(:,YCol)==RSK.data(castidx(ndx+1)).values(:,YCol);
         binCenter = RSK.data(castidx(ndx)).values(:,YCol);
     else 
-        error('The refence channel`s data of all the selected profiles must be identical. Use RSKbinaverage.m')
+        error('The reference channel data of all the selected profiles must be identical. Use RSKbinaverage.m')
     end
 end
 
