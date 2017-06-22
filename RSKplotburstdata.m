@@ -1,34 +1,36 @@
 function handles = RSKplotburstdata(RSK, varargin)
 
-% RSKplotburstdata - Plot summaries of logger burst data
+%RSKplotburstdata - Plot summaries of logger burst data.
 %
-% Syntax:  [handles] = RSKplotburstdata(RSK)
+% Syntax:  [handles] = RSKplotburstdata(RSK, [OPTIONS])
 % 
-% This generates a plot, similar to the thumbnail plot, only using the
+% Generates a plot, similar to the thumbnail plot, only using the
 % full 'burstData' that you read in, rather than just the thumbnail
 % view.  It tries to be intelligent about the subplots and channel
 % names, so you can get an idea of how to do better processing.
 % 
 % Inputs:
-%    [Required] - RSK - Structure containing the logger metadata and burstData
+%    [Required] - RSK - Structure containing the logger metadata and
+%                       burstData.
 %
-%    [Optional] - channel - channel to plots, can be multiple in a cell, if no value is
-%                       given it will plot all channels.
+%    [Optional] - channel - Longname of channel to plots, can be multiple
+%                       in a cell, if no value is given it will plot all
+%                       channels. 
 %
 % Output:
-%     handles - The line object of the plot.
+%     handles - Line object of the plot.
 %
 % Example: 
 %    RSK = RSKopen('sample.rsk');  
-%    RSK = RSKreadburstdata(RSK);  
+%    RSK = RSKreadburstdata(RSK, 'channel', {'Conductivity', 'Temperature', 'Pressure'});  
 %    RSKplotburstdata(RSK);  
 %
-% See also: RSKplotthumbnail, RSKplotdata, RSKreadburstdata
+% See also: RSKreadburstdata, RSKplotthumbnail, RSKplotdata.
 %
 % Author: RBR Ltd. Ottawa ON, Canada
 % email: support@rbr-global.com
 % Website: www.rbr-global.com
-% Last revision: 2017-06-02
+% Last revision: 2017-06-22
 
 p = inputParser;
 addRequired(p, 'RSK', @isstruct);
