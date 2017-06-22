@@ -1,28 +1,31 @@
 function RSK = RSKreaddata(RSK, varargin)
 
-% RSKreaddata - Reads the data tables from an RBR RSK SQLite file.
+%RSKreaddata - Read the data tables from an RBR RSK SQLite file.
 %
-% Syntax:  RSK = RSKreaddata(RSK, t1, t2)
+% Syntax:  RSK = RSKreaddata(RSK, [OPTIONS])
 % 
 % Reads the actual data tables from the RSK file previously opened
-% with RSKopen(). Will either read the entire data structre, or a
-% specified subset. 
+% with RSKopen(). Will either read the entire data structre, or a subset
+% specified by the 't1' and 't2' arguments.
 %
 % Note: If the file type is 'skinny' the file will have to be opened with
 % Ruskin before RSKtools can read the data because the data is stored in a
 % raw bin file.
 % 
 % Inputs: 
-%    RSK - Structure containing the logger metadata and thumbnails
-%          returned by RSKopen. If provided as the only argument the
-%          data for the entire file is read. Depending on the amount
-%          of data in your dataset, and the amount of memory in your
-%          computer, you can read bigger or smaller chunks before
-%          Matlab will complain and run out of memory.
-%     t1 - Optional start time for range of data to be read,
-%          specified using the MATLAB datenum format.
-%     t2 - Optional end time for range of data to be read,
-%          specified using the MATLAB datenum format.
+%    [Required] - RSK - Structure containing the logger metadata and
+%                       thumbnails returned by RSKopen. If provided as the
+%                       only argument the data for the entire file is read.
+%                       Depending on the amount of data in your dataset,
+%                       and the amount of memory in your computer, you can
+%                       read bigger or smaller chunks before Matlab will
+%                       complain and run out of memory. 
+%
+%    [Optional] - t1 - Start time for range of data to be read, specified
+%                       using the MATLAB datenum format. 
+%                 t2 - End time for range of data to be read, specified
+%                       using the MATLAB datenum format. 
+%
 %
 % Outputs:
 %    RSK - Structure containing the logger metadata, along with the
@@ -31,14 +34,15 @@ function RSK = RSKreaddata(RSK, varargin)
 %
 % Example: 
 %    RSK = RSKopen('sample.rsk');  
-%    RSK = RSKreaddata(RSK);
+%    % Read 1/2 day of data since logger started.
+%    RSK = RSKreaddata(RSK, 't2', RSK.epochs.startTime+0.5);
 %
-% See also: RSKopen, RSKreadevents, RSKreadburstdata
+% See also: RSKopen, RSKreadevents, RSKreadburstdata.
 %
 % Author: RBR Ltd. Ottawa ON, Canada
 % email: support@rbr-global.com
 % Website: www.rbr-global.com
-% Last revision: 2017-05-25
+% Last revision: 2017-06-22
 
 p = inputParser;
 addRequired(p, 'RSK', @isstruct);
@@ -49,6 +53,8 @@ parse(p, RSK, varargin{:})
 RSK = p.Results.RSK;
 t1 = p.Results.t1;
 t2 = p.Results.t2;
+
+
 
 if isempty(t1)
     t1 = RSK.epochs.startTime;
@@ -63,13 +69,16 @@ if t2 <= t1
     error('The end time (t2) must be greater (later) than the start time (t1)')
 end
 
+
+
 %% Check if file type is skinny
 if strcmp(RSK.dbInfo(end).type, 'skinny')
     error('File must be opened in Ruskin before RSKtools can read the data.');
 end
 
-%% Load data
 
+
+%% Load data
 sql = ['select tstamp/1.0 as tstamp,* from data where tstamp between ' num2str(t1) ' and ' num2str(t2) ' order by tstamp'];
 results = mksqlite(sql);
 if isempty(results)
@@ -87,6 +96,8 @@ if ~strcmpi(RSK.dbInfo(end).type, 'EPdesktop')
     [~, isDerived] = removenonmarinechannels(RSK);
     results.values = results.values(:,~isDerived);
 end
+
+
 
 %% Put data into data field of RSK structure.
 RSK.data=results;
