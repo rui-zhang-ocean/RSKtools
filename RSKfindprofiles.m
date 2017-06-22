@@ -1,54 +1,60 @@
 function RSK = RSKfindprofiles(RSK, varargin)
 
-%RSKfindprofiles - Find profiles in the rsk pressure data if profile events are non exist.
+%RSKfindprofiles - Find profiles using the pressure data. 
 %
-% Syntax:  [RSK] = RSKfindprofiles(RSK, varargin)
+% Syntax:  [RSK] = RSKfindprofiles(RSK, [OPTIONS])
 % 
-% RSKfindprofiles implements the algorithm used by the logger to find upcasts
-% or downcasts if they were not detected while the instument was recording.
+% Implements the algorithm used by the logger to find upcasts or downcasts
+% by looking for pressure reversals in the pressure data. It retrieves
+% metadata about the profiles and puts it into the profiles field of the
+% RSK. The casts are seperated by upcasts and downcasts and each have
+% tstart and tend for start times and end times. 
 %
 % Inputs: 
-%    [Required] - RSK - Structure containing the logger metadata and thumbnails
+%    [Required] - RSK - Structure containing the logger metadata and thumbnail
 %               
-%    [Optional] - pressureThreshold - The pressure difference required to detect a
-%                    profile. The logger uses 3dbar, which is the default.
-%                    It may be too large for short profiles.
+%    [Optional] - pressureThreshold - Pressure difference required to
+%                       detect a profile. The logger uses 3dbar, which is
+%                       the default. It may be too large for short
+%                       profiles.  
 %
-%                 conductivityThreshold - The conductivity value that indicates the
-%                    sensor is out of water. Typically 0.05 mS/cm is very good. If the
-%                    water is fresh it may be better to use a lower value.
+%                 conductivityThreshold - Threshold value that indicates
+%                       the sensor is out of seawater. If the water is
+%                       fresh you may consider using a lower value.     
 %
 % Output: 
-%
 %   RSK - Structure containing profiles field with the profile metadata.
 %         Use RSKreadprofiles to populate the profiles field with data.
 %
 % Ex:
 %    RSK = RSKopen(fname);
 %    RSK = RSKreaddata(RSK);
-%    RSK = RSKfindprofiles(RSK);
+%    RSK = RSKfindprofiles(RSK, 'pressureThreshold', 1);
+%
+% See also: RSKreadprofiles, RSKgetprofiles.
 %
 % Author: RBR Ltd. Ottawa ON, Canada
 % email: support@rbr-global.com
 % Website: www.rbr-global.com
-% Last revision: 2017-05-29
+% Last revision: 2017-06-22
 
-%% Parse Inputs
 p = inputParser;
 addRequired(p, 'RSK', @isstruct);
 addParameter(p, 'profileThreshold', 3, @isnumeric);
 addParameter(p, 'conductivityThreshold', 0.05, @isnumeric);
 parse(p, RSK, varargin{:})
 
-% Assign each argument
 RSK = p.Results.RSK;
 profileThreshold = p.Results.profileThreshold;
 conductivityThreshold = p.Results.conductivityThreshold;
 
-%% Check if upcasts is already populated
+
+
 if isfield(RSK, 'profiles')
     error('Profiles are already found, get data using RSKreadprofiles.m');
 end
+
+
 
 %% Set up values
 Pcol = getchannelindex(RSK, 'Pressure');
@@ -64,14 +70,16 @@ catch
     conductivity = [];
 end
 
+
+
 %% Run profile detection
 [wwevt] = detectprofiles(pressure, timestamp, conductivity, profileThreshold, conductivityThreshold);
-
-
 if size(wwevt,1) < 2
     disp('No profiles were detected in this dataset with the given parameters.')
     return
 end
+
+
 
 %% Use the events to establish profile start and end times.
 % Event 1 is a downcast start
@@ -117,16 +125,14 @@ if wwevt(end,2) == 1
 elseif wwevt(end,2) == 2
     upend(u) = timestamp(end);
 end
-    
-         
 
-%% Put profiling events into RSK profiles field.
+
+
 RSK.profiles.upcast.tstart = upstart;
 RSK.profiles.upcast.tend = upend';
 RSK.profiles.downcast.tstart = downstart;
 RSK.profiles.downcast.tend = downend';
  
-
 end
             
    
