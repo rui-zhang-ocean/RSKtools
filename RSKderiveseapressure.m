@@ -1,32 +1,35 @@
-function [RSK, seapressure] = RSKderiveseapressure(RSK, varargin)
+function [RSK] = RSKderiveseapressure(RSK, varargin)
 
-% RSKderiveseapressure - Calculate sea pressure and add or replace it in the data table
+%RSKderiveseapressure - Calculate sea pressure.
 %
-% Syntax:  [RSK, seapressure] = RSKderiveseapressure(RSK, [OPTIONS])
+% Syntax:  [RSK] = RSKderiveseapressure(RSK, [OPTIONS])
 % 
-% This function derives sea pressure and fills all of data's fields. If sea
-% pressure is already calculated, it will recalculate it and overwrite that
-% data column. 
+% Derives sea pressure and fills all of data's elements and channel
+% metadata. If sea pressure is already calculated, it recalculates it and
+% overwrites that data column.  
 %
 % Inputs: 
-%    RSK - Structure containing the logger metadata and data
+%    RSK - Structure containing the logger metadata and data.
 %
 % Outputs:
-%    RSK - RSK structure containing the salinity data
+%    RSK - Structure containing the salinity data.
 %
-%    seapressure - The sea pressure calculated.
+% See also: getseapressure, RSKplotprofiles.
 %
 % Author: RBR Ltd. Ottawa ON, Canada
 % email: support@rbr-global.com
 % Website: www.rbr-global.com
-% Last revision: 2017-05-29
+% Last revision: 2017-06-22
 
 pAtm = getatmosphericpressure(RSK);
 Pcol = getchannelindex(RSK, 'Pressure');
 
-%% Calculate Sea Pressure
+
+
 RSK = addchannelmetadata(RSK, 'Sea Pressure', 'dbar');
 SPcol = getchannelindex(RSK, 'Sea Pressure');
+
+
 
 castidx = getdataindex(RSK);
 for ndx = castidx

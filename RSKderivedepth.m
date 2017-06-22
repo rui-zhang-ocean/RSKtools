@@ -1,8 +1,8 @@
-function [RSK, depth] = RSKderivedepth(RSK, varargin)
+function [RSK] = RSKderivedepth(RSK, varargin)
 
 %RSKderivedepth - Calculate depth from pressure.
 %
-% Syntax:  [RSK, depth] = RSKderivedepth(RSK, [OPTION])
+% Syntax:  [RSK] = RSKderivedepth(RSK, [OPTION])
 % 
 % Calculates depth from pressure and adds the channel metadata in the
 % appropriate fields. If the data elements already have a 'depth' channel,
@@ -18,8 +18,6 @@ function [RSK, depth] = RSKderivedepth(RSK, varargin)
 %
 % Outputs:
 %    RSK - RSK structure containing the depth data
-%
-%    depth - Vector containing depth in meters.
 %
 % Author: RBR Ltd. Ottawa ON, Canada
 % email: support@rbr-global.com
