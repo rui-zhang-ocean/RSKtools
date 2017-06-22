@@ -18,7 +18,7 @@ function out = runmed(in, windowLength, edgepad)
 % Outputs:
 %    out - Smoothed time series
 %
-% See also: RSKsmooth.
+% See also: RSKsmooth, RSKdespike.
 %
 % Author: RBR Ltd. Ottawa ON, Canada
 % email: support@rbr-global.com
@@ -32,7 +32,6 @@ end
 if mod(windowLength, 2) == 0
     error('windowLength must be odd');
 end
-
 
 
 
