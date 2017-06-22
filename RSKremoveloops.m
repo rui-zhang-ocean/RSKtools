@@ -1,40 +1,40 @@
 function [RSK, flagidx] = RSKremoveloops(RSK, varargin)
 
-% RSKremoveloops - Remove values exceeding a threshold CTD profiling
-%                  rate. 
+%RSKremoveloops - Remove values exceding a threshold CTD profiling rate.
+%
 % Syntax:  [RSK, flagidx] = RSKremoveloops(RSK, [OPTIONS])
 % 
-% This function filters the pressure channel with a lowpass boxcar to
-% reduce the effect of noise, then finds the samples that exceed a
-% threshold profiling velocity and replaces them with a NaN. Profiling rate
-% is computed by differencing the depth time series. 
+% Filters the pressure channel with a lowpass boxcar to reduce the effect
+% of noise, then finds the samples that exceed a threshold profiling
+% velocity and replaces them with a NaN. Profiling rate is computed by
+% differencing the depth time series.  
 % 
 % Inputs:
-%   [Required] - RSK - The input RSK structure.
+%   [Required] - RSK - Structure.
 %
-%   [Optional] - profile - Optional profile number. Default is to operate
-%                      on all of data's elements. 
+%   [Optional] - profile - Profile number. Default is to operate on all of
+%                      the elements in the data table. 
 %
 %                 direction - 'up' for upcast, 'down' for downcast, or
 %                      `both` for all. Default all directions available.
 % 
-%                threshold - The minimum speed at which the profile must be
-%                      taken. Default is 0.25 m/s 
+%                threshold - Minimum speed at which the profile must be
+%                      taken. Default is 0.25 m/s.
 %
 % Outputs:
-%    RSK - The structure without pressure reversal or slowdowns.
+%    RSK - Structure without pressure reversal or slowdowns.
 %
-%    flagidx - The index of the samples that did not meet the profiling velocity criteria.
+%    flagidx - Index of the samples that did not meet the profiling velocity criteria.
 %
 % Example: 
 %    RSK = RSKopen(RSK)
 %    RSK = RSKreadprofiles(RSK)
-%    RSK = RSKremoveheave(RSK)
+%    RSK = RSKremoveloops(RSK)
 %
 % Author: RBR Ltd. Ottawa ON, Canada
 % email: support@rbr-global.com
 % Website: www.rbr-global.com
-% Last revision: 2017-05-31
+% Last revision: 2017-06-22
 
 validDirections = {'down', 'up', 'both'};
 checkDirection = @(x) any(validatestring(x,validDirections));
@@ -86,7 +86,6 @@ RSK = RSKappendtolog(RSK, logentry);
     % calculate the velocity using midpoints of depth and time.
     
         secondsperday = 86400;
-
         deltaD = diff(depth);
         deltaT = diff(time * secondsperday);
         dDdT = deltaD ./ deltaT;
