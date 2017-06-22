@@ -8,6 +8,9 @@ function im = RSKplot2D(RSK, channel, varargin)
 % y axis is a reference channel. The reference channel must have indentical
 % entries across all casts being plotted. Use RSKbinaverage.m. 
 %
+% Note: To have optimal plots download the cmocean toolbox :
+% https://www.mathworks.com/matlabcentral/fileexchange/57773-cmocean-perceptually-uniform-colormaps
+%
 % Inputs:
 %   [Required] - RSK - Structure, with profiles as read using RSKreadprofiles.
 %
