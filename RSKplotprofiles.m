@@ -1,33 +1,35 @@
 function handles = RSKplotprofiles(RSK, varargin)
 
-% RSKplotprofiles - Plot summaries of logger data as profiles.
+%RSKplotprofiles - Plot summaries of logger data as profiles.
 %
 % Syntax:  [handles] = RSKplotprofiles(RSK, [OPTIONS])
 % 
 % Plots profiles from automatically detected casts. If called with one
-% argument, will default to plotting dowall the casts of all channels
-% available. Optionally outputs an array of handles to the line objects. 
+% argument, will default to plotting all the casts of all channels
+% available (excluding Pressure, Sea Pressure and Depth). Optionally
+% outputs a matrix of handles to the line objects.   
 %
 % Inputs: 
-%    [Required] - RSK - Structure containing the logger metadata and data
+%    [Required] - RSK - Structure containing the logger metadata and data.
 %
-%    [Optional] - profile - Optional profile number to plot. Default is to plot 
+%    [Optional] - profile - Profile number to plot. Default is to plot 
 %                        all detected profiles.
 %
 %                 channel - Variables to plot (e.g. temperature, salinity,
-%                        etc). Default is all.
+%                        etc). Default is all channel (excluding Pressure
+%                        and Sea pressure).
 % 
 %                 direction - 'up' for upcast, 'down' for downcast or
-%                        'both'.
+%                        'both'. Default is to use all directions
+%                        available.
 %
 % Output:
-%     handles - The line object of the plot.
+%     handles - Line object of the plot.
 %
 % Examples:
 %    rsk = RSKopen('profiles.rsk');
 %    rsk = RSKreadprofiles(rsk, 'direction', 'down');
-%    % plot selective downcasts and output handles
-%      for customization
+%    % plot selective downcasts and output handles for customization 
 %    hdls = RSKplotprofiles(rsk, 'profile', [1 5 10], 'channel', {'Conductivity', 'Temperature'});
 %
 % See also: RSKreadprofiles, RSKreaddata.
@@ -35,7 +37,7 @@ function handles = RSKplotprofiles(RSK, varargin)
 % Author: RBR Ltd. Ottawa ON, Canada
 % email: support@rbr-global.com
 % Website: www.rbr-global.com
-% Last revision: 2017-06-20
+% Last revision: 2017-06-22
 
 validDirections = {'down', 'up', 'both'};
 checkDirection = @(x) any(validatestring(x,validDirections));
@@ -47,7 +49,6 @@ addParameter(p, 'channel', 'all')
 addParameter(p, 'direction', [], checkDirection);
 parse(p, RSK, varargin{:})
 
-% Assign each input argument
 RSK = p.Results.RSK;
 profile = p.Results.profile;
 channel = p.Results.channel;
@@ -58,10 +59,12 @@ direction = p.Results.direction;
 chanCol = [];
 channels = cellchannelnames(RSK, channel);
 for chan = channels
-    chanCol = [chanCol getchannelindex(RSK, chan{1})];
+    if ~(strcmp(chan, 'Pressure') || strcmp(chan, 'Sea Pressure') || strcmp(chan, 'Depth'))
+        chanCol = [chanCol getchannelindex(RSK, chan{1})];
+    end
 end
-
 numchannels = length(chanCol);
+
 castidx = getdataindex(RSK, profile, direction);
 [RSKsp, SPcol] = getseapressure(RSK);
 
@@ -92,6 +95,5 @@ for chan = chanCol
 end
 linkaxes(ax,'y')
 shg
-
 
 end
