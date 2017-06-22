@@ -1,5 +1,8 @@
 function setcolormap(channel)
-% Use cmocean colormaps, choose it based on the channel.
+%SETCOLORMAP - Use cmocean colormaps, choose it based on the channel. 
+%
+% cmocean toolbox can be found here:
+% https://www.mathworks.com/matlabcentral/fileexchange/57773-cmocean-perceptually-uniform-colormaps 
 
 if exist('cmocean', 'file')==2 
     cmocean('haline');
