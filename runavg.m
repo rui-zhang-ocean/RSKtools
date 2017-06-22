@@ -18,7 +18,7 @@ function out = runavg(in, windowLength, edgepad)
 % Outputs:
 %    out - Smoothed time series.
 %
-% See also: RSKsmooth.
+% See also: RSKsmooth, RSKcalculateCTlag.
 %
 % Author: RBR Ltd. Ottawa ON, Canada
 % email: support@rbr-global.com
