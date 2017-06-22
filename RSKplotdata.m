@@ -1,35 +1,37 @@
 function handles = RSKplotdata(RSK, varargin)
 
-% RSKplotdata - Plot summaries of logger data
+%RSKplotdata - Plot summaries of logger data.
 %
 % Syntax:  [handles] = RSKplotdata(RSK, [OPTIONS])
 % 
-% This generates a plot, similar to the thumbnail plot, only using the
-% full 'data' that you read in.
+% Generates a plot, similar to the thumbnail plot, only using the full
+% 'data' that you read in. If data field has many elements, casts, the
+% default is to use the first data element; RSK.data(1).
 % 
 % Inputs:
-%    [Required] - RSK - Structure containing the logger metadata and data
+%    [Required] - RSK - Structure containing the logger metadata and data.
 %
-%    [Optional] - channel - channel to plots, can be multiple in a cell, if no value is
-%                       given it will plot all channels.
+%    [Optional] - channel - Longname of channel to plot, can be multiple in
+%                       a cell, if no value is given it will plot all
+%                       channels.
 %
-%                 profile - number indicating the profile to plot. Default
-%                       is 1.
+%                 profile - Profile number. Default is 1.
 % 
 %                 direction - 'up' for upcast, 'down' for downcast. Default
-%                       is the first string in RSK.profiles.order.
+%                       is the first string in RSK.profiles.order; the
+%                       first cast.
 %
 % Output:
-%     handles - The line object of the plot.
+%     handles - Line object of the plot.
 %
 % Example: 
 %    RSK = RSKopen('sample.rsk');   
 %    RSK = RSKreaddata(RSK);  
 %    RSKplotdata(RSK);
 %    -OR-
-%    hdls = RSKplotdata(RSK, 'channel', {'Temperature', 'Conductivity'})
+%    handles = RSKplotdata(RSK, 'channel', {'Temperature', 'Conductivity'})
 %
-% See also: RSKplotprofiles, RSKplotburstdata
+% See also: RSKplotprofiles, RSKplotburstdata.
 %
 % Author: RBR Ltd. Ottawa ON, Canada
 % email: support@rbr-global.com
