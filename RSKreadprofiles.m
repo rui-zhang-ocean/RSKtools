@@ -1,13 +1,13 @@
 function RSK = RSKreadprofiles(RSK, varargin)
 
-% RSKreadprofiles - Read individual profiles (e.g. upcast and downcast)
-%                   from an rsk file. 
+%RSKreadprofiles - Read individual casts from RSK SQLite database.
 %
-% Syntax:  RSK = RSKreadprofiles(RSK, [OPTIONS])
+% Syntax:  [RSK] = RSKreadprofiles(RSK, [OPTIONS])
 % 
-% Reads profiles, including up and/or down casts, from the events
-% contained in an rsk file. The profiles are written to the data field as a
-% matrix for each cast; that way, they can be indexed individually.
+% Reads profile, including up and/or down casts, from the events contained
+% in an .rsk file. The profiles are written to the data field as a matrix
+% for each cast; that way, they can be indexed individually using
+% RSK.data(index).
 %
 % The profile events are parsed from the events table using the
 % following types (see RSKconstants.m):
@@ -19,7 +19,7 @@ function RSK = RSKreadprofiles(RSK, varargin)
 %    [Required] - RSK - Structure containing the logger data read
 %                       from the RSK file.
 %
-%    [Optional] - profile - vector identifying the profile numbers to
+%    [Optional] - profile - Vector identifying the profile numbers to
 %                       read. This can be used to read only a subset of all
 %                       the profiles. Default is to read all the profiles. 
 % 
@@ -27,24 +27,24 @@ function RSK = RSKreadprofiles(RSK, varargin)
 %                       `both` for all. Default is 'both'.
 %
 % Outputs:
-%    RSK - RSK structure containing individual casts in the data field.
+%    RSK - RSK structure containing individual casts as each element in the
+%          data field.
 %
 % Examples:
-%
 %    rsk = RSKopen('profiles.rsk');
 %
 %    % read all profiles
 %    rsk = RSKreadprofiles(rsk);
-%
+%    -OR-
 %    % read selective upcasts
-%    rsk = RSKreadprofiles(rsk, 'profileNum', [1 3 10], 'direction', 'up');
+%    rsk = RSKreadprofiles(rsk, 'profile', [1 3 10], 'direction', 'up');
 %
-% See also: RSKreaddata, RSKfindprofiles, RSKplotprofiles
+% See also: RSKfindprofiles, RSKplotprofiles.
 %
 % Author: RBR Ltd. Ottawa ON, Canada
 % email: support@rbr-global.com
 % Website: www.rbr-global.com
-% Last revision: 2017-05-30
+% Last revision: 2017-06-22
 
 validDirections = {'down', 'up', 'both'};
 checkDirection = @(x) any(validatestring(x,validDirections));
@@ -64,10 +64,11 @@ direction = {p.Results.direction};
 if ~isfield(RSK, 'profiles') 
     error('No profiles in this RSK, try RSKreaddata or RSKfindprofiles');
 end
-
 if strcmpi(direction{1}, 'both')
     direction = {'down', 'up'};
 end
+
+
 
 alltstart = [];
 alltend = [];
@@ -103,6 +104,8 @@ else
     castidx = 1:length(alltstart);
     RSK.profiles.originalindex = 1:length(alltstart);
 end
+
+
 
 k = 1;
 data(length(castidx)).tstamp = [];
