@@ -1,14 +1,15 @@
 function [RSK, geodata] = RSKreadgeodata(RSK, varargin)
 
-% RSKreadgeodata - Reads the geodata of a rsk file
+%RSKreadgeodata - Read the geodata of a .rsk file.
 %
 % Syntax:  [RSK, geodata] = RSKreadgeodata(RSK)
 %
-% RSKreadgeodata will return the geodata of a file
+% Returns the geodata of a file, includes timestamp, latitude, longitude
+% accuracy and the accuracy type. If a UTCdelta time is available in the
+% file it will be applied, if no value is given.
 %
 % Inputs:
-%    RSK - Structure containing the logger metadata and thumbnails
-%          returned by RSKopen.
+%    RSK - Structure containing the logger metadata and thumbnail.
 %
 %    UTCdelta - The offset of the timestamp. If a value is entered it will
 %          be used. Otherwise it will use the one given in the epochs
@@ -18,12 +19,14 @@ function [RSK, geodata] = RSKreadgeodata(RSK, varargin)
 %    RSK - Structure containing previously present logger metadata as well
 %          as geodata.
 %
-%    geodata - The contents of the geodata field returned as an array.
+%    geodata - Contents of the geodata field returned as an array.
+%
+% See also: RSKopen.
 %
 % Author: RBR Ltd. Ottawa ON, Canada
 % email: support@rbr-global.com
 % Website: www.rbr-global.com
-% Last revision: 2017-06-02
+% Last revision: 2017-06-22
 
 p = inputParser;
 addRequired(p, 'RSK', @isstruct);
