@@ -1,8 +1,9 @@
 %% RSKtools for Matlab access to RBR data
-% Clark Richards, PhD; 
-% clark.richards@rbr-global.com; 
-% RSKtools version 1.4; 
-% Updated 2016-04-05
+% RSKtools v2.0.0
+% Author: RBR Ltd. Ottawa ON, Canada
+% email: support@rbr-global.com
+% Website: www.rbr-global.com
+% Last revision: 2017-06-23
 
 %% Introduction
 % RBR instruments output data in an open database format known as
@@ -17,8 +18,9 @@
 % 
 % |RSKtools| also provides some convenience functions for common data
 % extraction (e.g. extracting profiles from a continuous dataset) and
-% visualization (plotting individual profiles). For plans for future
-% additions, see the Future plans section.
+% visualization (plotting individual profiles). From this version on, we
+% are expanding on our post-processing functions. For plans for future
+% additions, see the Future plans section. 
 
 %% Installing
 % The latest stable version of |RSKtools| can be found at <http://www.rbr-global.com/support/matlab-tools>.
@@ -38,7 +40,7 @@
 % long. The structure returned after opening an RSK looks something
 % like:
 
-file = '../testfiles/065583_20140612_0739_v1_12_2.rsk';
+file = 'ProfilesClark.rsk';
 rsk = RSKopen(file)
 
 %%
@@ -50,9 +52,8 @@ rsk = RSKopen(file)
 % using a start and end time (in Matlab |datenum| format, which is
 % defined as the number of days since January 0, 0000).
 
-t1 = rsk.thumbnailData.tstamp(1) + 0.5; % half a day after start
-t2 = rsk.thumbnailData.tstamp(1) + 1.5; % 1.5 days after start
-rsk = RSKreaddata(rsk, t1, t2);
+t1 = rsk.epochs.startTime+0.25;
+rsk = RSKreaddata(rsk, 't1', t1, 't2', t1+0.25);
 
 %%
 % Note that the data structure can be found in the object at
@@ -60,12 +61,15 @@ rsk = RSKreaddata(rsk, t1, t2);
 rsk.data        
 
 %% 
-% In this example, because the instrument was determined to be a
-% "CTD"-type instrument, a new channel was created called |Salinity|
-% (using the Practical Salinity Scale). The salinity calculation is
-% performed by the <http://teos-10.org/software.htm TEOS-10>]]
-% package, which can be obtained from
-% <http://teos-10.org/software.htm>.
+% In this example, because the instrument is a
+% "CTD"-type instrument, we can derive a new channel called |Salinity| and
+% it's data will be added to all the appropriate places (using the
+% Practical Salinity Scale). The salinity calculation is performed by the
+% <http://teos-10.org/software.htm TEOS-10>]] package, which can be
+% obtained from <http://teos-10.org/software.htm>.
+
+rsk = RSKderivesalinity(rsk);
+rsk.channels.longName
 
 %% Working with profiles
 % Profiling loggers with recent versions of firmware contain the
@@ -76,17 +80,19 @@ rsk.data
 % this, quick plots of the profiles can be made using the
 % |RSKplotprofiles()| function.
 
-file = '../testfiles/065583_20140612_0739_v1_12_2.rsk';
-rsk = RSKopen(file);
-
 % load the first 10 profiles
-rsk = RSKreadprofiles(rsk, 1:10);
+rsk = RSKreadprofiles(rsk, 'profile', 1:10);
+rsk = RSKderivesalinity(rsk);
 
-% plot the downcasts
-subplot(121)
-RSKplotprofiles(rsk, [], 'temperature', 'down')
-subplot(122)
-RSKplotprofiles(rsk, [], 'salinity', 'down')
+% plot the upcasts of Conductivity, Temperature and Salinity
+RSKplotprofiles(rsk, 'channel', {'conductivity', 'temperature','salinity'}, 'direction', 'up')
+
+% If profiles have not been detected by the logger or Ruskin, The function
+% RSKfindprofiles will detect profiles, the pressureThreshold which
+% determines the pressure reversal required to trigger a new profile and
+% the conductivityThreshold determines if the logger is out of the water
+% can be adjusted for short or fresh water profiles.
+
 
 %% Future plans
 % * Cast detection for datasets without profile events
