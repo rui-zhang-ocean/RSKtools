@@ -4,7 +4,7 @@ function [RSK, downidx] = RSKselectdowncast(RSK)
 %
 % Syntax:  [RSK, isDown] = RSKselectdowncast(RSK)
 %
-% Keeps the downcasts in the RSK and returns the index of the downcasts
+% Keeps only the downcasts in the RSK and returns the index of the downcasts
 % from the input RSK structure. 
 %
 % Inputs:

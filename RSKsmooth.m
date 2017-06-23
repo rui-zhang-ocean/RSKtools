@@ -1,16 +1,16 @@
 function RSK = RSKsmooth(RSK, channel, varargin)
 
-% RSKsmooth - Applies a low pass filter on specified channels.
+%RSKsmooth - Apply a low pass filter on specified channels.
 %
 % Syntax:  [RSK] = RSKsmooth(RSK, channel, [OPTIONS])
 % 
-% RSKsmooth applies a lowpass filter function to the selected channel.
-% It replaces every sample with the filter results. The windowLength
-% parameter determines how many samples are used to filter, the sample
-% being evaluated is always in the center of the filtering window. 
+% Applies a lowpass filter function to the selected channel. It replaces
+% every sample with the filtered results. The windowLength argument
+% determines how many samples are used to filter, the sample being
+% evaluated is always in the center of the filtering window.  
 %
 % Inputs: 
-%    [Required] - RSK - Structure containing the logger data
+%    [Required] - RSK - Structure containing the logger data.
 %
 %                 channel - Longname of channel to filter. Can be cell
 %                       array of many channels or 'all'.
@@ -18,8 +18,8 @@ function RSK = RSKsmooth(RSK, channel, varargin)
 %    [Optional] - filter - The type of smoothing filter that will be used.
 %                       Either median, boxcar or triangle. Default is boxcar.
 %
-%                 profile - Optional profile number. Default is to operate
-%                       on all of data's elements. 
+%                 profile - Profile number. Default is to operate on all
+%                       available profiles.  
 %
 %                 direction - 'up' for upcast, 'down' for downcast, or
 %                       `both` for all. Default all directions available.
@@ -28,7 +28,7 @@ function RSK = RSKsmooth(RSK, channel, varargin)
 %                       be odd. Default is 3.
 %
 % Outputs:
-%    RSK - The RSK structure with filtered channel values.
+%    RSK - Structure with filtered values.
 %
 % Example: 
 %    rsk = RSKopen('file.rsk');
