@@ -81,7 +81,6 @@ alltstart = sort(alltstart);
 alltend = sort(alltend);
 
 RSK.profiles.order = direction;
-RSK.profiles.originalindex = profile;
 profilecast = size(RSK.profiles.order, 2);
 if profilecast == 2 && (alltstart(1) == RSK.profiles.upcast.tstart(1))
     RSK.profiles.order = {'up', 'down'};
@@ -102,9 +101,8 @@ if ~isempty(profile)
     end
 else
     castidx = 1:length(alltstart);
-    RSK.profiles.originalindex = 1:length(alltstart);
 end
-
+RSK.profiles.originalindex = castidx;
 
 
 k = 1;
