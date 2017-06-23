@@ -19,8 +19,9 @@ function RSK = RSKfindprofiles(RSK, varargin)
 %                       profiles.  
 %
 %                 conductivityThreshold - Threshold value that indicates
-%                       the sensor is out of seawater. If the water is
-%                       fresh you may consider using a lower value.     
+%                       the sensor is out of seawater. Default is 0.05
+%                       mS/cm. If the water is fresh you may consider using
+%                       a lower value.      
 %
 % Output: 
 %   RSK - Structure containing profiles field with the profile metadata.
