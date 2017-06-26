@@ -52,8 +52,9 @@ rsk = RSKopen(file)
 % using a start and end time (in Matlab |datenum| format, which is
 % defined as the number of days since January 0, 0000).
 
-t1 = rsk.epochs.startTime+0.25;
-rsk = RSKreaddata(rsk, 't1', t1, 't2', t1+0.25);
+t1 = rsk.epochs.startTime+0.25; %Specify a start time (optional).
+t2 = rsk.epochs.startTime+0.5;%Specify a end time (optional).
+rsk = RSKreaddata(rsk, 't1', t1, 't2', t2);
 
 %%
 % Note that the data structure can be found in the object at
@@ -80,24 +81,36 @@ rsk.channels.longName
 % this, quick plots of the profiles can be made using the
 % |RSKplotprofiles()| function.
 
-% load the first 10 profiles
-rsk = RSKreadprofiles(rsk, 'profile', 1:10);
+% load the first 10 profiles in both directions (upcast and downcast)
+rsk = RSKreadprofiles(rsk, 'profile', 2:10, 'direction', 'both');
 rsk = RSKderivesalinity(rsk);
 
 % plot the upcasts of Conductivity, Temperature and Salinity
-RSKplotprofiles(rsk, 'channel', {'conductivity', 'temperature','salinity'}, 'direction', 'up')
+handles = RSKplotprofiles(rsk, 'channel', {'conductivity', 'temperature','salinity'}, 'direction', 'up');
 
-% If profiles have not been detected by the logger or Ruskin, The function
-% RSKfindprofiles will detect profiles, the pressureThreshold which
+% If profiles have not been detected by the logger or Ruskin. The function
+% |RSKfindprofiles()| will detect profiles, the pressureThreshold which
 % determines the pressure reversal required to trigger a new profile and
 % the conductivityThreshold determines if the logger is out of the water
 % can be adjusted for short or fresh water profiles.
 
+%% Customizing plots
+% All plotting functions return a handle which enables the access to the
+% lines in the plot. The output is a matrix containing a columns for each
+% channel subplot and a row for each profile.
+handles
+
+% To increase the linewidth of the first profiles in all subplots
+(set(handles(1,:),{'linewidth'},{5}));
+
+%% See RSKtools_vignette2
+% A second vignette is available for information on getting started with
+% post-processing functions
 
 %% Future plans
-% * Cast detection for datasets without profile events
-% * Wave processing functions
-% * Improved data processing functions (e.g. for CTD data)
+% * function to write metadata, log and data to a file.
+% * Wave processing functions.
+% * A TS plotting function.
 
 %% About this document
 % This document was created using
