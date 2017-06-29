@@ -5,10 +5,9 @@ function RSK = RSKreadcalibrations(RSK)
 % Syntax:  RSK = RSKreadcalibrations(RSK)
 %
 % Adds the calibrations field and coefficients to the RSK structure. In
-% version 1.13.4 of the RSK schema the coefficients table was seperated
-% from the calibrations table. Here we recombine them into one table or
-% simply open the calibrations table and adjust the timestamps if it was
-% create before 1.13.4. 
+% version 1.13.4 of the RSK schema, the coefficients table is separate
+% from the calibrations table. Here, we combine them into one table or
+% simply open the calibrations table and adjust the timestamps.
 %
 % Inputs:
 %    RSK - Structure containing the logger metadata and thumbnails

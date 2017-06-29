@@ -7,8 +7,8 @@ function RSK = RSKfindprofiles(RSK, varargin)
 % Implements the algorithm used by the logger to find upcasts or downcasts
 % by looking for pressure reversals in the pressure data. It retrieves
 % metadata about the profiles and puts it into the profiles field of the
-% RSK. The casts are seperated by upcasts and downcasts and each have
-% tstart and tend for start times and end times. 
+% RSK. . The algorithm splits each profile into upcasts and downcasts, and
+% each has tstart and tend for start times and end times.
 %
 % Inputs: 
 %    [Required] - RSK - Structure containing the logger metadata and thumbnail
@@ -20,8 +20,8 @@ function RSK = RSKfindprofiles(RSK, varargin)
 %
 %                 conductivityThreshold - Threshold value that indicates
 %                       the sensor is out of seawater. Default is 0.05
-%                       mS/cm. If the water is fresh you may consider using
-%                       a lower value.      
+%                       mS/cm. If the water is fresh, you may consider
+%                       using a lower value.      
 %
 % Output: 
 %   RSK - Structure containing profiles field with the profile metadata.

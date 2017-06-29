@@ -4,7 +4,7 @@ function [v, vsnMajor, vsnMinor]  = RSKfirmwarever(RSK)
 %
 % Syntax:  [v, vsnMajor, vsnMinor] = RSKfirmwarever(RSK)
 %
-% Returns the most recent version of the firmware, the information is
+% Returns the most recent version of the firmware; the information is
 % retrieved from 'instruments' fields for files older than v1.12.2 or
 % 'deployments' for more recent files.
 %

@@ -5,7 +5,7 @@ function handles = RSKplotdata(RSK, varargin)
 % Syntax:  [handles] = RSKplotdata(RSK, [OPTIONS])
 % 
 % Generates a plot, similar to the thumbnail plot, only using the full
-% 'data' that you read in. If data field has many elements, casts, the
+% 'data' that you read in. If data field has many elements, many casts, the
 % default is to use the first data element; RSK.data(1).
 % 
 % Inputs:

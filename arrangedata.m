@@ -4,7 +4,7 @@ function data = arrangedata(results_struct)
 % 
 % Syntax:  [data] = ARRANGEDATA(results_struct)
 % 
-% Arranges data read from an RSK SQLite database, and cleans it by setting
+% Arranges data read from an RSK SQLite database and cleans it by setting
 % zeros for empty values (usually occurs at the beginning of profiling runs
 % when some sensors are still settling).
 % 

@@ -5,11 +5,11 @@ function RSK = RSKreaddata(RSK, varargin)
 % Syntax:  [RSK] = RSKreaddata(RSK, [OPTIONS])
 % 
 % Reads the actual data tables from the RSK file previously opened
-% with RSKopen(). Will either read the entire data structre, or a subset
+% with RSKopen(). Will either read the entire data structure, or a subset
 % specified by the 't1' and 't2' arguments.
 %
-% Note: If the file type is 'skinny' the file will have to be opened with
-% Ruskin before RSKtools can read the data because the data is stored in a
+% Note: If the file type is 'skinny' the file has to be opened with
+% Ruskin before RSKtools can read the data because the data is in a
 % raw bin file.
 % 
 % Inputs: 
@@ -17,9 +17,9 @@ function RSK = RSKreaddata(RSK, varargin)
 %                       thumbnails returned by RSKopen. If provided as the
 %                       only argument the data for the entire file is read.
 %                       Depending on the amount of data in your dataset,
-%                       and the amount of memory in your computer, you can
-%                       read bigger or smaller chunks before Matlab will
-%                       complain and run out of memory. 
+%                       and the amount of memory on your computer, you can
+%                       read bigger or smaller chunks before Matlab
+%                       complains and runs out of memory. 
 %
 %    [Optional] - t1 - Start time for range of data to be read, specified
 %                       using the MATLAB datenum format. 
@@ -29,8 +29,8 @@ function RSK = RSKreaddata(RSK, varargin)
 %
 % Outputs:
 %    RSK - Structure containing the logger metadata, along with the
-%          added 'data' fields. Note that this replaces any
-%          previous data that was read this way.
+%          added 'data' fields. Note: This function replaces all entries
+%          and elements in the data field. 
 %
 % Example: 
 %    RSK = RSKopen('sample.rsk');  

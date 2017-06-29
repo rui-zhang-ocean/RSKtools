@@ -1,6 +1,6 @@
 function [RSK, upidx] = RSKselectupcast(RSK)
 
-%RSKselectupcast - Select the data elements that have decreasing pressure.
+%RSKselectupcast - Select the data elements with decreasing pressure.
 %
 % Syntax:  [RSKup, upidx] = RSKselectupcast(RSK)
 %

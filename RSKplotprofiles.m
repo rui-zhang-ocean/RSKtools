@@ -4,10 +4,9 @@ function handles = RSKplotprofiles(RSK, varargin)
 %
 % Syntax:  [handles] = RSKplotprofiles(RSK, [OPTIONS])
 % 
-% Plots profiles from automatically detected casts. If called with one
-% argument, will default to plotting all the casts of all channels
-% available (excluding Pressure, Sea Pressure and Depth). Optionally
-% outputs a matrix of handles to the line objects.   
+% Plots profiles from automatically detected casts. The defaults is to plot
+% all the casts of all channels available (excluding Pressure, Sea Pressure
+% and Depth). Optionally outputs a matrix of handles to the line objects.   
 %
 % Inputs: 
 %    [Required] - RSK - Structure containing the logger metadata and data.

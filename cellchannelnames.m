@@ -7,8 +7,8 @@ function chanNames = cellchannelnames(RSK, channel)
 % Sets up channel names into a cell to facilitate iterating through many
 % different channels for other functions. If the channel argument is 'all',
 % all the channels.longName in the structure are put into a cell. If there
-% is only one channel name it simply puts it in a cell and if there is a
-% few channel names they are kept in a cell.
+% is only one channel name, it simply puts it in a cell, and if there are
+% many channel names, they stay in a cell. 
 %
 % Inputs:
 %    RSK - Structure containing some logger metadata

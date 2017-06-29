@@ -7,7 +7,7 @@ function wwevt = detectprofiles(pressure, timestamp, conductivity, profileThresh
 % Implements the algorithm used by the logger to find upcast and downcast
 % events using the pressure reversals during the time series. The algorithm
 % uses conductivity (if available) to detect when the logger is out of the
-% water, the out of water times will not be included in the profiles. 
+% water. The profiles do not include the out of water times. 
 %
 % Inputs:
 %    pressure - Time series

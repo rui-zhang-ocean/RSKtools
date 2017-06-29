@@ -5,7 +5,7 @@ function RSK = RSKreadevents(RSK, varargin)
 % Syntax:  [RSK] = RSKreadevents(RSK, [OPTIONS])
 % 
 % Reads the events from the RSK file previously opened with
-% RSKopen(). Will either read all the events or a subset specified by the
+% RSKopen(). Either reads all the events or a subset specified by the
 % 't1' and 't2' input arguments.
 % 
 % Inputs: 

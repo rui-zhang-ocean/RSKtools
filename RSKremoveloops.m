@@ -4,10 +4,10 @@ function [RSK, flagidx] = RSKremoveloops(RSK, varargin)
 %
 % Syntax:  [RSK, flagidx] = RSKremoveloops(RSK, [OPTIONS])
 % 
-% Filters the pressure channel with a lowpass boxcar to reduce the effect
-% of noise, then finds the samples that exceed a threshold profiling
-% velocity and replaces them with a NaN. Profiling rate is computed by
-% differencing the depth time series.  
+% Filters the pressure channel with a low-pass boxcar to reduce the effect
+% of noise then finds the samples that exceed a threshold profiling
+% velocity and replaces them with a NaN. Differenciates the depth time
+% series to calculate the profiling velocity. 
 % 
 % Inputs:
 %   [Required] - RSK - Structure.

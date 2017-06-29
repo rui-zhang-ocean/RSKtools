@@ -4,11 +4,11 @@ function [RSK, dbid] = RSKopen(fname)
 %
 % Syntax:  [RSK, dbid] = RSKopen(fname)
 % 
-% Makes a connection to an RSK (sqlite format) database as obtained from an
+% Makes a connection to an RSK (SQLite format) database as obtained from an
 % RBR logger and reads in the instrument metadata as well as a thumbnail of
 % the stored data. RSKopen assumes only a single instrument deployment is
-% contained in the RSK file. The thumbnail usually contains about 4000
-% points, and thus avoids reading large amounts of data.
+% in the RSK file. The thumbnail usually contains about 4000 points, and
+% thus avoids reading large amounts of data. 
 %
 % Requires a working mksqlite library. We have included a couple of
 % versions here for Windows (32/64 bit), Linux (64 bit) and Mac (64 bit),

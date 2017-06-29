@@ -6,8 +6,7 @@ function handles = RSKplotburstdata(RSK, varargin)
 % 
 % Generates a plot, similar to the thumbnail plot, only using the
 % full 'burstData' that you read in, rather than just the thumbnail
-% view.  It tries to be intelligent about the subplots and channel
-% names, so you can get an idea of how to do better processing.
+% view.
 % 
 % Inputs:
 %    [Required] - RSK - Structure containing the logger metadata and

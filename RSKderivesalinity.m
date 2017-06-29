@@ -5,8 +5,8 @@ function [RSK] = RSKderivesalinity(RSK)
 % Syntax:  [RSK] = RSKderivesalinty(RSK)
 % 
 % Derives salinity using the TEOS-10 toolbox and fills the
-% appropriate fields in channels field and data. If salinity is already
-% calculated, it will recalculate it and overwrite that data column. This
+% appropriate fields in channels field and data. If salinity already
+% exists, it will recalculate it and overwrite that data column. This 
 % function requires TEOS-10 to be downloaded and in the path 
 % (http://www.teos-10.org/software.htm).
 %

@@ -4,9 +4,8 @@ function RSK = RSKreadprofiles(RSK, varargin)
 %
 % Syntax:  [RSK] = RSKreadprofiles(RSK, [OPTIONS])
 % 
-% Reads profile, including up and/or down casts, from the events contained
-% in an .rsk file. The profiles are written to the data field as a matrix
-% for each cast; that way, they can be indexed individually using
+% Reads profile, including upcasts, downcasts, or both from the events contained
+% in a .rsk file. Each cast is an element in the data field matrix; that way, they can be indexed individually using
 % RSK.data(index).
 %
 % The profile events are parsed from the events table using the
@@ -20,7 +19,7 @@ function RSK = RSKreadprofiles(RSK, varargin)
 %                       from the RSK file.
 %
 %    [Optional] - profile - Vector identifying the profile numbers to
-%                       read. This can be used to read only a subset of all
+%                       read. Can be used to read only a subset of all
 %                       the profiles. Default is to read all the profiles. 
 % 
 %                 direction - 'up' for upcast, 'down' for downcast, or

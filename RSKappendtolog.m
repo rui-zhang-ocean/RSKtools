@@ -4,8 +4,9 @@ function RSK = RSKappendtolog(RSK, logentry)
 %
 % Syntax:  [RSK] = RSKappendtolog(RSK, logentry)
 % 
-% Adds the current time and logentry  to the log field in the RSK structure.
-% If the field isn't present it creates it. It only ever appends entries to
+% Adds the current time and log entry to the log field in the RSK structure.
+% If creates a field called log if none are existent. It only ever appends
+% entries to 
 % the end. 
 %
 % Inputs: 

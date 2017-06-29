@@ -1,6 +1,6 @@
 function [RSK, downidx] = RSKselectdowncast(RSK)
 
-%RSKselectdowncast - Keep the data elements that have a increasing pressure.
+%RSKselectdowncast - Keep the data elements with an increasing pressure.
 %
 % Syntax:  [RSK, isDown] = RSKselectdowncast(RSK)
 %

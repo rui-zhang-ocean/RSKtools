@@ -5,7 +5,7 @@ function [RSK] = RSKderiveseapressure(RSK, varargin)
 % Syntax:  [RSK] = RSKderiveseapressure(RSK, [OPTIONS])
 % 
 % Derives sea pressure and fills all of data's elements and channel
-% metadata. If sea pressure is already calculated, it recalculates it and
+% metadata. If sea pressure already exists, it recalculates it and
 % overwrites that data column.  
 %
 % Inputs: 

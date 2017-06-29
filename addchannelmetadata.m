@@ -4,8 +4,8 @@ function RSK = addchannelmetadata(RSK, longName, units)
 %
 % Syntax:  [RSK] = ADDCHANNELMETADATA(RSK, longName, units)
 % 
-% Adds all the metadata associated with a new channel in the fields
-% channels and instrumentsChannels of the RSK structure.
+% Adds all the metadata associated with a new channel in the fields,
+% channels and instrumentsChannels, of the RSK structure.
 %
 % Inputs:
 %   RSK - Input RSK structure

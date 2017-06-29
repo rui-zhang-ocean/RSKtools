@@ -6,14 +6,13 @@ function [RSK, geodata] = RSKreadgeodata(RSK, varargin)
 %
 % Returns the geodata of a file, includes timestamp, latitude, longitude
 % accuracy and the accuracy type. If a UTCdelta time is available in the
-% file it will be applied, if no value is given.
+% file, it is applied, unless a value is input.
 %
 % Inputs:
 %    RSK - Structure containing the logger metadata and thumbnail.
 %
-%    UTCdelta - The offset of the timestamp. If a value is entered it will
-%          be used. Otherwise it will use the one given in the epochs
-%          table, if there is none it will use 0.
+%    UTCdelta - The offset of the timestamp. Uses the input value, if none
+%               the value in the epochs field, if none, 0.
 %
 % Output:
 %    RSK - Structure containing previously present logger metadata as well

@@ -20,8 +20,8 @@ function RSK = RSKreadburstdata(RSK, varargin)
 %
 % Outputs:
 %    RSK - Structure containing the logger metadata, along with the
-%          added burstData fields. Note that this replaces
-%          any previous data that was read this way.
+%          added burstData fields. Note: any data previously in the
+%          burstData field is replaced.
 %
 % Example: 
 %    RSK = RSKopen('sample.rsk');  

@@ -5,20 +5,17 @@ function lag = RSKcalculateCTlag(RSK, varargin)
 % Syntax: [lag] = RSKcalculateCTlag(RSK, [OPTIONS])
 %
 % Calculates the optimal conductivity time shift relative to temperature to
-% minimize salinity spiking.  The shift is made in time, but if temperature
-% is not shifted then it is effectively aligned to temperature.  The
-% optimal lag is determined by constructing a smoothed reference salinity
-% by running the calculated salinity through a boxcar filter, then
-% comparing the standard deviations of the residuals for a range of lags
-% from -20 to +20 samples. A pressure range can be determined to align with
-% respect to a certain range of values (used to avoid large effects from
-% surface anomalies). 
+% minimize salinity spiking. Determines the optimal lag by smoothing the
+% calculated salinity by running it through a boxcar filter, then comparing
+% the standard deviations of the residuals for a range of lags, from -20 to
+% +20 samples. A pressure range can be determined to align over a certain
+% range of values (used to avoid large effects from surface anomalies). 
 %
 % Note: Requires the TEOS-10 GSW toobox to compute salinity.
 %
 % Inputs:
 %    [Required] - RSK - Structure, with profiles as read using
-%                       RSKreadprofiles 
+%                       RSKreadprofiles.
 %
 %    [Optional] - pressureRange - Limits of the pressure range used to
 %                       obtain the lag. Specify as a two-element vector, 
@@ -26,7 +23,7 @@ function lag = RSKcalculateCTlag(RSK, varargin)
 %                       max(Pressure)].
 %
 %                 profile - Profile number. Default is all available
-%                       profiles
+%                       profiles.
 %
 %                 direction - 'up' for upcast, 'down' for downcast, or
 %                       `both` for all. Default all directions available.

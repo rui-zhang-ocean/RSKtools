@@ -6,8 +6,8 @@ function [RSK] = RSKderivedepth(RSK, varargin)
 % 
 % Calculates depth from pressure and adds the channel metadata in the
 % appropriate fields. If the data elements already have a 'depth' channel,
-% it will be replaced. If TEOS-10 toolbox is installed it will use it
-% http://www.teos-10.org/software.htm#1. Otherwise it is calculated using
+% it is replaced. Uses TEOS-10 toolbox if it is installed
+% (http://www.teos-10.org/software.htm#1). Otherwise, it is calculated using
 % the Saunders & Fofonoff method.  
 %
 % Inputs: 

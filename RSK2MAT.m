@@ -10,8 +10,8 @@ function [RBR] = RSK2MAT(RSK)
 % serialstarttime/serialendtime, derived channels, events, parameters and
 % sample code.
 %
-% NOTE: This function is to be used if you previously have been using the .mat
-% export from Ruskin and already have functions set up to work with this
+% NOTE: Only use this function if you previously have been using the .mat
+% export from Ruskin and already have scripts set up to work with this
 % layout. If possible use the .rsk files directly.
 % 
 %

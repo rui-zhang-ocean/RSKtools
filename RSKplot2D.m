@@ -4,9 +4,9 @@ function im = RSKplot2D(RSK, channel, varargin)
 %
 % Syntax:  [im] = RSKplot2D(RSK, channel, [OPTIONS])
 % 
-% Generates a plot of the profiles over time. The x axis is time, the
-% y axis is a reference channel. The reference channel must have indentical
-% entries across all casts being plotted. Use RSKbinaverage.m. 
+% Generates a plot of the profiles over time. The x-axis is time; the
+% y-axis is a reference channel. All data elements must have identical
+% reference channel samples. Use RSKbinaverage.m to achieve this. 
 %
 % Note: To have access to colormaps download the cmocean toolbox :
 % https://www.mathworks.com/matlabcentral/fileexchange/57773-cmocean-perceptually-uniform-colormaps

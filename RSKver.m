@@ -4,8 +4,8 @@ function [v, vsnMajor, vsnMinor, vsnPatch] = RSKver(RSK)
 %
 % Syntax:  [v, vsnMajor, vsnMinor, vsnPatch] = RSKver(RSK)
 %
-% Retrieve the most recent version of the RSK file. This information is
-% kept in a list in dbInfo table.
+% Retrieves the most recent version of the RSK file. This information is
+% kept in a list in the dbInfo field.
 %
 % Inputs:
 %    RSK - Structure containing the logger metadata and thumbnail

@@ -4,7 +4,7 @@ function samplingperiod = RSKsamplingperiod(RSK)
 %
 % Syntax:  [samplingperiod] = RSKsamplingperiod(RSK)
 %
-% Returns the sampling period of the file
+% Returns the sampling period of the file.
 %
 % Inputs:
 %    RSK - Structure containing the logger metadata and thumbnail.

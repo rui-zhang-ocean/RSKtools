@@ -4,10 +4,10 @@ function handles = RSKplotthumbnail(RSK, varargin)
 %
 % Syntax:  [handles] = RSKplotthumbnail(RSK, [OPTIONS])
 % 
-% Generates a summary plot of the thumbnail data in the RSK structure. This
-% is usually a plot of about 4000 points.  Each time value has a max and a
-% min data value so that all spikes are visible even though the dataset is
-% down-sampled. 
+% Generates a summary plot of the thumbnail data in the RSK structure.
+% ThumbnailData is usually a downsampled dataset of about 4000 points.
+% Each time value has a maximum and a minimum data value so that all spikes
+% are visible even though the dataset is down-sampled. 
 % 
 % Inputs:
 %    [Required] - RSK - Structure containing the logger metadata and

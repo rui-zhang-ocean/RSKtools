@@ -4,7 +4,7 @@ function handles = channelsubplots(RSK, field, varargin)
 %
 % Syntax:  [handles] = CHANNELSUBPLOT(RSK, field, [OPTIONS])
 % 
-% Generates a subplots and plots each channel in the chosen data element.
+% Generates subplots and plots each channel in the chosen data element.
 % If data has many fields and none are specified, the first one is
 % selected.  
 %
@@ -14,7 +14,7 @@ function handles = channelsubplots(RSK, field, varargin)
 %                field - Source of the data to plot. Can be
 %                      'burstData', 'thumbnailData', or 'data'.
 %
-%   [Optional] - chanCol - Column number of the channels to be plotted.
+%   [Optional] - chanCol - Column number of the channels to plot.
 %                      Default is to plot all channels.
 %
 %                castidx - Data element that will be used to make
