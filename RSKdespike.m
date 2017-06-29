@@ -30,32 +30,34 @@ function [RSK, spike] = RSKdespike(RSK, channel, varargin)
 %                windowLength - Total size of the filter window. Must be
 %                      odd. Default is 3. 
 %
-%                action - Action to perform on a spike. The default, 'nan',
-%                      is to leave the spike as a missing value. Can also
-%                      be 'replace' is to replace it with the reference
-%                      value or 'interp' to interpolate based on 'good'
-%                      values.  
+%                action - Action to perform on a spike. The default is 'NaN',
+%                      whereby spikes are replaced with NaN.  Other options are 
+%                      'replace', whereby spikes are replaced with the 
+%                      corresponding reference value, and 'interp', 
+%                      whereby spikes are replaced with values calculated
+%                      by linearly interpolating from the neighbouring 
+%                      points.
 %
 % Outputs:
 %    RSK - Structure with de-spiked series.
 %
-%    spike - Structure containing the index of the spikes; if many data
-%          fields were despiked, spike is a structure with a field for each
+%    spike - Structure containing the index of the spikes; if more than one
+%          channel was despiked, spike is a structure with a field for each
 %          profile.   
 %
 % Example: 
-%    [RSK, spike] = RSKdespike(RSK,  'Pressure')
+%    [RSK, spike] = RSKdespike(RSK, 'Turbidity')
 %   OR
-%    [RSK, spike] = RSKdespike(RSK, 'Temperature', 'threshold', 4, 'windowLength', 10, 'action', 'nan'); 
+%    [RSK, spike] = RSKdespike(RSK, 'Temperature', 'threshold', 4, 'windowLength', 11, 'action', 'NaN'); 
 %
 % See also: RSKremoveloops, RSKsmooth.
 %
 % Author: RBR Ltd. Ottawa ON, Canada
 % email: support@rbr-global.com
 % Website: www.rbr-global.com
-% Last revision: 2017-06-22
+% Last revision: 2017-06-28
 
-validActions = {'replace', 'interp', 'nan'};
+validActions = {'replace', 'interp', 'NaN'};
 checkAction = @(x) any(validatestring(x,validActions));
 
 validDirections = {'down', 'up', 'both'};
@@ -68,7 +70,7 @@ addParameter(p, 'profile', [], @isnumeric);
 addParameter(p, 'direction', [], checkDirection);
 addParameter(p, 'threshold', 2, @isnumeric);
 addParameter(p, 'windowLength', 3, @isnumeric);
-addParameter(p, 'action', 'nan', checkAction);
+addParameter(p, 'action', 'NaN', checkAction);
 parse(p, RSK, channel, varargin{:})
 
 RSK = p.Results.RSK;
