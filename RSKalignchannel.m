@@ -102,8 +102,8 @@ for ndx =  castidx
             RSK.data(ndx).values = RSK.data(ndx).values(lags(counter)+1:end,:);
             RSK.data(ndx).tstamp = RSK.data(ndx).tstamp(lags(counter)+1:end);
         elseif lags(counter) < 0 
-            RSK.data(ndx).values = RSK.data(ndx).values(1:end-lags(counter),:);
-            RSK.data(ndx).tstamp = RSK.data(ndx).tstamp(1:end-lags(counter));
+            RSK.data(ndx).values = RSK.data(ndx).values(1:end+lags(counter),:);
+            RSK.data(ndx).tstamp = RSK.data(ndx).tstamp(1:end+lags(counter));
         end
     else 
         channelShifted = shiftarray(channelData, lags(counter), shiftfill);
