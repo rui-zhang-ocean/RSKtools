@@ -30,7 +30,7 @@ function [RSK, spike] = RSKdespike(RSK, channel, varargin)
 %                windowLength - Total size of the filter window. Must be
 %                      odd. Default is 3. 
 %
-%                action - Action to perform on a spike. The default is 'NaN',
+%                action - Action to perform on a spike. The default is 'nan',
 %                      whereby spikes are replaced with NaN.  Other options are 
 %                      'replace', whereby spikes are replaced with the 
 %                      corresponding reference value, and 'interp', 
@@ -48,7 +48,7 @@ function [RSK, spike] = RSKdespike(RSK, channel, varargin)
 % Example: 
 %    [RSK, spike] = RSKdespike(RSK, 'Turbidity')
 %   OR
-%    [RSK, spike] = RSKdespike(RSK, 'Temperature', 'threshold', 4, 'windowLength', 11, 'action', 'NaN'); 
+%    [RSK, spike] = RSKdespike(RSK, 'Temperature', 'threshold', 4, 'windowLength', 11, 'action', 'nan'); 
 %
 % See also: RSKremoveloops, RSKsmooth.
 %
@@ -57,7 +57,7 @@ function [RSK, spike] = RSKdespike(RSK, channel, varargin)
 % Website: www.rbr-global.com
 % Last revision: 2017-06-28
 
-validActions = {'replace', 'interp', 'NaN'};
+validActions = {'replace', 'interp', 'nan'};
 checkAction = @(x) any(validatestring(x,validActions));
 
 validDirections = {'down', 'up', 'both'};
@@ -70,7 +70,7 @@ addParameter(p, 'profile', [], @isnumeric);
 addParameter(p, 'direction', [], checkDirection);
 addParameter(p, 'threshold', 2, @isnumeric);
 addParameter(p, 'windowLength', 3, @isnumeric);
-addParameter(p, 'action', 'NaN', checkAction);
+addParameter(p, 'action', 'nan', checkAction);
 parse(p, RSK, channel, varargin{:})
 
 RSK = p.Results.RSK;
