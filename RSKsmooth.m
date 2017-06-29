@@ -4,25 +4,27 @@ function RSK = RSKsmooth(RSK, channel, varargin)
 %
 % Syntax:  [RSK] = RSKsmooth(RSK, channel, [OPTIONS])
 % 
-% Applies a lowpass filter function to the selected channel. It replaces
-% every sample with the filtered results. The windowLength argument
-% determines how many samples are used to filter, the sample being
-% evaluated is always in the center of the filtering window.  
+% Low-pass filter a specified channel or multiple channels with a
+% running average or median.  The sample being evaluated is always in
+% the centre of the filtering window to avoid phase distortion.  Edge
+% effects are handled by mirroring the original time series.
 %
 % Inputs: 
 %    [Required] - RSK - Structure containing the logger data.
 %
-%                 channel - Longname of channel to filter. Can be cell
-%                       array of many channels or 'all'.
+%                 channel - Longname of channel to filter. Can be a 
+%                       single channel, a cell array for multiple 
+%                       channels, or 'all' for all channels.
 %               
-%    [Optional] - filter - The type of smoothing filter that will be used.
-%                       Either median, boxcar or triangle. Default is boxcar.
+%    [Optional] - filter - The weighting function, 'boxcar' or 'triangle'.
+%                       Use 'median' to compute the running median. 
+%                       Defaults to 'boxcar.'
 %
-%                 profile - Profile number. Default is to operate on all
+%                 profile - Profile number. Defaults to operate on all
 %                       available profiles.  
 %
 %                 direction - 'up' for upcast, 'down' for downcast, or
-%                       `both` for all. Default all directions available.
+%                       'both' for all. Defaults to all directions available.
 %
 %                 windowLength - The total size of the filter window. Must
 %                       be odd. Default is 3.
@@ -38,7 +40,7 @@ function RSK = RSKsmooth(RSK, channel, varargin)
 % Author: RBR Ltd. Ottawa ON, Canada
 % email: support@rbr-global.com
 % Website: www.rbr-global.com
-% Last revision: 2017-05-30
+% Last revision: 2017-06-28
 
 validFilterNames = {'median', 'boxcar', 'triangle'};
 checkFilter = @(x) any(validatestring(x,validFilterNames));
