@@ -5,7 +5,7 @@ function RSK = readparameters(RSK)
 % Syntax:  [RSK] = READPARAMETERS(RSK)
 %
 % Reads the table that contains parameter information and adds it to the
-% RSK structure. If there are many sets of parametes, it will select the
+% RSK structure. If there are many sets of parameters, it will select the
 % most recent/current values. 
 %
 % Inputs:

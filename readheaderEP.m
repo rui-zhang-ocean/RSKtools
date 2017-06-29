@@ -4,8 +4,8 @@ function RSK = readheaderEP(RSK)
 %
 % Syntax:  [RSK] = READHEADEREP(RSK)
 %
-% For the tables that could be populated in a 'EasyParse' file, checks if
-% they are present and populated and adds them to the RSK structure.
+% For the tables that could be in an 'EasyParse' file, checks if they are
+% present and populated and adds them to the RSK structure. 
 %
 % Inputs:
 %    RSK - Structure of 'EasyParse' file opened using RSKopen.m.
@@ -18,7 +18,7 @@ function RSK = readheaderEP(RSK)
 % Author: RBR Ltd. Ottawa ON, Canada
 % email: support@rbr-global.com
 % Website: www.rbr-global.com
-% Last revision: 2017-06-21
+% Last revision: 2017-06-29
 
 %% Remove non marine channels
 [RSK, ~] = removenonmarinechannels(RSK);

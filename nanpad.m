@@ -4,8 +4,8 @@ function out = nanpad(in, padsize)
 %
 % Syntax:  [out] = NANPAD(in, padsize)
 % 
-% Pads in vector with padsize of entries at the beginning and end of the
-% in vector. The added entries are NaNs.
+% Pads the 'in' vector with 'padsize' of values at the beginning and end of the
+% 'in' vector. The added values are NaNs.
 %
 % Inputs:
 %    in - Vector

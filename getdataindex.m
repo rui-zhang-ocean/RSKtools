@@ -4,7 +4,7 @@ function castidx = getdataindex(RSK, varargin)
 %
 % Syntax:  [castIdx] = GETDATAINDEX(RSK, [OPTIONS])
 % 
-% Selects the data elements that fufill the requirements described by the
+% Selects the data elements that fulfill the requirements described by the 
 % profile number and direction arguments.
 %
 % Inputs:

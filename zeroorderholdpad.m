@@ -4,8 +4,8 @@ function out = zeroorderholdpad(in, padsize)
 %
 % Syntax:  [out] = ZEROORDERHOLDPAD(in, padsize)
 % 
-% Pads vector with padsize of entries at the beginning and end of the in
-% vector. The added entries are repeated first and last entry. 
+% Pads vector with 'padsize' of values at the beginning and end of the 'in'
+% vector. The added values are repeats of the first and last entry. 
 %
 % Inputs:
 %    in - Vector

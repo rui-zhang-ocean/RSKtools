@@ -6,7 +6,7 @@ function [RSK, isDerived] = removenonmarinechannels(RSK)
 %
 % Removes the hidden or derived channels from the channels table and
 % returns a logical index vector. They are also removed from
-% instrumentChannels, if field exists. 
+% instrumentChannels if the field exists. 
 %
 % Inputs:
 %    RSK - Structure

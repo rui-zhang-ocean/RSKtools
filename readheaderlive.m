@@ -5,8 +5,8 @@ function RSK = readheaderlive(RSK)
 % Syntax:  [RSK] = READHEADERLIVE(RSK)
 %
 % Opens the non-standard populated tables of RSK 'live' files. These tables
-% are appSettings, instrumentsChannels and parameters. If data is available
-% it will open the parameterKeys and thumbnailData tables. 
+% are appSettings, instrumentsChannels, and parameters. If data is
+% available, it will open the parameterKeys and thumbnailData tables.  
 %
 % Note: Only marine channels will be displayed.
 %
@@ -21,7 +21,7 @@ function RSK = readheaderlive(RSK)
 % Author: RBR Ltd. Ottawa ON, Canada
 % email: support@rbr-global.com
 % Website: www.rbr-global.com
-% Last revision: 2017-06-21
+% Last revision: 2017-06-28
 
 %% Tables that are definitely in 'live'
 RSK.appSettings = mksqlite('select * from appSettings');

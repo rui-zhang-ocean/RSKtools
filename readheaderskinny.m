@@ -5,10 +5,10 @@ function RSK = readheaderskinny(RSK)
 % Syntax:  [RSK] = READHEADERSKINNY(RSK)
 %
 % Opens the non-standard populated tables of 'skinny' files. Only to be
-% used by RSKopen.m. If metadata is available it will open geodata.
+% used by RSKopen.m. If metadata is available, it will open geodata.
 %
-% Note: The data is stored in raw bin file, this file type must first be
-% opened in Ruskin in order to read the data.
+% Note: The data is stored in raw bin file, open this file in Ruskin first
+% to read the data. 
 %
 % Inputs:
 %    RSK - Structure of 'skinny' file opened using RSKopen.m.

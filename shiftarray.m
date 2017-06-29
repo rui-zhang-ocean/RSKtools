@@ -6,10 +6,9 @@ function out = shiftarray(in, shift, edgepad)
 % 
 % Shifts a vector time series by a lag corresponding to an integer
 % number of samples. Negative shifts correspond to moving the samples
-% backward in time (earlier), positive to forward in time (later). To
-% conserve the length of the output vector, values at either the
-% beginning or the end are set to a value specified by the argument
-% "edgepad."
+% backward in time (earlier), positive to forward in time (later). Values
+% at either the beginning or the end are set to a value specified by the
+% argument "edgepad" to conserve the length of the input vector.
 %
 % Inputs:
 %    in - Time series.

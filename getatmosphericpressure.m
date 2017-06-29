@@ -5,8 +5,8 @@ function pAtm = getatmosphericpressure(RSK)
 % Syntax:  [pAtm] = GETATMOSPHERICPRESSURE(RSK)
 %
 % Uses the parameterKeys or parameters field to find the atmospheric
-% pressure, if it is not there or there is no parameters field a default
-% value of 10.1325 dbar is used.
+% pressure, if it is not there or there is no parameters field, it uses a  
+% default value of 10.1325 dbar.
 %
 % Inputs:
 %    RSK - Structure containing the logger metadata and data.
@@ -19,7 +19,7 @@ function pAtm = getatmosphericpressure(RSK)
 % Author: RBR Ltd. Ottawa ON, Canada
 % email: support@rbr-global.com
 % Website: www.rbr-global.com
-% Last revision: 2017-06-20
+% Last revision: 2017-06-28
 
 RSKconstants
 

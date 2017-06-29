@@ -6,7 +6,7 @@ function RSK = readheaderfull(RSK)
 %
 % Opens the non-standard tables populated in RSK 'full' files. Only to be
 % used by RSKopen.m. These tables are appSettings, instrumentsChannels, and
-% ranging . If data is available it will open the parameters,
+% ranging. If data is available, it will open the parameters,
 % parameterKeys, geodata and thumbnailData tables. 
 %
 % Note: Only marine channels will be displayed.

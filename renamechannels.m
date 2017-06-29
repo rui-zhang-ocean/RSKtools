@@ -4,7 +4,7 @@ function RSK = renamechannels(RSK)
 %
 % Syntax:  [RSK] = RENAMECHANNELS(RSK)
 %
-% Checks for shortnames that correspond to channels that require a more
+% Checks for shortNames that correspond to channels that require a more
 % descriptive name and replaces the longName. These are doxy, temp04,
 % temp05, temp10, temp13 and pres08. 
 % 

@@ -5,7 +5,7 @@ function dataresults = removeunuseddatacolumns(results)
 % Syntax:  [dataresults] = REMOVEUNUSEDDATACOLUMNS(results)
 %
 % Data queries may contain columns that are unnecessary in the RSK
-% structure. These columns are tstamp_1 and datasetid, they are removed if
+% structure. These columns are tstamp_1 and datasetId; they are removed if
 % they are present.
 %
 % Inputs:

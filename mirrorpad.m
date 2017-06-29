@@ -4,8 +4,8 @@ function out = mirrorpad(in, padsize)
 %
 % Syntax:  [out] = MIRRORPAD(in, padsize)
 % 
-% Pads vector with window length of entries at the beginning and end of the
-% in vector. The added entries are mirrors of in. 
+% Pads vector with 'padsize' of values at the beginning and end of the 
+% 'in' vector. The added values are mirrors of 'in'. 
 %
 % Inputs:
 %    in - a vector
@@ -24,7 +24,7 @@ function out = mirrorpad(in, padsize)
 % Author: RBR Ltd. Ottawa ON, Canada
 % email: support@rbr-global.com
 % Website: www.rbr-global.com
-% Last revision: 2017-06-20
+% Last revision: 2017-06-28
 
 if isrow(in)
     pre = fliplr(in(1:padsize));
