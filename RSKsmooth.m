@@ -6,8 +6,8 @@ function RSK = RSKsmooth(RSK, channel, varargin)
 % 
 % Applies a lowpass filter function to the selected channel. It replaces
 % every sample with the filtered results. The windowLength argument
-% determines how many samples are used to filter, the sample being
-% evaluated is always in the center of the filtering window.  
+% determines how many samples are used to filter, the evaluated sample is
+% always in the center of the filtering window. 
 %
 % Inputs: 
 %    [Required] - RSK - Structure containing the logger data.

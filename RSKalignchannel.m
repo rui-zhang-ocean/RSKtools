@@ -14,7 +14,7 @@ function RSK = RSKalignchannel(RSK, channel, lag, varargin)
 %                 channel - Longname of channel to align (e.g. temperature)
 %
 %                 lag - The lag (in samples) to apply to the channel. A
-%                       negative lag shifts the channel backward in time
+%                       negative lag shifts the channel backwards in time
 %                       (earlier), while a positive lag shifts the channel
 %                       forward in time (later). To apply a different lag
 %                       to each data element, specify the lags in a vector.
@@ -26,12 +26,12 @@ function RSK = RSKalignchannel(RSK, channel, lag, varargin)
 %                       `both` for all. Default all directions available.
 %
 %                  shiftfill - Values that will fill the void left at the
-%                        beginning or end of the time series; 'nan', fills
+%                        beginning or end of the time series. 'nan', fills
 %                        the removed samples of the shifted channel with
-%                        NaN, 'zeroorderhold' fills the removed samples of
-%                        the shifted channels with the first or last value,
+%                        NaN. 'zeroorderhold' fills the removed samples of
+%                        the shifted channels with the first or last value.
 %                        'mirror' fills the removed values with the
-%                        reflection of the original end point, and 'union'
+%                        reflection of the original end point. Lastly, 'union'
 %                        will remove the values of the OTHER channels that
 %                        do not align with the shifted channel (note: this
 %                        will reduce the size of values array by "lag"

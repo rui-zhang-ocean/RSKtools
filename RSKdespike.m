@@ -7,7 +7,7 @@ function [RSK, spike] = RSKdespike(RSK, channel, varargin)
 % Compares the time series to a reference series. The reference series is
 % the time series filtered with a median filter of length 'windowLength'.
 % Each point in the original series is compared against the reference
-% series, if a sample is greater than 'threshold' standard deviations of
+% series if a sample is greater than 'threshold' standard deviations than
 % the residual between the original series and the reference series; the
 % sample is considered a spike. The default behaviour is to replace the
 % spikes with the reference value. 
@@ -22,7 +22,7 @@ function [RSK, spike] = RSKdespike(RSK, channel, varargin)
 %                      profiles.
 %
 %                direction - 'up' for upcast, 'down' for downcast, or
-%                      `both` for all. Default all directions available.
+%                      `both` for all. Default is all directions available.
 %
 %                threshold - Amount of standard deviations to use for the
 %                      spike criterion. Default value is 2. 
@@ -30,10 +30,11 @@ function [RSK, spike] = RSKdespike(RSK, channel, varargin)
 %                windowLength - Total size of the filter window. Must be
 %                      odd. Default is 3. 
 %
-%                action - Action to perform on a spike. The default, 'NaN'
-%                      to leave the spike as a missing value. Can also be
-%                      'replace' is to replace it with the reference value
-%                      or 'interp' to interpolate based on 'good' values. 
+%                action - Action to perform on a spike. The default, 'nan',
+%                      is to leave the spike as a missing value. Can also
+%                      be 'replace' is to replace it with the reference
+%                      value or 'interp' to interpolate based on 'good'
+%                      values.  
 %
 % Outputs:
 %    RSK - Structure with de-spiked series.
@@ -45,7 +46,7 @@ function [RSK, spike] = RSKdespike(RSK, channel, varargin)
 % Example: 
 %    [RSK, spike] = RSKdespike(RSK,  'Pressure')
 %   OR
-%    [RSK, spike] = RSKdespike(RSK, 'Temperature', 'threshold', 4, 'windowLength', 10, 'action', 'NaN'); 
+%    [RSK, spike] = RSKdespike(RSK, 'Temperature', 'threshold', 4, 'windowLength', 10, 'action', 'nan'); 
 %
 % See also: RSKremoveloops, RSKsmooth.
 %
@@ -54,7 +55,7 @@ function [RSK, spike] = RSKdespike(RSK, channel, varargin)
 % Website: www.rbr-global.com
 % Last revision: 2017-06-22
 
-validActions = {'replace', 'interp', 'NaN'};
+validActions = {'replace', 'interp', 'nan'};
 checkAction = @(x) any(validatestring(x,validActions));
 
 validDirections = {'down', 'up', 'both'};
@@ -67,7 +68,7 @@ addParameter(p, 'profile', [], @isnumeric);
 addParameter(p, 'direction', [], checkDirection);
 addParameter(p, 'threshold', 2, @isnumeric);
 addParameter(p, 'windowLength', 3, @isnumeric);
-addParameter(p, 'action', 'NaN', checkAction);
+addParameter(p, 'action', 'nan', checkAction);
 parse(p, RSK, channel, varargin{:})
 
 RSK = p.Results.RSK;
@@ -119,7 +120,7 @@ RSK = RSKappendtolog(RSK, logentry);
         switch action
           case 'replace'
             y(I) = ref(I);
-          case 'NaN'
+          case 'nan'
             y(I) = NaN;
           case 'interp'
             y(I) = interp1(t(good), x(good), t(I)) ;
