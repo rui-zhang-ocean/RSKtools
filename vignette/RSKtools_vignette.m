@@ -1,9 +1,9 @@
-%% RSKtools for Matlab access to RBR data
+editedit chaedit coe%% RSKtools for Matlab access to RBR data
 % RSKtools v2.0.0
 % Author: RBR Ltd. Ottawa ON, Canada
 % email: support@rbr-global.com
 % Website: www.rbr-global.com
-% Last revision: 2017-06-23
+% Last revision: 2017-06-26
 
 %% Introduction
 % RBR instruments output data in an open database format known as
@@ -89,7 +89,7 @@ rsk = RSKderivesalinity(rsk);
 handles = RSKplotprofiles(rsk, 'channel', {'conductivity', 'temperature','salinity'}, 'direction', 'up');
 
 % If profiles have not been detected by the logger or Ruskin. The function
-% |RSKfindprofiles()| will detect profiles, the pressureThreshold which
+% |RSKfindprofiles()| can be used. The pressureThreshold which
 % determines the pressure reversal required to trigger a new profile and
 % the conductivityThreshold determines if the logger is out of the water
 % can be adjusted for short or fresh water profiles.
@@ -108,7 +108,7 @@ handles
 % post-processing functions
 
 %% Future plans
-% * function to write metadata, log and data to a file.
+% * Function to write metadata, log and data to a file.
 % * Wave processing functions.
 % * A TS plotting function.
 
