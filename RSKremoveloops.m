@@ -4,37 +4,42 @@ function [RSK, flagidx] = RSKremoveloops(RSK, varargin)
 %
 % Syntax:  [RSK, flagidx] = RSKremoveloops(RSK, [OPTIONS])
 % 
-% Filters the pressure channel with a low-pass boxcar to reduce the effect
-% of noise then finds the samples that exceed a threshold profiling
-% velocity and replaces them with a NaN. Differenciates the depth time
-% series to calculate the profiling velocity. 
+% RSKremoveloops identifies and flags data obtained when the logger
+% vertical profiling speed falls below a threshold value.  The flagged
+% data is replaced with NaNs.  All logger channels except pressure
+% and depth are affected.    
+% 
+% Depth is computed from pressure and then differentiated to estimate
+% the profiling speed.  The pressure channel is first smoothed with a
+% 3-point running average to reduce noise.
 % 
 % Inputs:
-%   [Required] - RSK - Structure.
+%   [Required] - RSK - RSK structure with logger data and metadata
 %
-%   [Optional] - profile - Profile number. Default is to operate on all of
-%                      the elements in the data table. 
+%   [Optional] - profile - Profile number. Defaults to all profiles.
 %
 %                 direction - 'up' for upcast, 'down' for downcast, or
-%                      `both` for all. Default all directions available.
+%                      'both' for all. Defaults to all directions
+%                       available.
 % 
-%                threshold - Minimum speed at which the profile must be
-%                      taken. Default is 0.25 m/s.
+%                threshold - Minimum speed at which the profile must
+%                       be taken. Defaults to 0.25 m/s.
 %
 % Outputs:
-%    RSK - Structure without pressure reversal or slowdowns.
+%    RSK - Structure with data filtered by threshold profiling speed.
 %
-%    flagidx - Index of the samples that did not meet the profiling velocity criteria.
+%    flagidx - Index of the samples that did not meet the profiling
+%        velocity criteria.
 %
 % Example: 
-%    RSK = RSKopen(RSK)
-%    RSK = RSKreadprofiles(RSK)
-%    RSK = RSKremoveloops(RSK)
+%    RSK = RSKopen('file.rsk');
+%    RSK = RSKreadprofiles(RSK);
+%    RSK = RSKremoveloops(RSK);
 %
 % Author: RBR Ltd. Ottawa ON, Canada
 % email: support@rbr-global.com
 % Website: www.rbr-global.com
-% Last revision: 2017-06-22
+% Last revision: 2017-07-02
 
 validDirections = {'down', 'up', 'both'};
 checkDirection = @(x) any(validatestring(x,validDirections));
