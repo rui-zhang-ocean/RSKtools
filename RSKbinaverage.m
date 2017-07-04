@@ -5,7 +5,8 @@ function [RSK, samplesinbin] = RSKbinaverage(RSK, varargin)
 % Syntax:  [RSK, samplesinbin] = RSKbinaverage(RSK, [OPTIONS])
 % 
 % Averages data in each profile using averaging intervals defined by the
-% binSizes and boundaries of the binBy channel. 
+% binSizes and boundaries of the binBy channel. The default binBy channel
+% is sea pressure, it can be derived using RSKderiveseapressure.
 %
 % Note: The boundaries takes precedence over the bin size. (Ex.
 % boundary = [5 20], binSize = [10 20]; bin array = [5 15 20 40 60...].
@@ -25,7 +26,7 @@ function [RSK, samplesinbin] = RSKbinaverage(RSK, varargin)
 %
 %                binBy - Reference channel that determines the samples in
 %                      each bin, can be any channel or time. Default is
-%                      Pressure.
+%                      sea pressure.
 %
 %                binSize - Size of bins in each regime. Default [1] (units 
 %                      of binBy channel). 
@@ -43,7 +44,7 @@ function [RSK, samplesinbin] = RSKbinaverage(RSK, varargin)
 % Author: RBR Ltd. Ottawa ON, Canada
 % email: support@rbr-global.com
 % Website: www.rbr-global.com
-% Last revision: 2017-06-21
+% Last revision: 2017-07-04
 
 validDirections = {'down', 'up'};
 checkDirection = @(x) any(validatestring(x,validDirections));
@@ -52,7 +53,7 @@ p = inputParser;
 addRequired(p, 'RSK', @isstruct);
 addParameter(p, 'profile', [], @isnumeric);
 addParameter(p, 'direction', 'down', checkDirection);
-addParameter(p, 'binBy', 'Pressure', @ischar);
+addParameter(p, 'binBy', 'sea pressure', @ischar);
 addParameter(p, 'binSize', 1, @isnumeric);
 addParameter(p, 'boundary', [], @isnumeric);
 parse(p, RSK, varargin{:})
