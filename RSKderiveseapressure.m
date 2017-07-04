@@ -15,7 +15,7 @@ function [RSK] = RSKderiveseapressure(RSK, varargin)
 %                       parameters table or 10.1325 dbar if unavailable. 
 %
 % Outputs:
-%    RSK - Structure containing the salinity data.
+%    RSK - Structure containing the sea pressure data.
 %
 % See also: getseapressure, RSKplotprofiles.
 %
