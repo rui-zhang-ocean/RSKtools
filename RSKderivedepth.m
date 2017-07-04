@@ -47,4 +47,9 @@ for ndx = castidx
     RSK.data(ndx).values(:,Dcol) = depth;
 end
 
+
+
+logentry = ['Depth calculated using a latitude of ' num2str(latitude) ' degrees north.'];
+RSK = RSKappendtolog(RSK, logentry);
+
 end

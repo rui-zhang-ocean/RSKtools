@@ -52,6 +52,11 @@ for ndx = castidx
     RSK.data(ndx).values(:,SPcol) = seapressure;
 end
 
+
+
+logentry = ['Sea pressure calculated using an atmospheric pressure of ' num2str(patm) ' dbar.'];
+RSK = RSKappendtolog(RSK, logentry);
+
 end
 
 
