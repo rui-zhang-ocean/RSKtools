@@ -8,9 +8,9 @@ function velocity = calculatevelocity(depth, time)
 % interpolates back to the original time and depth point given.
 % 
 % Inputs:
-%    pressure - Vector of depth values in m.
+%   pressure - Vector of depth values in m.
 %
-%    time - Time at each depth values in datenum.
+%   time - Time at each depth value in datenum.
 %
 % Outputs:
 %    velocity - velocity at the input time values in m/s.
