@@ -19,7 +19,7 @@ function RSK = renamechannels(RSK)
 % Author: RBR Ltd. Ottawa ON, Canada
 % email: support@rbr-global.com
 % Website: www.rbr-global.com
-% Last revision: 2017-06-21
+% Last revision: 2017-07-04
 
 shortName = {RSK.channels.shortName};
 
@@ -39,7 +39,7 @@ if any(idx)
     RSK.channels(idx).longName = 'External Cabled Temperature';
 end
 
-idx = strcmpi(shortName, 'doxy09');
+idx = strncmpi(shortName, 'doxy', 4);
 if any(idx)
     RSK.channels(idx).longName = 'Dissolved O2';
 end
