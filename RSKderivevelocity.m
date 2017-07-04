@@ -1,8 +1,8 @@
-function velocity = RSKderivevelocity(RSK, varargin)
+function RSK = RSKderivevelocity(RSK, varargin)
 
-%RSKcalculatevelocity - Calculate sea pressure.
+%RSKcalculatevelocity - Calculate velocity from depth and time.
 %
-% Syntax:  [velocity] = RSKcalculatevelocity(RSK, [OPTIONS])
+% Syntax:  [RSK] = RSKcalculatevelocity(RSK, [OPTIONS])
 % 
 % Differenciates depth to estimate the profiling speed. The depth channel
 % is first smoothed with a 'windowLength' running average to reduce noise.
@@ -20,8 +20,7 @@ function velocity = RSKderivevelocity(RSK, varargin)
 %                       to filter depth. Must be odd. Default is 3.
 %
 % Outputs:
-%    velocity - Structure containing velocity from depth and time and the
-%               velocity mean for each cast.
+%    RSK - RSK structure containing the velocity data.
 %
 % See also: RSKremoveloops, calculatevelocity.
 %
@@ -55,17 +54,25 @@ end
 
 
 
+RSK = addchannelmetadata(RSK, 'Velocity', 'm/s');
+Vcol = getchannelindex(RSK, 'Velocity');
+
+
+
 castidx = getdataindex(RSK, profile, direction);
 for ndx = castidx
     d = RSK.data(ndx).values(:,Dcol);
     depth = runavg(d, windowLength, 'nan');
     time = RSK.data(ndx).tstamp;
-
     vel = calculatevelocity(depth, time);
-    velocity(ndx).values = vel;
-    velocity(ndx).mean = mean(vel);
+    
+    RSK.data(ndx).values(:,Vcol)  = vel;
 end
 
+
+
+logentry = ['Velocity calculated from depth filtered with a windowLength of ' num2str(windowLength) ' samples.'];
+RSK = RSKappendtolog(RSK, logentry);
 end
 
 
