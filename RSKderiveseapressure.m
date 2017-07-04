@@ -11,7 +11,7 @@ function [RSK] = RSKderiveseapressure(RSK, varargin)
 % Inputs: 
 %    [Required] - RSK - Structure containing the logger metadata and data
 %
-%    [Optional] - pAtm - Atmospheric Pressure. Default is value stored in
+%    [Optional] - patm - Atmospheric Pressure. Default is value stored in
 %                       parameters table or 10.1325 dbar if unavailable. 
 %
 % Outputs:
@@ -26,17 +26,17 @@ function [RSK] = RSKderiveseapressure(RSK, varargin)
 
 p = inputParser;
 addRequired(p, 'RSK', @isstruct);
-addParameter(p, 'pAtm', [], @isnumeric);
+addParameter(p, 'patm', [], @isnumeric);
 parse(p, RSK, varargin{:})
 
 RSK = p.Results.RSK;
-pAtm = p.Results.pAtm;
+patm = p.Results.patm;
 
 
 
 Pcol = getchannelindex(RSK, 'Pressure');
-if isempty(pAtm)
-    pAtm = getatmosphericpressure(RSK);
+if isempty(patm)
+    patm = getatmosphericpressure(RSK);
 end
 
 
@@ -48,7 +48,7 @@ SPcol = getchannelindex(RSK, 'Sea Pressure');
 
 castidx = getdataindex(RSK);
 for ndx = castidx
-    seapressure = RSK.data(ndx).values(:, Pcol)- pAtm;
+    seapressure = RSK.data(ndx).values(:, Pcol)- patm;
     RSK.data(ndx).values(:,SPcol) = seapressure;
 end
 
