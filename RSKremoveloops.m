@@ -1,6 +1,6 @@
 function [RSK, flagidx] = RSKremoveloops(RSK, varargin)
 
-%RSKremoveloops - Remove values exceding a threshold CTD profiling rate.
+%RSKremoveloops - Remove values exceding a threshold profiling rate.
 %
 % Syntax:  [RSK, flagidx] = RSKremoveloops(RSK, [OPTIONS])
 % 
@@ -39,7 +39,7 @@ function [RSK, flagidx] = RSKremoveloops(RSK, varargin)
 % Author: RBR Ltd. Ottawa ON, Canada
 % email: support@rbr-global.com
 % Website: www.rbr-global.com
-% Last revision: 2017-07-02
+% Last revision: 2017-07-04
 
 validDirections = {'down', 'up', 'both'};
 checkDirection = @(x) any(validatestring(x,validDirections));
@@ -58,7 +58,14 @@ threshold = p.Results.threshold;
 
 
 
-Dcol = getchannelindex(RSK, 'Depth');
+try
+    Dcol = getchannelindex(RSK, 'Depth');
+catch
+    error('RSKremoveloops requires a depth channel to calculate velocity (m/s). Use RSKderivedepth...');
+end
+
+
+
 castidx = getdataindex(RSK, profile, direction);
 for ndx = castidx
     d = RSK.data(ndx).values(:,Dcol);
