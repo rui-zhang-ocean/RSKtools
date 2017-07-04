@@ -1,30 +1,30 @@
 function [RSK] = RSKderivesalinity(RSK)
 
-%RSKderivesalinity - Calculate salinity.
+%RSKderivesalinity - Calculate practical salinity.
 %
 % Syntax:  [RSK] = RSKderivesalinty(RSK)
 % 
-% Derives salinity using the TEOS-10 toolbox and fills the
-% appropriate fields in channels field and data. If salinity already
-% exists, it will recalculate it and overwrite that data column. This 
-% function requires TEOS-10 to be downloaded and in the path 
-% (http://www.teos-10.org/software.htm).
+% Derives salinity using the TEOS-10 GSW toolbox
+% (http://www.teos-10.org/software.htm). The result is added to the
+% RSK data structure, and the channel list is updated. If salinity is
+% already in the RSK data structure (i.e., from Ruskin), it will be
+% overwritten by RSKderivesalinity.
 %
 % Inputs: 
 %    RSK - Structure containing the logger metadata and data.         
 %
 % Outputs:
-%    RSK - Structure containing the salinity data.
+%    RSK - Updated structure containing practical salinity.
 %
 % See also: RSKcalculateCTlag.
 %
 % Author: RBR Ltd. Ottawa ON, Canada
 % email: support@rbr-global.com
 % Website: www.rbr-global.com
-% Last revision: 2017-06-22
+% Last revision: 2017-07-02
 
 if isempty(which('gsw_SP_from_C'))
-    error('RSKtools requires TEOS-10 toolbox to derive salinity. Download it here: http://www.teos-10.org/software.htm');
+    error('RSKtools requires TEOS-10 GSW toolbox to derive salinity. Download it here: http://www.teos-10.org/software.htm');
 end
     
 
