@@ -22,7 +22,7 @@ function [RSK] = RSKderivedepth(RSK, varargin)
 % Author: RBR Ltd. Ottawa ON, Canada
 % email: support@rbr-global.com
 % Website: www.rbr-global.com
-% Last revision: 2017-06-22
+% Last revision: 2017-07-04
 
 p = inputParser;
 addRequired(p, 'RSK', @isstruct);

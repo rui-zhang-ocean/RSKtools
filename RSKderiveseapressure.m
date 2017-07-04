@@ -32,11 +32,12 @@ parse(p, RSK, varargin{:})
 RSK = p.Results.RSK;
 pAtm = p.Results.pAtm;
 
+
+
+Pcol = getchannelindex(RSK, 'Pressure');
 if isempty(pAtm)
     pAtm = getatmosphericpressure(RSK);
 end
-
-Pcol = getchannelindex(RSK, 'Pressure');
 
 
 
