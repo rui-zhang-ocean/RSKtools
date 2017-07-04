@@ -84,19 +84,4 @@ logentry = ['Samples measured at a profiling velocity less than ' num2str(thresh
 
 RSK = RSKappendtolog(RSK, logentry);
 
-
-
-%% Nested function
-    function velocity = calculatevelocity(depth, time)
-    % calculate the velocity using midpoints of depth and time.
-    
-        secondsperday = 86400;
-        deltaD = diff(depth);
-        deltaT = diff(time * secondsperday);
-        dDdT = deltaD ./ deltaT;
-        midtime = time(2:end) + deltaT/(2*secondsperday);
-        velocity = interp1(midtime, dDdT, time, 'linear', 'extrap');
-    
-    end
-
 end
