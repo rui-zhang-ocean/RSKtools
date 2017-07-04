@@ -4,14 +4,12 @@ function [RSK, flagidx] = RSKremoveloops(RSK, varargin)
 %
 % Syntax:  [RSK, flagidx] = RSKremoveloops(RSK, [OPTIONS])
 % 
-% RSKremoveloops identifies and flags data obtained when the logger
-% vertical profiling speed falls below a threshold value.  The flagged
-% data is replaced with NaNs.  All logger channels except pressure
-% and depth are affected.    
+% Identifies and flags data obtained when the logger vertical profiling
+% speed falls below a threshold value. The flagged data is replaced with
+% NaNs.  All logger channels except depth are affected.    
 % 
-% Depth is computed from pressure and then differentiated to estimate
-% the profiling speed.  The pressure channel is first smoothed with a
-% 3-point running average to reduce noise.
+% Differenciates depth to estimate the profiling speed. The depth channel
+% is first smoothed with a 3-point running average to reduce noise. 
 % 
 % Inputs:
 %   [Required] - RSK - RSK structure with logger data and metadata
