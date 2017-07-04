@@ -20,13 +20,13 @@ function channelIdx = getchannelindex(RSK, channel)
 % Author: RBR Ltd. Ottawa ON, Canada
 % email: support@rbr-global.com
 % Website: www.rbr-global.com
-% Last revision: 2017-06-20
+% Last revision: 2017-07-04
 
 if any(strcmpi(channel, {RSK.channels.longName}));
     chanCol = find(strcmpi(channel, {RSK.channels.longName}));
     channelIdx = chanCol(1);
 else
-    error(['The is no ' channel ' channel in this file.']);
+    error(['There is no ' channel ' channel in this file.']);
 end
 
 end
