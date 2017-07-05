@@ -1,6 +1,6 @@
 function [RSK, flagidx] = RSKremoveloops(RSK, varargin)
 
-%RSKremoveloops - Remove values exceding a threshold profiling rate.
+%RSKremoveloops - Remove values exceeding a threshold profiling rate.
 %
 % Syntax:  [RSK, flagidx] = RSKremoveloops(RSK, [OPTIONS])
 % 
