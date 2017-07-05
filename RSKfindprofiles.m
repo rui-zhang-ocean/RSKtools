@@ -1,31 +1,34 @@
 function RSK = RSKfindprofiles(RSK, varargin)
 
-%RSKfindprofiles - Find profiles using the pressure data. 
+%RSKfindprofiles - Find profiles in a time series using pressure
+%                  and conductivity data (if it exists). 
 %
 % Syntax:  [RSK] = RSKfindprofiles(RSK, [OPTIONS])
 % 
-% Implements the algorithm used by the logger to find upcasts or downcasts
-% by looking for pressure reversals in the pressure data. It retrieves
-% metadata about the profiles and puts it into the profiles field of the
-% RSK. . The algorithm splits each profile into upcasts and downcasts, and
-% each has tstart and tend for start times and end times.
+% Implements the algorithm used by the logger and Ruskin to find
+% upcasts or downcasts by looking for pressure reversals.  The
+% algorithm distinguishes between upcasts and downcasts, and stores
+% the start and end time for each as 'tstart' and 'tend' in the
+% profile field of the RSK structure.
 %
 % Inputs: 
-%    [Required] - RSK - Structure containing the logger metadata and thumbnail
+%    [Required] - RSK - Structure containing logger metadata and data
 %               
-%    [Optional] - pressureThreshold - Pressure difference required to
-%                       detect a profile. The logger uses 3dbar, which is
-%                       the default. It may be too large for short
-%                       profiles.  
+%    [Optional] - pressureThreshold - Minimum pressure difference 
+%                       required to detect a profile. The default is
+%                       3 dbar, which is the same as the logger. 
+%                       Consider reducing the pressure difference for
+%                       very shallow profiles.  
 %
 %                 conductivityThreshold - Threshold value that indicates
-%                       the sensor is out of seawater. Default is 0.05
-%                       mS/cm. If the water is fresh, you may consider
-%                       using a lower value.      
+%                       whether the sensor is out of water. Default is 
+%                       0.05 mS/cm.  In very fresh water it may help to
+%                       reduce this value.      
 %
 % Output: 
 %   RSK - Structure containing profiles field with the profile metadata.
-%         Use RSKreadprofiles to populate the profiles field with data.
+%         Use RSKreadprofiles to parse and organize the time series into 
+%         profiles by applying the start and end times.
 %
 % Ex:
 %    RSK = RSKopen(fname);
@@ -37,16 +40,16 @@ function RSK = RSKfindprofiles(RSK, varargin)
 % Author: RBR Ltd. Ottawa ON, Canada
 % email: support@rbr-global.com
 % Website: www.rbr-global.com
-% Last revision: 2017-06-22
+% Last revision: 2017-07-05
 
 p = inputParser;
 addRequired(p, 'RSK', @isstruct);
-addParameter(p, 'profileThreshold', 3, @isnumeric);
+addParameter(p, 'pressureThreshold', 3, @isnumeric);
 addParameter(p, 'conductivityThreshold', 0.05, @isnumeric);
 parse(p, RSK, varargin{:})
 
 RSK = p.Results.RSK;
-profileThreshold = p.Results.profileThreshold;
+pressureThreshold = p.Results.pressureThreshold;
 conductivityThreshold = p.Results.conductivityThreshold;
 
 
@@ -74,7 +77,7 @@ end
 
 
 %% Run profile detection
-[wwevt] = detectprofiles(pressure, timestamp, conductivity, profileThreshold, conductivityThreshold);
+[wwevt] = detectprofiles(pressure, timestamp, conductivity, pressureThreshold, conductivityThreshold);
 if size(wwevt,1) < 2
     disp('No profiles were detected in this dataset with the given parameters.')
     return
