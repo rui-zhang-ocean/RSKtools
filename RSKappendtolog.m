@@ -22,10 +22,10 @@ function RSK = RSKappendtolog(RSK, logentry)
 % Author: RBR Ltd. Ottawa ON, Canada
 % email: support@rbr-global.com
 % Website: www.rbr-global.com
-% Last revision: 2017-06-21
+% Last revision: 2017-07-04
 
 if isfield(RSK, 'log')
-    nlog = length(RSK.log);
+    nlog = size(RSK.log, 1);
 else
     nlog = 0;
 end
