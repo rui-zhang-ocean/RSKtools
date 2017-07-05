@@ -10,13 +10,7 @@ function RSK = RSKderivevelocity(RSK, varargin)
 % Inputs: 
 %   [Required] - RSK - Structure containing the logger metadata and data
 %
-%   [Optional] - profile - Profile number. Defaults to all profiles.
-%
-%                direction - 'up' for upcast, 'down' for downcast, or
-%                      'both' for all. Defaults to all directions
-%                       available.
-%
-%                 windowLength - The total size of the filter window used
+%   [Optional] - windowLength - The total size of the filter window used
 %                       to filter depth. Must be odd. Default is 3.
 %
 % Outputs:
@@ -27,21 +21,15 @@ function RSK = RSKderivevelocity(RSK, varargin)
 % Author: RBR Ltd. Ottawa ON, Canada
 % email: support@rbr-global.com
 % Website: www.rbr-global.com
-% Last revision: 2017-07-04
+% Last revision: 2017-07-05
 
-validDirections = {'down', 'up', 'both'};
-checkDirection = @(x) any(validatestring(x,validDirections));
 
 p = inputParser;
 addRequired(p, 'RSK', @isstruct);
-addParameter(p, 'profile', [], @isnumeric);
-addParameter(p, 'direction', [], checkDirection);
 addParameter(p, 'windowLength', 3, @isnumeric);
 parse(p, RSK, varargin{:})
 
 RSK = p.Results.RSK;
-profile = p.Results.profile;
-direction = p.Results.direction;
 windowLength = p.Results.windowLength;
 
 
@@ -59,7 +47,7 @@ Vcol = getchannelindex(RSK, 'Velocity');
 
 
 
-castidx = getdataindex(RSK, profile, direction);
+castidx = getdataindex(RSK);
 for ndx = castidx
     d = RSK.data(ndx).values(:,Dcol);
     depth = runavg(d, windowLength, 'nan');
