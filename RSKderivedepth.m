@@ -14,7 +14,7 @@ function [RSK] = RSKderivedepth(RSK, varargin)
 %    [Required] - RSK - Structure containing the logger metadata and data
 %
 %    [Optional] - latitude - Location of the pressure measurement in
-%                       decimal degrees north. Default is 45. 
+%                       decimal degrees. Default is 45. 
 %
 % Outputs:
 %    RSK - RSK structure containing the depth data
@@ -49,7 +49,7 @@ end
 
 
 
-logentry = ['Depth calculated using a latitude of ' num2str(latitude) ' degrees north.'];
+logentry = ['Depth calculated using a latitude of ' num2str(latitude) ' degrees.'];
 RSK = RSKappendtolog(RSK, logentry);
 
 end
