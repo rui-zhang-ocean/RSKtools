@@ -24,7 +24,7 @@ function im = RSKplot2D(RSK, channel, varargin)
 %                      is down.
 %
 %                 reference - Channel that will be plotted as y. Default
-%                      'Pressure', can be any other channel.
+%                      'Sea Pressure', can be any other channel.
 %
 % Output:
 %     im - Image object created, use to set properties.
@@ -34,7 +34,7 @@ function im = RSKplot2D(RSK, channel, varargin)
 % Author: RBR Ltd. Ottawa ON, Canada
 % email: support@rbr-global.com
 % Website: www.rbr-global.com
-% Last revision: 2017-06-22
+% Last revision: 2017-07-05
 
 validDirections = {'down', 'up'};
 checkDirection = @(x) any(validatestring(x,validDirections));
@@ -44,7 +44,7 @@ addRequired(p, 'RSK', @isstruct);
 addRequired(p, 'channel');
 addParameter(p, 'profile', [], @isnumeric);
 addParameter(p, 'direction', [], checkDirection);
-addParameter(p, 'reference', 'Pressure', @ischar);
+addParameter(p, 'reference', 'Sea Pressure', @ischar);
 parse(p, RSK, channel, varargin{:})
 
 RSK = p.Results.RSK;
