@@ -30,7 +30,7 @@ end
 
     function up = isUpcast(pressure)
     % Returns true if pressure decreases. False is pressure increases.
-
+        pressure = (pressure(~isnan(pressure)));
         if pressure(1) > pressure(end)
             up = 1;
         else
@@ -42,7 +42,7 @@ end
 
     function down = isDowncast(pressure)
     % Returns true if pressure increases. False is pressure decreases.
-
+        pressure = (pressure(~isnan(pressure)));
         if pressure(1) < pressure(end)
             down = 1;
         else
