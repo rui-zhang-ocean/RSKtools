@@ -34,6 +34,13 @@ end
 
 
 
+if ~any(downidx ==1)
+    disp('No downcasts in this RSK structure.');
+    return;
+end
+
+
+
 RSK.profiles.originalindex = RSK.profiles.originalindex(logical(downidx));
 RSK.data = RSK.data(logical(downidx));
 

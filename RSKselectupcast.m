@@ -34,6 +34,13 @@ end
 
 
 
+if ~any(upidx ==1)
+    disp('No upcasts in this RSK structure.');
+    return;
+end
+
+
+
 RSK.profiles.originalindex = RSK.profiles.originalindex(logical(upidx));
 RSK.data = RSK.data(logical(upidx));
 
