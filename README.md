@@ -1,8 +1,8 @@
 # RSKtools
 
-Current stable version: 1.5.3 (2017-06-07)
+Current stable version: 2.0.0 (2017-07-07)
 
-RSKtools is a simple Matlab toolbox designed to open RSK SQLite files generated 
+RSKtools is a Matlab toolbox designed to open RSK SQLite files generated 
 by RBR instruments. This repository is for the development version of
 the toolbox -- for the "officially" distributed version go to:
 
@@ -45,6 +45,16 @@ If the [TEOS-10](http://www.teos-10.org/software.htm) matlab toolbox is installe
 * Write to `support@rbr-global.com` if you need help
 
 ## Changes
+* Version 2.0.0 (2017-07-07)
+    - All optional input arguments are name-value pair
+    - Rename burstdata field to burstData
+    - Add post-processing functions
+    - Add 2D plotting function
+    - RSKplotprofiles contains a subplot for each channel
+    - Add optional channel input and image or line object output to plotting function
+    - Relocate profiling data from the profiles field to the data field
+    - Add RSKderivevelocity function
+
 * Version 1.5.3 (2017-06-07)
     - Use atmospheric pressure in database if available
     - Improve channel table reading by using instrumentChannels
