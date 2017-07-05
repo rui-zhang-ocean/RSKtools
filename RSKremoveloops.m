@@ -85,7 +85,7 @@ end
 
 
 logdata = logentrydata(RSK, profile, direction);
-logentry = ['Samples measured at a profiling velocity less than ' num2str(threshold) 'm/s were replaced with NaN on ' logdata '.'];
+logentry = ['Samples measured at a profiling velocity less than ' num2str(threshold) ' m/s were replaced with NaN on ' logdata '.'];
 
 RSK = RSKappendtolog(RSK, logentry);
 
