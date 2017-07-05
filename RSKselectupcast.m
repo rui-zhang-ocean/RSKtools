@@ -42,6 +42,7 @@ end
 
 
 RSK.profiles.originalindex = RSK.profiles.originalindex(logical(upidx));
+RSK.profiles.order = {'up'};
 RSK.data = RSK.data(logical(upidx));
 
 end

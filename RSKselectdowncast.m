@@ -42,6 +42,7 @@ end
 
 
 RSK.profiles.originalindex = RSK.profiles.originalindex(logical(downidx));
+RSK.profiles.order = {'down'};
 RSK.data = RSK.data(logical(downidx));
 
 end
