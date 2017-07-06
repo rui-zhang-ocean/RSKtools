@@ -26,3 +26,5 @@ catch
     RSK = RSKderiveseapressure(RSK);
     SPcol = getchannelindex(RSK, 'Sea Pressure');
 end
+
+end
