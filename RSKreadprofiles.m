@@ -115,6 +115,7 @@ end
 
 RSK = readchannels(RSK);
 [RSK, ~] = removenonmarinechannels(RSK);
+RSK = renamechannels(RSK);
 RSK.data = data;
 
 end

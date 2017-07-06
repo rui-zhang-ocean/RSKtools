@@ -94,6 +94,7 @@ t=results.tstamp';
 results.tstamp = RSKtime2datenum(t);
 RSK = readchannels(RSK);
 [RSK, isDerived] = removenonmarinechannels(RSK);
+RSK = renamechannels(RSK);
 
 if ~strcmpi(RSK.dbInfo(end).type, 'EPdesktop')
     results.values = results.values(:,~isDerived);
