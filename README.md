@@ -29,7 +29,8 @@ RSKplotthumbnail(r);
 * Unzip the archive (to `~/matlab/RSKtools`, for instance)
 * Add the folder to your path inside matlab (`addpath
   ~/matlab/RSKtools` or some nifty GUI thing)
-* type `help RSKtools` to get an overview and take a look at the examples.
+* Type `help RSKtools` to get an overview and take a look at the examples.
+* Read the [RSKtools User Manual](https://docs.rbr-global.com/rsktools).
 
 ## A note on calculation of Seawater properties
 
