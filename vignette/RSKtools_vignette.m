@@ -1,24 +1,14 @@
-editedit chaedit coe%% RSKtools for Matlab access to RBR data
+%% RSKtools for Matlab access to RBR data
 % RSKtools v2.0.0
 % Author: RBR Ltd. Ottawa ON, Canada
 % email: support@rbr-global.com
 % Website: www.rbr-global.com
-% Last revision: 2017-06-26
+% Last revision: 2017-07-07
 
-%% Introduction
-% RBR instruments output data in an open database format known as
-% <http://www.sqlite.org/famous.html SQLite>. To facilitate direct
-% access to the data in Matlab(TM), we created the |RSKtools|
-% toolbox. |RSKtools| facilitates direct access to the data stored in
-% |RSK| files by using the included |mksqlite| library, for which we
-% have provided versions compiled for Windows (32/64bit), Linux
-% (64bit) and Mac OSX (64bit). It may be necessary to compile your own
-% version, using the source code provided at
-% <http://sourceforge.net/projects/mksqlite/>.
-% 
-% |RSKtools| also provides some convenience functions for common data
+%% Introduction 
+% |RSKtools| provides some convenience functions for common data
 % extraction (e.g. extracting profiles from a continuous dataset) and
-% visualization (plotting individual profiles). From this version on, we
+% visualisation (plotting individual profiles). From this version on, we
 % are expanding on our post-processing functions. For plans for future
 % additions, see the Future plans section. 
 
@@ -36,11 +26,11 @@ editedit chaedit coe%% RSKtools for Matlab access to RBR data
 % To work with an RSK file using |RSKtools|, a connection to the
 % database must be made. This is done using the |RSKopen()|
 % function. Note that |RSKopen| doesn't actually read the data, but
-% reads a /thumbnail/ of the data which is typically about 4000 points
+% reads a /thumbnail/ of the data which is up to 4000 points
 % long. The structure returned after opening an RSK looks something
 % like:
 
-file = 'ProfilesClark.rsk';
+file = 'sample.rsk';
 rsk = RSKopen(file)
 
 %%
@@ -51,9 +41,8 @@ rsk = RSKopen(file)
 % data, it may be preferable to read a subset of the data, specified
 % using a start and end time (in Matlab |datenum| format, which is
 % defined as the number of days since January 0, 0000).
-
-t1 = rsk.epochs.startTime+0.25; %Specify a start time (optional).
-t2 = rsk.epochs.startTime+0.5;%Specify a end time (optional).
+t1 = datenum(2014, 05, 03);
+t2 = datenum(2014, 05, 04);
 rsk = RSKreaddata(rsk, 't1', t1, 't2', t2);
 
 %%
@@ -80,19 +69,21 @@ rsk.channels.longName
 % the raw data, based on the previously identified events. Following
 % this, quick plots of the profiles can be made using the
 % |RSKplotprofiles()| function.
+%
+% If profiles have not been detected by the logger or Ruskin. The function
+% |RSKfindprofiles()| can be used. The pressureThreshold which
+% determines the pressure reversal required to trigger a new profile and
+% the conductivityThreshold determines if the logger is out of the water
+% can be adjusted for short or fresh water profiles.
 
-% load the first 10 profiles in both directions (upcast and downcast)
+% load the second to tenth profiles in both directions (upcast and downcast)
 rsk = RSKreadprofiles(rsk, 'profile', 2:10, 'direction', 'both');
 rsk = RSKderivesalinity(rsk);
 
 % plot the upcasts of Conductivity, Temperature and Salinity
 handles = RSKplotprofiles(rsk, 'channel', {'conductivity', 'temperature','salinity'}, 'direction', 'up');
 
-% If profiles have not been detected by the logger or Ruskin. The function
-% |RSKfindprofiles()| can be used. The pressureThreshold which
-% determines the pressure reversal required to trigger a new profile and
-% the conductivityThreshold determines if the logger is out of the water
-% can be adjusted for short or fresh water profiles.
+
 
 %% Customizing plots
 % All plotting functions return a handle which enables the access to the

@@ -3,7 +3,7 @@
 % Author: RBR Ltd. Ottawa ON, Canada
 % email: support@rbr-global.com
 % Website: www.rbr-global.com
-% Last revision: 2017-06-26
+% Last revision: 2017-07-06
 
 %% Introduction
 % In order to facilitate the post-processing process of RBR data. We
@@ -14,17 +14,17 @@
 % If the steps below are uncommon to you, please review RSKtools_vignette.
 file = '../rsktools/sample.rsk';
 rsk = RSKopen(file);
-rsk = RSKreadprofiles(rsk, 'profile', 10:60, 'direction', 'up');
+rsk = RSKreadprofiles(rsk, 'profile', 10:55, 'direction', 'up');
 
 %% Low-pass filtering
 % The first step is generally to apply a low pass filter to the pressure
-% data. And low-pass filter to the temperature and conductivity channels to
+% data; then filter the temperature and conductivity channels to
 % smooth high frequencies. RSKtools provides a function called
 % |RSKsmooth()|. All post-processing functions have many name-value pair
-% arguments to specify what and how you want to process. To process all
-% data using the default parameters no name-value pair arguments are
-% required. 
-% All the information above can be found for each function using the help, for example: |help
+% input arguments to specify what values you want to process and how you
+% want to do it. To process all data using the default parameters no
+% name-value pair arguments are required. 
+% All the information above is available for each function using |help|, for example: |help
 % RSKsmooth|.
 help RSKsmooth
 
@@ -55,21 +55,23 @@ rsk = RSKderivedepth(rsk);
 rsk = RSKremoveloops(rsk, 'threshold', 0.3);
 
 %% Derive
-% A few functions are provided to facilitate deriving Salinity, Depth and
-% Sea pressure from the data.
+% A few functions are provided to facilitate deriving sea pressure, salinity, and depth from the data. We suggesting deriving sea pressure first,
+% in case you want to add a custom atmospheric pressure, because salinity
+% and depth calculations use sea pressire.
+rsk = RSKderiveseapressure(rsk);
 rsk = RSKderivesalinity(rsk);
 rsk = RSKderivedepth(rsk);
 
 %% Bin data
-% Quantize data in 0.5m bins. |RSKbinaverage()| requires a direction
+% Quantize data in 0.5dbar bins. |RSKbinaverage()| requires a direction
 % to explicitly describe in which direction the bin limits will be
 % determined. 
-rsk = RSKbinaverage(rsk, 'binBy', 'Depth', 'binSize', 0.5, 'direction', 'up');
+rsk = RSKbinaverage(rsk, 'binBy', 'Sea Pressure', 'binSize', 0.5, 'direction', 'up');
 
 %% Plot
 % Now we can see what the data looks like. We suggest plotting as you go to
 % see if the changes eing applied are what you expect.
-RSKplot2D(rsk, 'Salinity', 'reference', 'Depth');
+RSKplot2D(rsk, 'Salinity');
 
 
 %% See RSKtools_vignette
