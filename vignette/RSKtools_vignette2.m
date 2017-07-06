@@ -1,9 +1,8 @@
 %% RSKtools for Matlab processing RBR data
-% RSKtools v2.0.0
-% Author: RBR Ltd. Ottawa ON, Canada
-% email: support@rbr-global.com
-% Website: www.rbr-global.com
-% Last revision: 2017-07-06
+% RSKtools v2.0.0;
+% RBR Ltd. Ottawa ON, Canada;
+% support@rbr-global.com;
+% 2017-07-06
 
 %% Introduction
 % In order to facilitate the post-processing process of RBR data. We
@@ -12,7 +11,7 @@
 
 %% Getting set up
 % If the steps below are uncommon to you, please review RSKtools_vignette.
-file = '../rsktools/sample.rsk';
+file = 'sample.rsk';
 rsk = RSKopen(file);
 rsk = RSKreadprofiles(rsk, 'profile', 10:55, 'direction', 'up');
 
@@ -57,7 +56,7 @@ rsk = RSKremoveloops(rsk, 'threshold', 0.3);
 %% Derive
 % A few functions are provided to facilitate deriving sea pressure, salinity, and depth from the data. We suggesting deriving sea pressure first,
 % in case you want to add a custom atmospheric pressure, because salinity
-% and depth calculations use sea pressire.
+% and depth calculations use sea pressure.
 rsk = RSKderiveseapressure(rsk);
 rsk = RSKderivesalinity(rsk);
 rsk = RSKderivedepth(rsk);

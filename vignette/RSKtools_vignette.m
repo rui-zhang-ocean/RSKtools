@@ -1,9 +1,8 @@
 %% RSKtools for Matlab access to RBR data
-% RSKtools v2.0.0
-% Author: RBR Ltd. Ottawa ON, Canada
-% email: support@rbr-global.com
-% Website: www.rbr-global.com
-% Last revision: 2017-07-07
+% RSKtools v2.0.0;
+% RBR Ltd. Ottawa ON, Canada;
+% support@rbr-global.com;
+% 2017-07-06
 
 %% Introduction 
 % |RSKtools| provides some convenience functions for common data
