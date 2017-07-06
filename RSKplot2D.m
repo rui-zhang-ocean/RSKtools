@@ -34,7 +34,7 @@ function im = RSKplot2D(RSK, channel, varargin)
 % Author: RBR Ltd. Ottawa ON, Canada
 % email: support@rbr-global.com
 % Website: www.rbr-global.com
-% Last revision: 2017-07-05
+% Last revision: 2017-07-06
 
 validDirections = {'down', 'up'};
 checkDirection = @(x) any(validatestring(x,validDirections));
@@ -81,11 +81,11 @@ set(im, 'AlphaData', ~isnan(binValues)) %plot NaN values in white.
 
 setcolormap(channel);
 cb = colorbar;
-ylabel(cb, RSK.channels(chanCol).units, 'FontSize', 14)
-h = title(sprintf('%s', RSK.channels(chanCol).longName), 'FontSize', 16);
+ylabel(cb, RSK.channels(chanCol).units)
+h = title(sprintf('%s', RSK.channels(chanCol).longName));
 p = get(h,'Position');
 set(h, 'Position', [t(end) p(2) p(3)], 'HorizontalAlignment', 'right')
-text(t(1), p(2)-0.5, sprintf('[%s - %s]', datestr(t(1), 'mmmm dd HH:MM'), datestr(t(end),'mmmm dd HH:MM')), 'FontSize', 14);
+text(t(1), p(2)-0.5, sprintf('[%s - %s]', datestr(t(1), 'mmmm dd HH:MM'), datestr(t(end),'mmmm dd HH:MM')));
 set(gcf, 'Position', [1 1 800 450]);
 datetick('x', 'HH', 'keepticks')
 axis tight
