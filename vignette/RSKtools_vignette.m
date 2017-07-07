@@ -2,7 +2,7 @@
 % RSKtools v2.0.0;
 % RBR Ltd. Ottawa ON, Canada;
 % support@rbr-global.com;
-% 2017-07-06
+% 2017-07-07
 
 %% Introduction 
 % |RSKtools| provides some convenience functions for common data extraction
@@ -85,7 +85,7 @@ handles = RSKplotprofiles(rsk, 'channel', {'conductivity', 'temperature','salini
 
 
 
-%% Customizing plots
+%% Customising plots
 % All plotting functions return a handle which enables access to the lines
 % in the plot. The output is a matrix containing a column for each
 % channel subplot and a row for each profile. 
