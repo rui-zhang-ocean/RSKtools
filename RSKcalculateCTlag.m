@@ -87,7 +87,6 @@ Pcol = getchannelindex(RSK, 'pressure');
 bestlag = [];
 castidx = getdataindex(RSK, profile, direction);
 for ndx = castidx
-    disp(['Processing cast: ' num2str(ndx)]) 
     C = RSK.data(ndx).values(:, Ccol);
     T = RSK.data(ndx).values(:, Tcol);
     P = RSK.data(ndx).values(:, Pcol);
