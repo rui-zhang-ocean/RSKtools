@@ -6,7 +6,7 @@
    <!--
 This HTML was auto-generated from MATLAB code.
 To make changes, update the MATLAB code and republish this document.
-      --><title>RSKtools for Matlab access to RBR data</title><meta name="generator" content="MATLAB 8.6"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2017-07-07"><meta name="DC.source" content="RSKtools_vignette.m"><style type="text/css">
+      --><title>RSKtools for Matlab access to RBR data</title><meta name="generator" content="MATLAB 8.6"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2017-07-07"><meta name="DC.source" content="VignetteStandard.m"><style type="text/css">
 html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
 
 html { min-height:100%; margin-bottom:1px; }
@@ -66,7 +66,7 @@ table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px soli
 
 
 
-  </style></head><body><div class="content"><h1>RSKtools for Matlab access to RBR data</h1><!--introduction--><p>RSKtools v2.0.0; RBR Ltd. Ottawa ON, Canada; <a href="mailto:support@rbr-global.com">support@rbr-global.com</a>; 2017-07-07</p><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#1">Introduction</a></li><li><a href="#2">Installing</a></li><li><a href="#3">Examples of use</a></li><li><a href="#7">Working with profiles</a></li><li><a href="#8">Customising plots</a></li><li><a href="#9">See RSKtools_vignette2</a></li><li><a href="#10">Future plans</a></li><li><a href="#11">About this document</a></li></ul></div><h2>Introduction<a name="1"></a></h2><p><tt>RSKtools</tt> provides some convenience functions for common data extraction (e.g., extracting profiles from a continuous dataset) and visualisation (e.g., plotting individual profiles). New in v2.0.0 are a suite of functions to perform routine processing steps to enhance the data quality (see RSKtools_vignette2 for more information). From this version on, we are expanding our data post-processing suite. See the Future Plans for some ideas, and please feel free to make suggestions.</p><h2>Installing<a name="2"></a></h2><p>The latest stable version of <tt>RSKtools</tt> can be found at <a href="http://www.rbr-global.com/support/matlab-tools">http://www.rbr-global.com/support/matlab-tools</a>.</p><div><ul><li>Unzip the archive (to <tt>~/matlab/RSKtools</tt>, for instance)</li><li>Add the folder to your path from the command line (<tt>addpath ~/matlab/RSKtools</tt>) or launch the path editor gui (<tt>pathtool</tt>).</li><li>type <tt>help RSKtools</tt> to get an overview and take a look at the examples.</li></ul></div><h2>Examples of use<a name="3"></a></h2><p><h3>Loading files</h3></p><p>A connection to the database must be made to work with an RSK file using <tt>RSKtools</tt>. This connection is made using the <tt>RSKopen()</tt> function. Note that <tt>RSKopen</tt> does not actually read the data, but reads a /thumbnail/ of the data, which is up to 4000 samples long. The structure returned after opening an RSK looks something like:</p><pre class="codeinput">file = <span class="string">'sample.rsk'</span>;
+  </style></head><body><div class="content"><h1>RSKtools for Matlab access to RBR data</h1><!--introduction--><p>RSKtools v2.0.0; RBR Ltd. Ottawa ON, Canada; <a href="mailto:support@rbr-global.com">support@rbr-global.com</a>; 2017-07-07</p><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#1">Introduction</a></li><li><a href="#2">Installing</a></li><li><a href="#3">Examples of use</a></li><li><a href="#7">Working with profiles</a></li><li><a href="#8">Customising plots</a></li><li><a href="#9">Other Resources</a></li><li><a href="#10">Future plans</a></li><li><a href="#11">About this document</a></li></ul></div><h2>Introduction<a name="1"></a></h2><p><tt>RSKtools</tt> provides some convenience functions for common data extraction (e.g., extracting profiles from a continuous dataset) and visualisation (e.g., plotting individual profiles). New in v2.0.0 are a suite of functions to perform routine processing steps to enhance the data quality (see VignettePostProcessing for more information). From this version on, we are expanding our data post-processing suite. See the Future Plans for some ideas, and please feel free to make suggestions.</p><h2>Installing<a name="2"></a></h2><p>The latest stable version of <tt>RSKtools</tt> can be found at <a href="http://www.rbr-global.com/support/matlab-tools">http://www.rbr-global.com/support/matlab-tools</a>.</p><div><ul><li>Unzip the archive (to <tt>~/matlab/RSKtools</tt>, for instance)</li><li>Add the folder to your path from the command line (<tt>addpath ~/matlab/RSKtools</tt>) or launch the path editor gui (<tt>pathtool</tt>).</li><li>type <tt>help RSKtools</tt> to get an overview and take a look at the examples.</li></ul></div><h2>Examples of use<a name="3"></a></h2><p><h3>Loading files</h3></p><p>A connection to the database must be made to work with an RSK file using <tt>RSKtools</tt>. This connection is made using the <tt>RSKopen()</tt> function. Note that <tt>RSKopen</tt> does not actually read the data, but reads a /thumbnail/ of the data, which is up to 4000 samples long. The structure returned after opening an RSK looks something like:</p><pre class="codeinput">file = <span class="string">'sample.rsk'</span>;
 rsk = RSKopen(file)
 </pre><pre class="codeoutput">rsk = 
                 dbInfo: [1x1 struct]
@@ -93,7 +93,8 @@ rsk = RSKreaddata(rsk, <span class="string">'t1'</span>, t1, <span class="string
 </pre><pre class="codeoutput">ans = 
     tstamp: [22346x1 double]
     values: [22346x7 double]
-</pre><p>In this example, because the instrument is a "CTD"-type instrument, Practical Salinity can be derived from conductivity, temperature, and pressure. <tt>RSKderivesalinity</tt> is a wrapper for the TEOS-10 GSW function <tt>gsw_SP_from_C</tt>, and it adds a new channel called <tt>Salinity</tt> as a column in <tt>rsk.data.values</tt>.  The TEOS-10 GSW Matlab toolbox is freely available from  <a href="http://teos-10.org/software.htm">http://teos-10.org/software.htm</a>.</p><pre class="codeinput">rsk = RSKderivesalinity(rsk);
+</pre><p>In this example, because the instrument is a "CTD"-type instrument, Practical Salinity can be derived from conductivity, temperature, and pressure. <tt>RSKderivesalinity</tt> is a wrapper for the TEOS-10 GSW function <tt>gsw_SP_from_C</tt>, and it adds a new channel called <tt>Salinity</tt> as a column in <tt>rsk.data.values</tt>.  The TEOS-10 GSW Matlab toolbox is freely available from  <a href="http://teos-10.org/software.htm">http://teos-10.org/software.htm</a>. It is good practice to derive sea pressure first in case you want a customisable atmospheric pressure.</p><pre class="codeinput">rsk = RSKderiveseapressure(rsk);
+rsk = RSKderivesalinity(rsk);
 rsk.channels.longName
 </pre><pre class="codeoutput">ans =
 Conductivity
@@ -110,14 +111,17 @@ PAR
 ans =
 Chlorophyll
 ans =
+Sea Pressure
+ans =
 Salinity
-</pre><h2>Working with profiles<a name="7"></a></h2><p>Profiling loggers with recent versions of firmware contain the ability to detect and log profile "events" automatically; these are denoted as "downcasts" and "upcasts". The function <tt>RSKreadprofiles</tt> extracts individual profiles from the raw data, based on the previously identified profiling events. Then, plots of the profiles can be made using the <tt>RSKplotprofiles</tt> function.</p><p>If profiles have not been detected by the logger or Ruskin, the function <tt>RSKfindprofiles</tt> can be used. The pressureThreshold argument, which determines the pressure reversal required to trigger a new profile, and the conductivityThreshold argument, which determines if the logger is out of the water, can be adjusted to improve profile detection when the profiles are very shallow, or the water is very fresh.</p><pre class="codeinput"><span class="comment">% load the second to tenth profiles in both directions (upcast and downcast)</span>
+</pre><h2>Working with profiles<a name="7"></a></h2><p>Profiling loggers with recent versions of firmware contain the ability to detect and log profile "events" automatically; these are denoted as "downcasts" and "upcasts". The function <tt>RSKreadprofiles</tt> extracts individual profiles from the raw data, based on the previously identified profiling events. Then, plots of the profiles can be made using the <tt>RSKplotprofiles</tt> function.</p><p>If profiles have not been detected by the logger or Ruskin, the function <tt>RSKfindprofiles</tt> can be used. The pressureThreshold argument, which determines the pressure reversal required to trigger a new profile, and the conductivityThreshold argument, which determines if the logger is out of the water, can be adjusted to improve profile detection when the profiles are very shallow, or when the water is very fresh.</p><p>Salinity and sea pressure have to be derived again because <tt>RSKreadprofiles</tt> replaces the data field with the newly queried values.</p><pre class="codeinput"><span class="comment">% load the second to tenth profiles in both directions (upcast and downcast)</span>
 rsk = RSKreadprofiles(rsk, <span class="string">'profile'</span>, 2:10, <span class="string">'direction'</span>, <span class="string">'both'</span>);
+rsk = RSKderiveseapressure(rsk);
 rsk = RSKderivesalinity(rsk);
 
 <span class="comment">% plot the upcasts of conductivity, temperature, and salinity</span>
 handles = RSKplotprofiles(rsk, <span class="string">'channel'</span>, {<span class="string">'conductivity'</span>, <span class="string">'temperature'</span>,<span class="string">'salinity'</span>}, <span class="string">'direction'</span>, <span class="string">'up'</span>);
-</pre><img vspace="5" hspace="5" src="RSKtools_vignette_01.png" alt=""> <h2>Customising plots<a name="8"></a></h2><p>All plotting functions return a handle which enables access to the lines in the plot. The output is a matrix containing a column for each channel subplot and a row for each profile.</p><pre class="codeinput">handles
+</pre><img vspace="5" hspace="5" src="VignetteStandard_01.png" alt=""> <h2>Customising plots<a name="8"></a></h2><p>All plotting functions return a handle which enables access to the lines in the plot. The output is a matrix containing a column for each channel subplot and a row for each profile.</p><pre class="codeinput">handles
 
 <span class="comment">% To increase the linewidth of the first profile in all subplots</span>
 set(handles(1,:),{<span class="string">'linewidth'</span>},{5});
@@ -133,7 +137,7 @@ set(handles(1,:),{<span class="string">'linewidth'</span>},{5});
     Line    Line    Line
     Line    Line    Line
     Line    Line    Line
-</pre><img vspace="5" hspace="5" src="RSKtools_vignette_02.png" alt=""> <h2>See RSKtools_vignette2<a name="9"></a></h2><p>A second vignette is available for information on getting started with post-processing functions.</p><h2>Future plans<a name="10"></a></h2><div><ul><li>Function to write metadata, log and data to a file.</li><li>Wave processing functions.</li><li>Function to plot temperature-salinity diagrams.</li></ul></div><h2>About this document<a name="11"></a></h2><p>This document was created using <a href="http://www.mathworks.com/help/matlab/matlab_prog/marking-up-matlab-comments-for-publishing.html">Matlab&#8482; Markup Publishing</a>. To publish it as an HTML page, run the command:</p><pre class="language-matlab">publish(<span class="string">'RSKtools_vignette.m'</span>);
+</pre><img vspace="5" hspace="5" src="VignetteStandard_02.png" alt=""> <h2>Other Resources<a name="9"></a></h2><p>VignettePostProcessing is available for information on getting started with post-processing functions.</p><p>A User Manual for <a href="https://docs.rbr-global.com/rsktools">RSKtools</a> is available.</p><h2>Future plans<a name="10"></a></h2><div><ul><li>Function to write metadata, log and data to a file.</li><li>Wave processing functions.</li><li>Function to plot temperature-salinity diagrams.</li></ul></div><h2>About this document<a name="11"></a></h2><p>This document was created using <a href="http://www.mathworks.com/help/matlab/matlab_prog/marking-up-matlab-comments-for-publishing.html">Matlab&#8482; Markup Publishing</a>. To publish it as an HTML page, run the command:</p><pre class="language-matlab">publish(<span class="string">'VignetteStandard.m'</span>);
 </pre><p>See <tt>help publish</tt> for more document export options.</p><p class="footer"><br><a href="http://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2015b</a><br></p></div><!--
 ##### SOURCE BEGIN #####
 %% RSKtools for Matlab access to RBR data
@@ -147,7 +151,7 @@ set(handles(1,:),{<span class="string">'linewidth'</span>},{5});
 % (e.g., extracting profiles from a continuous dataset) and visualisation
 % (e.g., plotting individual profiles). New in v2.0.0 are a suite of
 % functions to perform routine processing steps to enhance the data quality
-% (see RSKtools_vignette2 for more information). From this version on, we
+% (see VignettePostProcessing for more information). From this version on, we
 % are expanding our data post-processing suite. See the Future Plans for
 % some ideas, and please feel free to make suggestions.
 
@@ -195,7 +199,10 @@ rsk.data
 % |gsw_SP_from_C|, and it adds a new channel called |Salinity| as a column
 % in |rsk.data.values|.  The TEOS-10 GSW Matlab toolbox is freely available
 % from  <http://teos-10.org/software.htm>.
+% It is good practice to derive sea pressure first in case you want a
+% customisable atmospheric pressure.
 
+rsk = RSKderiveseapressure(rsk);
 rsk = RSKderivesalinity(rsk);
 rsk.channels.longName
 
@@ -205,17 +212,21 @@ rsk.channels.longName
 % denoted as "downcasts" and "upcasts". The function |RSKreadprofiles|
 % extracts individual profiles from the raw data, based on the previously
 % identified profiling events. Then, plots of the profiles can be
-% made using the |RSKplotprofiles| function.
+% made using the |RSKplotprofiles| function. 
 %
 % If profiles have not been detected by the logger or Ruskin, the function
 % |RSKfindprofiles| can be used. The pressureThreshold argument, which
 % determines the pressure reversal required to trigger a new profile, and
 % the conductivityThreshold argument, which determines if the logger is
 % out of the water, can be adjusted to improve profile detection when 
-% the profiles are very shallow, or the water is very fresh.
+% the profiles are very shallow, or when the water is very fresh.
+%
+% Salinity and sea pressure have to be derived again because
+% |RSKreadprofiles| replaces the data field with the newly queried values.
 
 % load the second to tenth profiles in both directions (upcast and downcast)
 rsk = RSKreadprofiles(rsk, 'profile', 2:10, 'direction', 'both');
+rsk = RSKderiveseapressure(rsk);
 rsk = RSKderivesalinity(rsk);
 
 % plot the upcasts of conductivity, temperature, and salinity
@@ -232,9 +243,12 @@ handles
 % To increase the linewidth of the first profile in all subplots
 set(handles(1,:),{'linewidth'},{5});
 
-%% See RSKtools_vignette2
-% A second vignette is available for information on getting started with
+%% Other Resources
+% VignettePostProcessing is available for information on getting started with
 % post-processing functions.
+%
+% A User Manual for <https://docs.rbr-global.com/rsktools RSKtools> is available.
+
 
 %% Future plans
 % * Function to write metadata, log and data to a file.
@@ -248,7 +262,7 @@ set(handles(1,:),{'linewidth'},{5});
 % command:
 %%
 % 
-%   publish('RSKtools_vignette.m');
+%   publish('VignetteStandard.m');
 
 %%
 % See |help publish| for more document export options.

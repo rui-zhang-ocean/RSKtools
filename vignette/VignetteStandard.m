@@ -9,7 +9,7 @@
 % (e.g., extracting profiles from a continuous dataset) and visualisation
 % (e.g., plotting individual profiles). New in v2.0.0 are a suite of
 % functions to perform routine processing steps to enhance the data quality
-% (see RSKtools_vignette2 for more information). From this version on, we
+% (see VignettePostProcessing for more information). From this version on, we
 % are expanding our data post-processing suite. See the Future Plans for
 % some ideas, and please feel free to make suggestions.
 
@@ -57,7 +57,10 @@ rsk.data
 % |gsw_SP_from_C|, and it adds a new channel called |Salinity| as a column
 % in |rsk.data.values|.  The TEOS-10 GSW Matlab toolbox is freely available
 % from  <http://teos-10.org/software.htm>.
+% It is good practice to derive sea pressure first in case you want a
+% customisable atmospheric pressure.
 
+rsk = RSKderiveseapressure(rsk);
 rsk = RSKderivesalinity(rsk);
 rsk.channels.longName
 
@@ -67,17 +70,21 @@ rsk.channels.longName
 % denoted as "downcasts" and "upcasts". The function |RSKreadprofiles|
 % extracts individual profiles from the raw data, based on the previously
 % identified profiling events. Then, plots of the profiles can be
-% made using the |RSKplotprofiles| function.
+% made using the |RSKplotprofiles| function. 
 %
 % If profiles have not been detected by the logger or Ruskin, the function
 % |RSKfindprofiles| can be used. The pressureThreshold argument, which
 % determines the pressure reversal required to trigger a new profile, and
 % the conductivityThreshold argument, which determines if the logger is
 % out of the water, can be adjusted to improve profile detection when 
-% the profiles are very shallow, or the water is very fresh.
+% the profiles are very shallow, or when the water is very fresh.
+%
+% Salinity and sea pressure have to be derived again because
+% |RSKreadprofiles| replaces the data field with the newly queried values.
 
 % load the second to tenth profiles in both directions (upcast and downcast)
 rsk = RSKreadprofiles(rsk, 'profile', 2:10, 'direction', 'both');
+rsk = RSKderiveseapressure(rsk);
 rsk = RSKderivesalinity(rsk);
 
 % plot the upcasts of conductivity, temperature, and salinity
@@ -94,9 +101,12 @@ handles
 % To increase the linewidth of the first profile in all subplots
 set(handles(1,:),{'linewidth'},{5});
 
-%% See RSKtools_vignette2
-% A second vignette is available for information on getting started with
+%% Other Resources
+% VignettePostProcessing is available for information on getting started with
 % post-processing functions.
+%
+% A User Manual for <https://docs.rbr-global.com/rsktools RSKtools> is available.
+
 
 %% Future plans
 % * Function to write metadata, log and data to a file.
@@ -110,7 +120,7 @@ set(handles(1,:),{'linewidth'},{5});
 % command:
 %%
 % 
-%   publish('RSKtools_vignette.m');
+%   publish('VignetteStandard.m');
 
 %%
 % See |help publish| for more document export options.
