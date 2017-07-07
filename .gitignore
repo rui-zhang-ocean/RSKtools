@@ -2,6 +2,7 @@
 *.bak
 testfiles/
 tests/
+._*
 
 <<<<<<< HEAD
 .gitignore
