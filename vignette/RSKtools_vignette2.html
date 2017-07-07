@@ -66,7 +66,7 @@ table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px soli
 
 
 
-  </style></head><body><div class="content"><h1>RSKtools for Matlab processing RBR data</h1><!--introduction--><p>RSKtools v2.0.0; RBR Ltd. Ottawa ON, Canada; <a href="mailto:support@rbr-global.com">support@rbr-global.com</a>; 2017-07-06</p><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#1">Introduction</a></li><li><a href="#2">Getting set up</a></li><li><a href="#3">Low-pass filtering</a></li><li><a href="#5">Aligning CT</a></li><li><a href="#6">Remove loops</a></li><li><a href="#7">Derive</a></li><li><a href="#8">Bin data</a></li><li><a href="#9">Plot</a></li><li><a href="#10">See RSKtools_vignette</a></li><li><a href="#11">About this document</a></li></ul></div><h2>Introduction<a name="1"></a></h2><p>A suite of new functions are included in RSKtools v2.0.0 to post-process RBR logger data. Below we show how to implement some common processing steps to obtain the highest quality data possible.</p><h2>Getting set up<a name="2"></a></h2><p>See review RSKtools_vignette for help.</p><pre class="codeinput">file = <span class="string">'sample.rsk'</span>;
+  </style></head><body><div class="content"><h1>RSKtools for Matlab processing RBR data</h1><!--introduction--><p>RSKtools v2.0.0; RBR Ltd. Ottawa ON, Canada; <a href="mailto:support@rbr-global.com">support@rbr-global.com</a>; 2017-07-07</p><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#1">Introduction</a></li><li><a href="#2">Getting set up</a></li><li><a href="#3">Low-pass filtering</a></li><li><a href="#5">Aligning CT</a></li><li><a href="#6">Remove loops</a></li><li><a href="#7">Derive</a></li><li><a href="#8">Bin data</a></li><li><a href="#9">Plot</a></li><li><a href="#10">See RSKtools_vignette</a></li><li><a href="#11">About this document</a></li></ul></div><h2>Introduction<a name="1"></a></h2><p>A suite of new functions are included in RSKtools v2.0.0 to post-process RBR logger data. Below we show how to implement some common processing steps to obtain the highest quality data possible.</p><h2>Getting set up<a name="2"></a></h2><p>See review RSKtools_vignette for help.</p><pre class="codeinput">file = <span class="string">'sample.rsk'</span>;
 rsk = RSKopen(file);
 rsk = RSKreadprofiles(rsk, <span class="string">'profile'</span>, 10:55, <span class="string">'direction'</span>, <span class="string">'up'</span>);
 </pre><h2>Low-pass filtering<a name="3"></a></h2><p>The first step is generally to apply a low pass filter to the pressure data; then filter the temperature and conductivity channels to smooth high frequency variability and match sensor time constants. RSKtools includes a function called <tt>RSKsmooth</tt> for this purpose. All post-processing functions are customizable with name-value pair input arguments.  To process all data using the default parameters no name-value pair arguments are required. All the information above is available for each function using <tt>help</tt>, for example: <tt>help RSKsmooth</tt>.</p><pre class="codeinput">help <span class="string">RSKsmooth</span>
@@ -176,7 +176,7 @@ rsk = RSKderivedepth(rsk);
 % RSKtools v2.0.0;
 % RBR Ltd. Ottawa ON, Canada;
 % support@rbr-global.com;
-% 2017-07-06
+% 2017-07-07
 
 %% Introduction
 % A suite of new functions are included in RSKtools v2.0.0 
