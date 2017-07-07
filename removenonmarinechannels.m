@@ -23,7 +23,7 @@ function [RSK, isDerived] = removenonmarinechannels(RSK)
 % Website: www.rbr-global.com
 % Last revision: 2017-06-21
 
-if iscompatibleversion(RSK, 1, 8, 9) && ~strcmp(RSK.dbInfo(end).type, 'EP')
+if iscompatibleversion(RSK, 1, 8, 9) && ~(strcmp(RSK.dbInfo(end).type, 'EP') || strcmp(RSK.dbInfo(end).type, 'EPdesktop'))
     isDerived = logical([RSK.instrumentChannels.channelStatus]);% hidden and derived channels have a non-zero channelStatus
     RSK.instrumentChannels(isDerived) = [];
 else
