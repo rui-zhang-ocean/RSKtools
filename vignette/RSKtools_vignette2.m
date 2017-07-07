@@ -5,12 +5,13 @@
 % 2017-07-06
 
 %% Introduction
-% To facilitate the post-processing process of RBR data, we provide a few
-% common processing functions. Below we will walk through the standard
-% steps for processing CTD data. 
+% A suite of new functions are included in RSKtools v2.0.0 
+% to post-process RBR logger data. Below we show how
+% to implement some common processing steps to obtain the highest
+% quality data possible. 
 
 %% Getting set up
-% If the steps below are uncommon to you, please review RSKtools_vignette.
+% See review RSKtools_vignette for help.
 file = 'sample.rsk';
 rsk = RSKopen(file);
 rsk = RSKreadprofiles(rsk, 'profile', 10:55, 'direction', 'up');
@@ -18,10 +19,10 @@ rsk = RSKreadprofiles(rsk, 'profile', 10:55, 'direction', 'up');
 %% Low-pass filtering
 % The first step is generally to apply a low pass filter to the pressure
 % data; then filter the temperature and conductivity channels to
-% smooth high frequencies. RSKtools provides a function called
-% |RSKsmooth()|. All post-processing functions have many name-value pair
-% input arguments to specify what values you want to process and how you
-% want to do it. To process all data using the default parameters no
+% smooth high frequency variability and match sensor time constants. 
+% RSKtools includes a function called
+% |RSKsmooth| for this purpose. All post-processing functions are customizable
+% with name-value pair input arguments.  To process all data using the default parameters no
 % name-value pair arguments are required. 
 % All the information above is available for each function using |help|, for example: |help
 % RSKsmooth|.
@@ -33,32 +34,34 @@ rsk = RSKsmooth(rsk, {'Conductivity', 'Temperature'}, 'windowLength', 21);
 
 %% Aligning CT
 % RSKtools provides a function called |RSKcalculateCTlag| that estimates
-% conductivity to temperature lag measurements by minimising salinity
+% the optimal lag between conductivity and temperature by minimising salinity
 % spiking. See |help RSKcalculateCTlag|.
 lag = RSKcalculateCTlag(rsk);
 rsk = RSKalignchannel(rsk, 'Conductivity', lag);
 
 %% Remove loops
-% Profiling at sea can be very tricky. The measurements taken too slowly or
+% Profiling during rough seas can cause the CTD descent (or ascent) rate to vary, or even
+% temporarily reverse direction, while profiling.  During such times, the 
+% CTD can effectively sample its own wake, potentially degrading the quality
+% of the profile in regions of strong gradients. The measurements taken too slowly or
 % during a pressure reversal should not be used for further analysis. We
-% recommend using |RSKremoveloops()|. It uses a `threshold` value to
-% determine the minimum profiling speed; the default is 0.25 m/s. As you
-% can see the threshold is in m/s which means the function requires a depth
-% channel. We have provided |RSKderivedepth()| to facilitate this calculation.
+% recommend using |RSKremoveloops| to flag and remove data when the instrument falls
+% below a |threshold| speed.  This function requires a depth channel, for
+% which we have provided |RSKderivedepth|.
 rsk = RSKderivedepth(rsk);
 rsk = RSKremoveloops(rsk, 'threshold', 0.3);
 
 %% Derive
-% A few functions are provided to facilitate deriving sea pressure,
-% salinity, and depth from the data. We suggesting deriving sea pressure first, 
-% in case you want to add a custom atmospheric pressure, because salinity
-% and depth calculations use sea pressure.
+% Functions are provided to derive sea pressure,
+% practical salinity, and depth from measured channels. We suggest deriving sea pressure first, 
+% especially when an atmospheric pressure other than the nominal value of 10.1325 dbar
+% is used, because deriving salinity and depth requires sea pressure.
 rsk = RSKderiveseapressure(rsk);
 rsk = RSKderivesalinity(rsk);
 rsk = RSKderivedepth(rsk);
 
 %% Bin data
-% Quantize data in 0.5dbar bins using |RSKbinaverage()|.
+% Average the data into 0.5 dbar bins using |RSKbinaverage|.
 rsk = RSKbinaverage(rsk, 'binBy', 'Sea Pressure', 'binSize', 0.5, 'direction', 'up');
 
 %% Plot 
