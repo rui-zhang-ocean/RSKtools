@@ -6,7 +6,7 @@
    <!--
 This HTML was auto-generated from MATLAB code.
 To make changes, update the MATLAB code and republish this document.
-      --><title>RSKtools for Matlab processing RBR data</title><meta name="generator" content="MATLAB 8.6"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2017-07-06"><meta name="DC.source" content="RSKtools_vignette2.m"><style type="text/css">
+      --><title>RSKtools for Matlab processing RBR data</title><meta name="generator" content="MATLAB 8.6"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2017-07-07"><meta name="DC.source" content="RSKtools_vignette2.m"><style type="text/css">
 html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
 
 html { min-height:100%; margin-bottom:1px; }
@@ -66,10 +66,10 @@ table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px soli
 
 
 
-  </style></head><body><div class="content"><h1>RSKtools for Matlab processing RBR data</h1><!--introduction--><p>RSKtools v2.0.0; RBR Ltd. Ottawa ON, Canada; <a href="mailto:support@rbr-global.com">support@rbr-global.com</a>; 2017-07-06</p><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#1">Introduction</a></li><li><a href="#2">Getting set up</a></li><li><a href="#3">Low-pass filtering</a></li><li><a href="#5">Aligning CT</a></li><li><a href="#6">Remove loops</a></li><li><a href="#7">Derive</a></li><li><a href="#8">Bin data</a></li><li><a href="#9">Plot</a></li><li><a href="#10">See RSKtools_vignette</a></li><li><a href="#11">About this document</a></li></ul></div><h2>Introduction<a name="1"></a></h2><p>To facilitate the post-processing process of RBR data, we provide a few common processing functions. Below we will walk through the standard steps for processing CTD data.</p><h2>Getting set up<a name="2"></a></h2><p>If the steps below are uncommon to you, please review RSKtools_vignette.</p><pre class="codeinput">file = <span class="string">'sample.rsk'</span>;
+  </style></head><body><div class="content"><h1>RSKtools for Matlab processing RBR data</h1><!--introduction--><p>RSKtools v2.0.0; RBR Ltd. Ottawa ON, Canada; <a href="mailto:support@rbr-global.com">support@rbr-global.com</a>; 2017-07-06</p><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#1">Introduction</a></li><li><a href="#2">Getting set up</a></li><li><a href="#3">Low-pass filtering</a></li><li><a href="#5">Aligning CT</a></li><li><a href="#6">Remove loops</a></li><li><a href="#7">Derive</a></li><li><a href="#8">Bin data</a></li><li><a href="#9">Plot</a></li><li><a href="#10">See RSKtools_vignette</a></li><li><a href="#11">About this document</a></li></ul></div><h2>Introduction<a name="1"></a></h2><p>A suite of new functions are included in RSKtools v2.0.0 to post-process RBR logger data. Below we show how to implement some common processing steps to obtain the highest quality data possible.</p><h2>Getting set up<a name="2"></a></h2><p>See review RSKtools_vignette for help.</p><pre class="codeinput">file = <span class="string">'sample.rsk'</span>;
 rsk = RSKopen(file);
 rsk = RSKreadprofiles(rsk, <span class="string">'profile'</span>, 10:55, <span class="string">'direction'</span>, <span class="string">'up'</span>);
-</pre><h2>Low-pass filtering<a name="3"></a></h2><p>The first step is generally to apply a low pass filter to the pressure data; then filter the temperature and conductivity channels to smooth high frequencies. RSKtools provides a function called <tt>RSKsmooth()</tt>. All post-processing functions have many name-value pair input arguments to specify what values you want to process and how you want to do it. To process all data using the default parameters no name-value pair arguments are required. All the information above is available for each function using <tt>help</tt>, for example: <tt>help RSKsmooth</tt>.</p><pre class="codeinput">help <span class="string">RSKsmooth</span>
+</pre><h2>Low-pass filtering<a name="3"></a></h2><p>The first step is generally to apply a low pass filter to the pressure data; then filter the temperature and conductivity channels to smooth high frequency variability and match sensor time constants. RSKtools includes a function called <tt>RSKsmooth</tt> for this purpose. All post-processing functions are customizable with name-value pair input arguments.  To process all data using the default parameters no name-value pair arguments are required. All the information above is available for each function using <tt>help</tt>, for example: <tt>help RSKsmooth</tt>.</p><pre class="codeinput">help <span class="string">RSKsmooth</span>
 </pre><pre class="codeoutput"> RSKsmooth - Apply a low pass filter on specified channels.
  
   Syntax:  [RSK] = RSKsmooth(RSK, channel, [OPTIONS])
@@ -114,7 +114,7 @@ rsk = RSKreadprofiles(rsk, <span class="string">'profile'</span>, 10:55, <span c
 
 </pre><pre class="codeinput">rsk = RSKsmooth(rsk, <span class="string">'Pressure'</span>);
 rsk = RSKsmooth(rsk, {<span class="string">'Conductivity'</span>, <span class="string">'Temperature'</span>}, <span class="string">'windowLength'</span>, 21);
-</pre><h2>Aligning CT<a name="5"></a></h2><p>RSKtools provides a function called <tt>RSKcalculateCTlag</tt> that estimates conductivity to temperature lag measurements by minimising salinity spiking. See <tt>help RSKcalculateCTlag</tt>.</p><pre class="codeinput">lag = RSKcalculateCTlag(rsk);
+</pre><h2>Aligning CT<a name="5"></a></h2><p>RSKtools provides a function called <tt>RSKcalculateCTlag</tt> that estimates the optimal lag between conductivity and temperature by minimising salinity spiking. See <tt>help RSKcalculateCTlag</tt>.</p><pre class="codeinput">lag = RSKcalculateCTlag(rsk);
 rsk = RSKalignchannel(rsk, <span class="string">'Conductivity'</span>, lag);
 </pre><pre class="codeoutput">Processing cast: 1
 Processing cast: 2
@@ -162,12 +162,12 @@ Processing cast: 43
 Processing cast: 44
 Processing cast: 45
 Processing cast: 46
-</pre><h2>Remove loops<a name="6"></a></h2><p>Profiling at sea can be very tricky. The measurements taken too slowly or during a pressure reversal should not be used for further analysis. We recommend using <tt>RSKremoveloops()</tt>. It uses a `threshold` value to determine the minimum profiling speed; the default is 0.25 m/s. As you can see the threshold is in m/s which means the function requires a depth channel. We have provided <tt>RSKderivedepth()</tt> to facilitate this calculation.</p><pre class="codeinput">rsk = RSKderivedepth(rsk);
+</pre><h2>Remove loops<a name="6"></a></h2><p>Profiling during rough seas can cause the CTD descent (or ascent) rate to vary, or even temporarily reverse direction, while profiling.  During such times, the CTD can effectively sample its own wake, potentially degrading the quality of the profile in regions of strong gradients. The measurements taken too slowly or during a pressure reversal should not be used for further analysis. We recommend using <tt>RSKremoveloops</tt> to flag and remove data when the instrument falls below a <tt>threshold</tt> speed.  This function requires a depth channel, for which we have provided <tt>RSKderivedepth</tt>.</p><pre class="codeinput">rsk = RSKderivedepth(rsk);
 rsk = RSKremoveloops(rsk, <span class="string">'threshold'</span>, 0.3);
-</pre><h2>Derive<a name="7"></a></h2><p>A few functions are provided to facilitate deriving sea pressure, salinity, and depth from the data. We suggesting deriving sea pressure first, in case you want to add a custom atmospheric pressure, because salinity and depth calculations use sea pressure.</p><pre class="codeinput">rsk = RSKderiveseapressure(rsk);
+</pre><h2>Derive<a name="7"></a></h2><p>Functions are provided to derive sea pressure, practical salinity, and depth from measured channels. We suggest deriving sea pressure first, especially when an atmospheric pressure other than the nominal value of 10.1325 dbar is used, because deriving salinity and depth requires sea pressure.</p><pre class="codeinput">rsk = RSKderiveseapressure(rsk);
 rsk = RSKderivesalinity(rsk);
 rsk = RSKderivedepth(rsk);
-</pre><h2>Bin data<a name="8"></a></h2><p>Quantize data in 0.5dbar bins using <tt>RSKbinaverage()</tt>.</p><pre class="codeinput">rsk = RSKbinaverage(rsk, <span class="string">'binBy'</span>, <span class="string">'Sea Pressure'</span>, <span class="string">'binSize'</span>, 0.5, <span class="string">'direction'</span>, <span class="string">'up'</span>);
+</pre><h2>Bin data<a name="8"></a></h2><p>Average the data into 0.5 dbar bins using <tt>RSKbinaverage</tt>.</p><pre class="codeinput">rsk = RSKbinaverage(rsk, <span class="string">'binBy'</span>, <span class="string">'Sea Pressure'</span>, <span class="string">'binSize'</span>, 0.5, <span class="string">'direction'</span>, <span class="string">'up'</span>);
 </pre><h2>Plot<a name="9"></a></h2><p>Now we can see the changes to the data. We suggest plotting as you go to see if the changes being applied are what you expect.</p><pre class="codeinput">RSKplot2D(rsk, <span class="string">'Salinity'</span>);
 </pre><img vspace="5" hspace="5" src="RSKtools_vignette2_01.png" alt=""> <h2>See RSKtools_vignette<a name="10"></a></h2><p>A vignette is available for information on getting started with <tt>RSKtools</tt> standard functions.</p><h2>About this document<a name="11"></a></h2><p>This document was created using <a href="http://www.mathworks.com/help/matlab/matlab_prog/marking-up-matlab-comments-for-publishing.html">Matlab&#8482; Markup Publishing</a>. To publish it as an HTML page, run the command:</p><pre class="language-matlab">publish(<span class="string">'RSKtools_vignette.m'</span>);
 </pre><p>See <tt>help publish</tt> for more document export options.</p><p class="footer"><br><a href="http://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2015b</a><br></p></div><!--
@@ -179,12 +179,13 @@ rsk = RSKderivedepth(rsk);
 % 2017-07-06
 
 %% Introduction
-% To facilitate the post-processing process of RBR data, we provide a few
-% common processing functions. Below we will walk through the standard
-% steps for processing CTD data. 
+% A suite of new functions are included in RSKtools v2.0.0 
+% to post-process RBR logger data. Below we show how
+% to implement some common processing steps to obtain the highest
+% quality data possible. 
 
 %% Getting set up
-% If the steps below are uncommon to you, please review RSKtools_vignette.
+% See review RSKtools_vignette for help.
 file = 'sample.rsk';
 rsk = RSKopen(file);
 rsk = RSKreadprofiles(rsk, 'profile', 10:55, 'direction', 'up');
@@ -192,10 +193,10 @@ rsk = RSKreadprofiles(rsk, 'profile', 10:55, 'direction', 'up');
 %% Low-pass filtering
 % The first step is generally to apply a low pass filter to the pressure
 % data; then filter the temperature and conductivity channels to
-% smooth high frequencies. RSKtools provides a function called
-% |RSKsmooth()|. All post-processing functions have many name-value pair
-% input arguments to specify what values you want to process and how you
-% want to do it. To process all data using the default parameters no
+% smooth high frequency variability and match sensor time constants. 
+% RSKtools includes a function called
+% |RSKsmooth| for this purpose. All post-processing functions are customizable
+% with name-value pair input arguments.  To process all data using the default parameters no
 % name-value pair arguments are required. 
 % All the information above is available for each function using |help|, for example: |help
 % RSKsmooth|.
@@ -207,32 +208,34 @@ rsk = RSKsmooth(rsk, {'Conductivity', 'Temperature'}, 'windowLength', 21);
 
 %% Aligning CT
 % RSKtools provides a function called |RSKcalculateCTlag| that estimates
-% conductivity to temperature lag measurements by minimising salinity
+% the optimal lag between conductivity and temperature by minimising salinity
 % spiking. See |help RSKcalculateCTlag|.
 lag = RSKcalculateCTlag(rsk);
 rsk = RSKalignchannel(rsk, 'Conductivity', lag);
 
 %% Remove loops
-% Profiling at sea can be very tricky. The measurements taken too slowly or
+% Profiling during rough seas can cause the CTD descent (or ascent) rate to vary, or even
+% temporarily reverse direction, while profiling.  During such times, the 
+% CTD can effectively sample its own wake, potentially degrading the quality
+% of the profile in regions of strong gradients. The measurements taken too slowly or
 % during a pressure reversal should not be used for further analysis. We
-% recommend using |RSKremoveloops()|. It uses a `threshold` value to
-% determine the minimum profiling speed; the default is 0.25 m/s. As you
-% can see the threshold is in m/s which means the function requires a depth
-% channel. We have provided |RSKderivedepth()| to facilitate this calculation.
+% recommend using |RSKremoveloops| to flag and remove data when the instrument falls
+% below a |threshold| speed.  This function requires a depth channel, for
+% which we have provided |RSKderivedepth|.
 rsk = RSKderivedepth(rsk);
 rsk = RSKremoveloops(rsk, 'threshold', 0.3);
 
 %% Derive
-% A few functions are provided to facilitate deriving sea pressure,
-% salinity, and depth from the data. We suggesting deriving sea pressure first, 
-% in case you want to add a custom atmospheric pressure, because salinity
-% and depth calculations use sea pressure.
+% Functions are provided to derive sea pressure,
+% practical salinity, and depth from measured channels. We suggest deriving sea pressure first, 
+% especially when an atmospheric pressure other than the nominal value of 10.1325 dbar
+% is used, because deriving salinity and depth requires sea pressure.
 rsk = RSKderiveseapressure(rsk);
 rsk = RSKderivesalinity(rsk);
 rsk = RSKderivedepth(rsk);
 
 %% Bin data
-% Quantize data in 0.5dbar bins using |RSKbinaverage()|.
+% Average the data into 0.5 dbar bins using |RSKbinaverage|.
 rsk = RSKbinaverage(rsk, 'binBy', 'Sea Pressure', 'binSize', 0.5, 'direction', 'up');
 
 %% Plot 
