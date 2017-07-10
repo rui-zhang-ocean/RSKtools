@@ -6,7 +6,8 @@ function RSK = readchannels(RSK)
 %
 % If available, uses the instrumentChannels table to read the channels with
 % matching channelID. Otherwise, directly reads the metadata from the
-% channels table.
+% channels table. Only returns non-marine channels, unless it is a
+% EPdesktop file, and enumerates duplicate channel names.
 %
 % Inputs:
 %    RSK - RSK structure.
@@ -19,7 +20,7 @@ function RSK = readchannels(RSK)
 % Author: RBR Ltd. Ottawa ON, Canada
 % email: support@rbr-global.com
 % Website: www.rbr-global.com
-% Last revision: 2017-06-21
+% Last revision: 2017-07-10
 
 tables = mksqlite('SELECT name FROM sqlite_master WHERE type="table"');
 
