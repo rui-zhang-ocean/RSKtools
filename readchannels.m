@@ -35,4 +35,7 @@ else
     RSK.channels = mksqlite('SELECT shortName, longName, units FROM channels ORDER by channels.channelID');
 end
 
+RSK = removenonmarinechannels(RSK);
+RSK = renamechannels(RSK);
+
 end

@@ -45,7 +45,7 @@ end
 
 
 
-% Number duplicate longnames.
+% Enumerate duplicate longnames.
 longname = {RSK.channels.longName};
 [~, ~, channameidx] = unique(longname, 'stable');
 idx = find(hist(channameidx, unique(channameidx))>1);

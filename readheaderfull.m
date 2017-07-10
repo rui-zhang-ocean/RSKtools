@@ -22,7 +22,7 @@ function RSK = readheaderfull(RSK)
 % Author: RBR Ltd. Ottawa ON, Canada
 % email: support@rbr-global.com
 % Website: www.rbr-global.com
-% Last revision: 2017-06-21
+% Last revision: 2017-07-10
 
 %% Tables that are definitely in 'full'
 RSK.appSettings = mksqlite('select * from appSettings');
@@ -34,8 +34,6 @@ RSK.ranging = mksqlite('select * from ranging');
 % calibrations data.
 
 RSK = readsamplingdetails(RSK);
-
-[RSK, ~] = removenonmarinechannels(RSK);
 
 
 

@@ -75,8 +75,6 @@ switch RSK.dbInfo(end).type
         return
 end
 
-RSK = renamechannels(RSK);
-
 RSK = RSKgetprofiles(RSK);
 
 

@@ -18,12 +18,7 @@ function RSK = readheaderEP(RSK)
 % Author: RBR Ltd. Ottawa ON, Canada
 % email: support@rbr-global.com
 % Website: www.rbr-global.com
-% Last revision: 2017-06-29
-
-%% Remove non marine channels
-[RSK, ~] = removenonmarinechannels(RSK);
-
-
+% Last revision: 2017-07-10
 
 %% Tables that could be populated in 'EasyParse'
 tables = mksqlite('SELECT name FROM sqlite_master WHERE type="table"');

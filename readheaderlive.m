@@ -21,7 +21,7 @@ function RSK = readheaderlive(RSK)
 % Author: RBR Ltd. Ottawa ON, Canada
 % email: support@rbr-global.com
 % Website: www.rbr-global.com
-% Last revision: 2017-06-28
+% Last revision: 2017-07-10
 
 %% Tables that are definitely in 'live'
 RSK.appSettings = mksqlite('select * from appSettings');
@@ -29,8 +29,6 @@ RSK.appSettings = mksqlite('select * from appSettings');
 RSK = readparameters(RSK);
 
 RSK = readsamplingdetails(RSK);
-
-[RSK, ~] = removenonmarinechannels(RSK);
 
 
 
