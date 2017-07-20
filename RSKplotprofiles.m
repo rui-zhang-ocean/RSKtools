@@ -4,9 +4,10 @@ function handles = RSKplotprofiles(RSK, varargin)
 %
 % Syntax:  [handles] = RSKplotprofiles(RSK, [OPTIONS])
 % 
-% Plots profiles from automatically detected casts. The defaults is to plot
+% Plots profiles from automatically detected casts. The default is to plot
 % all the casts of all channels available (excluding Pressure, Sea Pressure
-% and Depth). Optionally outputs a matrix of handles to the line objects.   
+% and Depth) against sea pressure (options to plot against depth).
+% Optionally outputs a matrix of handles to the line objects.
 %
 % Inputs: 
 %    [Required] - RSK - Structure containing the logger metadata and data.
@@ -21,6 +22,9 @@ function handles = RSKplotprofiles(RSK, varargin)
 %                 direction - 'up' for upcast, 'down' for downcast or
 %                        'both'. Default is to use all directions
 %                        available.
+% 
+%                 reference - Channel plotted on the y axis for each
+%                        subplot.
 %
 % Output:
 %     handles - Line object of the plot.
@@ -36,22 +40,31 @@ function handles = RSKplotprofiles(RSK, varargin)
 % Author: RBR Ltd. Ottawa ON, Canada
 % email: support@rbr-global.com
 % Website: www.rbr-global.com
+<<<<<<< HEAD
 % Last revision: 2017-08-03
+=======
+% Last revision: 2017-07-20
+>>>>>>> ac72076... Add option to plot against depth
 
 validDirections = {'down', 'up', 'both'};
 checkDirection = @(x) any(validatestring(x,validDirections));
+
+validReference = {'sea pressure', 'depth'};
+checkReference = @(x) any(validatestring(x,validReference));
 
 p = inputParser;
 addRequired(p, 'RSK', @isstruct);
 addParameter(p, 'profile', [], @isnumeric);
 addParameter(p, 'channel', 'all')
 addParameter(p, 'direction', [], checkDirection);
+addParameter(p, 'reference', 'sea pressure', checkReference)
 parse(p, RSK, varargin{:})
 
 RSK = p.Results.RSK;
 profile = p.Results.profile;
 channel = p.Results.channel;
 direction = p.Results.direction;
+reference = p.Results.reference;
 
 
 
@@ -65,7 +78,12 @@ end
 numchannels = length(chanCol);
 
 castidx = getdataindex(RSK, profile, direction);
-[RSKsp, SPcol] = getseapressure(RSK);
+if strcmpi(reference, 'depth')
+    ycol = getchannelindex(RSK, 'depth');
+    RSKy = RSK;
+else
+    [RSKy, ycol] = getseapressure(RSK);
+end
 
 % In 2014a and earlier, lines plotted after calling 'hold on' results
 % in are the same color as the original.  To overcome this, specify
@@ -86,20 +104,35 @@ for chan = chanCol
     subplot(1,numchannels,n)
     ii = 1;
     for ndx = castidx
+<<<<<<< HEAD
         seapressure = RSKsp.data(ndx).values(:, SPcol);
         ydata = RSKy.data(ndx).values(:, ycol);
         handles(ii,n) = plot(RSK.data(ndx).values(:, chan), ydata,'color',clrs(ii,:));
+=======
+        ydata = RSKy.data(ndx).values(:, ycol);
+        handles(ii,n) = plot(RSK.data(ndx).values(:, chan), ydata);
+>>>>>>> ac72076... Add option to plot against depth
         hold on
-        pmax = max([pmax; seapressure]);
+        pmax = max([pmax; ydata]);
         ii = ii+1;
     end
     ylim([0 pmax])
     title(RSK.channels(chan).longName);
     xlabel(RSK.channels(chan).units);
+<<<<<<< HEAD
     ylabel('Sea pressure [dbar]')
     ylabel([RSKy.channels(ycol).longName ' [' RSKy.channels(ycol).units ']'])
     n = n+1;
     grid on
+=======
+    ylabel([RSKy.channels(ycol).longName ' [' RSKy.channels(ycol).units ']'])
+    set(gca, 'ydir', 'reverse')
+    ax(n) = gca;
+    ax(n).ColorOrderIndex = 1; 
+    n = n+1 ;
+    grid
+    hold off
+>>>>>>> ac72076... Add option to plot against depth
 end
 ax = findall(gcf,'type','axes');
 set(ax, 'ydir', 'reverse')
