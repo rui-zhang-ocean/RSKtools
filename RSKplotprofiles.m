@@ -84,6 +84,7 @@ for chan = chanCol
     ylim([0 pmax])
     title(RSK.channels(chan).longName);
     xlabel(RSK.channels(chan).units);
+<<<<<<< HEAD
     ylabel('Sea pressure [dbar]')
     set(gca, 'ydir', 'reverse')
     ax(n) = gca;
@@ -91,7 +92,14 @@ for chan = chanCol
     n = n+1 ;
     grid
     hold off
+=======
+    ylabel([RSKy.channels(ycol).longName ' [' RSKy.channels(ycol).units ']'])
+    n = n+1;
+    grid on
+>>>>>>> 59fde7b... Axes hold state now stays on for easy overplotting
 end
+ax = findall(gcf,'type','axes');
+set(ax, 'ydir', 'reverse')
 linkaxes(ax,'y')
 shg
 
