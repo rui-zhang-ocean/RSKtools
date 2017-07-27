@@ -174,15 +174,14 @@ RSK = RSKappendtolog(RSK, logentry);
         end
     end
 
-    function [out] = lagave(in) % mimics tsmovavg(in, 's', 2), a lagged average
-      
+    function [out] = lagave(in)
+    % mimics tsmovavg(in, 's', 2), a lagged average function that is in
+    % Matlab's financial toolbox
+        
       out = NaN(size(in));
-      for k=1:length(in),
-        if k>1,
-          ind = (k-1):(k);    
-          out(k) = nanmean(in(ind));
-        end
-      end
+      lag = 2;
+      tout = filter(ones(1,lag)/lag,1,in);
+      out(lag:end) = tout(lag:end);
       
     end
     
