@@ -156,7 +156,7 @@ RSK = RSKappendtolog(RSK, logentry);
         binArray = [binArray, binArray(end)+binSize(end)];
         binArray = unique(binArray);
         
-        binCenter = tsmovavg(binArray, 's', 2);
+        binCenter = lagave(binArray);
         binCenter = binCenter(2:end);
     end
 
@@ -173,6 +173,17 @@ RSK = RSKappendtolog(RSK, logentry);
             binidx(ind(discardedindex)+1:end) = 0;
         end
     end
+
+    function [out] = lagave(in) % mimics tsmovavg(in, 's', 2), a lagged average
+      
+      out = NaN(size(in));
+      for k=1:length(in),
+        if k>1,
+          ind = (k-1):(k);    
+          out(k) = nanmean(in(ind));
+        end
+      end
+      
+    end
     
 end
-    
