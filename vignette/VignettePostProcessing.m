@@ -2,7 +2,7 @@
 % RSKtools v2.0.0;
 % RBR Ltd. Ottawa ON, Canada;
 % support@rbr-global.com;
-% 2017-07-07
+% 2017-07-30
 
 %% Introduction
 % A suite of new functions are included in RSKtools v2.0.0 to
@@ -131,10 +131,15 @@ RSKplot2D(rsk, 'Salinity');
 
 
 %% Other Resources
-% VignetteStandard is available for information on getting started with
-% |RSKtools| standard functions.
+% We recommend reading:
 %
-% A User Manual for <https://docs.rbr-global.com/rsktools RSKtools> is available.
+% * the <https://docs.rbr-global.com/rsktools RSKtools on-line user
+% manual> for detailed RSKtools function documentation.
+%
+% * the
+% <http://rbr-global.com/wp-content/uploads/2017/07/VignetteStandard.pdf
+% RSKtools Getting Started> for an introduction on how to load RBR
+% data into Matlab from RSK files, make plots, and access the data.
 
 
 %% About this document
@@ -144,7 +149,7 @@ RSKplot2D(rsk, 'Salinity');
 % command:
 %%
 % 
-%   publish('RSKtools_vignette.m');
+%   publish('VignettePostProcessing.m');
 
 %%
 % See |help publish| for more document export options.
