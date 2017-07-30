@@ -92,7 +92,6 @@ rsk = RSKderivesalinity(rsk);
 handles = RSKplotprofiles(rsk, 'channel', {'conductivity', 'temperature','salinity'}, 'direction', 'up');
 
 
-
 %% Customising plots
 % All plotting functions return a handle enabling access to the line
 % objects. The output is a matrix containing a column for each channel
@@ -101,6 +100,27 @@ handles
 
 % To increase the line width of the first profile in all subplots
 set(handles(1,:),{'linewidth'},{5});
+
+
+%% Accessing individual channels and profiles
+% The channel data is stored in |rsk.data|.  If the data was parsed
+% into profiles, |data| is a 1xN structure array, where each element
+% is an upcast or downcast from a single profile containing an array
+% of time stamps and a matrix of channel data.  |RSKtools| has
+% functions to make accessing the data easy.  For example, to access
+% the time stamps, sea pressure, temperature, and dissolved O2, from
+% the upcast of the 1st profile, run:
+
+profind = getdataindex(rsk,'direction','up','profile',1);
+tempcol = getchannelindex(rsk,'temperature');
+o2col   = getchannelindex(rsk,'dissolved o2');
+prescol = getchannelindex(rsk,'sea pressure');
+
+time        = rsk.data(profind).tstamp;
+seapressure = rsk.data(profind).values(:,prescol);
+temperature = rsk.data(profind).values(:,tempcol);
+o2          = rsk.data(profind).values(:,o2col);
+
 
 %% Other Resources
 % We recommend reading:
