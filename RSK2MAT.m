@@ -31,13 +31,13 @@ function [RBR] = RSK2MAT(RSK)
 % Author: RBR Ltd. Ottawa ON, Canada
 % email: support@rbr-global.com
 % Website: www.rbr-global.com
-% Last revision: 2017-06-20
+% Last revision: 2017-08-01
 
 if strcmpi(RSK.dbInfo(1).type, 'EasyParse');
-    error('RSK2MAT is not compatible with files that are from Ruskin Mobile . File should be opened in Ruskin Desktop first.')
+    error('RSK2MAT is not compatible with files from Ruskin Mobile. File should be opened in Ruskin Desktop first.')
 end
 if size(RSK.data,2) > 1
-    disp('RSM2MAT is not compatible with casts, use RSKreaddata to have one data field.')
+    disp('RSK2MAT is not compatible with casts, use RSKreaddata to have one data field.')
     return
 end
 
