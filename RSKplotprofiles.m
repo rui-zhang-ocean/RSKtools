@@ -36,11 +36,7 @@ function handles = RSKplotprofiles(RSK, varargin)
 % Author: RBR Ltd. Ottawa ON, Canada
 % email: support@rbr-global.com
 % Website: www.rbr-global.com
-<<<<<<< HEAD
-% Last revision: 2017-06-22
-=======
 % Last revision: 2017-08-03
->>>>>>> fc8a340... Fixed problem in 2014a and earlier whereby all profiles were drawn using the same colour (see RSKTOOLS-93)
 
 validDirections = {'down', 'up', 'both'};
 checkDirection = @(x) any(validatestring(x,validDirections));
@@ -90,13 +86,9 @@ for chan = chanCol
     subplot(1,numchannels,n)
     ii = 1;
     for ndx = castidx
-<<<<<<< HEAD
         seapressure = RSKsp.data(ndx).values(:, SPcol);
-        handles(ii,n) = plot(RSK.data(ndx).values(:, chan), seapressure);
-=======
         ydata = RSKy.data(ndx).values(:, ycol);
         handles(ii,n) = plot(RSK.data(ndx).values(:, chan), ydata,'color',clrs(ii,:));
->>>>>>> fc8a340... Fixed problem in 2014a and earlier whereby all profiles were drawn using the same colour (see RSKTOOLS-93)
         hold on
         pmax = max([pmax; seapressure]);
         ii = ii+1;
@@ -104,19 +96,10 @@ for chan = chanCol
     ylim([0 pmax])
     title(RSK.channels(chan).longName);
     xlabel(RSK.channels(chan).units);
-<<<<<<< HEAD
     ylabel('Sea pressure [dbar]')
-    set(gca, 'ydir', 'reverse')
-    ax(n) = gca;
-    ax(n).ColorOrderIndex = 1; 
-    n = n+1 ;
-    grid
-    hold off
-=======
     ylabel([RSKy.channels(ycol).longName ' [' RSKy.channels(ycol).units ']'])
     n = n+1;
     grid on
->>>>>>> 59fde7b... Axes hold state now stays on for easy overplotting
 end
 ax = findall(gcf,'type','axes');
 set(ax, 'ydir', 'reverse')
