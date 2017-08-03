@@ -36,7 +36,11 @@ function handles = RSKplotprofiles(RSK, varargin)
 % Author: RBR Ltd. Ottawa ON, Canada
 % email: support@rbr-global.com
 % Website: www.rbr-global.com
+<<<<<<< HEAD
 % Last revision: 2017-06-22
+=======
+% Last revision: 2017-08-03
+>>>>>>> fc8a340... Fixed problem in 2014a and earlier whereby all profiles were drawn using the same colour (see RSKTOOLS-93)
 
 validDirections = {'down', 'up', 'both'};
 checkDirection = @(x) any(validatestring(x,validDirections));
@@ -67,6 +71,17 @@ numchannels = length(chanCol);
 castidx = getdataindex(RSK, profile, direction);
 [RSKsp, SPcol] = getseapressure(RSK);
 
+% In 2014a and earlier, lines plotted after calling 'hold on' results
+% in are the same color as the original.  To overcome this, specify
+% colors manually to overcome this behaviour.  Default in 2014b and
+% later is to use the next color in axescolororder, but we proceed
+% with the following fix anyway because it is compatible with 2014b
+% and later.
+clrs = get(0,'defaultaxescolororder');
+ncast = length(castidx); % up and down are both casts
+clrs = repmat(clrs,ceil(ncast/7),1);
+clrs = clrs(1:ncast,:);
+
 
 
 pmax = 0;
@@ -75,8 +90,13 @@ for chan = chanCol
     subplot(1,numchannels,n)
     ii = 1;
     for ndx = castidx
+<<<<<<< HEAD
         seapressure = RSKsp.data(ndx).values(:, SPcol);
         handles(ii,n) = plot(RSK.data(ndx).values(:, chan), seapressure);
+=======
+        ydata = RSKy.data(ndx).values(:, ycol);
+        handles(ii,n) = plot(RSK.data(ndx).values(:, chan), ydata,'color',clrs(ii,:));
+>>>>>>> fc8a340... Fixed problem in 2014a and earlier whereby all profiles were drawn using the same colour (see RSKTOOLS-93)
         hold on
         pmax = max([pmax; seapressure]);
         ii = ii+1;
