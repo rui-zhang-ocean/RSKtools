@@ -1,5 +1,6 @@
 *~
 *.bak
+*.html
 testfiles/
 tests/
 ._*
