@@ -4,12 +4,13 @@ function lag = RSKcalculateCTlag(RSK, varargin)
 % 
 % Syntax: [lag] = RSKcalculateCTlag(RSK, [OPTIONS])
 %
-% Calculates the optimal conductivity time shift relative to temperature to
-% minimize salinity spiking. Determines the optimal lag by smoothing the
-% calculated salinity by running it through a boxcar filter, then comparing
-% the standard deviations of the residuals for a range of lags, from -20 to
-% +20 samples. A pressure range can be determined to align over a certain
-% range of values (used to avoid large effects from surface anomalies). 
+% Calculates the optimal conductivity time shift relative to
+% temperature to minimize salinity spiking. Determines the optimal lag
+% by smoothing the calculated salinity by running it through a boxcar
+% filter, then comparing the standard deviations of the residuals for
+% a range of lags, from -20 to +20 samples. A pressure range can be
+% specified to estimate the alignment over a certain range of values
+% (used to avoid large effects from surface anomalies).
 %
 % Note: Requires the TEOS-10 GSW toobox to compute salinity.
 %
@@ -26,13 +27,13 @@ function lag = RSKcalculateCTlag(RSK, varargin)
 %                       profiles.
 %
 %                 direction - 'up' for upcast, 'down' for downcast, or
-%                       `both` for all. Default all directions available.
+%                       'both' for all. Default all directions available.
 %
 %                 windowLength - Length of the filter window used for the
 %                       reference salinity. Default is 21 samples.
 %
 % Outputs:
-%    lag - Optimal lags of conductivity for each profile.  These
+%    lag - Optimal lag of conductivity for each profile.  These
 %          can serve as inputs into RSKalignchannel.m.
 %
 % Examples:
@@ -50,7 +51,7 @@ function lag = RSKcalculateCTlag(RSK, varargin)
 % Author: RBR Ltd. Ottawa ON, Canada
 % email: support@rbr-global.com
 % Website: www.rbr-global.com
-% Last revision: 2017-06-22
+% Last revision: 2017-08-06
 
 hasTEOS = exist('gsw_SP_from_C', 'file') == 2;
 if ~hasTEOS
@@ -105,7 +106,7 @@ for ndx = castidx
         SS = gsw_SP_from_C(Cshift, T, P);
         Ssmooth = runavg(SS, windowLength, 'nan');
         dS = SS - Ssmooth;
-        dSsd = [dSsd std(dS, 'omitnan')];
+        dSsd = [dSsd std(dS(isfinite(dS)))];
     end
     minlag = min(abs(lags(dSsd == min(dSsd))));
     bestlag = [bestlag minlag];

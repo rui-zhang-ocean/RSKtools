@@ -15,14 +15,14 @@ function [RSK, spike] = RSKdespike(RSK, channel, varargin)
 % Inputs:
 %   [Required] - RSK - Structure containing logger data.
 %
-%                channel - Longname of channel to despike (e.g. temperature,
+%                channel - Longname of channel to despike (e.g., temperature,
 %                      salinity, etc)
 %
 %   [Optional] - profile - Profile number. Default is all available
 %                      profiles.
 %
 %                direction - 'up' for upcast, 'down' for downcast, or
-%                      `both` for all. Default is all directions available.
+%                      'both' for all. Default is all directions available.
 %
 %                threshold - Amount of standard deviations to use for the
 %                      spike criterion. Default value is 2. 
@@ -55,7 +55,7 @@ function [RSK, spike] = RSKdespike(RSK, channel, varargin)
 % Author: RBR Ltd. Ottawa ON, Canada
 % email: support@rbr-global.com
 % Website: www.rbr-global.com
-% Last revision: 2017-06-28
+% Last revision: 2017-08-06
 
 validActions = {'replace', 'interp', 'nan'};
 checkAction = @(x) any(validatestring(x,validActions));
@@ -115,7 +115,7 @@ RSK = RSKappendtolog(RSK, logentry);
         y = x;
         ref = runmed(x, windowLength);
         dx = x - ref;
-        sd = std(dx, 'omitnan');
+        sd = std(dx(isfinite(dx)));
         I = find(abs(dx) > threshold*sd);
         good = find(abs(dx) <= threshold*sd);
 
