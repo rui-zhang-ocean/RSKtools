@@ -1,16 +1,17 @@
 function [RSK, spike] = RSKdespike(RSK, channel, varargin)
 
-%RSKdespike - Despike a time series series.
+%RSKdespike - Despike a time series.
 %
 % Syntax:  [RSK, spike] = RSKdespike(RSK, channel, [OPTIONS])
 % 
-% Compares the time series to a reference series. The reference series is
-% the time series filtered with a median filter of length 'windowLength'.
-% Each point in the original series is compared against the reference
-% series if a sample is greater than 'threshold' standard deviations than
-% the residual between the original series and the reference series; the
-% sample is considered a spike. The default behaviour is to replace the
-% spikes with the reference value. 
+% Identifies and treats spikes using a median filtering algorithm.  A
+% reference time series is created by filtering the input channel with
+% a median filter of length 'windowLength'.  A residual ("high-pass")
+% series is formed by subtracting the reference series from the
+% original signal.  Data in the reference series lying outside of
+% 'threshold' standard deviations are defined as spikes.  Spikes are
+% then treated by one of three methods (see below).
+%    
 %
 % Inputs:
 %   [Required] - RSK - Structure containing logger data.
@@ -55,7 +56,7 @@ function [RSK, spike] = RSKdespike(RSK, channel, varargin)
 % Author: RBR Ltd. Ottawa ON, Canada
 % email: support@rbr-global.com
 % Website: www.rbr-global.com
-% Last revision: 2017-08-06
+% Last revision: 2017-08-10
 
 validActions = {'replace', 'interp', 'nan'};
 checkAction = @(x) any(validatestring(x,validActions));
