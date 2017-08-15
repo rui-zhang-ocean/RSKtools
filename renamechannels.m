@@ -1,13 +1,17 @@
 function RSK = renamechannels(RSK)
 
-%RENAMECHANNELS - Rename channels that require a more descriptive name.
+%RENAMECHANNELS - Renames channels that require a more descriptive
+% name, enumerates duplicate channel long names, and replaces the
+% subscript 2 in dissolved oxygen with a normal 2.
 %
-% Syntax:  [RSK] = RENAMECHANNELS(RSK)
+% Syntax: [RSK] = RENAMECHANNELS(RSK)
 %
-% Checks for shortNames that correspond to channels that require a more
-% descriptive name and replaces the longName. These are doxy, temp04,
-% temp05, temp10, temp13 and pres08. Enumerates duplicate longNames.
-% 
+% Checks for shortNames that correspond to channels that require a
+% more descriptive name and replaces the longName. These are doxy,
+% temp04, temp05, temp10, temp13 and pres08. Enumerates duplicate
+% longNames.  Replaces the subscript '2' in dissolved oxygen with a
+% normal '2'.
+%    
 % Inputs:
 %    RSK - Structure containing metadata.
 %
@@ -19,7 +23,7 @@ function RSK = renamechannels(RSK)
 % Author: RBR Ltd. Ottawa ON, Canada
 % email: support@rbr-global.com
 % Website: www.rbr-global.com
-% Last revision: 2017-07-10
+% Last revision: 2017-08-15
 
 shortName = {RSK.channels.shortName};
 
@@ -35,7 +39,7 @@ end
 
 idx = strncmpi(shortName, 'doxy', 4);
 if any(idx)
-    RSK.channels(idx).longName = 'Dissolved O2';
+    [RSK.channels(idx).longName] = deal('Dissolved O2');
 end
 
 idx = strcmpi(shortName, 'pres08');
