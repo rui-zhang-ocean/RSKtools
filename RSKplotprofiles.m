@@ -40,7 +40,7 @@ function handles = RSKplotprofiles(RSK, varargin)
 % Author: RBR Ltd. Ottawa ON, Canada
 % email: support@rbr-global.com
 % Website: www.rbr-global.com
-% Last revision: 2017-08-03
+% Last revision: 2017-08-29
 
 validDirections = {'down', 'up', 'both'};
 checkDirection = @(x) any(validatestring(x,validDirections));
@@ -81,20 +81,19 @@ else
     [RSKy, ycol] = getseapressure(RSK);
 end
 
-% In 2014a and earlier, lines plotted after calling 'hold on' results
-% in are the same color as the original.  To overcome this, specify
-% colors manually to overcome this behaviour.  Default in 2014b and
+% In R2014a and earlier, lines plotted after calling 'hold on' are
+% drawn in the same color as the first.  To overcome this here, line
+% colours are specified manually.  Default behaviour in R2014b and
 % later is to use the next color in axescolororder, but we proceed
-% with the following fix anyway because it is compatible with 2014b
+% with the following fix anyway because it is compatible with R2014b
 % and later.
 clrs = get(0,'defaultaxescolororder');
 ncast = length(castidx); % up and down are both casts
-clrs = repmat(clrs,ceil(ncast/7),1);
+clrs = repmat(clrs,ceil(ncast/7),1); % 7 separate colours in default color order
 clrs = clrs(1:ncast,:);
 
 
 
-pmax = 0;
 n = 1;
 for chan = chanCol
     subplot(1,numchannels,n)
@@ -103,18 +102,21 @@ for chan = chanCol
         ydata = RSKy.data(ndx).values(:, ycol);
         handles(ii,n) = plot(RSK.data(ndx).values(:, chan), ydata,'color',clrs(ii,:));
         hold on
-        pmax = max([pmax; ydata]);
         ii = ii+1;
     end
-    ylim([0 pmax])
     title(RSK.channels(chan).longName);
     xlabel(RSK.channels(chan).units);
     ylabel([RSKy.channels(ycol).longName ' [' RSKy.channels(ycol).units ']'])
     n = n+1;
     grid on
 end
-ax = findall(gcf,'type','axes');
-set(ax, 'ydir', 'reverse')
+
+% set y-limits 
+pmin = min(arrayfun(@(x) min(x.values(:,ycol)),RSKy.data));
+pmax = max(arrayfun(@(x) max(x.values(:,ycol)),RSKy.data));
+ax = findobj(gcf,'type','axes');
+set(ax, 'ydir', 'reverse', 'ylim', [pmin pmax])
+
 linkaxes(ax,'y')
 shg
 
