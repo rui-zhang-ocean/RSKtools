@@ -6,9 +6,10 @@ function out = shiftarray(in, shift, edgepad)
 % 
 % Shifts a vector time series by a lag corresponding to an integer
 % number of samples. Negative shifts correspond to moving the samples
-% backward in time (earlier), positive to forward in time (later). Values
-% at either the beginning or the end are set to a value specified by the
-% argument "edgepad" to conserve the length of the input vector.
+% backward in time (earlier), positive to forward in time
+% (later). Values at either the beginning or the end are set to a
+% value specified by the argument "edgepad" to conserve the length of
+% the input vector, except for the particular case of 'union'.
 %
 % Inputs:
 %    in - Time series.
@@ -16,7 +17,7 @@ function out = shiftarray(in, shift, edgepad)
 %    shift - Number of samples to shift by.
 %
 %    edgepad - Values to set the beginning or end values. Options are
-%         'mirror' (default), 'zeroorderhold', and 'nan'.n
+%         'mirror' (default), 'zeroorderhold', 'nan', and 'union'.
 %
 % Outputs:
 %    out - The shifted time series.
@@ -29,7 +30,7 @@ function out = shiftarray(in, shift, edgepad)
 % Author: RBR Ltd. Ottawa ON, Canada
 % email: support@rbr-global.com
 % Website: www.rbr-global.com
-% Last revision: 2017-06-21
+% Last revision: 2017-08-30
 
 if nargin == 2
     edgepad = 'mirror';
@@ -49,8 +50,10 @@ switch lower(edgepad)
         inpad = zeroorderholdpad(in, abs(shift));
     case 'nan'
         inpad = nanpad(in, abs(shift)); 
+    case 'union'
+        inpad = nanpad(in, abs(shift));
     otherwise
-        error('edgepad argument is not recognized. Must be `mirror`, `nan` or `zeroorderhold`');
+        error('edgepad argument is not recognized. Must be ''mirror'', ''nan'', or ''zeroorderhold''');
 end
 
 
@@ -62,5 +65,8 @@ else
 end
 
 out = inpad(Ilag);
+if strcmpi(edgepad, 'union')
+    out = out(~isnan(out));
+end
 
 end
