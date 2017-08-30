@@ -40,7 +40,7 @@ function handles = RSKplotprofiles(RSK, varargin)
 % Author: RBR Ltd. Ottawa ON, Canada
 % email: support@rbr-global.com
 % Website: www.rbr-global.com
-% Last revision: 2017-08-29
+% Last revision: 2017-08-30
 
 validDirections = {'down', 'up', 'both'};
 checkDirection = @(x) any(validatestring(x,validDirections));
@@ -93,7 +93,8 @@ clrs = repmat(clrs,ceil(ncast/7),1); % 7 separate colours in default color order
 clrs = clrs(1:ncast,:);
 
 
-
+pmin = [];
+pmax = [];
 n = 1;
 for chan = chanCol
     subplot(1,numchannels,n)
@@ -102,6 +103,8 @@ for chan = chanCol
         ydata = RSKy.data(ndx).values(:, ycol);
         handles(ii,n) = plot(RSK.data(ndx).values(:, chan), ydata,'color',clrs(ii,:));
         hold on
+        pmin = min([pmin; ydata]);
+        pmax = max([pmax; ydata]);
         ii = ii+1;
     end
     title(RSK.channels(chan).longName);
@@ -112,10 +115,10 @@ for chan = chanCol
 end
 
 % set y-limits 
-pmin = arrayfun(@(x) min(x.values(:,ycol)),RSKy.data,'uniformoutput',false);
-pmin = min(cell2mat(pmin(cellfun(@(x) ~isempty(x),pmin))));
-pmax = arrayfun(@(x) max(x.values(:,ycol)),RSKy.data,'uniformoutput',false);
-pmax = max(cell2mat(pmax(cellfun(@(x) ~isempty(x),pmax))));
+%pmin = arrayfun(@(x) min(x.values(:,ycol)),RSKy.data,'uniformoutput',false);
+%pmin = min(cell2mat(pmin(cellfun(@(x) ~isempty(x),pmin))));
+%pmax = arrayfun(@(x) max(x.values(:,ycol)),RSKy.data,'uniformoutput',false);
+%pmax = max(cell2mat(pmax(cellfun(@(x) ~isempty(x),pmax))));
 
 ax = findobj(gcf,'type','axes');
 set(ax, 'ydir', 'reverse', 'ylim', [pmin pmax])
