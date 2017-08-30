@@ -2,7 +2,7 @@
 % RSKtools v2.0.0;
 % RBR Ltd. Ottawa ON, Canada;
 % support@rbr-global.com;
-% 2017-07-30
+% 2017-08-30
 
 %% Introduction 
 % |RSKtools| provides some convenience functions for common data extraction
@@ -51,18 +51,18 @@ rsk = RSKreaddata(rsk, 't1', t1, 't2', t2);
 rsk.data        
 
 %% 
-% In this example, because the instrument is a "CTD"-type instrument, 
-% Practical Salinity can be derived from conductivity, temperature, and pressure.
-% |RSKderivesalinity| is a wrapper for the TEOS-10 GSW function
-% |gsw_SP_from_C|, and it adds a new channel called |Salinity| as a column
-% in |rsk.data.values|.  The TEOS-10 GSW Matlab toolbox is freely available
-% from  <http://teos-10.org/software.htm>.
-% It is good practice to derive sea pressure first in case you want a
-% customisable atmospheric pressure.
+% In this example, because the instrument is a "CTD"-type instrument,
+% Practical Salinity can be derived from conductivity, temperature,
+% and pressure.  |RSKderivesalinity| is a wrapper for the TEOS-10 GSW
+% function |gsw_SP_from_C|, and it adds a new channel called
+% |Salinity| as a column in |rsk.data.values|.  The TEOS-10 GSW Matlab
+% toolbox is freely available from <http://teos-10.org/software.htm>.
+% It is good practice to derive sea pressure first in case you want to
+% specify a custom value of atmospheric pressure.
 
 rsk = RSKderiveseapressure(rsk);
 rsk = RSKderivesalinity(rsk);
-{rsk.channels.longName}
+{rsk.channels.longName}'
 
 %% Working with profiles
 % Profiling loggers with recent versions of firmware contain the

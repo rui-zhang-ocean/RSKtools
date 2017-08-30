@@ -2,7 +2,7 @@
 % RSKtools v2.0.0;
 % RBR Ltd. Ottawa ON, Canada;
 % support@rbr-global.com;
-% 2017-07-30
+% 2017-08-30
 
 %% Introduction
 % A suite of new functions are included in RSKtools v2.0.0 to
@@ -40,19 +40,19 @@ raw = rsk;
 
 
 %% Low-pass filtering
-% Applying a low pass filter to temperature and conductivity
-% smooths high frequency variability and compensates for differences
-% in sensor time constants (the thermistor often has a slower response
-% to changes than conductivity).  RSKtools includes a function called
-% |RSKsmooth| for this purpose.  
+% Applying a low pass filter to temperature and conductivity smooths
+% high frequency variability and compensates for differences in sensor
+% time constants (thermistors often respond more slowly to changes
+% than conductivity).  RSKtools includes a function called |RSKsmooth|
+% for this purpose.
 %
 % RBR thermistors on profiling instruments have time constants of
 % about 0.6 s, so the conductivity should be smoothed to match that
-% value.  In this example, the logger samples at 6 Hz instrument
+% value.  In this example, the logger samples at 6 Hz
 % (|rsk.continuous.samplingPeriod|), so a 7 sample window should
 % provide sufficient smoothing.
 
-rsk = RSKsmooth(rsk, {'Conductivity', 'Temperature'}, 'windowLength', 7);
+rsk = RSKsmooth(rsk,{'Conductivity','Temperature'},'windowLength',7);
 
 
 %% Alignment of conductivity to temperature and pressure 
@@ -63,10 +63,10 @@ rsk = RSKsmooth(rsk, {'Conductivity', 'Temperature'}, 'windowLength', 7);
 % salinity is of high accuracy.
 %
 % The classic approach is to compute the salinity for a range of lags,
-% plot each curve, and to manually choose the curve with the smallest
+% plot each curve, and manually choose the curve with the smallest
 % salinity spikes at sharp interfaces.  As an alternative, RSKtools
 % provides a function called |RSKcalculateCTlag| that estimates the
-% optimal lag between conductivity and temperature by minimising
+% optimal lag between conductivity and temperature by minimizing
 % salinity spiking. See |help RSKcalculateCTlag|.
 
 lag = RSKcalculateCTlag(rsk);
@@ -122,6 +122,8 @@ set(hdls,{'linewidth'},{2})
 
 
 %% 2D plot
+% RSKtools can plot a time-depth heat map of any channel after the
+% profiles have been binned:
 clf
 RSKplot2D(rsk, 'Salinity'); 
 
