@@ -4,13 +4,12 @@ function lag = RSKcalculateCTlag(RSK, varargin)
 % 
 % Syntax: [lag] = RSKcalculateCTlag(RSK, [OPTIONS])
 %
-% Calculates the optimal conductivity time shift relative to
-% temperature to minimize salinity spiking. Determines the optimal lag
-% by smoothing the calculated salinity by running it through a boxcar
-% filter, then comparing the standard deviations of the residuals for
-% a range of lags, from -20 to +20 samples. A pressure range can be
-% specified to estimate the alignment over a certain range of values
-% (used to avoid large effects from surface anomalies).
+% Calculates the optimal conductivity time shift relative to temperature to
+% minimize salinity spiking. Determines the optimal lag by smoothing the
+% calculated salinity by running it through a boxcar filter, then comparing
+% the standard deviations of the residuals for a range of lags, from -20 to
+% +20 samples. A sea pressure range can be determined to align over a certain
+% range of values (used to avoid large effects from surface anomalies). 
 %
 % Note: Requires the TEOS-10 GSW toobox to compute salinity.
 %
@@ -18,10 +17,10 @@ function lag = RSKcalculateCTlag(RSK, varargin)
 %    [Required] - RSK - Structure, with profiles as read using
 %                       RSKreadprofiles.
 %
-%    [Optional] - pressureRange - Limits of the pressure range used to
-%                       obtain the lag. Specify as a two-element vector, 
-%                       [pressureMin, pressureMax]. Default is [0,
-%                       max(Pressure)].
+%    [Optional] - seapressureRange - Limits of the sea pressure range used
+%                       to obtain the lag. Specify as a two-element vector,
+%                       [seapressureMin, seapressureMax]. Default is [0,
+%                       max(seapressure)].
 %
 %                 profile - Profile number. Default is all available
 %                       profiles.
@@ -65,14 +64,14 @@ checkDirection = @(x) any(validatestring(x,validDirections));
 
 p = inputParser;
 addRequired(p,'RSK', @isstruct);
-addParameter(p, 'pressureRange', [], @isvector);
+addParameter(p, 'seapressureRange', [], @isvector);
 addParameter(p,'profile', [], @isnumeric) 
 addParameter(p, 'direction', [], checkDirection);
 addParameter(p,'windowLength', 21, @isnumeric)
 parse(p, RSK, varargin{:})
 
 RSK = p.Results.RSK;
-pressureRange = p.Results.pressureRange;
+seapressureRange = p.Results.seapressureRange;
 profile = p.Results.profile;
 direction = p.Results.direction;
 windowLength = p.Results.windowLength;
@@ -81,7 +80,7 @@ windowLength = p.Results.windowLength;
 
 Ccol = getchannelindex(RSK, 'conductivity');
 Tcol = getchannelindex(RSK, 'temperature');
-Pcol = getchannelindex(RSK, 'pressure');
+[RSKsp, SPcol] = getseapressure(RSK);
 
 
 
@@ -90,20 +89,20 @@ castidx = getdataindex(RSK, profile, direction);
 for ndx = castidx
     C = RSK.data(ndx).values(:, Ccol);
     T = RSK.data(ndx).values(:, Tcol);
-    P = RSK.data(ndx).values(:, Pcol);
+    SP = RSKsp.data(ndx).values(:, SPcol);
     
-    if ~isempty(pressureRange)
-        selectValues = (P >= pressureRange(1) & P <= pressureRange(2)); 
+    if ~isempty(seapressureRange)
+        selectValues = (SP >= seapressureRange(1) & SP <= seapressureRange(2)); 
         C = C(selectValues);
         T = T(selectValues);
-        P = P(selectValues);
+        SP = SP(selectValues);
     end
     
     lags = -20:20;
     dSsd = [];
     for l = lags
         Cshift = shiftarray(C, l, 'nan');
-        SS = gsw_SP_from_C(Cshift, T, P);
+        SS = gsw_SP_from_C(Cshift, T, SP);
         Ssmooth = runavg(SS, windowLength, 'nan');
         dS = SS - Ssmooth;
         dSsd = [dSsd std(dS(isfinite(dS)))];
