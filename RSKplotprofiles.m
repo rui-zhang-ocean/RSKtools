@@ -114,11 +114,7 @@ for chan = chanCol
     grid on
 end
 
-% set y-limits 
-%pmin = arrayfun(@(x) min(x.values(:,ycol)),RSKy.data,'uniformoutput',false);
-%pmin = min(cell2mat(pmin(cellfun(@(x) ~isempty(x),pmin))));
-%pmax = arrayfun(@(x) max(x.values(:,ycol)),RSKy.data,'uniformoutput',false);
-%pmax = max(cell2mat(pmax(cellfun(@(x) ~isempty(x),pmax))));
+% set some y-axis properties
 
 ax = findobj(gcf,'type','axes');
 set(ax, 'ydir', 'reverse', 'ylim', [pmin pmax])
