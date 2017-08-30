@@ -4,10 +4,10 @@ function handles = RSKplotprofiles(RSK, varargin)
 %
 % Syntax:  [handles] = RSKplotprofiles(RSK, [OPTIONS])
 % 
-% Plots profiles from automatically detected casts. The default is to plot
-% all the casts of all channels available (excluding Pressure, Sea Pressure
-% and Depth) against sea pressure (options to plot against depth).
-% Optionally outputs a matrix of handles to the line objects.
+% Plots profiles from automatically detected casts. The default is to
+% plot all channels (excluding pressure, sea pressure and depth) for
+% all casts against sea pressure or depth.  Optionally outputs a
+% matrix of handles to the line objects.
 %
 % Inputs: 
 %    [Required] - RSK - Structure containing the logger metadata and data.
@@ -112,8 +112,11 @@ for chan = chanCol
 end
 
 % set y-limits 
-pmin = min(arrayfun(@(x) min(x.values(:,ycol)),RSKy.data));
-pmax = max(arrayfun(@(x) max(x.values(:,ycol)),RSKy.data));
+pmin = arrayfun(@(x) min(x.values(:,ycol)),RSKy.data,'uniformoutput',false);
+pmin = min(cell2mat(pmin(cellfun(@(x) ~isempty(x),pmin))));
+pmax = arrayfun(@(x) max(x.values(:,ycol)),RSKy.data,'uniformoutput',false);
+pmax = max(cell2mat(pmax(cellfun(@(x) ~isempty(x),pmax))));
+
 ax = findobj(gcf,'type','axes');
 set(ax, 'ydir', 'reverse', 'ylim', [pmin pmax])
 
