@@ -1,17 +1,18 @@
 %% RSKtools for Matlab access to RBR data
-% RSKtools v2.0.0;
+% RSKtools v2.1.0;
 % RBR Ltd. Ottawa ON, Canada;
 % support@rbr-global.com;
-% 2017-08-30
+% 2017-08-31
 
 %% Introduction 
-% |RSKtools| provides some convenience functions for common data extraction
-% (e.g., extracting profiles from a continuous dataset) and visualisation
-% (e.g., plotting individual profiles). New in v2.0.0 are a suite of
-% functions to perform routine processing steps to enhance the data quality
-% (see VignettePostProcessing for more information). From this version on, we
-% are expanding our data post-processing suite. See the Future Plans for
-% some ideas, and please feel free to make suggestions.
+% |RSKtools| provides some convenience functions for common data
+% extraction (e.g., extracting profiles from a continuous dataset) and
+% visualisation (e.g., plotting individual profiles). As of v2.0.0,
+% RSKtools includes a suite of functions to perform routine processing
+% steps to enhance the data quality (see VignettePostProcessing for
+% more information). From this version on, we are expanding our data
+% post-processing suite. See the Future Plans for some ideas, and
+% please feel free to make suggestions.
 
 %% Installing
 % The latest stable version of |RSKtools| can be found at <http://www.rbr-global.com/support/matlab-tools>.
