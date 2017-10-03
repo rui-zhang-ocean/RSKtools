@@ -4,9 +4,9 @@ function handles = RSKplotprofiles(RSK, varargin)
 %
 % Syntax:  [handles] = RSKplotprofiles(RSK, [OPTIONS])
 % 
-% Plots profiles from automatically detected casts. The default is to plot
-% all the casts of all channels available (excluding Pressure, Sea Pressure
-% and Depth) against sea pressure (options to plot against depth).
+% Plots profiles from automatically detected casts. The default is to
+% plot all the casts of all channels available (excluding pressure,
+% sea pressure and depth) against sea pressure or, optionally, depth.
 % Optionally outputs a matrix of handles to the line objects.
 %
 % Inputs: 
@@ -15,14 +15,15 @@ function handles = RSKplotprofiles(RSK, varargin)
 %    [Optional] - profile - Profile number to plot. Default is to plot 
 %                        all detected profiles.
 %
-%                 channel - Variables to plot (e.g. temperature, salinity,
-%                        etc). Default is all channel (excluding Pressure
-%                        and Sea pressure).
+%                 channel - Variables to plot (e.g., temperature, salinity,
+%                        etc). Default is all channel (excluding pressure
+%                        and sea pressure).
 % 
 %                 direction - 'up' for upcast, 'down' for downcast or
 %                        'both'. Default is to use all directions
-%                        available. When choosing 'both', downcast with
-%                        solid while upcast with dashed line.
+%                        available. When choosing 'both', downcasts are
+%                        plotted with solid lines and upcasts are plotted
+%                        with dashed lines.
 % 
 %                 reference - Channel plotted on the y axis for each
 %                        subplot. Default is sea pressure, option for
@@ -83,12 +84,12 @@ else
     [RSKy, ycol] = getseapressure(RSK);
 end
 
-% In 2014a and earlier, lines plotted after calling 'hold on' results
-% in are the same color as the original.  To overcome this, specify
-% colors manually to overcome this behaviour.  Default in 2014b and
-% later is to use the next color in axescolororder, but we proceed
-% with the following fix anyway because it is compatible with 2014b
-% and later.
+% In 2014a and earlier, lines plotted after calling 'hold on' are
+% drawn with the first colour in defaultaxescolororder, whereas we
+% prefer to use a different colour for each cast.  Although the
+% default behaviour in 2014b is to step through defaultaxescolororder,
+% we proceed with the following fix anyway because it is compatible
+% with 2014b and later.
 clrs = get(0,'defaultaxescolororder');
 ncast = length(castidx); % up and down are both casts
 clrs = repmat(clrs,ceil(ncast/7),1);
