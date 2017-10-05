@@ -4,9 +4,10 @@ function RSK = RSKreadprofiles(RSK, varargin)
 %
 % Syntax:  [RSK] = RSKreadprofiles(RSK, [OPTIONS])
 % 
-% Reads profile, including upcasts, downcasts, or both from the events contained
-% in a .rsk file. Each cast is an element in the data field matrix; that
-% way, they can be indexed individually using RSK.data(index).
+% Reads profile, including upcasts, downcasts, or both from the events 
+% contained in a .rsk file. Each cast is an element in the data field 
+% matrix. The cast direction is indicated as 'up' or 'down' in 
+% RSK.data.direction.
 %
 % The profile events are parsed from the events table using the
 % following types (see RSKconstants.m):
@@ -43,7 +44,7 @@ function RSK = RSKreadprofiles(RSK, varargin)
 % Author: RBR Ltd. Ottawa ON, Canada
 % email: support@rbr-global.com
 % Website: www.rbr-global.com
-% Last revision: 2017-07-06
+% Last revision: 2017-10-05
 
 validDirections = {'down', 'up', 'both'};
 checkDirection = @(x) any(validatestring(x,validDirections));
@@ -103,13 +104,23 @@ else
 end
 RSK.profiles.originalindex = castidx;
 
+dir2fill = cell(length(castidx),1); % append data.direction to each cast
+if size(RSK.profiles.order, 2) == 1
+    dir2fill(:) = direction;
+else
+    dir2fill(1:2:end) = RSK.profiles.order(1);
+    dir2fill(2:2:end) = RSK.profiles.order(2);
+end
+
 k = 1;
 data(length(castidx)).tstamp = [];
 data(length(castidx)).values = [];
+data(length(castidx)).direction = [];
 for ndx = castidx
     tmp = RSKreaddata(RSK, 't1', alltstart(ndx), 't2', alltend(ndx));
     data(k).tstamp = tmp.data.tstamp;
     data(k).values = tmp.data.values;
+    data(k).direction = dir2fill{ndx};
     k = k + 1;
 end
 
