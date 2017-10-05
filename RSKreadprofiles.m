@@ -116,11 +116,14 @@ k = 1;
 data(length(castidx)).tstamp = [];
 data(length(castidx)).values = [];
 data(length(castidx)).direction = [];
+data(length(castidx)).castnumber = [];
+
 for ndx = castidx
     tmp = RSKreaddata(RSK, 't1', alltstart(ndx), 't2', alltend(ndx));
     data(k).tstamp = tmp.data.tstamp;
     data(k).values = tmp.data.values;
     data(k).direction = dir2fill{ndx};
+    data(k).castnumber = ndx;
     k = k + 1;
 end
 
