@@ -107,23 +107,25 @@ RSK.profiles.originalindex = castidx;
 dir2fill = cell(length(castidx),1); % append data.direction to each cast
 if size(RSK.profiles.order, 2) == 1
     dir2fill(:) = direction;
+    pronum2fill = castidx;
 else
     dir2fill(1:2:end) = RSK.profiles.order(1);
     dir2fill(2:2:end) = RSK.profiles.order(2);
+    pronum2fill = reshape(repmat(castidx(1:length(castidx)/2), 2, 1),length(castidx),1);
 end
 
 k = 1;
 data(length(castidx)).tstamp = [];
 data(length(castidx)).values = [];
 data(length(castidx)).direction = [];
-data(length(castidx)).castnumber = [];
+data(length(castidx)).profilenumber = [];
 
 for ndx = castidx
     tmp = RSKreaddata(RSK, 't1', alltstart(ndx), 't2', alltend(ndx));
     data(k).tstamp = tmp.data.tstamp;
     data(k).values = tmp.data.values;
     data(k).direction = dir2fill{ndx};
-    data(k).castnumber = ndx;
+    data(k).profilenumber = pronum2fill(ndx);
     k = k + 1;
 end
 
