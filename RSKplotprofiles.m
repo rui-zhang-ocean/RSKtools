@@ -105,11 +105,21 @@ for chan = chanCol
     if strcmp(direction, 'both') % downcast in solid and upcast in dashed line with the same color
         ii = 1;
         for ndx = castidx(1:2:end) 
-            ydata = RSKy.data(ndx).values(:, ycol);
-            handles(ii,n) = plot(RSK.data(ndx).values(:, chan), ydata,'color',clrs(ii,:));
-            hold on
-            ydata = RSKy.data(ndx+1).values(:, ycol);
-            handles(ii,n) = plot(RSK.data(ndx+1).values(:, chan), ydata,'color',clrs(ii,:),'linestyle','--');
+            
+            if strcmp(RSKy.data(1).direction,'down') % first cast is downcast
+                ydata = RSKy.data(ndx).values(:, ycol);
+                handles(ii,n) = plot(RSK.data(ndx).values(:, chan), ydata,'color',clrs(ii,:),'linestyle','-');
+                hold on
+                ydata = RSKy.data(ndx+1).values(:, ycol);
+                handles(ii,n) = plot(RSK.data(ndx+1).values(:, chan), ydata,'color',clrs(ii,:),'linestyle','--');
+            else % first cast is upcast
+                ydata = RSKy.data(ndx).values(:, ycol);
+                handles(ii,n) = plot(RSK.data(ndx).values(:, chan), ydata,'color',clrs(ii,:),'linestyle','--');
+                hold on
+                ydata = RSKy.data(ndx+1).values(:, ycol);
+                handles(ii,n) = plot(RSK.data(ndx+1).values(:, chan), ydata,'color',clrs(ii,:),'linestyle','-');
+            end
+            
             pmax = max([pmax; ydata]);
             ii = ii+1;
         end
