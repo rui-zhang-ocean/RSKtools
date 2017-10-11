@@ -71,12 +71,17 @@ for ndx = castidx
     time = RSK.data(ndx).tstamp;
 
     velocity = calculatevelocity(depth, time);
+    
     if getcastdirection(depth, 'up')
-            flag = velocity > -threshold; 
+      flag = (velocity > -threshold);
+      cm = cummin(depth);
+      flag((depth - cm) > 0) = true;
     else
-            flag = velocity < threshold;    
-    end  
-
+      flag = velocity < threshold; 
+      cm = cummax(depth);
+      flag((depth - cm) < 0) = true;
+    end
+    
     flagChannels = ~strcmpi('Depth', {RSK.channels.longName});    
     RSK.data(ndx).values(flag,flagChannels) = NaN;
     flagidx(ndx).index = find(flag);
