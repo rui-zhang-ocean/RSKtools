@@ -1,13 +1,13 @@
 function handles = RSKplotprofiles(RSK, varargin)
 
-%RSKplotprofiles - Plot summaries of logger data as profiles.
+% RSKplotprofiles - Plot summaries of logger data as profiles.
 %
 % Syntax:  [handles] = RSKplotprofiles(RSK, [OPTIONS])
 % 
 % Plots profiles from automatically detected casts. The default is to
 % plot all the casts of all channels available (excluding pressure,
-% sea pressure and depth) against sea pressure or, optionally, depth.
-% Optionally outputs a matrix of handles to the line objects.
+% sea pressure and depth) against sea pressure, or optionally, depth or 
+% pressure. Optionally outputs a matrix of handles to the line objects.
 %
 % Inputs: 
 %    [Required] - RSK - Structure containing the logger metadata and data.
@@ -27,7 +27,7 @@ function handles = RSKplotprofiles(RSK, varargin)
 % 
 %                 reference - Channel plotted on the y axis for each
 %                        subplot. Default is sea pressure, option for
-%                        depth.
+%                        depth or pressure.
 %
 % Output:
 %     handles - Line object of the plot.
@@ -43,12 +43,12 @@ function handles = RSKplotprofiles(RSK, varargin)
 % Author: RBR Ltd. Ottawa ON, Canada
 % email: support@rbr-global.com
 % Website: www.rbr-global.com
-% Last revision: 2017-10-03
+% Last revision: 2017-10-17
 
 validDirections = {'down', 'up', 'both'};
 checkDirection = @(x) any(validatestring(x,validDirections));
 
-validReference = {'Sea Pressure', 'Depth'};
+validReference = {'Sea Pressure', 'Depth', 'Pressure'};
 checkReference = @(x) any(validatestring(x,validReference));
 
 p = inputParser;
@@ -79,6 +79,9 @@ numchannels = length(chanCol);
 castidx = getdataindex(RSK, profile, direction);
 if strcmpi(reference, 'Depth')
     ycol = getchannelindex(RSK, 'Depth');
+    RSKy = RSK;
+elseif strcmpi(reference, 'Pressure');
+    ycol = getchannelindex(RSK, 'Pressure');
     RSKy = RSK;
 else
     [RSKy, ycol] = getseapressure(RSK);
