@@ -99,13 +99,13 @@ clrs = repmat(clrs,ceil(ncast/7),1);
 clrs = clrs(1:ncast,:);
 
 
-
+save('all')
 pmax = 0;
 n = 1;
 for chan = chanCol
     subplot(1,numchannels,n)
     
-    if strcmp(direction, 'both') % downcast in solid and upcast in dashed line with the same color
+    if strcmp(direction, 'both') || isempty(direction) && length(RSKy.data.profilenumber) > 1 && RSKy.data(1).profilenumber == RSKy.data(2).profilenumber % downcast in solid and upcast in dashed line with the same color
         ii = 1;
         for ndx = castidx(1:2:end) 
             
