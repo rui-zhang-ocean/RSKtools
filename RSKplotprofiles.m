@@ -43,7 +43,7 @@ function handles = RSKplotprofiles(RSK, varargin)
 % Author: RBR Ltd. Ottawa ON, Canada
 % email: support@rbr-global.com
 % Website: www.rbr-global.com
-% Last revision: 2017-10-17
+% Last revision: 2017-10-26
 
 validDirections = {'down', 'up', 'both'};
 checkDirection = @(x) any(validatestring(x,validDirections));
@@ -64,8 +64,6 @@ profile = p.Results.profile;
 channel = p.Results.channel;
 direction = p.Results.direction;
 reference = p.Results.reference;
-
-
 
 chanCol = [];
 channels = cellchannelnames(RSK, channel);
@@ -98,45 +96,41 @@ ncast = length(castidx); % up and down are both casts
 clrs = repmat(clrs,ceil(ncast/7),1);
 clrs = clrs(1:ncast,:);
 
-
-save('all')
 pmax = 0;
 n = 1;
 for chan = chanCol
     subplot(1,numchannels,n)
     
-    if strcmp(direction, 'both') || isempty(direction) && length(RSKy.data.profilenumber) > 1 && RSKy.data(1).profilenumber == RSKy.data(2).profilenumber % downcast in solid and upcast in dashed line with the same color
-        ii = 1;
-        for ndx = castidx(1:2:end) 
-            
-            if strcmp(RSKy.data(1).direction,'down') % first cast is downcast
-                ydata = RSKy.data(ndx).values(:, ycol);
-                handles(ii,n) = plot(RSK.data(ndx).values(:, chan), ydata,'color',clrs(ii,:),'linestyle','-');
-                hold on
-                ydata = RSKy.data(ndx+1).values(:, ycol);
-                handles(ii,n) = plot(RSK.data(ndx+1).values(:, chan), ydata,'color',clrs(ii,:),'linestyle','--');
-            else % first cast is upcast
-                ydata = RSKy.data(ndx).values(:, ycol);
-                handles(ii,n) = plot(RSK.data(ndx).values(:, chan), ydata,'color',clrs(ii,:),'linestyle','--');
-                hold on
-                ydata = RSKy.data(ndx+1).values(:, ycol);
-                handles(ii,n) = plot(RSK.data(ndx+1).values(:, chan), ydata,'color',clrs(ii,:),'linestyle','-');
-            end
-            
-            pmax = max([pmax; ydata]);
-            ii = ii+1;
-        end
-    else  % all solid line if only downcast or upcast is chosen
-        ii = 1;
-        for ndx = castidx 
-            ydata = RSKy.data(ndx).values(:, ycol);
-            handles(ii,n) = plot(RSK.data(ndx).values(:, chan), ydata,'color',clrs(ii,:));
-            hold on
-            pmax = max([pmax; ydata]);
-            ii = ii+1;
-        end
+    stepsize = 1;
+    
+    noninput_both = isempty(direction) && length(RSKy.data.profilenumber) > 1 && RSKy.data(1).profilenumber == RSKy.data(2).profilenumber;
+    if strcmp(direction, 'both') || noninput_both % downcast in solid and upcast in dashed line with the same color
+        stepsize = 2;
     end
     
+    ii = 1;
+    for ndx = castidx(1:stepsize:end) 
+        line1 = '-';
+        line2 = '--';
+
+        if stepsize > 1 && strcmp(RSKy.data(1).direction,'up') % first cast is upcast
+            line1 = '--';
+            line2 = '-';
+        end
+
+        ydata = RSKy.data(ndx).values(:, ycol);
+        handles(ii,n) = plot(RSK.data(ndx).values(:, chan), ydata,'color',clrs(ii,:),'linestyle',line1);
+        hold on
+
+        if(stepsize > 1)
+            ydata = RSKy.data(ndx+1).values(:, ycol);
+            handles(ii,n) = plot(RSK.data(ndx+1).values(:, chan), ydata,'color',clrs(ii,:),'linestyle',line2);
+        end
+
+        pmax = max([pmax; ydata]);
+        ii = ii+1;
+    end
+
     ylim([0 pmax])
     title(RSK.channels(chan).longName);
     xlabel(RSK.channels(chan).units);
