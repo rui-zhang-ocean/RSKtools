@@ -23,18 +23,23 @@ function RSK = renamechannels(RSK)
 % Author: RBR Ltd. Ottawa ON, Canada
 % email: support@rbr-global.com
 % Website: www.rbr-global.com
-% Last revision: 2017-08-15
+% Last revision: 2017-10-30
 
 shortName = {RSK.channels.shortName};
 
 idx = (strcmpi(shortName, 'temp05') | strcmpi(shortName, 'temp10'));
 if any(idx)
-    RSK.channels(idx).longName = 'Pressure Gauge Temperature';
+    [RSK.channels(idx).longName] = deal('Pressure Gauge Temperature');
 end
 
 idx = strcmpi(shortName, 'temp13');
 if any(idx)
-    RSK.channels(idx).longName = 'External Cabled Temperature';
+    [RSK.channels(idx).longName] = deal('External Cabled Temperature');
+end
+
+idx = strcmpi(shortName, 'temp16');
+if any(idx)
+    [RSK.channels(idx).longName] = deal('Optode Temperature');
 end
 
 idx = strncmpi(shortName, 'doxy', 4);
@@ -44,7 +49,7 @@ end
 
 idx = strcmpi(shortName, 'pres08');
 if any(idx)
-    RSK.channels(idx).longName = 'Sea Pressure';
+    [RSK.channels(idx).longName] = deal('Sea Pressure');
 end
 
 
