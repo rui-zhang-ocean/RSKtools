@@ -124,8 +124,8 @@ for ndx = castidx
     tmp = RSKreaddata(RSK, 't1', alltstart(ndx), 't2', alltend(ndx));
     data(k).tstamp = tmp.data.tstamp;
     data(k).values = tmp.data.values;
-    data(k).direction = dir2fill{ndx};
-    data(k).profilenumber = pronum2fill(ndx);
+    data(k).direction = dir2fill{k};
+    data(k).profilenumber = pronum2fill(k);
     k = k + 1;
 end
 
