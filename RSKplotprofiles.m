@@ -103,7 +103,7 @@ for chan = chanCol
     
     stepsize = 1;
     
-    noninput_both = isempty(direction) && length(RSKy.data.profilenumber) > 1 && RSKy.data(1).profilenumber == RSKy.data(2).profilenumber;
+    noninput_both = isempty(direction) && length(RSKy.data) > 1 && RSKy.data(1).profilenumber == RSKy.data(2).profilenumber;
     if strcmp(direction, 'both') || noninput_both % downcast in solid and upcast in dashed line with the same color
         stepsize = 2;
     end
