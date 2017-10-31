@@ -1,11 +1,11 @@
 %% RSKtools for Matlab processing RBR data
-% RSKtools v2.1.0;
+% RSKtools v2.0.0;
 % RBR Ltd. Ottawa ON, Canada;
 % support@rbr-global.com;
-% 2017-08-31
+% 2017-07-30
 
 %% Introduction
-% A suite of new functions were introduced in RSKtools v2.0.0 to
+% A suite of new functions are included in RSKtools v2.0.0 to
 % post-process RBR logger data. Below we show how to implement some
 % common processing steps to obtain the highest quality data possible.
 
@@ -38,21 +38,62 @@ rsk = RSKderiveseapressure(rsk);
 % Hang on to the raw data for plotting later.
 raw = rsk;
 
+%% Correct for A2D zero-order hold
+% The analog-to-digital (A2D) converter on RBR instruments must recalibrate
+% periodically.  In the time it takes for the caliration to finish, one
+% or multiple samples are missed.  The onboard firmware fills the missed
+% scan with the same data measured during the previous scan, a simple
+% technique called a zero-order hold.
+%
+% The function identifies zero-hold points by looking for where consecutive
+% differences for each channel are equal to zero, and removes the values 
+% (fill NaN) or replaces them with linear interpolation.
+
+pronum = 9;
+[rsk_correcthold,holdpts] = RSKcorrecthold(rsk,'Profile', pronum, ...
+    'direction', 'up','channel', {'Temperature','Pressure','Turbidity'}, 'action','interp'); 
+profind = getdataindex(rsk,'direction','up','profile', pronum); 
+chanCol = [];
+channels = cellchannelnames(rsk, {'Temperature','Pressure','Turbidity'});
+for chan = channels
+    chanCol = [chanCol getchannelindex(rsk, chan{1})];
+end
+t = datetime(rsk.data(profind).tstamp,'ConvertFrom','datenum');
+ind = holdpts(1).index{3};
+p_ind = ind(1);
+
+% Make plots, green square stands for original data while red cross
+% represents data after correct hold.
+for p = 1:length(channels)
+    subplot(length(channels),1,p)
+    plot(t(p_ind-2:p_ind+2),rsk.data(profind).values(p_ind-2:...
+    p_ind+2,chanCol(p)),'--ks','LineWidth',1, 'MarkerEdgeColor',...
+    'k', 'MarkerFaceColor','g','MarkerSize',10);
+    hold on
+    if ~isempty(cell2mat(holdpts(1).index(chanCol(p)))) && ...
+        any(cell2mat(holdpts(1).index(chanCol(p))) == p_ind);
+        plot(t(p_ind),rsk_correcthold.data(profind).values(p_ind, ...
+        chanCol(p)),'rx','LineWidth',4, 'MarkerEdgeColor','r',...
+        'MarkerFaceColor','r','MarkerSize',15);      
+    end
+    ylabel(channels{p})  
+end
+set(findall(fig,'-property','FontSize'),'FontSize',13)
 
 %% Low-pass filtering
-% Applying a low pass filter to temperature and conductivity smooths
-% high frequency variability and compensates for differences in sensor
-% time constants (thermistors often respond more slowly to changes
-% than conductivity).  RSKtools includes a function called |RSKsmooth|
-% for this purpose.
+% Applying a low pass filter to temperature and conductivity
+% smooths high frequency variability and compensates for differences
+% in sensor time constants (the thermistor often has a slower response
+% to changes than conductivity).  RSKtools includes a function called
+% |RSKsmooth| for this purpose.  
 %
 % RBR thermistors on profiling instruments have time constants of
 % about 0.6 s, so the conductivity should be smoothed to match that
-% value.  In this example, the logger samples at 6 Hz
+% value.  In this example, the logger samples at 6 Hz instrument
 % (|rsk.continuous.samplingPeriod|), so a 7 sample window should
 % provide sufficient smoothing.
 
-rsk = RSKsmooth(rsk,{'Conductivity','Temperature'},'windowLength',7);
+rsk = RSKsmooth(rsk, {'Conductivity', 'Temperature'}, 'windowLength', 7);
 
 
 %% Alignment of conductivity to temperature and pressure 
@@ -63,10 +104,10 @@ rsk = RSKsmooth(rsk,{'Conductivity','Temperature'},'windowLength',7);
 % salinity is of high accuracy.
 %
 % The classic approach is to compute the salinity for a range of lags,
-% plot each curve, and manually choose the curve with the smallest
+% plot each curve, and to manually choose the curve with the smallest
 % salinity spikes at sharp interfaces.  As an alternative, RSKtools
 % provides a function called |RSKcalculateCTlag| that estimates the
-% optimal lag between conductivity and temperature by minimizing
+% optimal lag between conductivity and temperature by minimising
 % salinity spiking. See |help RSKcalculateCTlag|.
 
 lag = RSKcalculateCTlag(rsk);
@@ -101,6 +142,19 @@ rsk = RSKremoveloops(rsk, 'threshold', 0.3);
 % <http://www.teos-10.org/software.htm>.
 rsk = RSKderivesalinity(rsk);
 
+%% Compute an extra variable and add it to the RSK structure
+% In this example we compute Absolute Salinity, which is equivalent with RSKderivesalinity 
+p = getchannelindex(rsk,'sea pressure');
+sp= getchannelindex(rsk,'salinity');
+
+ncast = length(rsk.data);
+sa = repmat(struct('values',[]),1,ncast);
+for k=1:ncast,
+  sa(k).values = gsw_SA_from_SP(rsk.data(k).values(:,sp),...
+                                rsk.data(k).values(:,p),-150,49);
+end
+
+rsk = RSKaddchannel(rsk,sa,'Absolute Salinity','g/kg');
 
 %% Bin average all channels
 % Average the data into 0.5 dbar bins using |RSKbinaverage|.
@@ -122,8 +176,6 @@ set(hdls,{'linewidth'},{2})
 
 
 %% 2D plot
-% RSKtools can plot a time-depth heat map of any channel after the
-% profiles have been binned:
 clf
 RSKplot2D(rsk, 'Salinity'); 
 
