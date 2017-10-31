@@ -1,5 +1,5 @@
 % RSKTOOLS
-% Version 2.1.0 2017-08-31
+% Version 2.2.0 2017-11-01
 %
 % 1.  This toolbox depends on the presence of a functional mksqlite
 % library.  We have included a couple of versions here for Windows (32 bit/
@@ -77,11 +77,13 @@
 %   RSKderivevelocity    - derive velocity from depth and time
 %   RSKsmooth            - apply low-pass filter to data
 %   RSKdespike           - remove or replace spikes in data
+%   RSKcorrecthold       - remove or replace zero-order hold points in data
 %   RSKcalculateCTlag    - estimate optimal conductivity shift
 %   RSKalignchannel      - align a channel using a specified lag
-%   RSKremoveloops       - remove values exceeding a threshold profiling rate
+%   RSKremoveloops       - remove values exceeding a threshold profiling or in loops (reversed pressure)
 %   RSKbinaverage        - average the profile data by reference channel intervals
 %   RSKtrim              - remove channel data fitting specified criteria
+%   RSKaddchannel        - add new variable data to exsiting rsk structure
 %   RSK2MAT              - convert RSK structure to legacy RUSKIN .mat format
 %
 %
