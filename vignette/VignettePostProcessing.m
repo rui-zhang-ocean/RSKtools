@@ -1,8 +1,8 @@
 %% RSKtools for Matlab processing RBR data
-% RSKtools v2.0.0;
+% RSKtools v2.2.0;
 % RBR Ltd. Ottawa ON, Canada;
 % support@rbr-global.com;
-% 2017-07-30
+% 2017-11-01
 
 %% Introduction
 % A suite of new functions are included in RSKtools v2.0.0 to
@@ -47,38 +47,11 @@ raw = rsk;
 %
 % The function identifies zero-hold points by looking for where consecutive
 % differences for each channel are equal to zero, and removes the values 
-% (fill NaN) or replaces them with linear interpolation.
+% (fill NaN) or replaces them with linear interpolation. See appendix for
+% further plots information.
 
-pronum = 9;
-[rsk_correcthold,holdpts] = RSKcorrecthold(rsk,'Profile', pronum, ...
+[rsk_correcthold,holdpts] = RSKcorrecthold(rsk,'Profile', 9, ...
     'direction', 'up','channel', {'Temperature','Pressure','Turbidity'}, 'action','interp'); 
-profind = getdataindex(rsk,'direction','up','profile', pronum); 
-chanCol = [];
-channels = cellchannelnames(rsk, {'Temperature','Pressure','Turbidity'});
-for chan = channels
-    chanCol = [chanCol getchannelindex(rsk, chan{1})];
-end
-t = datetime(rsk.data(profind).tstamp,'ConvertFrom','datenum');
-ind = holdpts(1).index{3};
-p_ind = ind(1);
-
-% Make plots, green square stands for original data while red cross
-% represents data after correct hold.
-for p = 1:length(channels)
-    subplot(length(channels),1,p)
-    plot(t(p_ind-2:p_ind+2),rsk.data(profind).values(p_ind-2:...
-    p_ind+2,chanCol(p)),'--ks','LineWidth',1, 'MarkerEdgeColor',...
-    'k', 'MarkerFaceColor','g','MarkerSize',10);
-    hold on
-    if ~isempty(cell2mat(holdpts(1).index(chanCol(p)))) && ...
-        any(cell2mat(holdpts(1).index(chanCol(p))) == p_ind);
-        plot(t(p_ind),rsk_correcthold.data(profind).values(p_ind, ...
-        chanCol(p)),'rx','LineWidth',4, 'MarkerEdgeColor','r',...
-        'MarkerFaceColor','r','MarkerSize',15);      
-    end
-    ylabel(channels{p})  
-end
-set(findall(fig,'-property','FontSize'),'FontSize',13)
 
 %% Low-pass filtering
 % Applying a low pass filter to temperature and conductivity
@@ -122,9 +95,10 @@ rsk = RSKalignchannel(rsk, 'Conductivity', lag);
 % gradients. The measurements taken when the instrument is profiling
 % too slowly or during a pressure reversal should not be used for
 % further analysis. We recommend using |RSKremoveloops| to flag and
-% remove data when the instrument falls below a |threshold| speed.
-% Use |RSKderivedepth| to calculate depth from sea pressure, and
-% |RSKderivevelocity| to calculate profiling rate.
+% remove data when the instrument falls below a |threshold| speed and
+% when reversed pressure (loop) is detected. Use |RSKderivedepth| to 
+% calculate depth from sea pressure, and |RSKderivevelocity| to 
+% calculate profiling rate.
 rsk = RSKderivedepth(rsk);
 rsk = RSKderivevelocity(rsk);
 
@@ -204,6 +178,36 @@ RSKplot2D(rsk, 'Salinity');
 %%
 % 
 %   publish('VignettePostProcessing.m');
+
+%% Appendix
+pronum = 9;
+profind = getdataindex(rsk,'direction','up','profile', pronum); 
+chanCol = [];
+channels = cellchannelnames(rsk, {'Temperature','Pressure','Turbidity'});
+for chan = channels
+    chanCol = [chanCol getchannelindex(rsk, chan{1})];
+end
+t = datetime(rsk.data(profind).tstamp,'ConvertFrom','datenum');
+ind = holdpts(1).index{3};
+p_ind = ind(1);
+
+% Make plots, green square stands for original data while red cross
+% represents data after correct hold.
+for p = 1:length(channels)
+    subplot(length(channels),1,p)
+    plot(t(p_ind-2:p_ind+2),raw.data(profind).values(p_ind-2:...
+    p_ind+2,chanCol(p)),'--ks','LineWidth',1, 'MarkerEdgeColor',...
+    'k', 'MarkerFaceColor','g','MarkerSize',10);
+    hold on
+    if ~isempty(cell2mat(holdpts(1).index(chanCol(p)))) && ...
+        any(cell2mat(holdpts(1).index(chanCol(p))) == p_ind);
+        plot(t(p_ind),rsk_correcthold.data(profind).values(p_ind, ...
+        chanCol(p)),'rx','LineWidth',4, 'MarkerEdgeColor','r',...
+        'MarkerFaceColor','r','MarkerSize',15);      
+    end
+    ylabel(channels{p})  
+end
+set(findall(gcf,'-property','FontSize'),'FontSize',13)
 
 %%
 % See |help publish| for more document export options.
