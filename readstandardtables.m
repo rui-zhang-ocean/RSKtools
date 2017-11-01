@@ -1,4 +1,4 @@
-function RSK = readstandardtables(RSK)
+function RSK = readstandardtables(RSK,varargin)
 
 %READSTANDARDTABLES- Read tables that are populated in all .rsk files.
 %
@@ -8,7 +8,9 @@ function RSK = readstandardtables(RSK)
 % channels, epochs, schedules, deployments and instruments.
 %
 % Inputs:
-%    RSK - Structure opened using RSKopen.m.
+%    [Required] - RSK - Structure opened using RSKopen.m.
+%
+%    [Optional] - rhc - Read hidden channel or not, 1 or 0.
 %
 % Outputs:
 %    RSK - Structure containing the standard tables.
@@ -20,7 +22,15 @@ function RSK = readstandardtables(RSK)
 % Website: www.rbr-global.com
 % Last revision: 2017-06-21
 
-RSK = readchannels(RSK);
+p = inputParser;
+addRequired(p, 'RSK', @isstruct);
+addOptional(p, 'rhc', 0, @isnumeric);
+parse(p, RSK, varargin{:})
+
+RSK = p.Results.RSK;
+rhc = p.Results.rhc;
+
+RSK = readchannels(RSK, rhc);
 
 RSK.epochs = mksqlite('select deploymentID,startTime/1.0 as startTime, endTime/1.0 as endTime from epochs');
 RSK.epochs.startTime = RSKtime2datenum(RSK.epochs.startTime);

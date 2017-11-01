@@ -1,8 +1,8 @@
-function [RSK, dbid] = RSKopen(fname)
+function [RSK, dbid] = RSKopen(fname, varargin)
 
 %RSKopen - Open an RBR RSK file and read metadata and thumbnails.
 %
-% Syntax:  [RSK, dbid] = RSKopen(fname)
+% Syntax:  [RSK, dbid] = RSKopen(fname, [OPTIONS])
 % 
 % Makes a connection to an RSK (SQLite format) database as obtained from an
 % RBR logger and reads in the instrument metadata as well as a thumbnail of
@@ -19,7 +19,9 @@ function [RSK, dbid] = RSKopen(fname)
 % Note: If the file was recorded from an |rt instrument there is no thumbnail data.
 %
 % Inputs:
-%    fname - Filename of the RSK database.
+%    [Required] - fname - Filename of the RSK database.
+%
+%    [Optional] - rhc - Read hidden channel or not, 1 or 0.
 %
 % Outputs:
 %    RSK - Structure containing the logger metadata and thumbnail
@@ -35,6 +37,14 @@ function [RSK, dbid] = RSKopen(fname)
 % email: support@rbr-global.com
 % Website: www.rbr-global.com
 % Last revision: 2017-06-22
+
+p = inputParser;
+addRequired(p,'fname',@ischar);
+addOptional(p,'rhc', 0, @isnumeric)
+parse(p, fname, varargin{:})
+
+fname = p.Results.fname;
+rhc = p.Results.rhc;
 
 RSKconstants
 
@@ -58,7 +68,7 @@ end
 
 
 
-RSK = readstandardtables(RSK);
+RSK = readstandardtables(RSK,rhc);
 switch RSK.dbInfo(end).type
     case 'EasyParse'
         RSK = readheaderEP(RSK);
@@ -67,7 +77,7 @@ switch RSK.dbInfo(end).type
     case 'skinny'
         RSK = readheaderskinny(RSK);
     case 'full'
-        RSK = readheaderfull(RSK);
+        RSK = readheaderfull(RSK, rhc);
     case 'live'
         RSK = readheaderlive(RSK);
     otherwise

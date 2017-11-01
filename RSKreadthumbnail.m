@@ -1,4 +1,4 @@
-function RSK = RSKreadthumbnail(RSK)
+function RSK = RSKreadthumbnail(RSK, varargin)
 
 %RSKreadthumbnail - Read thumbnail data from an opened RSK file. 
 %
@@ -8,8 +8,10 @@ function RSK = RSKreadthumbnail(RSK)
 % within RSKopen.
 %
 % Inputs:
-%    RSK - Structure containing the logger metadata and thumbnails
-%          returned by RSKopen.
+%    [Required] - RSK - Structure containing the logger metadata and thumbnails
+%                 returned by RSKopen.
+%
+%    [Optional] - rhc - Read hidden channel or not, 1 or 0.
 %
 % Output:
 %    RSK - Structure containing previously present logger metadata as well
@@ -21,6 +23,14 @@ function RSK = RSKreadthumbnail(RSK)
 % email: support@rbr-global.com
 % Website: www.rbr-global.com
 % Last revision: 2017-06-22
+
+p = inputParser;
+addRequired(p, 'RSK', @isstruct);
+addOptional(p, 'rhc', 0, @isnumeric);
+parse(p, RSK, varargin{:})
+
+RSK = p.Results.RSK;
+rhc = p.Results.rhc;
 
 sql = 'select tstamp/1.0 as tstamp, * from thumbnailData order by tstamp';
 results = mksqlite(sql);
@@ -36,7 +46,7 @@ results = arrangedata(results);
 results.tstamp = RSKtime2datenum(results.tstamp');
 
 if ~strcmpi(RSK.dbInfo(end).type, 'EPdesktop')
-    [~, isDerived] = removenonmarinechannels(RSK);
+    [~, isDerived] = removenonmarinechannels(RSK, rhc);
     results.values = results.values(:,~isDerived);
 end
 
