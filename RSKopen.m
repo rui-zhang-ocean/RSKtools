@@ -79,7 +79,7 @@ switch RSK.dbInfo(end).type
     case 'full'
         RSK = readheaderfull(RSK, rhc);
     case 'live'
-        RSK = readheaderlive(RSK);
+        RSK = readheaderlive(RSK, rhc);
     otherwise
         disp('Not recognised')
         return
