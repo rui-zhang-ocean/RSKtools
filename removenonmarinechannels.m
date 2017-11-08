@@ -28,7 +28,7 @@ if ~(strcmp(RSK.dbInfo(end).type, 'EPdesktop') || strcmp(RSK.dbInfo(end).type, '
         isDerived = logical([RSK.instrumentChannels.channelStatus]);% hidden and derived channels have a non-zero channelStatus
         RSK.instrumentChannels(isDerived) = [];
     else
-        results = mksqlite('select isDerived from channels');
+        results = doSelect(RSK, 'select isDerived from channels');
         isDerived = logical([results.isDerived])'; 
     end
 else
