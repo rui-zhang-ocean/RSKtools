@@ -24,7 +24,7 @@ function RSK = readheaderlive(RSK)
 % Last revision: 2017-07-10
 
 %% Tables that are definitely in 'live'
-RSK.appSettings = mksqlite('select * from appSettings');
+RSK.appSettings = doSelect(RSK, 'select * from appSettings');
 
 RSK = readparameters(RSK);
 
@@ -33,7 +33,7 @@ RSK = readsamplingdetails(RSK);
 
 
 %% Tables that may or may not be in 'live'
-tables = mksqlite('SELECT name FROM sqlite_master WHERE type="table"');
+tables = doSelect(RSK, 'SELECT name FROM sqlite_master WHERE type="table"');
 
 if any(strcmpi({tables.name}, 'geodata'))
     RSK = RSKreadgeodata(RSK);
