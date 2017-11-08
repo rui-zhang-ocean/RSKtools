@@ -23,7 +23,7 @@ function RSK = RSKreadthumbnail(RSK)
 % Last revision: 2017-06-22
 
 sql = 'select tstamp/1.0 as tstamp, * from thumbnailData order by tstamp';
-results = mksqlite(sql);
+results = doSelect(RSK, sql);
 if isempty(results)
     return
 end
