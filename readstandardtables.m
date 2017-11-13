@@ -20,6 +20,12 @@ function RSK = readstandardtables(RSK)
 % Website: www.rbr-global.com
 % Last revision: 2017-06-21
 
+p = inputParser;
+addRequired(p, 'RSK', @isstruct);
+parse(p, RSK)
+
+RSK = p.Results.RSK;
+
 RSK = readchannels(RSK);
 
 RSK.epochs = doSelect(RSK, 'select deploymentID,startTime/1.0 as startTime, endTime/1.0 as endTime from epochs');

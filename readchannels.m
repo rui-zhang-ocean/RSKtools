@@ -10,7 +10,7 @@ function RSK = readchannels(RSK)
 % EPdesktop file, and enumerates duplicate channel names.
 %
 % Inputs:
-%    RSK - RSK structure.
+%    RSK - Structure opened using RSKopen.m.
 %
 % Outputs:
 %    RSK - Structure containing channels.
@@ -21,6 +21,13 @@ function RSK = readchannels(RSK)
 % email: support@rbr-global.com
 % Website: www.rbr-global.com
 % Last revision: 2017-07-10
+
+
+p = inputParser;
+addRequired(p, 'RSK', @isstruct);
+parse(p, RSK);
+
+RSK = p.Results.RSK;
 
 tables = doSelect(RSK, 'SELECT name FROM sqlite_master WHERE type="table"');
 
