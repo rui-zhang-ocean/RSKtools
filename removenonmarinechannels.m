@@ -42,7 +42,7 @@ if ~(strcmp(RSK.dbInfo(end).type, 'EPdesktop') || strcmp(RSK.dbInfo(end).type, '
         end
         RSK.instrumentChannels(isDerived) = [];
     else
-        results = mksqlite('select isDerived from channels');
+        results = doSelect(RSK, 'select isDerived from channels');
         isDerived = logical([results.isDerived])'; 
     end
 else

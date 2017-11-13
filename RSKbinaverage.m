@@ -114,7 +114,11 @@ end
 
 
 
-unit = RSK.channels(chanCol).units;
+if binbytime, 
+    unit = 'tstamp';
+else
+    unit = RSK.channels(chanCol).units;
+end
 logdata = logentrydata(RSK, profile, direction);
 logentry = sprintf('Binned with respect to %s using [%s] boundaries with %s %s bin size on %s.', binBy, num2str(boundary), num2str(binSize), unit, logdata);
 RSK = RSKappendtolog(RSK, logentry);

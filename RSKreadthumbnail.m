@@ -33,7 +33,7 @@ RSK = p.Results.RSK;
 rhc = p.Results.rhc;
 
 sql = 'select tstamp/1.0 as tstamp, * from thumbnailData order by tstamp';
-results = mksqlite(sql);
+results = doSelect(RSK, sql);
 if isempty(results)
     return
 end

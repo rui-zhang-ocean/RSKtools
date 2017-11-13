@@ -57,10 +57,9 @@ elseif isempty(dir(fname))
     return
 end
 
+RSK.filename = fname;
 
-
-dbid = mksqlite('open',fname);
-RSK.dbInfo = mksqlite('select version,type from dbInfo');
+RSK.dbInfo = doSelect(RSK, 'select version,type from dbInfo');
 
 if iscompatibleversion(RSK, latestRSKversionMajor, latestRSKversionMinor, latestRSKversionPatch+1)
     warning(['RSK version ' vsnString ' is newer than your RSKtools version. It is recommended to update RSKtools at https://rbr-global.com/support/matlab-tools']);

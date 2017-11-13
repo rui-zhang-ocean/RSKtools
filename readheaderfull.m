@@ -35,9 +35,9 @@ RSK = p.Results.RSK;
 rhc = p.Results.rhc;
 
 %% Tables that are definitely in 'full'
-RSK.appSettings = mksqlite('select * from appSettings');
+RSK.appSettings = doSelect(RSK, 'select * from appSettings');
 
-RSK.ranging = mksqlite('select * from ranging');
+RSK.ranging = doSelect(RSK, 'select * from ranging');
 
 % NOTE : We no longer automatically read the calibrations table when
 % opening a file with RSKopen. Use RSKreadcalibrations(RSK) to load the
@@ -48,7 +48,7 @@ RSK = readsamplingdetails(RSK);
 
 
 %% Tables that could be populated in 'full'
-tables = mksqlite('SELECT name FROM sqlite_master WHERE type="table"');
+tables = doSelect(RSK, 'SELECT name FROM sqlite_master WHERE type="table"');
 
 if any(strcmpi({tables.name}, 'parameters'))
     RSK = readparameters(RSK);

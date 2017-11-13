@@ -32,18 +32,18 @@ parse(p, RSK, varargin{:})
 RSK = p.Results.RSK;
 rhc = p.Results.rhc;
 
-tables = mksqlite('SELECT name FROM sqlite_master WHERE type="table"');
+tables = doSelect(RSK, 'SELECT name FROM sqlite_master WHERE type="table"');
 
 if any(strcmpi({tables.name}, 'instrumentChannels'))
-    RSK.instrumentChannels = mksqlite('select * from instrumentChannels');
-    RSK.channels = mksqlite(['SELECT c.shortName as shortName,'...
+    RSK.instrumentChannels = doSelect(RSK, 'select * from instrumentChannels');
+    RSK.channels = doSelect(RSK, ['SELECT c.shortName as shortName,'...
                         'c.longName as longName,'...
                         'c.units as units '... 
                         'FROM instrumentChannels ic '... 
                         'JOIN channels c ON ic.channelID = c.channelID '...
                         'ORDER by ic.channelOrder']);
 else
-    RSK.channels = mksqlite('SELECT shortName, longName, units FROM channels ORDER by channels.channelID');
+    RSK.channels = doSelect(RSK, 'SELECT shortName, longName, units FROM channels ORDER by channels.channelID');
 end
 
 RSK = removenonmarinechannels(RSK,rhc);

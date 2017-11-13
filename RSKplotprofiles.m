@@ -124,11 +124,12 @@ for chan = chanCol
 
         if(stepsize > 1)
             ydata = RSKy.data(ndx+1).values(:, ycol);
-            handles(ii,n) = plot(RSK.data(ndx+1).values(:, chan), ydata,'color',clrs(ii,:),'linestyle',line2);
+            handles(ii+1,n) = plot(RSK.data(ndx+1).values(:, chan), ydata,'color',clrs(ii,:),'linestyle',line2);
         end
 
         pmax = max([pmax; ydata]);
         ii = ii+1;
+        if(stepsize > 1), ii = ii+1; end
     end
 
     ylim([0 pmax])
