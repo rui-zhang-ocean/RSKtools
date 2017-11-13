@@ -23,6 +23,7 @@ function RSK = RSKreaddata(RSK, varargin)
 %
 %    [Optional] - t1 - Start time for range of data to be read, specified
 %                       using the MATLAB datenum format. 
+%
 %                 t2 - End time for range of data to be read, specified
 %                       using the MATLAB datenum format. 
 %

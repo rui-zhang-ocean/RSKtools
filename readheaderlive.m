@@ -23,6 +23,12 @@ function RSK = readheaderlive(RSK)
 % Website: www.rbr-global.com
 % Last revision: 2017-07-10
 
+p = inputParser;
+addRequired(p, 'RSK', @isstruct);
+parse(p, RSK)
+
+RSK = p.Results.RSK;
+
 %% Tables that are definitely in 'live'
 RSK.appSettings = doSelect(RSK, 'select * from appSettings');
 
