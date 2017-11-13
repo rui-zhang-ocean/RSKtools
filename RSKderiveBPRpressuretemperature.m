@@ -17,7 +17,7 @@ function [RSK] = RSKderiveBPRpressuretemperature(RSK)
 % Author: RBR Ltd. Ottawa ON, Canada
 % email: support@rbr-global.com
 % Website: www.rbr-global.com
-% Last revision: 2017-11-09
+% Last revision: 2017-11-13
 
 p = inputParser;
 addRequired(p, 'RSK', @isstruct);
@@ -64,26 +64,30 @@ BPRTempcol = getchannelindex(RSK, 'BPR temperature');
 
 castidx = getdataindex(RSK);
 for ndx = castidx
-    
-    % Equations for deriving BPR temperature and pressure, period unit convert
-    % from picoseconds to microseconds (/1e6)
-    U = (RSK.data(ndx).values(:,TempPeriCol)/(1e6)) - u0;
+    temperature_period = RSK.data(ndx).values(:,TempPeriCol);
+    pressure_period = RSK.data(ndx).values(:,PresPeriCol);
+    [temperature, pressure] = BPRderive(temperature_period, pressure_period, u0, y1, y2, y3, c1, c2, c3, d1, d2, t1, t2, t3, t4, t5);
+    RSK.data(ndx).values(:,BPRPrescol) = pressure;
+    RSK.data(ndx).values(:,BPRTempcol) = temperature;
+end
+
+logentry = ('BPR temperature and pressure were derived from period data.');
+RSK = RSKappendtolog(RSK, logentry);
+
+    %% Nested Functions
+    function [temperature, pressure] = BPRderive(temperature_period, pressure_period, u0, y1, y2, y3, c1, c2, c3, d1, d2, t1, t2, t3, t4, t5)
+    % Equations for deriving BPR temperature and pressure, period unit convert from picoseconds to microseconds (/1e6)
+
+    U = (temperature_period/(1e6)) - u0;
     temperature = y1 .* U + y2 .* U .*U + y3 .* U .* U .* U;
 
     C = c1 + c2 .* U + c3 .* U .* U;
     D = d1 + d2 .* U;
     T0 = t1 + t2 .* U + t3 .* U .* U + t4 .* U .* U .* U + t5 .* U .* U .* U .* U;
-    Tsquare = (RSK.data(ndx).values(:,PresPeriCol)/(1e6)) .* (RSK.data(ndx).values(:,PresPeriCol)/(1e6));
+    Tsquare = (pressure_period/(1e6)) .* (pressure_period/(1e6));
     Pres = C .* (1 - ((T0 .* T0) ./ (Tsquare))) .* (1 - D .* (1 - ((T0 .* T0) ./ (Tsquare))));
     pressure = Pres* 0.689475; % convert from PSI to dBar
     
-    RSK.data(ndx).values(:,BPRPrescol) = pressure;
-    RSK.data(ndx).values(:,BPRTempcol) = temperature;
-end
-
-
-
-logentry = ('BPR temperature and pressure were derived from period data');
-RSK = RSKappendtolog(RSK, logentry);
+    end
 
 end
