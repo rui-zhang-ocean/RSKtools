@@ -1,4 +1,4 @@
-function RSK = readchannels(RSK, varargin)
+function RSK = readchannels(RSK)
 
 %READCHANNELS - Populate the channels table.
 %
@@ -10,9 +10,7 @@ function RSK = readchannels(RSK, varargin)
 % EPdesktop file, and enumerates duplicate channel names.
 %
 % Inputs:
-%    [Required] - RSK - Structure opened using RSKopen.m.
-%
-%    [Optional] - rhc - Read hidden channel or not, 1 or 0.
+%    RSK - Structure opened using RSKopen.m.
 %
 % Outputs:
 %    RSK - Structure containing channels.
@@ -26,11 +24,9 @@ function RSK = readchannels(RSK, varargin)
 
 p = inputParser;
 addRequired(p, 'RSK', @isstruct);
-addOptional(p, 'rhc', 0, @isnumeric);
-parse(p, RSK, varargin{:})
+parse(p, RSK)
 
 RSK = p.Results.RSK;
-rhc = p.Results.rhc;
 
 tables = doSelect(RSK, 'SELECT name FROM sqlite_master WHERE type="table"');
 
@@ -46,7 +42,7 @@ else
     RSK.channels = doSelect(RSK, 'SELECT shortName, longName, units FROM channels ORDER by channels.channelID');
 end
 
-RSK = removenonmarinechannels(RSK,rhc);
+RSK = removenonmarinechannels(RSK);
 RSK = renamechannels(RSK);
 
 end

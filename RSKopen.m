@@ -57,7 +57,8 @@ elseif isempty(dir(fname))
     return
 end
 
-RSK.filename = fname;
+RSK.toolSettings.filename = fname;
+RSK.toolSettings.rhc = rhc;
 
 RSK.dbInfo = doSelect(RSK, 'select version,type from dbInfo');
 
@@ -67,7 +68,7 @@ end
 
 
 
-RSK = readstandardtables(RSK,rhc);
+RSK = readstandardtables(RSK);
 switch RSK.dbInfo(end).type
     case 'EasyParse'
         RSK = readheaderEP(RSK);
@@ -76,9 +77,9 @@ switch RSK.dbInfo(end).type
     case 'skinny'
         RSK = readheaderskinny(RSK);
     case 'full'
-        RSK = readheaderfull(RSK, rhc);
+        RSK = readheaderfull(RSK);
     case 'live'
-        RSK = readheaderlive(RSK, rhc);
+        RSK = readheaderlive(RSK);
     otherwise
         disp('Not recognised')
         return

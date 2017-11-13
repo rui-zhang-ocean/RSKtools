@@ -1,4 +1,4 @@
-function [RSK, isDerived] = removenonmarinechannels(RSK, varargin)
+function [RSK, isDerived] = removenonmarinechannels(RSK)
 
 %REMOVENONMARINECHANNELS - Remove hidden or derived channels.
 %
@@ -9,9 +9,7 @@ function [RSK, isDerived] = removenonmarinechannels(RSK, varargin)
 % instrumentChannels if the field exists. 
 %
 % Inputs:
-%    [Required] - RSK - Structure
-%
-%    [Optional] - rhc - Read hidden channel or not, 1 or 0.
+%    RSK - Structure
 %
 % Outputs:
 %    RSK - Structure with only marine channels.
@@ -27,15 +25,13 @@ function [RSK, isDerived] = removenonmarinechannels(RSK, varargin)
 
 p = inputParser;
 addRequired(p, 'RSK', @isstruct);
-addOptional(p, 'rhc', 0, @isnumeric);
-parse(p, RSK, varargin{:})
+parse(p, RSK)
 
 RSK = p.Results.RSK;
-rhc = p.Results.rhc;
 
 if ~(strcmp(RSK.dbInfo(end).type, 'EPdesktop') || strcmp(RSK.dbInfo(end).type, 'skinny'))
     if iscompatibleversion(RSK, 1, 8, 9) && ~strcmp(RSK.dbInfo(end).type, 'EP')
-        if logical(rhc)
+        if logical(RSK.toolSettings.rhc)
             isDerived = logical([RSK.instrumentChannels.channelStatus] == 4);% derived channels have a '4' channelStatus
         else
             isDerived = logical([RSK.instrumentChannels.channelStatus]);% hidden and derived channels have a non-zero channelStatus

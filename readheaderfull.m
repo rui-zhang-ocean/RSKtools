@@ -1,4 +1,4 @@
-function RSK = readheaderfull(RSK, varargin)
+function RSK = readheaderfull(RSK)
 
 %READHEADERFULL - Read tables that are populated in a 'full' file.
 %
@@ -12,9 +12,7 @@ function RSK = readheaderfull(RSK, varargin)
 % Note: Only marine channels will be displayed.
 %
 % Inputs:
-%    [Required] - RSK - Structure of 'full' file opened using RSKopen.m.
-%
-%    [Optional] - rhc - Read hidden channel or not, 1 or 0.
+%    RSK - Structure of 'full' file opened using RSKopen.m.
 %
 % Outputs:
 %    RSK - Structure containing logger metadata and thumbnail.
@@ -28,11 +26,9 @@ function RSK = readheaderfull(RSK, varargin)
 
 p = inputParser;
 addRequired(p, 'RSK', @isstruct);
-addOptional(p, 'rhc', 0, @isnumeric);
-parse(p, RSK, varargin{:})
+parse(p, RSK)
 
 RSK = p.Results.RSK;
-rhc = p.Results.rhc;
 
 %% Tables that are definitely in 'full'
 RSK.appSettings = doSelect(RSK, 'select * from appSettings');
@@ -59,7 +55,7 @@ if any(strcmpi({tables.name}, 'geodata'))
 end
 
 if any(strcmpi({tables.name}, 'thumbnailData'))
-    RSK = RSKreadthumbnail(RSK, rhc);
+    RSK = RSKreadthumbnail(RSK);
 end
 
 end

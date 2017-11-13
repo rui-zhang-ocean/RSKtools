@@ -19,9 +19,7 @@ function RSK = RSKreadprofiles(RSK, varargin)
 %    [Required] - RSK - Structure containing the logger data read
 %                       from the RSK file.
 %
-%    [Optional] - rhc - Read hidden channel or not, 1 or 0.
-%
-%                 profile - Vector identifying the profile numbers to
+%    [Optional] - profile - Vector identifying the profile numbers to
 %                       read. Can be used to read only a subset of all
 %                       the profiles. Default is to read all the profiles. 
 % 
@@ -53,13 +51,11 @@ checkDirection = @(x) any(validatestring(x,validDirections));
 
 p = inputParser;
 addRequired(p, 'RSK', @isstruct);
-addOptional(p, 'rhc', 0, @isnumeric);
 addParameter(p, 'profile', [], @isnumeric);
 addParameter(p, 'direction', 'both', checkDirection);
 parse(p, RSK, varargin{:})
 
 RSK = p.Results.RSK;
-rhc = p.Results.rhc;
 profile = p.Results.profile;
 direction = {p.Results.direction};
 
@@ -125,7 +121,7 @@ data(length(castidx)).direction = [];
 data(length(castidx)).profilenumber = [];
 
 for ndx = castidx
-    tmp = RSKreaddata(RSK, rhc, 't1', alltstart(ndx), 't2', alltend(ndx));
+    tmp = RSKreaddata(RSK, 't1', alltstart(ndx), 't2', alltend(ndx));
     data(k).tstamp = tmp.data.tstamp;
     data(k).values = tmp.data.values;
     data(k).direction = dir2fill{k};
@@ -133,7 +129,7 @@ for ndx = castidx
     k = k + 1;
 end
 
-RSK = readchannels(RSK, rhc);
+RSK = readchannels(RSK);
 RSK.data = data;
 
 end

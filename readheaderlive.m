@@ -1,4 +1,4 @@
-function RSK = readheaderlive(RSK, varargin)
+function RSK = readheaderlive(RSK)
 
 %READHEADERLIVE - Read tables that are populated in a 'live' file.
 %
@@ -11,9 +11,7 @@ function RSK = readheaderlive(RSK, varargin)
 % Note: Only marine channels will be displayed.
 %
 % Inputs:
-%    RSK - [Required] - Structure of 'live' file opened using RSKopen.m.
-%
-%          [Optional] - rhc - Read hidden channel or not, 1 or 0.
+%    RSK - Structure of 'live' file opened using RSKopen.m.
 %
 % Outputs:
 %    RSK - Structure containing logger metadata and thumbnail.
@@ -27,11 +25,9 @@ function RSK = readheaderlive(RSK, varargin)
 
 p = inputParser;
 addRequired(p, 'RSK', @isstruct);
-addOptional(p, 'rhc', 0, @isnumeric);
-parse(p, RSK, varargin{:})
+parse(p, RSK)
 
 RSK = p.Results.RSK;
-rhc = p.Results.rhc;
 
 %% Tables that are definitely in 'live'
 RSK.appSettings = doSelect(RSK, 'select * from appSettings');
@@ -50,7 +46,7 @@ if any(strcmpi({tables.name}, 'geodata'))
 end
 
 if any(strcmpi({tables.name}, 'thumbnailData'))
-    RSK = RSKreadthumbnail(RSK, rhc);
+    RSK = RSKreadthumbnail(RSK);
 end
 
 

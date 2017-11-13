@@ -21,10 +21,9 @@ function RSK = RSKreaddata(RSK, varargin)
 %                       read bigger or smaller chunks before Matlab
 %                       complains and runs out of memory. 
 %
-%    [Optional] - rhc - Read hidden channel or not, 1 or 0.
-
-%                 t1 - Start time for range of data to be read, specified
+%    [Optional] - t1 - Start time for range of data to be read, specified
 %                       using the MATLAB datenum format. 
+%
 %                 t2 - End time for range of data to be read, specified
 %                       using the MATLAB datenum format. 
 %
@@ -48,13 +47,11 @@ function RSK = RSKreaddata(RSK, varargin)
 
 p = inputParser;
 addRequired(p, 'RSK', @isstruct);
-addOptional(p, 'rhc', 0, @isnumeric);
 addParameter(p, 't1', [], @isnumeric);
 addParameter(p, 't2', [], @isnumeric);
 parse(p, RSK, varargin{:})
 
 RSK = p.Results.RSK;
-rhc = p.Results.rhc;
 t1 = p.Results.t1;
 t2 = p.Results.t2;
 
@@ -96,10 +93,10 @@ results = arrangedata(results);
 
 t=results.tstamp';
 results.tstamp = RSKtime2datenum(t);
-RSK = readchannels(RSK,rhc);
+RSK = readchannels(RSK);
 
 if ~strcmpi(RSK.dbInfo(end).type, 'EPdesktop')
-    [~, isDerived] = removenonmarinechannels(RSK,rhc);
+    [~, isDerived] = removenonmarinechannels(RSK);
     results.values = results.values(:,~isDerived);
 end
 
