@@ -87,7 +87,6 @@ for ndx =  castidx
     
     if strcmpi(action, 'nan')
         RSK.data(ndx).values(trimindex,:) = NaN;
-        RSK.data(ndx).tstamp(trimindex,:) = NaN;
     else 
         RSK.data(ndx).values(trimindex,:) = [];
         RSK.data(ndx).tstamp(trimindex,:) = [];
