@@ -121,12 +121,30 @@ data(length(castidx)).direction = [];
 data(length(castidx)).profilenumber = [];
 
 for ndx = castidx
-    tmp = RSKreaddata(RSK, 't1', alltstart(ndx), 't2', alltend(ndx));
-    data(k).tstamp = tmp.data.tstamp;
-    data(k).values = tmp.data.values;
+    
+    if isfield(RSK, 'data')
+        ind_start = (find(RSK.data.tstamp == alltstart(ndx)));
+        ind_end = (find(RSK.data.tstamp == alltend(ndx)));
+        
+        if isempty(ind_start) || isempty(ind_end)
+            tmp = RSKreaddata(RSK, 't1', alltstart(ndx), 't2', alltend(ndx));
+            data(k).tstamp = tmp.data.tstamp;
+            data(k).values = tmp.data.values;
+        else
+            data(k).tstamp = RSK.data.tstamp(ind_start:ind_end);
+            data(k).values = RSK.data.values(ind_start:ind_end,:);
+        end
+        
+    else
+        tmp = RSKreaddata(RSK, 't1', alltstart(ndx), 't2', alltend(ndx));
+        data(k).tstamp = tmp.data.tstamp;
+        data(k).values = tmp.data.values;
+    end
+
     data(k).direction = dir2fill{k};
     data(k).profilenumber = pronum2fill(k);
     k = k + 1;
+    
 end
 
 RSK = readchannels(RSK);
