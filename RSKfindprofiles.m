@@ -55,7 +55,7 @@ conductivityThreshold = p.Results.conductivityThreshold;
 
 
 if isfield(RSK, 'profiles')
-    error('Profiles are already found, get data using RSKreadprofiles.m');
+    RSK = rmfield(RSK, 'profiles');
 end
 
 
