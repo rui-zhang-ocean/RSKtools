@@ -1,6 +1,8 @@
 function [RSK] = RSKaddchannel(RSK, input, channelName, units)
 
-% RSKaddchannel - Add a new channel with defined channel name and units.
+% RSKaddchannel - Add a new channel with defined channel name and units. If
+% the given channelName exists in current rsk structure, it will overwrite
+% the old one.
 %
 % Syntax:  [RSK] = RSKaddchannel(RSK, input, channelName, units)
 % 
@@ -20,7 +22,7 @@ function [RSK] = RSKaddchannel(RSK, input, channelName, units)
 % Author: RBR Ltd. Ottawa ON, Canada
 % email: support@rbr-global.com
 % Website: www.rbr-global.com
-% Last revision: 2017-10-30
+% Last revision: 2017-11-21
 
 p = inputParser;
 addRequired(p, 'RSK', @isstruct);
