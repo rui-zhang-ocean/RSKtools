@@ -1,6 +1,7 @@
 function RSK = RSKreadprofiles(RSK, varargin)
 
-%RSKreadprofiles - Read individual casts from RSK SQLite database.
+% RSKreadprofiles - Read individual casts from RSK SQLite database or
+% existing RSK.data field.
 %
 % Syntax:  [RSK] = RSKreadprofiles(RSK, [OPTIONS])
 % 
@@ -44,7 +45,7 @@ function RSK = RSKreadprofiles(RSK, varargin)
 % Author: RBR Ltd. Ottawa ON, Canada
 % email: support@rbr-global.com
 % Website: www.rbr-global.com
-% Last revision: 2017-10-05
+% Last revision: 2017-11-22
 
 validDirections = {'down', 'up', 'both'};
 checkDirection = @(x) any(validatestring(x,validDirections));
