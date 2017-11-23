@@ -44,7 +44,7 @@ function [RSK, samplesinbin] = RSKbinaverage(RSK, varargin)
 % Author: RBR Ltd. Ottawa ON, Canada
 % email: support@rbr-global.com
 % Website: www.rbr-global.com
-% Last revision: 2017-07-04
+% Last revision: 2017-11-23
 
 validDirections = {'down', 'up'};
 checkDirection = @(x) any(validatestring(x,validDirections));
@@ -89,7 +89,7 @@ end
 
 
 [binArray, binCenter, boundary] = setupbins(Y, boundary, binSize, direction);
-samplesinbin = NaN(maxlength, length(binArray)-1);
+samplesinbin = NaN(length(binArray)-1,1);
 k = 1;
 for ndx = castidx
     X = [RSK.data(ndx).tstamp, RSK.data(ndx).values];
@@ -97,7 +97,7 @@ for ndx = castidx
     
     for bin=1:length(binArray)-1
         binidx = findbinindices(Y(:,k), binArray(bin), binArray(bin+1));
-        samplesinbin(:,bin) = binidx;
+        samplesinbin(bin,1) = length(find(binidx == 1));
         binnedValues(bin,:) = nanmean(X(binidx,:),1);
     end
     
