@@ -104,7 +104,7 @@ for ndx = castidx
     RSK.data(ndx).values = binnedValues(:,2:end);
     RSK.data(ndx).samplesinbin = samplesinbin;
     if binbytime
-        RSK.data(ndx).tstamp = binCenter;
+        RSK.data(ndx).tstamp = binCenter';
     else
         RSK.data(ndx).tstamp = binnedValues(:,1);
         RSK.data(ndx).values(:,chanCol) = binCenter;
