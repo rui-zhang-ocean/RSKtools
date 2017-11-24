@@ -97,7 +97,7 @@ for ndx = castidx
     
     for bin=1:length(binArray)-1
         binidx = findbinindices(Y(:,k), binArray(bin), binArray(bin+1));
-        samplesinbin(bin,1) = length(find(binidx == 1));
+        samplesinbin(bin,1) = sum(binidx);
         binnedValues(bin,:) = nanmean(X(binidx,:),1);
     end
     
