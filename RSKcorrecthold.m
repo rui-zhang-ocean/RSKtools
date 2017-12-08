@@ -42,9 +42,9 @@ function [RSK, holdpts] = RSKcorrecthold(RSK, varargin)
 %              with a field for each channel.  
 %
 % Example: 
-%    [RSK, holdpts] = RSKdespike(RSK)
+%    [RSK, holdpts] = RSKcorrecthold(RSK)
 %   OR
-%    [RSK, holdpts] = RSKdespike(RSK, 'channel', 'Temperature', 'action', 'interp'); 
+%    [RSK, holdpts] = RSKcorrecthold(RSK, 'channel', 'Temperature', 'action', 'interp'); 
 %
 % See also: RSKdespike, RSKremoveloops, RSKsmooth.
 %
