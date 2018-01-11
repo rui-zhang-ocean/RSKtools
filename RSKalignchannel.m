@@ -25,7 +25,7 @@ function RSK = RSKalignchannel(RSK, channel, lag, varargin)
 %                 direction - 'up' for upcast, 'down' for downcast, or
 %                       'both' for all. Defaults to all directions available.
 %
-%                 shiftfill - Values that will fill the void left at the
+%                  shiftfill - Values that will fill the void left at the
 %                        beginning or end of the time series. 'nan', fills
 %                        the removed samples of the shifted channel with
 %                        NaN, 'zeroorderhold' fills the removed samples of
@@ -36,9 +36,6 @@ function RSK = RSKalignchannel(RSK, channel, lag, varargin)
 %                        do not align with the shifted channel (note: this
 %                        will reduce the size of values array by "lag"
 %                        samples).  
-%
-%                 lagunits - Units of the lag entry. Can be seconds or
-%                        samples (default).
 %
 % Outputs:
 %    RSK - Structure with aligned channel values.
@@ -63,16 +60,13 @@ function RSK = RSKalignchannel(RSK, channel, lag, varargin)
 % Author: RBR Ltd. Ottawa ON, Canada
 % email: support@rbr-global.com
 % Website: www.rbr-global.com
-% Last revision: 2017-07-13
+% Last revision: 2017-06-28
 
 validShiftfill = {'zeroorderhold', 'union', 'nan', 'mirror'};
 checkShiftfill = @(x) any(validatestring(x,validShiftfill));
 
 validDirections = {'down', 'up', 'both'};
 checkDirection = @(x) any(validatestring(x,validDirections));
-
-validlagunits = {'samples', 'seconds'};
-checklagunits = @(x) any(validatestring(x,validlagunits));
 
 p = inputParser;
 addRequired(p, 'RSK', @isstruct);
@@ -81,7 +75,6 @@ addRequired(p, 'lag', @isnumeric);
 addParameter(p, 'profile', [], @isnumeric);
 addParameter(p, 'direction', [], checkDirection);
 addParameter(p, 'shiftfill', 'zeroorderhold', checkShiftfill);
-addParameter(p, 'lagunits', 'samples', checklagunits);
 parse(p, RSK, channel, lag, varargin{:})
 
 RSK = p.Results.RSK;
@@ -90,65 +83,44 @@ lag = p.Results.lag;
 profile = p.Results.profile;
 direction = p.Results.direction;
 shiftfill = p.Results.shiftfill;
-lagunits = p.Results.lagunits;
 
 
 
 castidx = getdataindex(RSK, profile, direction);
-lags = checklag(lag, castidx, lagunits);
+lags = checklag(lag, castidx);
 channelCol = getchannelindex(RSK, channel);
-
-
 
 counter = 0;
 for ndx =  castidx
     counter = counter + 1;       
     channelData = RSK.data(ndx).values(:, channelCol);
     
-    if strcmpi(lagunits, 'seconds')
-        timelag = lags(counter);
-        shifttime = RSK.data(ndx).tstamp+timelag/86400;
-        shiftchan = interp1(shifttime, channelData, RSK.data(ndx).tstamp);
-        channelaligned = interp1(shifttime, shiftchan, RSK.data(ndx).tstamp);
-        
-        if lags(counter) > 0
-            samplelag = find(~isnan(channelaligned), 1, 'first') - 1;
-            channelaligned = channelaligned(samplelag+1:end);
-            channelShifted = shiftarray(channelaligned, samplelag, shiftfill);
-            channelShifted = [channelShifted; channelaligned(end-samplelag+1:end)];
-        else
-            samplelag = find(~isnan(channelaligned), 1, 'last') - length(channelData);
-            channelaligned = channelaligned(1:end+samplelag);
-            channelShifted = shiftarray(channelaligned, samplelag, shiftfill);
-            channelShifted = [channelaligned(1:abs(samplelag)); channelShifted];
-        end
-    else
-        samplelag = lags(counter);
-        channelShifted = shiftarray(channelData, samplelag, shiftfill);
-    end
-    
     if strcmpi(shiftfill, 'union')
+        channelShifted = shiftarray(channelData, lags(counter), 'zeroorderhold');
+        RSK.data(ndx).values(:, channelCol) = channelShifted;
         if lags(counter) > 0 
-            RSK.data(ndx).values = RSK.data(ndx).values(samplelag+1:end,:);
-            RSK.data(ndx).tstamp = RSK.data(ndx).tstamp(samplelag+1:end);
+            RSK.data(ndx).values = RSK.data(ndx).values(lags(counter)+1:end,:);
+            RSK.data(ndx).tstamp = RSK.data(ndx).tstamp(lags(counter)+1:end);
         elseif lags(counter) < 0 
-            RSK.data(ndx).values = RSK.data(ndx).values(1:end+samplelag,:);
-            RSK.data(ndx).tstamp = RSK.data(ndx).tstamp(1:end+samplelag);
+            RSK.data(ndx).values = RSK.data(ndx).values(1:end+lags(counter),:);
+            RSK.data(ndx).tstamp = RSK.data(ndx).tstamp(1:end+lags(counter));
         end
+    else 
+        channelShifted = shiftarray(channelData, lags(counter), shiftfill);
+        RSK.data(ndx).values(:, channelCol) = channelShifted;
     end
-    RSK.data(ndx).values(:, channelCol) = channelShifted;
 end
 
 
 %% Log entry
 if length(lag) == 1
     logdata = logentrydata(RSK, profile, direction);
-    logentry = [channel ' aligned using a ' num2str(lags(1)) ' ' lagunits ' lag and ' shiftfill ' shiftfill on ' logdata '.'];
+    logentry = [channel ' aligned using a ' num2str(lags(1)) ' sample lag and ' shiftfill ' shiftfill on ' logdata '.'];
     RSK = RSKappendtolog(RSK, logentry);
 else
     for ndx = 1:length(castidx)
         logdata = logentrydata(RSK, profile, direction);
-        logentry = [channel ' aligned using a ' num2str(lags(ndx)) ' ' lagunits ' lag and ' shiftfill ' shiftfill on ' logdata '.'];
+        logentry = [channel ' aligned using a ' num2str(lags(ndx)) ' sample lag and ' shiftfill ' shiftfill on ' logdata '.'];
         RSK = RSKappendtolog(RSK, logentry);
     end
 end
@@ -156,12 +128,12 @@ end
 
 
 %% Nested function
-    function lags = checklag(lag, castidx, lagunits)
+    function lags = checklag(lag, castidx)
     % Checks if the lag values are intergers and either: one for all
     % profiles or one for each profiles. 
 
-        if ~isequal(fix(lag),lag) && strcmpi(lagunits, 'samples')
-           error('Lag values must be integers.')
+        if ~isequal(fix(lag),lag),
+            error('Lag values must be integers.')
         end
 
         if length(lag) == 1 && length(castidx) ~= 1
