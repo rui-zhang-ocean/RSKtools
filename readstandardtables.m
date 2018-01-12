@@ -38,6 +38,6 @@ RSK.deployments = doSelect(RSK, 'select * from deployments');
 
 RSK.instruments = doSelect(RSK, 'select * from instruments');
 
-if RSK.dbInfo.version(1) >= 2, RSK.power = doSelect(RSK, 'select * from power'); end
+if str2double(RSK.dbInfo.version(1)) >= 2, RSK.power = doSelect(RSK, 'select * from power'); end
 
 end
