@@ -148,7 +148,7 @@ for ndx = castidx
     
 end
 
-RSK = readchannels(RSK);
+if ~isfield(RSK, 'data'), RSK = readchannels(RSK); end
 RSK.data = data;
 
 end
