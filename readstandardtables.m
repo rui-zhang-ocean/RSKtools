@@ -1,6 +1,6 @@
 function RSK = readstandardtables(RSK)
 
-%READSTANDARDTABLES- Read tables that are populated in all .rsk files.
+% READSTANDARDTABLES- Read tables that are populated in all .rsk files.
 %
 % Syntax:  [RSK] = READSTANDARDTABLES(RSK)
 %
@@ -18,7 +18,7 @@ function RSK = readstandardtables(RSK)
 % Author: RBR Ltd. Ottawa ON, Canada
 % email: support@rbr-global.com
 % Website: www.rbr-global.com
-% Last revision: 2017-06-21
+% Last revision: 2018-01-16
 
 p = inputParser;
 addRequired(p, 'RSK', @isstruct);
@@ -38,6 +38,19 @@ RSK.deployments = doSelect(RSK, 'select * from deployments');
 
 RSK.instruments = doSelect(RSK, 'select * from instruments');
 
-if str2double(RSK.dbInfo.version(1)) >= 2, RSK.power = doSelect(RSK, 'select * from power'); end
+RSK = readpowertable(RSK);
+
+%% Nested function reading power table
+    function RSK = readpowertable(RSK)
+    if isfield(RSK.instruments, 'firmwareType') && RSK.instruments.firmwareType > 103;
+        RSK.power = doSelect(RSK, 'select * from power'); 
+        if RSK.power.internalBatteryType == -1; 
+            RSK.power = rmfield(RSK.power, {'internalBatteryType','internalBatteryCapacity','internalEnergyUsed'}); 
+        end
+        if RSK.power.externalBatteryType == -1; 
+            RSK.power = rmfield(RSK.power, {'externalBatteryType','externalBatteryCapacity','externalEnergyUsed'}); 
+        end
+    end
+    end
 
 end
