@@ -32,7 +32,7 @@ if any(idx)
     [RSK.channels(idx).longName] = deal('Pressure Gauge Temperature');
 end
 
-idx = strcmpi(shortName, 'temp11');
+idx = (strcmpi(shortName, 'temp11') | strcmpi(shortName, 'temp22'));
 if any(idx)
     [RSK.channels(idx).longName] = deal('CT Cell Temperature');
 end
