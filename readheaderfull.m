@@ -58,5 +58,7 @@ if any(strcmpi({tables.name}, 'thumbnailData'))
     RSK = RSKreadthumbnail(RSK);
 end
 
+RSK = RSKreaddownsample(RSK);
+
 end
 
