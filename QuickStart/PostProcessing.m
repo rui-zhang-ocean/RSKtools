@@ -2,7 +2,7 @@
 % RSKtools v2.2.0;
 % RBR Ltd. Ottawa ON, Canada;
 % support@rbr-global.com;
-% 2017-11-01
+% 2018-01-18
 
 %% Introduction
 % A suite of new functions are included in RSKtools v2.0.0 to
@@ -17,17 +17,18 @@
 % |>> help RSKsmooth|.
 
 %% Getting set up
-% Review VignetteStandard for help.
+% Review Standard for help.
 
 % First, open a connection to the RSK logger database file:
 file = 'sample.rsk';
 rsk = RSKopen(file);
 
-% read the upcast from profiles 1 - 55
-rsk = RSKreadprofiles(rsk, 'profile', 1:55, 'direction', 'up');
+% read the upcast from profiles 1 - 20
+rsk = RSKreadprofiles(rsk, 'profile', 1:20, 'direction', 'up');
 
-% plot the raw data as profiles
-RSKplotprofiles(rsk);
+% plot the raw data of temperature, conductivity, and chlorophyll as profiles
+RSKplotprofiles(rsk,'profile',[1 10 20],...
+    'channel',{'temperature','conductivity','chlorophyll'});
 
 %% Remove atmospheric pressure from measured total pressure
 % We suggest deriving sea pressure first, especially when an
@@ -47,11 +48,12 @@ raw = rsk;
 %
 % The function identifies zero-hold points by looking for where consecutive
 % differences for each channel are equal to zero, and removes the values 
-% (fill NaN) or replaces them with linear interpolation. See appendix for
-% further plots information.
+% (fill NaN) or replaces them with linear interpolation. See 
+% <https://docs.rbr-global.com/rsktools RSKtools on-line user manual> for
+% further information.
 
-[rsk_correcthold,holdpts] = RSKcorrecthold(rsk,'Profile', 9, ...
-    'direction', 'up','channel', {'Temperature','Pressure','Turbidity'}, 'action','interp'); 
+[rsk,holdpts] = RSKcorrecthold(rsk,'channel',...
+    {'temperature','conductivity','chlorophyll'},'action','interp'); 
 
 %% Low-pass filtering
 % Applying a low pass filter to temperature and conductivity
@@ -66,7 +68,8 @@ raw = rsk;
 % (|rsk.continuous.samplingPeriod|), so a 7 sample window should
 % provide sufficient smoothing.
 
-rsk = RSKsmooth(rsk, {'Conductivity', 'Temperature'}, 'windowLength', 7);
+rsk = RSKsmooth(rsk, ...
+    {'temperature','conductivity','chlorophyll'}, 'windowLength', 7);
 
 
 %% Alignment of conductivity to temperature and pressure 
@@ -102,9 +105,6 @@ rsk = RSKalignchannel(rsk, 'Conductivity', lag);
 rsk = RSKderivedepth(rsk);
 rsk = RSKderivevelocity(rsk);
 
-% Plot the velocity profile to help determine a minimum rate
-RSKplotprofiles(rsk,'channel',{'temperature','velocity'},'direction','up');
-
 % Apply the threshold
 rsk = RSKremoveloops(rsk, 'threshold', 0.3);
 
@@ -117,7 +117,8 @@ rsk = RSKremoveloops(rsk, 'threshold', 0.3);
 rsk = RSKderivesalinity(rsk);
 
 %% Compute an extra variable and add it to the RSK structure
-% In this example we compute Absolute Salinity, which is equivalent with RSKderivesalinity 
+% In this example we compute Absolute Salinity and add it to the RSK
+% structure
 p = getchannelindex(rsk,'sea pressure');
 sp= getchannelindex(rsk,'salinity');
 
@@ -131,22 +132,16 @@ end
 rsk = RSKaddchannel(rsk,sa,'Absolute Salinity','g/kg');
 
 %% Bin average all channels
-% Average the data into 0.5 dbar bins using |RSKbinaverage|.
-rsk = RSKbinaverage(rsk, 'binBy', 'Sea Pressure', 'binSize', 0.5, 'direction', 'up');
+% Average the data into 0.25 dbar bins using |RSKbinaverage|.
+rsk = RSKbinaverage(rsk, 'binBy', 'Sea Pressure', 'binSize', 0.25, 'direction', 'up');
 
 %% Plot the bin averaged profiles
-% Compare the binned data to the raw data for a few example profiles.
+% Compare the binned data to the raw data for a few example profiles,
+% processed data are represented with thicker lines.
 clf
-RSKplotprofiles(raw,'profile',[1 20 40]);
-axhandles = get(gcf,'children');
-for k=1:length(axhandles),
-  hold(axhandles(k),'on')
-end
-
-hdls = RSKplotprofiles(rsk,'profile',[1 20 40],...
-                           'channel',{'conductivity','temperature',...
-                           'dissolved O2','turbidity','par','chlorophyll'});
-set(hdls,{'linewidth'},{2})
+h1 = RSKplotprofiles(raw,'profile',[1 10 20],'channel',{'conductivity','temperature','chlorophyll'});
+h2 = RSKplotprofiles(rsk,'profile',[1 10 20],'channel',{'conductivity','temperature','chlorophyll'});
+set(h2,{'linewidth'},{2})
 
 
 %% 2D plot
@@ -165,7 +160,7 @@ RSKplot2D(rsk, 'Salinity');
 % manual> for detailed RSKtools function documentation.
 %
 % * the
-% <http://rbr-global.com/wp-content/uploads/2017/07/VignetteStandard.pdf
+% <http://rbr-global.com/wp-content/uploads/2017/08/VignetteStandard.pdf
 % RSKtools Getting Started> for an introduction on how to load RBR
 % data into Matlab from RSK files, make plots, and access the data.
 
@@ -177,37 +172,7 @@ RSKplot2D(rsk, 'Salinity');
 % command:
 %%
 % 
-%   publish('VignettePostProcessing.m');
-
-%% Appendix
-pronum = 9;
-profind = getdataindex(rsk,'direction','up','profile', pronum); 
-chanCol = [];
-channels = cellchannelnames(rsk, {'Temperature','Pressure','Turbidity'});
-for chan = channels
-    chanCol = [chanCol getchannelindex(rsk, chan{1})];
-end
-t = datetime(rsk.data(profind).tstamp,'ConvertFrom','datenum');
-ind = holdpts(1).index{3};
-p_ind = ind(1);
-
-% Make plots, green square stands for original data while red cross
-% represents data after correct hold.
-for p = 1:length(channels)
-    subplot(length(channels),1,p)
-    plot(t(p_ind-2:p_ind+2),raw.data(profind).values(p_ind-2:...
-    p_ind+2,chanCol(p)),'--ks','LineWidth',1, 'MarkerEdgeColor',...
-    'k', 'MarkerFaceColor','g','MarkerSize',10);
-    hold on
-    if ~isempty(cell2mat(holdpts(1).index(chanCol(p)))) && ...
-        any(cell2mat(holdpts(1).index(chanCol(p))) == p_ind);
-        plot(t(p_ind),rsk_correcthold.data(profind).values(p_ind, ...
-        chanCol(p)),'rx','LineWidth',4, 'MarkerEdgeColor','r',...
-        'MarkerFaceColor','r','MarkerSize',15);      
-    end
-    ylabel(channels{p})  
-end
-set(findall(gcf,'-property','FontSize'),'FontSize',13)
+%   publish('PostProcessing.m');
 
 %%
 % See |help publish| for more document export options.
