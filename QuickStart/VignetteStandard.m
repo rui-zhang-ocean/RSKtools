@@ -1,8 +1,8 @@
 %% RSKtools for Matlab access to RBR data
-% RSKtools v2.1.0;
+% RSKtools v2.2.0;
 % RBR Ltd. Ottawa ON, Canada;
 % support@rbr-global.com;
-% 2017-08-31
+% 2018-01-18
 
 %% Introduction 
 % |RSKtools| provides some convenience functions for common data
@@ -85,7 +85,7 @@ rsk = RSKderivesalinity(rsk);
 % values.
 
 % load the second to tenth profiles in both directions (upcast and downcast)
-rsk = RSKreadprofiles(rsk, 'profile', 2:10, 'direction', 'both');
+rsk = RSKreadprofiles(rsk, 'profile', 6:8, 'direction', 'both');
 rsk = RSKderiveseapressure(rsk);
 rsk = RSKderivesalinity(rsk);
 
@@ -100,7 +100,7 @@ handles = RSKplotprofiles(rsk, 'channel', {'conductivity', 'temperature','salini
 handles
 
 % To increase the line width of the first profile in all subplots
-set(handles(1,:),{'linewidth'},{5});
+set(handles(1,:),{'linewidth'},{3.5});
 
 
 %% Accessing individual channels and profiles
