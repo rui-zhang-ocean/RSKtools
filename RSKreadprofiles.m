@@ -131,10 +131,10 @@ for ndx = castidx
             tmp = RSKreaddata(RSK, 't1', alltstart(ndx), 't2', alltend(ndx));
             data(k).tstamp = tmp.data.tstamp;
             data(k).values = tmp.data.values;
-        else
+         else
             data(k).tstamp = RSK.data.tstamp(ind_start:ind_end);
             data(k).values = RSK.data.values(ind_start:ind_end,:);
-        end
+         end
         
     else
         tmp = RSKreaddata(RSK, 't1', alltstart(ndx), 't2', alltend(ndx));
