@@ -42,6 +42,7 @@ field = 'downsample';
 if ~isfield(RSK,field)
     disp('You must read a section of downsample in first!');
     disp('Use RSKreaddownsample, note that when dataset is small, downsample may not exist.')
+    handles = NaN;
     return
 end
 
