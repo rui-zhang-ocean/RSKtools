@@ -85,7 +85,7 @@ ylabel(cb, RSK.channels(chanCol).units)
 h = title(sprintf('%s', RSK.channels(chanCol).longName));
 p = get(h,'Position');
 set(h, 'Position', [t(end) p(2) p(3)], 'HorizontalAlignment', 'right')
-text(t(1), p(2)-0.5, sprintf('[%s - %s]', datestr(t(1), 'mmmm dd HH:MM'), datestr(t(end),'mmmm dd HH:MM')));
+% text(t(1), p(2)-0.5, sprintf('[%s - %s]', datestr(t(1), 'mmmm dd HH:MM'), datestr(t(end),'mmmm dd HH:MM')));
 set(gcf, 'Position', [1 1 800 450]);
 datetick('x', 'HH', 'keepticks')
 axis tight
