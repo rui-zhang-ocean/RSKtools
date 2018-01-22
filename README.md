@@ -83,12 +83,12 @@ channel in the RSK structure.
 	- Added ability to align channel with time in `RSKalignchannel`.
 	- Added ability to read hidden channel and power table in `RSKopen`.
 	- Added interpolation ability in `RSKtrim`
-    	- Added `Optode Temperature` channel name.
+	- Added `Optode Temperature` channel name.
 	- Improved algorithm for `RSKbinaverage`.
-    	- Improved algorithm for RSKremoveloops.
-    	- Added `direction` and `profilenumber` fields to rsk.data with profiles.
-    	- RSKplotprofiles enables different linestyle for upcast and downcast.
-    	- RSKplotprofiles enables pressure as Y-axis.
+	- Improved algorithm for RSKremoveloops.
+	- Added `direction` and `profilenumber` fields to rsk.data with profiles.
+	- RSKplotprofiles enables different linestyle for upcast and downcast.
+	- RSKplotprofiles enables pressure as Y-axis.
 
 * Version 2.1.0 (2017-08-31)
 	- New function `RSKtrim` for pruning data
@@ -111,10 +111,10 @@ channel in the RSK structure.
 	- Add option to plot selected channels to plotting functions
 	- Plotting functions output handles to line objects for customization
 	- Relocate profiling data from the profiles field to the data field
-    	- Added function to calculate Practical Salinity, `RSKderivesalinity`
-    	- Added function to calculate sea pressure from total pressure, `RSKderiveseapressure`
-    	- Added function to calculate depth, `RSKderivedepth`
-    	- Added function to calculate profiling speed, `RSKderivevelocity`
+	- Added function to calculate Practical Salinity, `RSKderivesalinity`
+	- Added function to calculate sea pressure from total pressure, `RSKderiveseapressure`
+	- Added function to calculate depth, `RSKderivedepth`
+	- Added function to calculate profiling speed, `RSKderivevelocity`
 	- Cast detection function added, `RSKfindprofiles`
 
 * Version 1.5.3 (2017-06-07)
