@@ -71,16 +71,27 @@ channel in the RSK structure.
 ## Changes
 
 * Version 2.2.0 (2017-11-01)
-    - New function `RSKcorrecthold` for correcting A2D zero-order hold points.
-	- New function `RSKaddchannel` for adding new variable into exsiting rsk structure.
-	- Improved algorithm for RSKremoveloops.
-    - Added `direction` and `profilenumber` fields to rsk.data with profiles.
-    - RSKplotprofiles enables different linestyle for upcast and downcast.
-    - RSKplotprofiles enables pressure as Y-axis.
-    - Add `Optode Temperature` channel name.
+    	- New function `RSKcorrecthold` for correcting A2D zero-order hold points.
+    	- New function `RSKaddchannel` for adding new variable into exsiting rsk structure.
+	- New function `RSKderiveC25` for deriving specific conductivity at 25 degree Celsius.
+	- New function `RSKderiveBPRpressuretemperature` for deriving pressure and temperature from period data with bottom pressure recorder (BPR) channels.
+	- New function `RSK2CSV` for converting and outputting CSV files from RSK structure.
+	- New function `RSKreaddownsample` and `RSKplotdownsample` for reading and plotting downsample data.
+	- Mksqlite upgraded to 2.5
+	- Fixed bug that mksqlite mix SQtable when multiple files are opened.
+	- Fixed bug that `RSKfindprofile` can not detect upcast correctly.
+	- Added ability to align channel with time in `RSKalignchannel`.
+	- Added ability to read hidden channel and power table in `RSKopen`.
+	- Added interpolation ability in `RSKtrim`
+    	- Added `Optode Temperature` channel name.
+	- Improved algorithm for `RSKbinaverage`.
+    	- Improved algorithm for RSKremoveloops.
+    	- Added `direction` and `profilenumber` fields to rsk.data with profiles.
+    	- RSKplotprofiles enables different linestyle for upcast and downcast.
+    	- RSKplotprofiles enables pressure as Y-axis.
 
 * Version 2.1.0 (2017-08-31)
-    - New function `RSKtrim` for pruning data
+	- New function `RSKtrim` for pruning data
 	- Improved vignettes
 	- Option to plot against depth in `RSKplotprofiles`
 	- Fixed `RSKplotprofiles` for compatibility with pre-R2014b
@@ -91,30 +102,30 @@ channel in the RSK structure.
 	- Enumerate channels with duplicate longName
 
 * Version 2.0.0 (2017-07-07)
-    - All optional input arguments are name-value pair
-    - Rename burstdata field to burstData
-    - Add post-processing functions for smoothing, channel alignment, etc.
+	- All optional input arguments are name-value pair
+	- Rename burstdata field to burstData
+	- Add post-processing functions for smoothing, channel alignment, etc.
 	- RSKtools data processing log recorded in RSK structure 
-    - Add 2D plotting function, `RSKplot2D`
-    - RSKplotprofiles contains a subplot for each channel
-    - Add option to plot selected channels to plotting functions
+	- Add 2D plotting function, `RSKplot2D`
+	- RSKplotprofiles contains a subplot for each channel
+	- Add option to plot selected channels to plotting functions
 	- Plotting functions output handles to line objects for customization
-    - Relocate profiling data from the profiles field to the data field
-    - Added function to calculate Practical Salinity, `RSKderivesalinity`
-    - Added function to calculate sea pressure from total pressure, `RSKderiveseapressure`
-    - Added function to calculate depth, `RSKderivedepth`
-    - Added function to calculate profiling speed, `RSKderivevelocity`
+	- Relocate profiling data from the profiles field to the data field
+    	- Added function to calculate Practical Salinity, `RSKderivesalinity`
+    	- Added function to calculate sea pressure from total pressure, `RSKderiveseapressure`
+    	- Added function to calculate depth, `RSKderivedepth`
+    	- Added function to calculate profiling speed, `RSKderivevelocity`
 	- Cast detection function added, `RSKfindprofiles`
 
 * Version 1.5.3 (2017-06-07)
-    - Use atmospheric pressure in database if available
-    - Improve channel table reading by using instrumentChannels
-    - Change geodata warning to a display message
-    - Only read current parameter values in parameter table
+	- Use atmospheric pressure in database if available
+	- Improve channel table reading by using instrumentChannels
+	- Change geodata warning to a display message
+	- Only read current parameter values in parameter table
 
 * Version 1.5.2 (2017-05-23)
-    - Update RSKconstants.m
-    - Fix bug with opening files that are not in current directory
+	- Update RSKconstants.m
+	- Fix bug with opening files that are not in current directory
 
 * Version 1.5.1 (2017-05-18)
     - Add RSKderivedepth function
