@@ -72,7 +72,7 @@ channel in the RSK structure.
 
 * Version 2.2.0 (2017-11-01)
 	- New function `RSKcorrecthold` for correcting A2D zero-order hold points.
-	- New function `RSKaddchannel` for adding new variable into exsiting rsk structure.
+	- New function `RSKaddchannel` for adding new variable into existing rsk structure.
 	- New function `RSKderiveC25` for deriving specific conductivity at 25 degree Celsius.
 	- New function `RSKderiveBPRpressuretemperature` for deriving pressure and temperature from period data with bottom pressure recorder (BPR) channels.
 	- New function `RSK2CSV` for converting and outputting CSV files from RSK structure.
@@ -82,13 +82,13 @@ channel in the RSK structure.
 	- Fixed bug that `RSKfindprofile` can not detect upcast correctly.
 	- Added ability to align channel with time in `RSKalignchannel`.
 	- Added ability to read hidden channel and power table in `RSKopen`.
-	- Added interpolation ability in `RSKtrim`
+	- Added interpolation ability in `RSKtrim`.
 	- Added `Optode Temperature` channel name.
 	- Improved algorithm for `RSKbinaverage`.
 	- Improved algorithm for RSKremoveloops.
-	- Added `direction` and `profilenumber` fields to rsk.data with profiles.
-	- RSKplotprofiles enables different linestyle for upcast and downcast.
-	- RSKplotprofiles enables pressure as Y-axis.
+	- Added `direction` and `profilenumber` fields to `rsk.data` with profiles.
+	- `RSKplotprofiles` enables different line-style for upcast and downcast.
+	- `RSKplotprofiles` enables pressure as Y-axis.
 
 * Version 2.1.0 (2017-08-31)
 	- New function `RSKtrim` for pruning data
