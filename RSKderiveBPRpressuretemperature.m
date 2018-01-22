@@ -4,7 +4,22 @@ function [RSK] = RSKderiveBPRpressuretemperature(RSK)
 %
 % Syntax:  [RSK] = RSKderiveBPRpressuretemperature(RSK)
 % 
-% Derives BPR pressure and temperature from period data.
+% Loggers with bottom pressure recorder (BPR) channels interface a
+% Paroscientific, Inc. transducer. The logger measure precisely the output 
+% frequencies from the transducer. Those transducers generally outputs two 
+% signals, one for pressure and one for temperature. The 'full' type output
+% data only import with original signals which require conversion to 
+% meaningful pressure and temperature, where this function is applied. 
+%
+% The function implement the calibration equations from Parascientific, Inc
+% for pressure and temperature. It requires an RSK structure that contain 
+% calibration information. Use RSKreadcalibrations first to get the 
+% calibration table.
+%
+% Note: When data type is set to 'EPdesktop', the derived temperature and 
+% pressure from the logger will be read, however, it can't achieve the 
+% highest resolution available, so using 'full' data type and deriving 
+% temperature and pressure with RSKtools is recommended.
 %
 % Inputs: 
 %    RSK - Structure containing the logger metadata and data
