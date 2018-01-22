@@ -12,7 +12,7 @@ function [RSK] = RSKaddchannel(RSK, input, channelName, units)
 %    input - data of the added channel, must be a structure with form of:
 %            input(n).values 
 % 
-%    channelName - Name of the added channel
+%    channelName - name of the added channel
 %
 %    units - unit of the added channel
 %
@@ -22,7 +22,7 @@ function [RSK] = RSKaddchannel(RSK, input, channelName, units)
 % Author: RBR Ltd. Ottawa ON, Canada
 % email: support@rbr-global.com
 % Website: www.rbr-global.com
-% Last revision: 2017-11-21
+% Last revision: 2018-01-22
 
 p = inputParser;
 addRequired(p, 'RSK', @isstruct);
