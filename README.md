@@ -71,8 +71,8 @@ channel in the RSK structure.
 ## Changes
 
 * Version 2.2.0 (2017-11-01)
-    	- New function `RSKcorrecthold` for correcting A2D zero-order hold points.
-    	- New function `RSKaddchannel` for adding new variable into exsiting rsk structure.
+	- New function `RSKcorrecthold` for correcting A2D zero-order hold points.
+	- New function `RSKaddchannel` for adding new variable into exsiting rsk structure.
 	- New function `RSKderiveC25` for deriving specific conductivity at 25 degree Celsius.
 	- New function `RSKderiveBPRpressuretemperature` for deriving pressure and temperature from period data with bottom pressure recorder (BPR) channels.
 	- New function `RSK2CSV` for converting and outputting CSV files from RSK structure.
