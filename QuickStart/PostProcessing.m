@@ -20,7 +20,7 @@
 % Review Standard for help.
 
 % First, open a connection to the RSK logger database file:
-file = 'sample.rsk';
+file = '../sample.rsk';
 rsk = RSKopen(file);
 
 % read the upcast from profiles 1 - 20

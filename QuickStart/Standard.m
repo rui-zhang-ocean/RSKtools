@@ -30,7 +30,7 @@
 % the data, which is up to 4000 samples long. The structure returned after
 % opening an RSK looks something like:
 
-file = 'sample.rsk';
+file = '../sample.rsk';
 rsk = RSKopen(file)
 
 %%
