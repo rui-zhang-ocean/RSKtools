@@ -5,18 +5,20 @@
 % 2018-01-18
 
 %% Introduction 
-% |RSKtools| provides some convenient functions for common data
-% extraction (e.g., extracting profiles from a continuous dataset) and
-% visualisation (e.g., plotting individual profiles). As of v2.0.0,
-% RSKtools includes a suite of functions to perform routine processing
-% steps to enhance the data quality (see PostProcessing for more 
-% information). From this version on, we are expanding our data 
-% post-processing suite. Please feel free to make suggestions.
+% |RSKtools| provides convenient functions for data extraction (e.g.,
+% extracting profiles from a continuous dataset) and visualisation
+% (e.g., plotting individual profiles). As of v2.0.0, RSKtools
+% includes a suite of functions to perform routine processing steps to
+% enhance the data quality (see the Resources section for information
+% on RSKtools post-processing functions). We are continually expanding
+% RSKtools, and please feel free to suggest improvements and new
+% features.
 
 %% Installing
-% The latest stable version of |RSKtools| can be found at <http://www.rbr-global.com/support/matlab-tools>.
+% The latest stable version of |RSKtools| can be found at
+% <http://www.rbr-global.com/support/matlab-tools>.
 % 
-% * Unzip the archive (to |~/matlab/RSKtools|, for instance) 
+% * Download and unzip the archive (to |~/matlab/RSKtools|, for instance) 
 % * Add the folder to your path from the command line (|addpath ~/matlab/RSKtools|) or launch the path editor gui (|pathtool|). 
 % * type |help RSKtools| to get an overview and take a look at the examples.
 
@@ -24,11 +26,11 @@
 %% Examples of use
 % <html><h3>Loading files</h3></html>
 % 
-% A connection to the database must be made to work with an RSK file using
-% |RSKtools|. This connection is made using the |RSKopen()| function. Note
-% that |RSKopen| does not actually read the data, but reads a /thumbnail/ of
-% the data, which is up to 4000 samples long. The structure returned after
-% opening an RSK looks something like:
+% The first step is to make a connection to the RSK file with
+% |RSKopen|. Note that |RSKopen| does not actually read the data;
+% instead it reads a "thumbnail" of the data, which is up to 4000
+% samples long. The structure returned after opening an RSK looks
+% something like:
 
 file = '../sample.rsk';
 rsk = RSKopen(file)
@@ -50,40 +52,52 @@ rsk = RSKreaddata(rsk, 't1', t1, 't2', t2);
 
 rsk.data        
 
+%%
+% where |rsk.data.tstamp| contains the sample timestamps in Matlab
+% datenum format, and |rsk.data.values| contains the data.  Each
+% column in |rsk.data.values| contains data from a different channel.
+% The channel names and units for each column in |data| are:
+
+[{rsk.channels.longName}' {rsk.channels.units}']
+
 %% 
-% In this example, because the instrument is a "CTD"-type instrument,
-% Practical Salinity can be derived from conductivity, temperature,
-% and pressure.  |RSKderivesalinity| is a wrapper for the TEOS-10 GSW
-% function |gsw_SP_from_C|, and it adds a new channel called
-% |Salinity| as a column in |rsk.data.values|.  The TEOS-10 GSW Matlab
-% toolbox is freely available from <http://teos-10.org/software.htm>.
-% It is good practice to derive sea pressure first in case you want to
-% specify a custom value of atmospheric pressure.
+% In this particular example, Practical Salinity can be derived from
+% conductivity, temperature, and pressure because the file comes from
+% a "CTD"-type instrument.  |RSKderivesalinity| is a wrapper for the
+% TEOS-10 GSW function |gsw_SP_from_C|, and it adds a new channel
+% called |Salinity| as a column in |rsk.data.values|.  The TEOS-10 GSW
+% Matlab toolbox is freely available from
+% <http://teos-10.org/software.htm>.  It is good practice to derive
+% sea pressure first in case you want to specify a custom value of
+% atmospheric pressure, otherwise the nominal value of 10.1325 dbar is
+% used.
 
 rsk = RSKderiveseapressure(rsk);
 rsk = RSKderivesalinity(rsk);
-{rsk.channels.longName}'
+
 
 %% Working with profiles
-% Profiling loggers with recent versions of firmware contain the
-% ability to detect and log profile "events" automatically; these are
-% denoted as "downcasts" and "upcasts". The function |RSKreadprofiles|
-% extracts individual profiles from the raw data, based on the previously
-% identified profiling events. Then, a plot of the profiles can be
-% made very easily using the |RSKplotprofiles| function. 
+% Profiling loggers with recent versions of firmware can detect and
+% record profile upcast and downcast "events" automatically. The
+% function |RSKreadprofiles| uses the profile event time stamps to
+% organize the data into profiles. Then, a plot of the profiles can be
+% made very easily using the |RSKplotprofiles| function.
 %
-% If profiles have not been detected by the logger or Ruskin, the function
-% |RSKfindprofiles| can be used. The pressureThreshold argument, which
-% determines the pressure reversal required to trigger a new profile, and
-% the conductivityThreshold argument, which determines if the logger is
-% out of the water, can be adjusted to improve profile detection when 
-% the profiles are very shallow, or when the water is very fresh.
+% If profiles have not been detected by the logger or Ruskin, or if
+% the profile time stamps do not correctly parse the data into
+% profiles, the function |RSKfindprofiles| can be used. The
+% |pressureThreshold| argument, which determines the pressure reversal
+% required to trigger a new profile, and the |conductivityThreshold|
+% argument, which determines if the logger is out of the water, can be
+% adjusted to improve profile detection when the profiles were very
+% shallow, or if the water was very fresh.
 %
-% Note: Salinity and sea pressure have to be derived again because
-% |RSKreadprofiles| replaces the data field with the newly queried
-% values.
+% Note: Salinity, sea pressure, and other channels derived by RSKtools
+% should be derived again after using |RSKreadprofiles| because in
+% some circumstances it will go back and read raw data from the RSK
+% file.
 
-% load the six to eighth profiles in both directions (upcast and downcast)
+% load the upcast and downcast of profiles 6 to 8
 rsk = RSKreadprofiles(rsk, 'profile', 6:8, 'direction', 'both');
 rsk = RSKderiveseapressure(rsk);
 rsk = RSKderivesalinity(rsk);
@@ -93,7 +107,7 @@ handles = RSKplotprofiles(rsk, 'channel', {'temperature','salinity','chlorophyll
 
 
 %% Customising plots
-% All plotting functions return a handle enabling access to the line
+% The plotting functions return a handle enabling access to the line
 % objects. The output is a matrix containing a column for each channel
 % subplot and a row for each profile.
 handles
@@ -107,9 +121,9 @@ set(handles(1,:),{'linewidth'},{3});
 % into profiles, |data| is a 1xN structure array, where each element
 % is an upcast or downcast from a single profile containing an array
 % of time stamps and a matrix of channel data.  |RSKtools| has
-% functions to make accessing the data easy.  For example, to access
-% the time stamps, sea pressure, temperature, and dissolved O2, from
-% the upcast of the 1st profile, run:
+% functions to access the data from particular channels and profiles.
+% For example, to access the time stamps, sea pressure, temperature,
+% and dissolved O2 from the upcast of the 1st profile, run:
 
 profind = getdataindex(rsk,'direction','up','profile',1);
 tempcol = getchannelindex(rsk,'temperature');
@@ -132,7 +146,7 @@ o2          = rsk.data(profind).values(:,o2col);
 % RSKtools post-processing guide> for an introduction on how to
 % process RBR profiles with RSKtools.  The post-processing suite
 % contains, among other things, functions to low-pass filter, align,
-% de-spike data.
+% de-spike data, trim the data, and write CSV files.
 
 
 %% About this document
