@@ -1,12 +1,12 @@
 % RSKTOOLS
-% Version 2.2.0 2017-11-01
+% Version 2.2.0 2018-01-24
 %
 % 1.  This toolbox depends on the presence of a functional mksqlite
 % library.  We have included a couple of versions here for Windows (32 bit/
 % 64 bit), Linux (64 bit) and Mac (64 bit), but you might need to compile
-% another version.  The mksqlite-src directory contains everything you need
-% and some instructions from the original author.  You can also find the
-% source through Google.
+% another version.  The source code can be downloaded from 
+% https://sourceforge.net/projects/mksqlite/files/ we are currently using
+% version 2.5.
 %
 % 2.  Opening an RSK.  Use "RSKopen" with a filename as argument:
 %
@@ -26,7 +26,7 @@
 %
 % 4.  Use RSKreaddata to read a block of data from the database on disk
 %
-% RSK=RSKreaddata(RSK, 't1', <starttime>, 't2', <endtime>); 
+% RSK = RSKreaddata(RSK, 't1', <starttime>, 't2', <endtime>); 
 %
 % This reads a portion of the 'data' table into the RSK structure
 % (replacing any previous data that was read this way).  The <starttime>
@@ -94,10 +94,12 @@
 % Helper files
 %   mksqlite           - the library for SQLite files (the .rsk file format)
 %   arrangedata        - rearrange a structure into a cell array for convenience
-%   RSKtime2datenum    - convert SQLite times to Matlab datenums 
-%   datenum2RSKtime    - convert Matlab datenums to SQLite times
-%   unixtime2datenum   - convert unixtimes to Matlab datenums
-%   datenum2unixtime   - convert Matlab datenums to unixtimes
+%   addchannelmetadata - add the metadata for a new channel
+%   getchannelindex    - return index of channels
+%   getdataindex       - return the index of specified data elements
 %
-% 
-
+%
+% For more information, check out documents in QuickStart folder and our
+% online user manual: https://docs.rbr-global.com/rsktools
+%
+%
