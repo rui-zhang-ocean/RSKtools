@@ -1,8 +1,8 @@
-function [RSK] = RSKderiveBPRpressuretemperature(RSK)
+function [RSK] = RSKderiveBPR(RSK)
 
-% RSKderivepressuretemperature
+% RSKderiveBPR
 %
-% Syntax:  [RSK] = RSKderiveBPRpressuretemperature(RSK)
+% Syntax:  [RSK] = RSKderiveBPR(RSK)
 % 
 % Loggers with bottom pressure recorder (BPR) channels interface a
 % Paroscientific, Inc. transducer. The logger measure precisely the output 
@@ -41,7 +41,7 @@ parse(p, RSK)
 RSK = p.Results.RSK;
 
 if ~isstruct(RSK.calibrations)
-    error('RSKderiveBPRpressuretemperature requires calibrations field. Use RSKreadcalibrations...')
+    error('RSKderiveBPR requires calibrations field. Use RSKreadcalibrations...')
 end
     
 if ~strcmp(RSK.dbInfo(end).type, 'full')

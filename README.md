@@ -74,7 +74,7 @@ channel in the RSK structure.
 	- New function `RSKcorrecthold` for correcting A2D zero-order hold points.
 	- New function `RSKaddchannel` for adding new variable into existing rsk structure.
 	- New function `RSKderiveC25` for deriving specific conductivity at 25 degree Celsius.
-	- New function `RSKderiveBPRpressuretemperature` for deriving pressure and temperature from period data with bottom pressure recorder (BPR) channels.
+	- New function `RSKderiveBPR` for deriving pressure and temperature from period data with bottom pressure recorder (BPR) channels.
 	- New function `RSK2CSV` for converting and outputting CSV files from RSK structure.
 	- New function `RSKreaddownsample` and `RSKplotdownsample` for reading and plotting downsample data.
 	- Mksqlite upgraded to 2.5
