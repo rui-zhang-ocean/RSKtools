@@ -55,6 +55,8 @@
 %   RSKopen              - Open an RBR RSK file and read metadata and thumbnails
 %   RSKreadthumbnail     - read thumbnail data from database
 %   RSKplotthumbnail     - plot thumbnail data
+%   RSKreaddownsample    - read downsample data from database
+%   RSKplotdownsample    - plot downsample data
 %   RSKreaddata          - read full dataset from database
 %   RSKplotdata          - plot data
 %   RSKplot2D            - display bin averaged data in a time-depth heat map
@@ -75,6 +77,8 @@
 %   RSKderiveseapressure - derive sea pressure from pressure
 %   RSKderivedepth       - derive depth from pressure
 %   RSKderivevelocity    - derive velocity from depth and time
+%   RSKderiveC25         - derive specific conductivity at 25 degree Celcius
+%   RSKderiveBPR         - derive temperature and pressure from bottom pressure recorder (BRP) period data
 %   RSKsmooth            - apply low-pass filter to data
 %   RSKdespike           - remove or replace spikes in data
 %   RSKcorrecthold       - remove or replace zero-order hold points in data
@@ -85,6 +89,7 @@
 %   RSKtrim              - remove channel data fitting specified criteria
 %   RSKaddchannel        - add new variable data to exsiting rsk structure
 %   RSK2MAT              - convert RSK structure to legacy RUSKIN .mat format
+%   RSK2CSV              - convert and output RSK structure to one or multiple CSV files
 %
 %
 % Helper files
