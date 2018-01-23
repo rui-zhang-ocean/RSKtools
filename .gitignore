@@ -6,3 +6,4 @@ testfiles/
 tests/
 ._*
 .DS_Store
+.#*
