@@ -3,12 +3,12 @@
 %
 % 1.  This toolbox depends on the presence of a functional mksqlite
 % library.  We have included a couple of versions here for Windows (32 bit/
-% 64 bit), Linux (64 bit) and Mac (64 bit), but you might need to compile
-% another version.  The source code can be downloaded from 
-% https://sourceforge.net/projects/mksqlite/files/ we are currently using
-% version 2.5.
+% 64 bit), Linux (64 bit) and Mac (64 bit).  If you might need to compile
+% another version, the source code can be downloaded from 
+% https://sourceforge.net/projects/mksqlite/files/. RSKtools currently uses
+% mksqlite Version 2.5.
 %
-% 2.  Opening an RSK.  Use "RSKopen" with a filename as argument:
+% 2.  Opening an RSK file.  Use RSKopen with a filename as the argument:
 %
 % RSK = RSKopen('sample.rsk');  
 %
@@ -71,13 +71,13 @@
 %   RSKsamplingperiod    - read logger sampling period information from RSK file
 %   RSKreadevents        - read events from database
 %   RSKreadgeodata       - read geodata
-%   RSKreadcalibrations  - Read the calibrations table of a RSK file
+%   RSKreadcalibrations  - read the calibrations table of a RSK file
 %   RSKderivesalinity    - derive salinity from conductivity, temperature, and sea pressure
 %   RSKderiveseapressure - derive sea pressure from pressure
 %   RSKderivedepth       - derive depth from pressure
 %   RSKderivevelocity    - derive profiling rate from depth and time
-%   RSKderiveC25         - derive specific conductivity at 25 degree Celcius
-%   RSKderiveBPR         - derive temperature and pressure from bottom pressure recorder (BRP) period data
+%   RSKderiveC25         - derive specific conductivity at 25 degree Celsius
+%   RSKderiveBPR         - derive temperature and pressure from bottom pressure recorder (BPR) period data
 %   RSKsmooth            - apply low-pass filter to data
 %   RSKdespike           - statistically identify and treat spikes in data
 %   RSKcorrecthold       - identify, and then remove or replace zero-order hold points in data
@@ -86,7 +86,7 @@
 %   RSKremoveloops       - remove values exceeding a threshold profiling rate and pressure reversals
 %   RSKbinaverage        - bin average the profile data by reference channel intervals
 %   RSKtrim              - remove or NaN channel data fitting specified criteria
-%   RSKaddchannel        - add a new channel to exsiting RSK structure
+%   RSKaddchannel        - add a new channel to existing RSK structure
 %   RSK2MAT              - convert RSK structure to legacy RUSKIN .mat format
 %   RSK2CSV              - write channel data and metadata to one or more CSV files
 %
@@ -95,8 +95,8 @@
 %   mksqlite           - the library for SQLite files (the .rsk file format)
 %   arrangedata        - rearrange a structure into a cell array for convenience
 %   addchannelmetadata - add the metadata for a new channel
-%   getchannelindex    - return index of channels
-%   getdataindex       - return the index of specified data elements
+%   getchannelindex    - returns column index to the data table given a channel name
+%   getdataindex       - returns index into the RSK data array given profile numbers and cast directions
 %
 %
 % For more information, check out documents in QuickStart folder and our
