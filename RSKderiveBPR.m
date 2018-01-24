@@ -1,25 +1,28 @@
 function [RSK] = RSKderiveBPR(RSK)
 
-% RSKderiveBPR
+% RSKderiveBPR - convert BPR frequencies to temperature and pressure
+% using calibration coefficients.
 %
 % Syntax:  [RSK] = RSKderiveBPR(RSK)
 % 
-% Loggers with bottom pressure recorder (BPR) channels interface a
-% Paroscientific, Inc. transducer. The logger measure precisely the output 
-% frequencies from the transducer. Those transducers generally outputs two 
-% signals, one for pressure and one for temperature. The 'full' type output
-% data only import with original signals which require conversion to 
-% meaningful pressure and temperature, where this function is applied. 
+% Loggers with bottom pressure recorder (BPR) channels are equipped
+% with a Paroscientific, Inc. pressure transducer. The logger records
+% the temperature and pressure output frequencies from the transducer.
+% The 'full' RSK file type output data only import with original
+% signals which require conversion to meaningful pressure and
+% temperature, where this function is applied.
 %
-% The function implement the calibration equations from Parascientific, Inc
-% for pressure and temperature. It requires an RSK structure that contain 
-% calibration information. Use RSKreadcalibrations first to get the 
-% calibration table.
+% The function implements the calibration equations from
+% Parascientific, Inc. for pressure and temperature. It requires an
+% RSK structure containing calibration information. Use
+% RSKreadcalibrations to retrieve the calibration table before calling
+% RSKderiveBPR.
 %
-% Note: When data type is set to 'EPdesktop', the derived temperature and 
-% pressure from the logger will be read, however, it can't achieve the 
-% highest resolution available, so using 'full' data type and deriving 
-% temperature and pressure with RSKtools is recommended.
+% Note: When the data type is 'EPdesktop', the derived temperature and
+% pressure from the logger will be read, however, it can not achieve
+% the highest (temporal?) resolution available, so using 'full' data
+% type and deriving temperature and pressure with RSKtools is
+% recommended.
 %
 % Inputs: 
 %    RSK - Structure containing the logger metadata and data
@@ -32,7 +35,7 @@ function [RSK] = RSKderiveBPR(RSK)
 % Author: RBR Ltd. Ottawa ON, Canada
 % email: support@rbr-global.com
 % Website: www.rbr-global.com
-% Last revision: 2017-11-13
+% Last revision: 2018-01-24
 
 p = inputParser;
 addRequired(p, 'RSK', @isstruct);
@@ -41,11 +44,11 @@ parse(p, RSK)
 RSK = p.Results.RSK;
 
 if ~isstruct(RSK.calibrations)
-    error('RSKderiveBPR requires calibrations field. Use RSKreadcalibrations...')
+    error('RSKderiveBPR requires calibration coefficients. Use RSKreadcalibrations...')
 end
     
 if ~strcmp(RSK.dbInfo(end).type, 'full')
-    error('Only files of type "full" needs derivation for BPR pressure and temperature');
+    error('Only files of type "full" need derivation for BPR pressure and temperature');
 end
 
 % Find pressure and temperature period data column
@@ -60,6 +63,7 @@ u0 = RSK.calibrations(TempCaliCol).x0;
 y1 = RSK.calibrations(TempCaliCol).x1;
 y2 = RSK.calibrations(TempCaliCol).x2;
 y3 = RSK.calibrations(TempCaliCol).x3;
+
 c1 = RSK.calibrations(PresCaliCol).x1;
 c2 = RSK.calibrations(PresCaliCol).x2;
 c3 = RSK.calibrations(PresCaliCol).x3;
@@ -101,7 +105,7 @@ RSK = RSKappendtolog(RSK, logentry);
     T0 = t1 + t2 .* U + t3 .* U .* U + t4 .* U .* U .* U + t5 .* U .* U .* U .* U;
     Tsquare = (pressure_period/(1e6)) .* (pressure_period/(1e6));
     Pres = C .* (1 - ((T0 .* T0) ./ (Tsquare))) .* (1 - D .* (1 - ((T0 .* T0) ./ (Tsquare))));
-    pressure = Pres* 0.689475; % convert from PSI to dBar
+    pressure = Pres* 0.689475; % convert from PSI to dbar
     
     end
 
