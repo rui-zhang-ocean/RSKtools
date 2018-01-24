@@ -38,53 +38,60 @@ rsk = RSKderiveseapressure(rsk);
 
 % Hang on to the raw data for plotting later.
 raw = rsk;
+raw = RSKderivesalinity(raw);
 
 %% Correct for A2D zero-order hold
-% The analog-to-digital (A2D) converter on RBR instruments must recalibrate
-% periodically.  In the time it takes for the caliration to finish, one
-% or multiple samples are missed.  The onboard firmware fills the missed
-% scan with the same data measured during the previous scan, a simple
-% technique called a zero-order hold.
+% The analog-to-digital (A2D) converter on RBR instruments must
+% recalibrate periodically.  In the time it takes for the calibration
+% to finish, one or more samples are missed.  The onboard firmware
+% fills the missed scan with the same data measured during the
+% previous scan, a simple technique called a zero-order hold.
 %
-% The function identifies zero-hold points by looking for where consecutive
-% differences for each channel are equal to zero, and removes the values 
-% (fill NaN) or replaces them with linear interpolation. See 
-% <https://docs.rbr-global.com/rsktools RSKtools on-line user manual> for
-% further information.
+% The function identifies zero-hold points by looking for where
+% consecutive differences for each channel are equal to zero, and
+% replaces these samples with a NaN or an interpolated value. See
+% <https://docs.rbr-global.com/rsktools RSKtools on-line user manual>
+% for further information.
 
 [rsk,holdpts] = RSKcorrecthold(rsk,'channel',...
     {'temperature','conductivity','chlorophyll'},'action','interp'); 
 
 %% Low-pass filtering
-% Applying a low pass filter to temperature and conductivity
-% smooths high frequency variability and compensates for differences
-% in sensor time constants (the thermistor often has a slower response
-% to changes than conductivity).  RSKtools includes a function called
-% |RSKsmooth| for this purpose.  
+% Applying a low pass filter to temperature and conductivity smooths
+% high frequency variability and compensates for differences in sensor
+% time constants (the thermistor has a slower response to changes than
+% the conductivity cell).  Users may also wish to smooth other
+% channels to reduce noise (e.g., optical channels such as
+% chlorophyll).  RSKtools includes a function called |RSKsmooth| for
+% this purpose.
 %
-% RBR thermistors on profiling instruments have time constants of
-% about 0.6 s, so the conductivity should be smoothed to match that
-% value.  In this example, the logger samples at 6 Hz instrument
-% (|rsk.continuous.samplingPeriod|), so a 7 sample window should
-% provide sufficient smoothing.
+% The standard RBR thermistor on profiling instruments has time
+% constant of about 0.6 s, so the conductivity should be smoothed to
+% match that value (RBR's fast thermistors have a 0.1 s response
+% time).  In this example, the logger samples at 6 Hz
+% (|rsk.continuous.samplingPeriod|), so a 5 sample running average
+% should provide sufficient smoothing.
 
-rsk = RSKsmooth(rsk, ...
-    {'temperature','conductivity','chlorophyll'}, 'windowLength', 7);
+rsk = RSKsmooth(rsk,{'temperature','conductivity'}, 'windowLength', 5);
+rsk = RSKsmooth(rsk,'chlorophyll', 'windowLength', 9);
 
 
 %% Alignment of conductivity to temperature and pressure 
 % Conductivity, temperature, and pressure need to be aligned in time
 % to account for the fact these sensors are not physically co-located
-% on the logger.  At any instant, the sensors are measuring a slightly
-% different parcel of water.  Accounting for this effect ensure that
-% salinity is of high accuracy.
+% on the logger.  In other words, at any instant, the sensors are
+% measuring a slightly different parcel of water.  When temperature
+% and conductivity are misaligned, the salinity will contain spikes at
+% sharp interfaces and may even be biased.  Properly aligning the
+% sensors, together with matching the time response, will minimize
+% spiking and bias in salinity.
 %
 % The classic approach is to compute the salinity for a range of lags,
-% plot each curve, and to manually choose the curve with the smallest
-% salinity spikes at sharp interfaces.  As an alternative, RSKtools
-% provides a function called |RSKcalculateCTlag| that estimates the
-% optimal lag between conductivity and temperature by minimising
-% salinity spiking. See |help RSKcalculateCTlag|.
+% plot each curve, and choose the curve (often by eye) with the
+% smallest salinity spikes at sharp interfaces.  As an alternative,
+% RSKtools provides a function called |RSKcalculateCTlag| that
+% estimates the optimal lag between conductivity and temperature by
+% minimising salinity spiking. See |help RSKcalculateCTlag|.
 
 lag = RSKcalculateCTlag(rsk);
 rsk = RSKalignchannel(rsk, 'Conductivity', lag);
@@ -92,33 +99,37 @@ rsk = RSKalignchannel(rsk, 'Conductivity', lag);
 
 %% Remove loops
 % Profiling during rough seas can cause the CTD descent (or ascent)
-% rate to vary, or even temporarily reverse direction.  During such
-% times, the CTD can effectively sample its own wake, potentially
-% degrading the quality of the profile in regions of strong
-% gradients. The measurements taken when the instrument is profiling
-% too slowly or during a pressure reversal should not be used for
-% further analysis. We recommend using |RSKremoveloops| to flag and
-% remove data when the instrument falls below a |threshold| speed and
-% when reversed pressure (loop) is detected. Use |RSKderivedepth| to 
-% calculate depth from sea pressure, and |RSKderivevelocity| to 
-% calculate profiling rate.
+% rate to vary, or even change sign (i.e., the CTD momentarily changes
+% direction).  When this happens, the CTD can effectively sample its
+% own wake, potentially degrading the quality of the profile in
+% regions of strong gradients. The measurements taken when the
+% instrument is profiling too slowly or during a pressure reversal
+% should not be used for further analysis. We recommend using
+% |RSKremoveloops| to find and NaN the data when the instrument 1)
+% falls below a threshold speed and 2) when the pressure reverses (the
+% CTD "loops").  Before using |RSKremoveloops|, use |RSKderivedepth|
+% to calculate depth from sea pressure, and then use
+% |RSKderivevelocity| to calculate profiling rate.
+
 rsk = RSKderivedepth(rsk);
 rsk = RSKderivevelocity(rsk);
 
-% Apply the threshold
+% Apply the algorithm
 rsk = RSKremoveloops(rsk, 'threshold', 0.3);
 
 
 %% Derive practical salinity
-% RSKtools includes a function to derive Practical Salinity using the
-% TEOS-10 GSW function |gsw_SP_from_C|.  The TEOS-10 GSW Matlab
-% toolbox is freely available from
-% <http://www.teos-10.org/software.htm>.
+% RSKtools includes a convenience function to derive Practical
+% Salinity using the TEOS-10 GSW function |gsw_SP_from_C|.  The
+% TEOS-10 GSW Matlab toolbox is freely available from
+% <http://www.teos-10.org/software.htm>.  The result is stored in the
+% data table along with other measured and derived channels.
 rsk = RSKderivesalinity(rsk);
 
 %% Compute an extra variable and add it to the RSK structure
-% In this example we compute Absolute Salinity and add it to the RSK
-% structure
+% Users may wish to add additional data to the RSK structure.  We
+% illustrate how this is done by computing Absolute Salinity and
+% adding it to the RSK structure
 p = getchannelindex(rsk,'sea pressure');
 sp= getchannelindex(rsk,'salinity');
 
@@ -139,9 +150,9 @@ rsk = RSKbinaverage(rsk, 'binBy', 'Sea Pressure', 'binSize', 0.25, 'direction', 
 % Compare the binned data to the raw data for a few example profiles,
 % processed data are represented with thicker lines.
 clf
-h1 = RSKplotprofiles(raw,'profile',[1 10 20],'channel',{'conductivity','temperature','chlorophyll'});
-h2 = RSKplotprofiles(rsk,'profile',[1 10 20],'channel',{'conductivity','temperature','chlorophyll'});
-set(h2,{'linewidth'},{2})
+h1 = RSKplotprofiles(raw,'profile',[1 10 20],'channel',{'salinity','temperature','chlorophyll'});
+h2 = RSKplotprofiles(rsk,'profile',[1 10 20],'channel',{'salinity','temperature','chlorophyll'});
+set(h2,{'linewidth'},{3})
 
 
 %% 2D plot
