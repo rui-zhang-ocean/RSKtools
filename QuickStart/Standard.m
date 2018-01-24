@@ -2,7 +2,7 @@
 % RSKtools v2.2.0;
 % RBR Ltd. Ottawa ON, Canada;
 % support@rbr-global.com;
-% 2018-01-18
+% 2018-01-24
 
 %% Introduction 
 % |RSKtools| provides convenient functions for data extraction (e.g.,

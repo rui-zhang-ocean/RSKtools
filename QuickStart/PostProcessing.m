@@ -2,7 +2,7 @@
 % RSKtools v2.2.0;
 % RBR Ltd. Ottawa ON, Canada;
 % support@rbr-global.com;
-% 2018-01-18
+% 2018-01-24
 
 %% Introduction
 % A suite of new functions are included in RSKtools v2.0.0 to
@@ -156,6 +156,11 @@ set(h2,{'linewidth'},{3})
 
 
 %% 2D plot
+% |RSKplot2D| generates a plot of the profiles over time. The x-axis 
+% is time; the y-axis is a reference channel (default is sea pressure). 
+% All data elements must have identical reference channel samples. 
+% |RSKbinaverage| has achieved this here. 
+
 clf
 RSKplot2D(rsk, 'Salinity'); 
 

@@ -1,6 +1,6 @@
 function im = RSKplot2D(RSK, channel, varargin)
 
-%RSKplot2D - Plot profiles in a 2D plot.
+% RSKplot2D - Plot profiles in a 2D plot.
 %
 % Syntax:  [im] = RSKplot2D(RSK, channel, [OPTIONS])
 % 
@@ -20,10 +20,10 @@ function im = RSKplot2D(RSK, channel, varargin)
 %   [Optional] - profile - Profile numbers to plot. Default is to use all
 %                      available profiles.  
 %
-%                 direction - 'up' for upcast, 'down' for downcast. Default
+%                direction - 'up' for upcast, 'down' for downcast. Default
 %                      is down.
 %
-%                 reference - Channel that will be plotted as y. Default
+%                reference - Channel that will be plotted as y. Default
 %                      'Sea Pressure', can be any other channel.
 %
 % Output:
