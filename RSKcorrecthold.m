@@ -1,19 +1,25 @@
 function [RSK, holdpts] = RSKcorrecthold(RSK, varargin)
 
-% RSKcorrecthold - Correct zero-order hold for selected
-%                  channel/profile/direction.
+% RSKcorrecthold - Replace zero-order hold points with interpolated
+%                  value or NaN.
 %
 % Syntax:  [RSK, holdpts] = RSKcorrecthold(RSK, [OPTIONS])
 % 
-% The analog-to-digital (A2D) converter on RBR instruments must recalibrate
-% periodically.  In the time it takes for the caliration to finish, one
-% or multiple samples are missed.  The onboard firmware fills the missed
-% scan with the same data measured during the previous scan, a simple
-% technique called a zero-order hold.
+% The analog-to-digital (A2D) converter on RBR instruments must
+% recalibrate periodically.  In the time it takes for the calibration
+% to finish, one or more samples are missed.  The onboard firmware
+% fills the missed sample with the same data measured during the
+% previous sample, a simple technique called a zero-order hold.
 %
-% The function identifies zero-hold points by looking for where consecutive
-% differences for each channel are equal to zero, and removes the values 
-% (fill NaN) or replaces them with linear interpolation.
+% The function identifies zero-hold points by looking for where
+% consecutive differences for each channel are equal to zero, and
+% replaces them with an interpolated value or a NaN.
+%
+% An example of where zero-order holds are important is when computing
+% the vertical profiling rate from pressure.  Zero-order hold points
+% produce spikes in the profiling rate at regular intervals, which can
+% cause the points to be flagged by RSKremoveloops.
+%
 %
 % Inputs:
 %   [Required] - RSK - Structure containing logger data.
@@ -32,7 +38,7 @@ function [RSK, holdpts] = RSKcorrecthold(RSK, varargin)
 %                'nan', whereby hold points are replaced with NaN. Another
 %                option is 'interp', whereby hold points are replaced with
 %                values calculated by linearly interpolating from the
-%                nerghbouring points.
+%                neighbouring points.
 %
 % Outputs:
 %    RSK - Structure with zero-order hold corrected values.
@@ -51,7 +57,7 @@ function [RSK, holdpts] = RSKcorrecthold(RSK, varargin)
 % Author: RBR Ltd. Ottawa ON, Canada
 % email: support@rbr-global.com
 % Website: www.rbr-global.com
-% Last revision: 2017-10-26
+% Last revision: 2018-01-24
 
 validActions = {'interp', 'nan'};
 checkAction = @(x) any(validatestring(x,validActions));
