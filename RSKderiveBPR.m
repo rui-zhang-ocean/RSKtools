@@ -1,28 +1,30 @@
 function [RSK] = RSKderiveBPR(RSK)
 
-% RSKderiveBPR - convert BPR frequencies to temperature and pressure
-% using calibration coefficients.
+% RSKderiveBPR - convert bottom pressure recorder frequencies to
+% temperature and pressure using calibration coefficients.
 %
 % Syntax:  [RSK] = RSKderiveBPR(RSK)
 % 
 % Loggers with bottom pressure recorder (BPR) channels are equipped
 % with a Paroscientific, Inc. pressure transducer. The logger records
 % the temperature and pressure output frequencies from the transducer.
-% The 'full' RSK file type output data only import with original
-% signals which require conversion to meaningful pressure and
-% temperature, where this function is applied.
+% RSK files of type 'full' contain only the frequencies, whereas RSK
+% files of type 'EPdesktop' contain the transducer frequencies for
+% pressure and temperature, as well as the derived pressure and
+% temperature.  RSKderiveBPR derives temperature and pressure from the
+% transducer frequency channels for 'full' files.
+% 
+% RSKderiveBPR implements the calibration equations developed by
+% Paroscientific, Inc. to derive pressure and temperature.  The
+% function calls RSKreadcalibrations to retrieve the calibration table
+% if has not been read previously.
 %
-% The function implements the calibration equations from
-% Parascientific, Inc. for pressure and temperature. It requires an
-% RSK structure containing calibration information. The function will
-% call RSKreadcalibrations to retrieve the calibration table if the table
-% does not exist.
-%
-% Note: When RSK data type is set to 'EPdesktop', Ruskin will import with
-% both original signal and converted pressure and temperature data,
-% however, the converted data can not achieve the highest resolution 
-% available, so using 'full' data type and deriving temperature and 
-% pressure with RSKtools is recommended.
+% Note: When RSK data type is set to 'EPdesktop', Ruskin will import
+% both the original signal and the derived pressure and temperature
+% data.  However, the converted data can not achieve the highest
+% resolution available.  Using the 'full' data type and deriving
+% temperature and pressure with RSKtools will result in data with the
+% full resolution.
 %
 % Inputs: 
 %    RSK - Structure containing the logger metadata and data
