@@ -5,17 +5,15 @@ function [RSK] = RSKderiveC25(RSK, varargin)
 %
 % Syntax:  [RSK] = RSKderiveC25(RSK, [OPTIONS])
 %
-% This function computes the specific conductivity at 25 degree Celsius
-% given the conductivity in mS/cm and temperature in degrees Celsius.
-%    
-% The calculation uses the Standard Methods for the Examination of
-% Water and WasteWater (eds. Clesceri et. al.), 20th edition, 1998. The
-% default temperature sensitivity coefficient, alpha, is 0.0191 deg C-1.
+% This function computes the specific conductivity in µS/cm at 25
+% degrees Celsius given the conductivity in mS/cm and temperature in
+% degrees Celsius.  The default temperature sensitivity coefficient,
+% alpha, is 0.0191 deg C-1.
 %    
 % Inputs: 
 %    [Required] - RSK - Structure containing the logger metadata and data. 
 %
-%    [Optional] - alpha - temperature coefficient, with default 0.0191 deg C-1
+%    [Optional] - alpha - temperature coefficient, with default 0.0191 deg C-1.
 %
 % Outputs:
 %    RSK - Updated structure containing a new channel for specific conductivity.
@@ -53,6 +51,6 @@ RSK = RSKappendtolog(RSK, logentry);
 
 %% Nested function
     function out = deri_speccond(c,t,alpha)
-    out = c./(1+alpha*(t-25));
+    out = c./(1 + alpha.*(t-25));
     end
 end
