@@ -14,15 +14,15 @@ function [RSK] = RSKderiveBPR(RSK)
 %
 % The function implements the calibration equations from
 % Parascientific, Inc. for pressure and temperature. It requires an
-% RSK structure containing calibration information. Use
-% RSKreadcalibrations to retrieve the calibration table before calling
-% RSKderiveBPR.
+% RSK structure containing calibration information. The function will
+% call RSKreadcalibrations to retrieve the calibration table if the table
+% does not exist.
 %
-% Note: When the data type is 'EPdesktop', the derived temperature and
-% pressure from the logger will be read, however, it can not achieve
-% the highest (temporal?) resolution available, so using 'full' data
-% type and deriving temperature and pressure with RSKtools is
-% recommended.
+% Note: When RSK data type is set to 'EPdesktop', Ruskin will import with
+% both original signal and converted pressure and temperature data,
+% however, the converted data can not achieve the highest resolution 
+% available, so using 'full' data type and deriving temperature and 
+% pressure with RSKtools is recommended.
 %
 % Inputs: 
 %    RSK - Structure containing the logger metadata and data
@@ -44,7 +44,7 @@ parse(p, RSK)
 RSK = p.Results.RSK;
 
 if ~isstruct(RSK.calibrations)
-    error('RSKderiveBPR requires calibration coefficients. Use RSKreadcalibrations...')
+    RSK = RSKreadcalibrations(RSK);
 end
     
 if ~strcmp(RSK.dbInfo(end).type, 'full')
