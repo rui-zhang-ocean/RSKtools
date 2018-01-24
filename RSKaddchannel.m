@@ -1,28 +1,32 @@
 function [RSK] = RSKaddchannel(RSK, input, channelName, units)
 
-% RSKaddchannel - Add a new channel with defined channel name and units. If
-% the given channelName exists in current rsk structure, it will overwrite
-% the old one.
+% RSKaddchannel - Add a new channel with defined channel name and
+% units. If the new channel already exists in the RSK structure, it
+% will overwrite the old one.
 %
 % Syntax:  [RSK] = RSKaddchannel(RSK, input, channelName, units)
 % 
 % Inputs: 
 %    RSK - Structure containing the logger metadata and data. 
 %    
-%    input - data of the added channel, must be a structure with form of:
-%            input(n).values 
+%    input - Structure containing the data to be added.  The data for
+%            the new channel must be stored in a field of 'input'
+%            called 'values' (i.e., input.values).  If the data is
+%            arranged as profiles in the RSK structure, then 'input'
+%            must be a 1XN array of structures of where N =
+%            length(RSK.data).
 % 
 %    channelName - name of the added channel
 %
 %    units - unit of the added channel
 %
 % Outputs:
-%    RSK - Updated structure containing added data.
+%    RSK - Updated structure containing the new channel.
 %
 % Author: RBR Ltd. Ottawa ON, Canada
 % email: support@rbr-global.com
 % Website: www.rbr-global.com
-% Last revision: 2018-01-22
+% Last revision: 2018-01-24
 
 p = inputParser;
 addRequired(p, 'RSK', @isstruct);
