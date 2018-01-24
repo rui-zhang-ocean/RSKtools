@@ -78,7 +78,7 @@ channel in the RSK structure.
 	- New function `RSK2CSV` for writing logger data to CSV files.
 	- New functions `RSKreaddownsample` and `RSKplotdownsample` for reading and plotting downsample data.
 	- mksqlite upgraded to Version 2.5
-	- Fixed bug that mksqlite mix SQtable when multiple files are opened.
+	- Fixed bug that `RSKopen` imports wrong data table when multiple files are opened.
 	- Fixed bug that `RSKfindprofile` does not always detect upcast correctly.
 	- Added option to specify lag in units of time in `RSKalignchannel`.
 	- Option added in `RSKopen` to read hidden channels 
