@@ -176,7 +176,7 @@ RSKplot2D(rsk, 'Salinity');
 % manual> for detailed RSKtools function documentation.
 %
 % * the
-% <http://rbr-global.com/wp-content/uploads/2017/08/VignetteStandard.pdf
+% <http://rbr-global.com/wp-content/uploads/2018/01/Standard.pdf
 % RSKtools Getting Started> for an introduction on how to load RBR
 % data into Matlab from RSK files, make plots, and access the data.
 

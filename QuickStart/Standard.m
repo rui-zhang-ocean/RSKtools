@@ -142,7 +142,7 @@ o2          = rsk.data(profind).values(:,o2col);
 % * The <https://docs.rbr-global.com/rsktools RSKtools on-line user
 % manual> for detailed RSKtools function documentation.
 %
-% * The <http://rbr-global.com/wp-content/uploads/2017/08/VignettePostProcessing.pdf
+% * The <http://rbr-global.com/wp-content/uploads/2018/01/PostProcessing.pdf
 % RSKtools post-processing guide> for an introduction on how to
 % process RBR profiles with RSKtools.  The post-processing suite
 % contains, among other things, functions to low-pass filter, align,
