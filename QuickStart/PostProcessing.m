@@ -2,7 +2,7 @@
 % RSKtools v2.2.0;
 % RBR Ltd. Ottawa ON, Canada;
 % support@rbr-global.com;
-% 2018-01-24
+% 2018-01-25
 
 %% Introduction
 % A suite of new functions are included in RSKtools v2.0.0 to

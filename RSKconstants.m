@@ -3,7 +3,7 @@
 % Author: RBR Ltd. Ottawa ON, Canada
 % email: support@rbr-global.com
 % Website: www.rbr-global.com
-% Last revision: 2018-01-23
+% Last revision: 2018-01-25
 
 latestRSKversion = '2.0.0';
 latestRSKversionMajor = 2;
