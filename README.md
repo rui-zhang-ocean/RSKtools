@@ -42,8 +42,8 @@ rsk = RSKsmooth(rsk,{'Conductivity','Temperature'},'windowLength',5);
 * Add the folder to your Matlab path by typing `addpath ~/matlab/RSKtools` or `pathtool` at the command prompt.
 * Type `help RSKtools` to get an overview and take a look at the examples.
 * Read the [RSKtools User Manual](https://docs.rbr-global.com/rsktools).
-* Check out the [Getting started](https://rbr-global.com/wp-content/uploads/2017/08/VignetteStandard.pdf)
-  and [Post-processing](https://rbr-global.com/wp-content/uploads/2017/08/VignettePostProcessing.pdf) vignettes.
+* Check out the [Getting started](http://rbr-global.com/wp-content/uploads/2018/01/Standard.pdf)
+  and [Post-processing](http://rbr-global.com/wp-content/uploads/2018/01/PostProcessing.pdf) for a quick start.
 
 ## A note on calculation of salinity
 
