@@ -1,6 +1,6 @@
 function RSK = readregionprofiles(RSK)
 
-%READREGIONPROFILES - Read profiles start and end times from regions table.
+% READREGIONPROFILES - Read profiles start and end times from regions table.
 %
 % Syntax:  [RSK] = READREGIONPROFILES(RSK)
 %
@@ -18,12 +18,12 @@ function RSK = readregionprofiles(RSK)
 % Author: RBR Ltd. Ottawa ON, Canada
 % email: support@rbr-global.com
 % Website: www.rbr-global.com
-% Last revision: 2017-06-21
+% Last revision: 2018-02-09
 
 tables = doSelect(RSK, 'SELECT name FROM sqlite_master WHERE type="table"');
 
 if any(strcmpi({tables.name}, 'regionCast')) && any(strcmpi({tables.name}, 'region'))
-    RSK.region = doSelect(RSK, 'select regionID, type, tstamp1/1.0 as tstamp1, tstamp2/1.0 as tstamp2 from region');
+    RSK.region = doSelect(RSK, 'select regionID, type, tstamp1/1.0 as tstamp1, tstamp2/1.0 as tstamp2, description from region');
     RSK.regionCast = doSelect(RSK, 'select * from regionCast');
 else
     return
