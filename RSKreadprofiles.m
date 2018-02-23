@@ -8,7 +8,8 @@ function RSK = RSKreadprofiles(RSK, varargin)
 % Reads profile, including upcasts, downcasts, or both from the events 
 % contained in a .rsk file. Each cast is an element in the data field 
 % matrix. The cast direction is indicated as 'up' or 'down' in 
-% RSK.data.direction.
+% RSK.data.direction. The function will parse annotations (GPS, comment)
+% and profile description/detail field available into the data structure.
 %
 % The profile events are parsed from the events table using the
 % following types (see RSKconstants.m):
@@ -45,7 +46,7 @@ function RSK = RSKreadprofiles(RSK, varargin)
 % Author: RBR Ltd. Ottawa ON, Canada
 % email: support@rbr-global.com
 % Website: www.rbr-global.com
-% Last revision: 2017-11-22
+% Last revision: 2018-02-23
 
 validDirections = {'down', 'up', 'both'};
 checkDirection = @(x) any(validatestring(x,validDirections));
