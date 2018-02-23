@@ -69,6 +69,10 @@ if strcmpi(direction{1}, 'both')
     direction = {'down', 'up'};
 end
 
+hasGPS = isfield(RSK.profiles,'GPS');
+hasComment = isfield(RSK.profiles,'comment');
+hasDescription = isfield(RSK.region,'description');
+ProfileRegionID = strcmpi({RSK.region.type},'PROFILE') == 1;
 
 
 alltstart = [];
@@ -109,10 +113,30 @@ dir2fill = cell(length(castidx),1); % append data.direction to each cast
 if size(RSK.profiles.order, 2) == 1
     dir2fill(:) = direction;
     pronum2fill = castidx;
+    if hasGPS
+        lat2fill(:) = RSK.profiles.GPS.latitude;
+        lon2fill(:) = RSK.profiles.GPS.longitude;
+    end
+    if hasComment
+        comment2fill(:) = RSK.profiles.comment;
+    end
+    if hasDescription
+        description2fill(:) = {RSK.region(ProfileRegionID).description};
+    end
 else
     dir2fill(1:2:end) = RSK.profiles.order(1);
     dir2fill(2:2:end) = RSK.profiles.order(2);
     pronum2fill = reshape(repmat(castidx(1:length(castidx)/2), 2, 1),length(castidx),1);
+    if hasGPS
+        lat2fill(:) = reshape(repmat(RSK.profiles.GPS.latitude', 2 ,1),length(castidx),1);
+        lon2fill(:) = reshape(repmat(RSK.profiles.GPS.longitude', 2 ,1),length(castidx),1);
+    end
+    if hasComment
+        comment2fill(:) = reshape(repmat(RSK.profiles.comment', 2 ,1),length(castidx),1);
+    end
+    if hasDescription
+        description2fill(:) = reshape(repmat({RSK.region(ProfileRegionID).description}, 2 ,1),length(castidx),1);
+    end
 end
 
 k = 1;
@@ -120,6 +144,13 @@ data(length(castidx)).tstamp = [];
 data(length(castidx)).values = [];
 data(length(castidx)).direction = [];
 data(length(castidx)).profilenumber = [];
+
+if hasGPS
+    data(length(castidx)).latitude = [];
+    data(length(castidx)).longitude = [];
+end
+if hasComment, data(length(castidx)).comment = []; end
+if hasDescription, data(length(castidx)).description = []; end
 
 for ndx = castidx
     
@@ -144,6 +175,10 @@ for ndx = castidx
 
     data(k).direction = dir2fill{k};
     data(k).profilenumber = pronum2fill(k);
+    data(k).latitude = lat2fill(k);
+    data(k).longitude = lon2fill(k);
+    data(k).comment = comment2fill(k);
+    data(k).description = description2fill(k);
     k = k + 1;
     
 end
