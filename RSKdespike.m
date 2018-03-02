@@ -19,8 +19,7 @@ function [RSK, spike] = RSKdespike(RSK, channel, varargin)
 %                channel - Longname of channel to despike (e.g., temperature,
 %                      salinity, etc)
 %
-%   [Optional] - profile - Profile number. Default is all available
-%                      profiles.
+%   [Optional] - profile - Profile number. Default is all available profiles.
 %
 %                direction - 'up' for upcast, 'down' for downcast, or
 %                      'both' for all. Default is all directions available.
@@ -39,6 +38,11 @@ function [RSK, spike] = RSKdespike(RSK, channel, varargin)
 %                      by linearly interpolating from the neighbouring 
 %                      points.
 %
+%                diag - To give a diagnostic plot on the first profile or
+%                      not (1 or 0). Original, processed data and spikes 
+%                      will be plotted to show users how the algorithm
+%                      works. Default is 0.
+%
 % Outputs:
 %    RSK - Structure with de-spiked series.
 %
@@ -49,14 +53,14 @@ function [RSK, spike] = RSKdespike(RSK, channel, varargin)
 % Example: 
 %    [RSK, spike] = RSKdespike(RSK, 'Turbidity')
 %   OR
-%    [RSK, spike] = RSKdespike(RSK, 'Temperature', 'threshold', 4, 'windowLength', 11, 'action', 'nan'); 
+%    [RSK, spike] = RSKdespike(RSK, 'Temperature', 'threshold', 4, 'windowLength', 11, 'action', 'nan', 'diag', 1); 
 %
 % See also: RSKremoveloops, RSKsmooth.
 %
 % Author: RBR Ltd. Ottawa ON, Canada
 % email: support@rbr-global.com
 % Website: www.rbr-global.com
-% Last revision: 2017-08-10
+% Last revision: 2018-03-02
 
 validActions = {'replace', 'interp', 'nan'};
 checkAction = @(x) any(validatestring(x,validActions));
@@ -72,6 +76,7 @@ addParameter(p, 'direction', [], checkDirection);
 addParameter(p, 'threshold', 2, @isnumeric);
 addParameter(p, 'windowLength', 3, @isnumeric);
 addParameter(p, 'action', 'nan', checkAction);
+addParameter(p, 'diag', 0, @isnumeric);
 parse(p, RSK, channel, varargin{:})
 
 RSK = p.Results.RSK;
@@ -81,18 +86,22 @@ direction = p.Results.direction;
 windowLength = p.Results.windowLength;
 threshold = p.Results.threshold;
 action = p.Results.action;
-
+diag = p.Results.diag;
 
 
 channelCol = getchannelindex(RSK, channel);
 castidx = getdataindex(RSK, profile, direction);
 k = 1;
+
 for ndx = castidx
     in = RSK.data(ndx).values(:,channelCol);
     intime = RSK.data(ndx).tstamp;
     [out, index] = despike(in, intime, threshold, windowLength, action);
     RSK.data(ndx).values(:,channelCol) = out;
-    spike(k).index = index;
+    spike(k).index = index;    
+    if k == 1 && diag == 1; 
+        doDiagPlot(RSK, in, out, index, ndx, channel, channelCol); 
+    end 
     k = k+1;
 end
 
@@ -128,5 +137,26 @@ RSK = RSKappendtolog(RSK, logentry);
           case 'interp'
             y(I) = interp1(t(good), x(good), t(I)) ;
         end
+    end
+
+    %% Nested Functions
+    function [] = doDiagPlot(RSK, in, out, index, ndx, channel, channelCol)
+    % plot when diag == 1
+        presCol = getchannelindex(RSK,'Pressure');
+        fig = figure;
+        set(fig, 'position', [10 10 500 800]);
+        plot(in,RSK.data(ndx).values(:,presCol));
+        hold on
+        plot(out,RSK.data(ndx).values(:,presCol),'-k'); 
+        hold on
+        plot(in(index),RSK.data(ndx).values(index,presCol),...
+            'or','MarkerEdgeColor','r','MarkerSize',5);
+        ax = findall(gcf,'type','axes');
+        set(ax, 'ydir', 'reverse');
+        xlabel([channel ' (' RSK.channels(channelCol).units ')']);
+        ylabel(['Pressure (' RSK.channels(presCol).units ')']);
+        title(['Profile ' num2str(ndx)]);
+        legend('Original data','Despiked data','Spikes','Location','Best');
+        set(findall(fig,'-property','FontSize'),'FontSize',15);
     end
 end
