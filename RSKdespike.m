@@ -38,10 +38,10 @@ function [RSK, spike] = RSKdespike(RSK, channel, varargin)
 %                      by linearly interpolating from the neighbouring 
 %                      points.
 %
-%                diag - To give a diagnostic plot on the first profile or
-%                      not (1 or 0). Original, processed data and spikes 
-%                      will be plotted to show users how the algorithm
-%                      works. Default is 0.
+%                diagnostic - To give a diagnostic plot on the first 
+%                      profile or not (1 or 0). Original, processed data 
+%                      and spikes will be plotted to show users how the 
+%                      algorithm works. Default is 0.
 %
 % Outputs:
 %    RSK - Structure with de-spiked series.
@@ -53,7 +53,7 @@ function [RSK, spike] = RSKdespike(RSK, channel, varargin)
 % Example: 
 %    [RSK, spike] = RSKdespike(RSK, 'Turbidity')
 %   OR
-%    [RSK, spike] = RSKdespike(RSK, 'Temperature', 'threshold', 4, 'windowLength', 11, 'action', 'nan', 'diag', 1); 
+%    [RSK, spike] = RSKdespike(RSK, 'Temperature', 'threshold', 4, 'windowLength', 11, 'action', 'nan', 'diagnostic', 1); 
 %
 % See also: RSKremoveloops, RSKsmooth.
 %
@@ -76,7 +76,7 @@ addParameter(p, 'direction', [], checkDirection);
 addParameter(p, 'threshold', 2, @isnumeric);
 addParameter(p, 'windowLength', 3, @isnumeric);
 addParameter(p, 'action', 'nan', checkAction);
-addParameter(p, 'diag', 0, @isnumeric);
+addParameter(p, 'diagnostic', 0, @isnumeric);
 parse(p, RSK, channel, varargin{:})
 
 RSK = p.Results.RSK;
@@ -86,7 +86,7 @@ direction = p.Results.direction;
 windowLength = p.Results.windowLength;
 threshold = p.Results.threshold;
 action = p.Results.action;
-diag = p.Results.diag;
+diagnostic = p.Results.diagnostic;
 
 
 channelCol = getchannelindex(RSK, channel);
@@ -99,7 +99,7 @@ for ndx = castidx
     [out, index] = despike(in, intime, threshold, windowLength, action);
     RSK.data(ndx).values(:,channelCol) = out;
     spike(k).index = index;    
-    if k == 1 && diag == 1; 
+    if k == 1 && diagnostic == 1; 
         doDiagPlot(RSK, in, out, index, ndx, channel, channelCol); 
     end 
     k = k+1;
