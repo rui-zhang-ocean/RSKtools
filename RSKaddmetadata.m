@@ -1,6 +1,6 @@
 function [RSK] = RSKaddmetadata(RSK, profile, varargin)
 
-% RSKaddmetadata - Add metadata information for one specified profile.
+% RSKaddmetadata - Add metadata information for specified profile(s).
 %
 % Syntax:  [RSK] = RSKaddmetadata(RSK, profile, [OPTIONS])
 % 
@@ -15,13 +15,15 @@ function [RSK] = RSKaddmetadata(RSK, profile, varargin)
 %
 %                comment - Comment for specified profile
 %
-%                description - Decription for spefified profile
+%                description - Decription for specified profile
 %
 % Outputs:
 %    RSK - Updated structure containing metadata for specified profile.
 %
 % Example:
-%    RSK = RSKaddmetadata(RSK,4,'lat',45,'lon',-25,'comment','No Comment','description','Cruise in North Atlantic with ..')
+%    RSK = RSKaddmetadata(RSK, 4,'lat',45,'lon',-25,'comment',{'NoComment'},'description',{'Cruise in North Atlantic with ..'})
+%    OR
+%    RSK = RSKaddmetadata(RSK, 4:6,'lat',[45,44,46],'lon',[-25,-24,-23],'comment',{'Comment1','Comment2','Comment3'});
 % 
 % Author: RBR Ltd. Ottawa ON, Canada
 % email: support@rbr-global.com
@@ -29,16 +31,13 @@ function [RSK] = RSKaddmetadata(RSK, profile, varargin)
 % Last revision: 2018-03-07
 
 
-validLatitude = @(x) isnumeric(x) && (x >= -90) && (x <= 90);
-validLongitude = @(x) isnumeric(x) && (x >= -180) && (x <= 180);
-
 p = inputParser;
 addRequired(p, 'RSK', @isstruct);
 addRequired(p, 'profile', @isnumeric);
-addParameter(p, 'lat', [], validLatitude);
-addParameter(p, 'lon', [], validLongitude);
-addParameter(p, 'comment', '', @ischar);
-addParameter(p, 'description', '', @ischar);
+addParameter(p, 'lat', [], @isnumeric);
+addParameter(p, 'lon', [], @isnumeric);
+addParameter(p, 'comment', '', @iscell);
+addParameter(p, 'description', '', @iscell);
 parse(p, RSK, profile, varargin{:})
 
 RSK = p.Results.RSK;
@@ -50,20 +49,43 @@ description = p.Results.description;
 
 if length(RSK.data) == 1; RSK = RSKreadprofiles(RSK); end 
 
-ind_pro = find([RSK.data.profilenumber] == profile);
-if isempty(ind_pro); 
-    error('The profile requested is greater than the total amount of profiles in this RSK structure.'); 
+castidx = getdataindex(RSK, profile);
+
+directions = 1;
+if isfield(RSK.profiles,'order') && length(RSK.profiles.order) ~= 1 
+    directions = 2;
 end
 
-for i = 1:length(ind_pro);
-    if ~isempty(lat); RSK.data(ind_pro(i)).latitude = lat; end
-    if ~isempty(lon); RSK.data(ind_pro(i)).longitude = lon; end
-    if ~isempty(comment); RSK.data(ind_pro(i)).comment = comment; end
-    if ~isempty(description); RSK.data(ind_pro(i)).description = description; end
+k = 1;
+for i = 1:directions:length(castidx);    
+    RSK = assign_metadata(RSK, lat, castidx, i, directions, profile, k, 'latitude');
+    RSK = assign_metadata(RSK, lon, castidx, i, directions, profile, k, 'longitude');
+    RSK = assign_metadata(RSK, comment, castidx, i, directions, profile, k, 'comment');
+    RSK = assign_metadata(RSK, description, castidx, i, directions, profile, k, 'description');
+    k = k + 1;    
 end
 
 logentry = ['Metadata information added to profile ' num2str(profile) '.'];
 RSK = RSKappendtolog(RSK, logentry);
 
-
+    %% Nested Functions
+    function RSK = assign_metadata(RSK, meta, castidx, i, directions, profile, k, name)
+    % Assign metadata to data structure
+    if ~isempty(meta) && length(meta) == 1; 
+        RSK.data(castidx(i)).(name) = meta;
+        if directions == 2
+            RSK.data(castidx(i+1)).(name) = meta;
+        end        
+    elseif ~isempty(meta) && length(meta) ~= 1 && length(meta) == length(profile);
+        RSK.data(castidx(i)).(name) = meta(k);
+        if directions == 2
+            RSK.data(castidx(i+1)).(name) = meta(k);
+        end
+    elseif isempty(meta)
+        % do nothing
+    else
+        error('Input vectors must be either single value or the same length with profile.');
+    end
+    
+    end
 end
