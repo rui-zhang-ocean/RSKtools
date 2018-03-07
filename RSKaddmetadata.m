@@ -4,6 +4,12 @@ function [RSK] = RSKaddmetadata(RSK, profile, varargin)
 %
 % Syntax:  [RSK] = RSKaddmetadata(RSK, profile, [OPTIONS])
 % 
+% Append metadata to data structure with profiles, including latitude,
+% longitude, comment and description. The function is vectorized, which 
+% allows multiple metadata inputs for multiple profiles. But when there is
+% only one metadata input for multiple profiles, all pointed profiles will
+% be assigned with the same value.
+%
 % Inputs: 
 %   [Required] - RSK - Structure containing data. 
 %    
