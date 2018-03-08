@@ -145,9 +145,9 @@ RSK = RSKappendtolog(RSK, logentry);
         presCol = getchannelindex(RSK,'Pressure');
         fig = figure;
         set(fig, 'position', [10 10 500 800]);
-        plot(in,RSK.data(ndx).values(:,presCol));
+        plot(in,RSK.data(ndx).values(:,presCol),'-c','linewidth',2);
         hold on
-        plot(out,RSK.data(ndx).values(:,presCol),'-k'); 
+        plot(out,RSK.data(ndx).values(:,presCol),'--k'); 
         hold on
         plot(in(index),RSK.data(ndx).values(index,presCol),...
             'or','MarkerEdgeColor','r','MarkerSize',5);
