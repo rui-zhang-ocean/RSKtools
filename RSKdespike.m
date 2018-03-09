@@ -155,7 +155,9 @@ RSK = RSKappendtolog(RSK, logentry);
         set(ax, 'ydir', 'reverse');
         xlabel([channel ' (' RSK.channels(channelCol).units ')']);
         ylabel(['Pressure (' RSK.channels(presCol).units ')']);
-        title(['Profile ' num2str(RSK.data(ndx).profilenumber) ' ' RSK.data(ndx).direction 'cast']);
+        if isfield(RSK.data,'profilenumber') && isfield(RSK.data,'direction')
+            title(['Profile ' num2str(RSK.data(ndx).profilenumber) ' ' RSK.data(ndx).direction 'cast']);
+        end
         legend('Original data','Despiked data','Spikes','Location','Best');
         set(findall(fig,'-property','FontSize'),'FontSize',15);
     end
