@@ -43,7 +43,7 @@ p = inputParser;
 addRequired(p, 'RSK', @isstruct);
 addRequired(p, 'channel');
 addParameter(p, 'profile', [], @isnumeric);
-addParameter(p, 'direction', [], checkDirection);
+addParameter(p, 'direction', 'down', checkDirection);
 addParameter(p, 'reference', 'Sea Pressure', @ischar);
 parse(p, RSK, channel, varargin{:})
 
