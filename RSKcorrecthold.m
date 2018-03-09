@@ -40,6 +40,11 @@ function [RSK, holdpts] = RSKcorrecthold(RSK, varargin)
 %                values calculated by linearly interpolating from the
 %                neighbouring points.
 %
+%                diagnostic - To give a diagnostic plot on the first 
+%                profile of the first channel or not (1 or 0). Original, 
+%                processed data and zero-order hold points will be plotted 
+%                to show users how the algorithm works. Default is 0.
+%
 % Outputs:
 %    RSK - Structure with zero-order hold corrected values.
 %
@@ -49,8 +54,8 @@ function [RSK, holdpts] = RSKcorrecthold(RSK, varargin)
 %
 % Example: 
 %    [RSK, holdpts] = RSKcorrecthold(RSK)
-%   OR
-%    [RSK, holdpts] = RSKcorrecthold(RSK, 'channel', 'Temperature', 'action', 'interp'); 
+%     OR
+%    [RSK, holdpts] = RSKcorrecthold(RSK, 'channel', 'Temperature', 'action', 'interp','diagnostic',1); 
 %
 % See also: RSKdespike, RSKremoveloops, RSKsmooth.
 %
@@ -71,6 +76,7 @@ addParameter(p, 'channel','all');
 addParameter(p, 'profile', [], @isnumeric);
 addParameter(p, 'direction', [], checkDirection);
 addParameter(p, 'action', 'nan', checkAction);
+addParameter(p, 'diagnostic', 0, @isnumeric);
 parse(p, RSK, varargin{:})
 
 RSK = p.Results.RSK;
@@ -78,6 +84,7 @@ channel = p.Results.channel;
 profile = p.Results.profile;
 direction = p.Results.direction;
 action = p.Results.action;
+diagnostic = p.Results.diagnostic;
 
 chanCol = [];
 channels = cellchannelnames(RSK, channel);
@@ -95,6 +102,9 @@ for c = chanCol
         [out, index] = correcthold(in, intime, action);  
         RSK.data(ndx).values(:,c) = out;
         holdpts(k).index{c} = index;
+        if k == 1 && c == chanCol(1) && diagnostic == 1; 
+            doDiagPlot(RSK, in, out, index, ndx, channel, c); 
+        end 
         k = k+1;
     end     
 end
@@ -120,5 +130,34 @@ RSK = RSKappendtolog(RSK, logentry);
                 y(I) = NaN;
             end
         end  
+    end
+
+    %% Nested Functions
+    function [] = doDiagPlot(RSK, in, out, index, ndx, channel, c)
+    % plot when diag == 1
+        if strcmp(channel,'all');
+            channel = RSK.channels(1).longName; c = 1;
+        else
+            channel = channel(1); c = c(1);
+        end
+        
+        presCol = getchannelindex(RSK,'Pressure');
+        fig = figure;
+        set(fig, 'position', [10 10 500 800]);
+        plot(in,RSK.data(ndx).values(:,presCol),'-c','linewidth',2);
+        hold on
+        plot(out,RSK.data(ndx).values(:,presCol),'--k'); 
+        hold on
+        plot(in(index),RSK.data(ndx).values(index,presCol),...
+            'or','MarkerEdgeColor','r','MarkerSize',5);
+        ax = findall(gcf,'type','axes');
+        set(ax, 'ydir', 'reverse');
+        xlabel([RSK.channels(c).longName ' (' RSK.channels(c).units ')']);
+        ylabel(['Pressure (' RSK.channels(presCol).units ')']);
+        if isfield(RSK.data,'profilenumber') && isfield(RSK.data,'direction')
+            title(['Profile ' num2str(RSK.data(ndx).profilenumber) ' ' RSK.data(ndx).direction 'cast']);
+        end
+        legend('Original data','Correctedhold data','Holds points','Location','Best');
+        set(findall(fig,'-property','FontSize'),'FontSize',15);
     end
 end
