@@ -62,7 +62,7 @@ function [RSK, holdpts] = RSKcorrecthold(RSK, varargin)
 % Author: RBR Ltd. Ottawa ON, Canada
 % email: support@rbr-global.com
 % Website: www.rbr-global.com
-% Last revision: 2018-01-24
+% Last revision: 2018-03-09
 
 validActions = {'interp', 'nan'};
 checkAction = @(x) any(validatestring(x,validActions));
