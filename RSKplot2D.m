@@ -74,7 +74,8 @@ end
 
 
 t = cellfun( @(x)  nanmedian(x), {RSK.data(castidx).tstamp});
-im = imagesc(t, binCenter, binValues);
+im = pcolor(t, binCenter, binValues);
+shading flat
 set(im, 'AlphaData', ~isnan(binValues)) %plot NaN values in white.
 
 
@@ -82,19 +83,19 @@ set(im, 'AlphaData', ~isnan(binValues)) %plot NaN values in white.
 setcolormap(channel);
 cb = colorbar;
 ylabel(cb, RSK.channels(chanCol).units)
-h = title(sprintf('%s', RSK.channels(chanCol).longName));
-p = get(h,'Position');
-set(h, 'Position', [t(end) p(2) p(3)], 'HorizontalAlignment', 'right')
-% text(t(1), p(2)-0.5, sprintf('[%s - %s]', datestr(t(1), 'mmmm dd HH:MM'), datestr(t(end),'mmmm dd HH:MM')));
 set(gcf, 'Position', [1 1 800 450]);
 datetick('x', 'HH', 'keepticks')
 axis tight
 
 ylabel(cb, RSK.channels(chanCol).units, 'FontSize', 12)
-title(sprintf('%s on %s', RSK.channels(chanCol).longName, datestr(t(end))));
 xlabel(sprintf('Time (UTC)'))
 ylabel(sprintf('%s (%s)', RSK.channels(YCol).longName, RSK.channels(YCol).units));
 set(gca, 'YDir', 'reverse')
+
+h = title(sprintf('%s on %s', RSK.channels(chanCol).longName, datestr(t(end))));
+p = get(h,'Position');
+set(h, 'Position', [t(end) p(2) p(3)], 'HorizontalAlignment', 'right')
+
 set(gcf, 'Renderer', 'painters')
 set(h, 'EdgeColor', 'none');
 datetick('x')
