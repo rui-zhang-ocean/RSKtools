@@ -59,10 +59,10 @@ castidx = getdataindex(RSK, profile, direction);
 chanCol = getchannelindex(RSK, channel);
 YCol = getchannelindex(RSK, reference);
 for ndx = 1:length(castidx)-1
-    if RSK.data(castidx(ndx)).values(:,YCol)==RSK.data(castidx(ndx+1)).values(:,YCol);
+    if length(RSK.data(castidx(ndx)).values(:,YCol)) == length(RSK.data(castidx(ndx+1)).values(:,YCol));
         binCenter = RSK.data(castidx(ndx)).values(:,YCol);
     else 
-        error('The reference channel data of all the selected profiles must be identical. Use RSKbinaverage.m')
+        error('The reference channel data of all the selected profiles must be identical. Use RSKbinaverage.m for selected cast direction.')
     end
 end
 
