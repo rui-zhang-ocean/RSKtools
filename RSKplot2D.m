@@ -73,7 +73,7 @@ end
 
 
 
-t = cellfun( @(x)  min(x), {RSK.data(castidx).tstamp});
+t = cellfun( @(x)  nanmedian(x), {RSK.data(castidx).tstamp});
 im = imagesc(t, binCenter, binValues);
 set(im, 'AlphaData', ~isnan(binValues)) %plot NaN values in white.
 
