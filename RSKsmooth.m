@@ -1,6 +1,6 @@
 function RSK = RSKsmooth(RSK, channel, varargin)
 
-%RSKsmooth - Apply a low pass filter on specified channels.
+% RSKsmooth - Apply a low pass filter on specified channels.
 %
 % Syntax:  [RSK] = RSKsmooth(RSK, channel, [OPTIONS])
 % 
@@ -29,6 +29,11 @@ function RSK = RSKsmooth(RSK, channel, varargin)
 %                 windowLength - The total size of the filter window. Must
 %                       be odd. Default is 3.
 %
+%                 diagnostic - To give a diagnostic plot on the first 
+%                       profile of the first channel or not (1 or 0). 
+%                       Original and processed data will be plotted to 
+%                       show users how the algorithm works. Default is 0.
+%
 % Outputs:
 %    RSK - Structure with filtered values.
 %
@@ -40,7 +45,7 @@ function RSK = RSKsmooth(RSK, channel, varargin)
 % Author: RBR Ltd. Ottawa ON, Canada
 % email: support@rbr-global.com
 % Website: www.rbr-global.com
-% Last revision: 2017-06-28
+% Last revision: 2018-03-19
 
 validFilterNames = {'median', 'boxcar', 'triangle'};
 checkFilter = @(x) any(validatestring(x,validFilterNames));
@@ -55,6 +60,7 @@ addParameter(p, 'filter', 'boxcar', checkFilter);
 addParameter(p, 'profile', [], @isnumeric);
 addParameter(p, 'direction', [], checkDirection);
 addParameter(p, 'windowLength', 3, @isnumeric);
+addParameter(p, 'diagnostic', 0, @isnumeric);
 parse(p, RSK, channel, varargin{:})
 
 RSK = p.Results.RSK;
@@ -63,8 +69,9 @@ filter = p.Results.filter;
 profile = p.Results.profile;
 direction = p.Results.direction;
 windowLength = p.Results.windowLength;
+diagnostic = p.Results.diagnostic;
 
-
+if diagnostic == 1; raw = RSK; end % Save raw data if diagnostic plot is required
 
 channelcell = cellchannelnames(RSK, channel);
 
@@ -82,6 +89,9 @@ for chanName = channelcell
                 out = runtriang(in, windowLength);
         end      
         RSK.data(ndx).values(:,channelCol) = out;
+        if ndx == castidx(1) && diagnostic == 1; 
+            doDiagPlot(RSK,raw,'ndx',ndx,'channelidx',channelCol); 
+        end 
     end
     logdata = logentrydata(RSK, profile, direction);
     logentry = sprintf('%s filtered using a %s filter with a %1.0f sample window on %s.', chanName{1}, filter, windowLength, logdata);
