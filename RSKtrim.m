@@ -35,6 +35,12 @@ function [RSK, trimidx] = RSKtrim(RSK, varargin)
 %                 action - Action to apply to the flagged values.  Can be 
 %                       'nan' (default) or 'remove' or 'interp'.
 %
+%                 diagnostic - To give a diagnostic plot on the first 
+%                       profile of the first channel or not (1 or 0). 
+%                       Original, processed data and flagged data will be 
+%                       plotted to show users how the algorithm works. 
+%                       Default is 0.
+%
 % Outputs:
 %    RSK - Structure with trimmed channel values.
 %
