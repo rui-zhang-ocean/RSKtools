@@ -46,7 +46,7 @@ function [RSK, flagidx] = RSKremoveloops(RSK, varargin)
 % Author: RBR Ltd. Ottawa ON, Canada
 % email: support@rbr-global.com
 % Website: www.rbr-global.com
-% Last revision: 2018-03-09
+% Last revision: 2018-03-19
 
 validDirections = {'down', 'up', 'both'};
 checkDirection = @(x) any(validatestring(x,validDirections));
@@ -97,39 +97,15 @@ for ndx = castidx
     flagChannels = ~strcmpi('Depth', {RSK.channels.longName});    
     RSK.data(ndx).values(flag,flagChannels) = NaN;
     flagidx(k).index = find(flag);
-    if k == 1 && diagnostic == 1; 
-        doDiagPlot(RSK, raw, find(flag), ndx); 
+    if ndx == castidx(1) && diagnostic == 1; 
+        doDiagPlot(RSK, raw, find(flag), ndx, 1); 
     end 
     k = k + 1;
 end
 
 
-
 logdata = logentrydata(RSK, profile, direction);
 logentry = ['Samples measured at a profiling velocity less than ' num2str(threshold) ' m/s were replaced with NaN on ' logdata '.'];
 RSK = RSKappendtolog(RSK, logentry);
-
-    %% Nested Functions
-    function [] = doDiagPlot(RSK, raw, index, ndx)
-    % plot when diag == 1, only plot variable in RSK.channels(1)
-        presCol = getchannelindex(RSK,'Pressure');
-        fig = figure;
-        set(fig, 'position', [10 10 500 800]);
-        plot(raw.data(ndx).values(:,1),raw.data(ndx).values(:,presCol),'-c','linewidth',2);
-        hold on
-        plot(RSK.data(ndx).values(:,1),RSK.data(ndx).values(:,presCol),'--k'); 
-        hold on
-        plot(raw.data(ndx).values(index,1),raw.data(ndx).values(index,presCol),...
-            'or','MarkerEdgeColor','r','MarkerSize',5);
-        ax = findall(gcf,'type','axes');
-        set(ax, 'ydir', 'reverse');
-        xlabel([RSK.channels(1).longName ' (' RSK.channels(1).units ')']);
-        ylabel(['Pressure (' RSK.channels(presCol).units ')']);
-        if isfield(RSK.data,'profilenumber') && isfield(RSK.data,'direction')
-            title(['Profile ' num2str(RSK.data(ndx).profilenumber) ' ' RSK.data(ndx).direction 'cast']);
-        end
-        legend('Original data','Removedloop data','Loops','Location','Best');
-        set(findall(fig,'-property','FontSize'),'FontSize',15);
-    end
 
 end

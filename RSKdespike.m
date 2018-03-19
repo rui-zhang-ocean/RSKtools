@@ -88,6 +88,7 @@ threshold = p.Results.threshold;
 action = p.Results.action;
 diagnostic = p.Results.diagnostic;
 
+if diagnostic == 1; raw = RSK; end % Save raw data if diagnostic plot is required
 
 channelCol = getchannelindex(RSK, channel);
 castidx = getdataindex(RSK, profile, direction);
@@ -99,8 +100,8 @@ for ndx = castidx
     [out, index] = despike(in, intime, threshold, windowLength, action);
     RSK.data(ndx).values(:,channelCol) = out;
     spike(k).index = index;    
-    if k == 1 && diagnostic == 1; 
-        doDiagPlot(RSK, in, out, index, ndx, channel, channelCol); 
+    if ndx == castidx(1) && diagnostic == 1; 
+        doDiagPlot(RSK, raw, index, ndx, channelCol); 
     end 
     k = k+1;
 end
@@ -139,26 +140,4 @@ RSK = RSKappendtolog(RSK, logentry);
         end
     end
 
-    %% Nested Functions
-    function [] = doDiagPlot(RSK, in, out, index, ndx, channel, channelCol)
-    % plot when diag == 1
-        presCol = getchannelindex(RSK,'Pressure');
-        fig = figure;
-        set(fig, 'position', [10 10 500 800]);
-        plot(in,RSK.data(ndx).values(:,presCol),'-c','linewidth',2);
-        hold on
-        plot(out,RSK.data(ndx).values(:,presCol),'--k'); 
-        hold on
-        plot(in(index),RSK.data(ndx).values(index,presCol),...
-            'or','MarkerEdgeColor','r','MarkerSize',5);
-        ax = findall(gcf,'type','axes');
-        set(ax, 'ydir', 'reverse');
-        xlabel([channel ' (' RSK.channels(channelCol).units ')']);
-        ylabel(['Pressure (' RSK.channels(presCol).units ')']);
-        if isfield(RSK.data,'profilenumber') && isfield(RSK.data,'direction')
-            title(['Profile ' num2str(RSK.data(ndx).profilenumber) ' ' RSK.data(ndx).direction 'cast']);
-        end
-        legend('Original data','Despiked data','Spikes','Location','Best');
-        set(findall(fig,'-property','FontSize'),'FontSize',15);
-    end
 end
