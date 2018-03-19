@@ -40,6 +40,12 @@ function RSK = RSKalignchannel(RSK, channel, lag, varargin)
 %                 lagunits - Units of the lag entry. Can be seconds or
 %                        samples (default).
 %
+%                 diagnostic - To give a diagnostic plot on the first 
+%                        profile of the first channel or not (1 or 0). 
+%                        Original, processed data and flagged data will be 
+%                        plotted to show users how the algorithm works. 
+%                        Default is 0.
+%
 % Outputs:
 %    RSK - Structure with aligned channel values.
 %
@@ -63,7 +69,7 @@ function RSK = RSKalignchannel(RSK, channel, lag, varargin)
 % Author: RBR Ltd. Ottawa ON, Canada
 % email: support@rbr-global.com
 % Website: www.rbr-global.com
-% Last revision: 2018-01-16
+% Last revision: 2018-03-19
 
 validShiftfill = {'zeroorderhold', 'union', 'nan', 'mirror'};
 checkShiftfill = @(x) any(validatestring(x,validShiftfill));
@@ -82,6 +88,7 @@ addParameter(p, 'profile', [], @isnumeric);
 addParameter(p, 'direction', [], checkDirection);
 addParameter(p, 'shiftfill', 'zeroorderhold', checkShiftfill);
 addParameter(p, 'lagunits', 'samples', checklagunits);
+addParameter(p, 'diagnostic', 0, @isnumeric);
 parse(p, RSK, channel, lag, varargin{:})
 
 RSK = p.Results.RSK;
@@ -91,8 +98,9 @@ profile = p.Results.profile;
 direction = p.Results.direction;
 shiftfill = p.Results.shiftfill;
 lagunits = p.Results.lagunits;
+diagnostic = p.Results.diagnostic;
 
-
+if diagnostic == 1; raw = RSK; end % Save raw data if diagnostic plot is required
 
 castidx = getdataindex(RSK, profile, direction);
 lags = checklag(lag, castidx, lagunits);
@@ -141,6 +149,9 @@ for ndx =  castidx
         end
     end
     RSK.data(ndx).values(:, channelCol) = channelShifted;
+    if ndx == castidx(1) && diagnostic == 1; 
+        doDiagPlot(RSK,raw,'ndx',ndx,'channelidx',channelCol); 
+    end 
 end
 
 
