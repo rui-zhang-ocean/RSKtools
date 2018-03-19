@@ -42,9 +42,8 @@ function RSK = RSKalignchannel(RSK, channel, lag, varargin)
 %
 %                 diagnostic - To give a diagnostic plot on the first 
 %                        profile of the first channel or not (1 or 0). 
-%                        Original, processed data and flagged data will be 
-%                        plotted to show users how the algorithm works. 
-%                        Default is 0.
+%                        Original and processed data will be plotted to 
+%                        show users how the algorithm works. Default is 0.
 %
 % Outputs:
 %    RSK - Structure with aligned channel values.

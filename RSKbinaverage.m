@@ -1,6 +1,6 @@
 function [RSK, samplesinbin] = RSKbinaverage(RSK, varargin)
 
-%RSKbinaverage - Average the profile data by a quantized reference channel.
+% RSKbinaverage - Average the profile data by a quantized reference channel.
 %
 % Syntax:  [RSK, samplesinbin] = RSKbinaverage(RSK, [OPTIONS])
 % 
@@ -34,7 +34,12 @@ function [RSK, samplesinbin] = RSKbinaverage(RSK, varargin)
 %                boundary - First boundary crossed in the direction
 %                      selected of each regime, in same units as binBy.
 %                      Must have length(boundary) == length(binSize) or one
-%                      greater. Default[]; whole pressure range.       
+%                      greater. Default[]; whole pressure range.
+%
+%                diagnostic - To give a diagnostic plot on the first 
+%                      profile of the first channel or not (1 or 0). 
+%                      Original and processed data will be plotted to 
+%                      show users how the algorithm works. Default is 0.
 %
 % Outputs:
 %    RSK - Structure with binned data
@@ -44,7 +49,7 @@ function [RSK, samplesinbin] = RSKbinaverage(RSK, varargin)
 % Author: RBR Ltd. Ottawa ON, Canada
 % email: support@rbr-global.com
 % Website: www.rbr-global.com
-% Last revision: 2017-11-23
+% Last revision: 2018-03-19
 
 validDirections = {'down', 'up'};
 checkDirection = @(x) any(validatestring(x,validDirections));
@@ -56,6 +61,7 @@ addParameter(p, 'direction', 'down', checkDirection);
 addParameter(p, 'binBy', 'sea pressure', @ischar);
 addParameter(p, 'binSize', 1, @isnumeric);
 addParameter(p, 'boundary', [], @isnumeric);
+addParameter(p, 'diagnostic', 0, @isnumeric);
 parse(p, RSK, varargin{:})
 
 RSK = p.Results.RSK;
@@ -64,8 +70,9 @@ direction = p.Results.direction;
 binBy = p.Results.binBy;
 binSize = p.Results.binSize;
 boundary = p.Results.boundary;
+diagnostic = p.Results.diagnostic;
 
-
+if diagnostic == 1; raw = RSK; end % Save raw data if diagnostic plot is required
 
 binbytime = strcmpi(binBy, 'Time');
 
@@ -109,6 +116,9 @@ for ndx = castidx
         RSK.data(ndx).tstamp = binnedValues(:,1);
         RSK.data(ndx).values(:,chanCol) = binCenter;
     end
+    if ndx == castidx(1) && diagnostic == 1; 
+        doDiagPlot(RSK,raw,'ndx',ndx); 
+    end 
     k = k+1;
 end
 
