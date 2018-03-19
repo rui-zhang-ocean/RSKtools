@@ -64,6 +64,7 @@ addParameter(p, 'reference', 'index');
 addParameter(p, 'range', [], @isnumeric);
 addParameter(p, 'channel','all');
 addParameter(p, 'action', 'nan', checkAction);
+addParameter(p, 'diagnostic', 0, @isnumeric);
 parse(p, RSK, varargin{:})
 
 RSK = p.Results.RSK;
@@ -73,6 +74,7 @@ reference = p.Results.reference;
 range = p.Results.range;
 channel = p.Results.channel;
 action = p.Results.action;
+diagnostic = p.Results.diagnostic;
 
 
 appliedchanCol = [];
@@ -82,6 +84,7 @@ for chan = channels
 end
 castidx = getdataindex(RSK, profile, direction);
 
+if diagnostic == 1; raw = RSK; end % Save raw data if diagnostic plot is required
 
 for ndx =  castidx
     if strcmpi(reference, 'index')
@@ -113,6 +116,10 @@ for ndx =  castidx
             RSK.data(ndx).values(:,c) = y;
         end
     end
+    
+    if ndx == castidx(1) && diagnostic == 1; 
+        doDiagPlot(RSK, raw, find(trimindex), ndx, appliedchanCol(1)); 
+    end 
 
 end
 
@@ -122,5 +129,28 @@ end
 logdata = logentrydata(RSK, profile, direction);
 logentry = ['Data samples with ' reference ' between ' num2str(range(1)) '  and ' num2str(range(2)) ' trimmed by ' action ' on ' channel ' channels of ' logdata '.'];
 RSK = RSKappendtolog(RSK, logentry);
+
+    %% Nested Functions
+    function [] = doDiagPlot(RSK, raw, index, ndx, channelidx)
+    % plot when diag == 1, only plot variable in RSK.channels(1)
+        presCol = getchannelindex(RSK,'Pressure');
+        fig = figure;
+        set(fig, 'position', [10 10 500 800]);
+        plot(raw.data(ndx).values(:,1),raw.data(ndx).values(:,presCol),'-c','linewidth',2);
+        hold on
+        plot(RSK.data(ndx).values(:,1),RSK.data(ndx).values(:,presCol),'--k'); 
+        hold on
+        plot(raw.data(ndx).values(index,1),raw.data(ndx).values(index,presCol),...
+            'or','MarkerEdgeColor','r','MarkerSize',5);
+        ax = findall(gcf,'type','axes');
+        set(ax, 'ydir', 'reverse');
+        xlabel([RSK.channels(channelidx).longName ' (' RSK.channels(channelidx).units ')']);
+        ylabel(['Pressure (' RSK.channels(presCol).units ')']);
+        if isfield(RSK.data,'profilenumber') && isfield(RSK.data,'direction')
+            title(['Profile ' num2str(RSK.data(ndx).profilenumber) ' ' RSK.data(ndx).direction 'cast']);
+        end
+        legend('Original data','Processed data','Flagged data','Location','Best');
+        set(findall(fig,'-property','FontSize'),'FontSize',15);
+    end
 
 end
