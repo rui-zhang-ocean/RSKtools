@@ -82,6 +82,7 @@ channel = p.Results.channel;
 action = p.Results.action;
 diagnostic = p.Results.diagnostic;
 
+if diagnostic == 1; raw = RSK; end % Save raw data if diagnostic plot is required
 
 appliedchanCol = [];
 channels = cellchannelnames(RSK, channel);
@@ -89,8 +90,6 @@ for chan = channels
     appliedchanCol = [appliedchanCol getchannelindex(RSK, chan{1})];
 end
 castidx = getdataindex(RSK, profile, direction);
-
-if diagnostic == 1; raw = RSK; end % Save raw data if diagnostic plot is required
 
 for ndx =  castidx
     if strcmpi(reference, 'index')
