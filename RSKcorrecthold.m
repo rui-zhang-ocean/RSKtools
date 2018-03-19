@@ -105,7 +105,7 @@ for c = chanCol
         RSK.data(ndx).values(:,c) = out;
         holdpts(k).index{c} = index;
         if ndx == castidx(1) && diagnostic == 1; 
-            doDiagPlot(RSK, raw, index, ndx, chanCol(1)); 
+            doDiagPlot(RSK,raw,'index',index,'ndx',ndx,'channelidx',chanCol(1)); 
         end 
         k = k+1;
     end     

@@ -1,9 +1,9 @@
-function [] = doDiagPlot(RSK, raw, index, ndx, channelidx)
+function [] = doDiagPlot(RSK, raw, varargin)
 
 % doDiagPlot - Plot diagnostic plots to show difference before and after
 % data process.
 %
-% Syntax:  [handles] = doDiagPlot(RSK, raw, index, ndx, channelidx)
+% Syntax:  [handles] = doDiagPlot(RSK, raw, [OPTIONS])
 % 
 % Generates a plot to show original data, processed data and flagged data 
 % (if exists) against Pressure for profiles. It only plots the first 
@@ -19,15 +19,15 @@ function [] = doDiagPlot(RSK, raw, index, ndx, channelidx)
 % - RSKtrim
 % 
 % Inputs:
-%    RSK - RSK structure containing processed data.
+%    [Required] - RSK - RSK structure containing processed data.
 %
-%    raw - RSK structure containing raw data.
+%                 raw - RSK structure containing raw data.
 %
-%    index - flagged data index (i.e. RSK.data.values(index,:))
+%    [Optional] - index - flagged data index (i.e. RSK.data.values(index,:))
 %
-%    ndx - data structure index (i.e. RSK.data(ndx).values)
+%                 ndx - data structure index (i.e. RSK.data(ndx).values)
 %
-%    channelidx - channel index (i.e. RSK.data.values(:,channelidx))
+%                 channelidx - channel index (i.e. RSK.data.values(:,channelidx))
 %
 % Output:
 %     handles - Line object of the plot.
@@ -39,7 +39,22 @@ function [] = doDiagPlot(RSK, raw, index, ndx, channelidx)
 % Website: www.rbr-global.com
 % Last revision: 2018-03-19
 
+p = inputParser;
+addRequired(p, 'RSK', @isstruct);
+addRequired(p, 'raw', @isstruct);
+addParameter(p, 'index',[], @isnumeric);
+addParameter(p, 'ndx', 1, @isnumeric);
+addParameter(p, 'channelidx', 1, @isnumeric);
+parse(p, RSK, raw, varargin{:})
+
+RSK = p.Results.RSK;
+raw = p.Results.raw;
+index = p.Results.index;
+ndx = p.Results.ndx;
+channelidx = p.Results.channelidx;
+
 presCol = getchannelindex(RSK,'Pressure');
+
 fig = figure;
 set(fig, 'position', [10 10 500 800]);
 plot(raw.data(ndx).values(:,1),raw.data(ndx).values(:,presCol),'-c','linewidth',2);

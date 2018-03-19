@@ -101,7 +101,7 @@ for ndx = castidx
     RSK.data(ndx).values(:,channelCol) = out;
     spike(k).index = index;    
     if ndx == castidx(1) && diagnostic == 1; 
-        doDiagPlot(RSK, raw, index, ndx, channelCol); 
+        doDiagPlot(RSK,raw,'index',index,'ndx',ndx,'channelidx',channelCol); 
     end 
     k = k+1;
 end

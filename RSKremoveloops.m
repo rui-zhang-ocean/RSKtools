@@ -98,7 +98,7 @@ for ndx = castidx
     RSK.data(ndx).values(flag,flagChannels) = NaN;
     flagidx(k).index = find(flag);
     if ndx == castidx(1) && diagnostic == 1; 
-        doDiagPlot(RSK, raw, find(flag), ndx, 1); 
+        doDiagPlot(RSK,raw,'index',find(flag),'ndx',ndx); 
     end 
     k = k + 1;
 end
