@@ -77,11 +77,11 @@ N = round((t(end)-t(1))/(t(2)-t(1)));
 t_itp = linspace(t(1), t(end), N);
 
 ind_mt = bsxfun(@(x,y) abs(x-y), t(:), reshape(t_itp,1,[]));
-[~, idx_itp] = min(ind_mt,[],2); 
-idx_nan = setxor(idx_itp, 1:length(t_itp));
+[~, ind_itp] = min(ind_mt,[],2); 
+ind_nan = setxor(ind_itp, 1:length(t_itp));
 
 binValues_itp = interp1(t,binValues',t_itp)';
-binValues_itp(:,idx_nan) = NaN;
+binValues_itp(:,ind_nan) = NaN;
 
 % Plot
 im = imagesc(t_itp, binCenter, binValues_itp);
