@@ -75,7 +75,7 @@ end
 
 t = cellfun( @(x)  nanmedian(x), {RSK.data(castidx).tstamp});
 im = pcolor(t, binCenter, binValues);
-shading flat
+shading interp
 set(im, 'AlphaData', ~isnan(binValues)) %plot NaN values in white.
 
 
