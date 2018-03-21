@@ -1,8 +1,8 @@
-function im = RSKplot2D(RSK, channel, varargin)
+function [im, data2D, X, Y] = RSKplot2D(RSK, channel, varargin)
 
 % RSKplot2D - Plot profiles in a 2D plot.
 %
-% Syntax:  [im] = RSKplot2D(RSK, channel, [OPTIONS])
+% Syntax:  [im, data2D, X, Y] = RSKplot2D(RSK, channel, [OPTIONS])
 % 
 % Generates a plot of the profiles over time. The x-axis is time; the
 % y-axis is a reference channel. All data elements must have identical
@@ -26,14 +26,21 @@ function im = RSKplot2D(RSK, channel, varargin)
 %                reference - Channel that will be plotted as y. Default
 %                      'Sea Pressure', can be any other channel.
 %
-%                stretch - Plotting with stretching profiles or not (1 or
-%                      0). Default is 0.
+%                interp - Plotting with interpolated profiles onto a 
+%                       regular time grid, so that gaps between each
+%                       profile can be shown when set as 1. Default is 0. 
 %
 % Output:
 %     im - Image object created, use to set properties.
 %
-% % Example: 
-%     im = RSKplot2D(RSK,'Temperature','direction','down','stretch',1); 
+%     data2D - Plotted data matrix.
+%
+%     X - X axis vector in time.
+%
+%     Y - Y axis vector in sea pressure.
+%
+% Example: 
+%     im = RSKplot2D(RSK,'Temperature','direction','down','interp',1); 
 %
 % See also: RSKbinaverage, RSKplotprofiles.
 %
@@ -51,7 +58,7 @@ addRequired(p, 'channel');
 addParameter(p, 'profile', [], @isnumeric);
 addParameter(p, 'direction', 'down', checkDirection);
 addParameter(p, 'reference', 'Sea Pressure', @ischar);
-addOptional(p,'stretch', 0, @isnumeric)
+addOptional(p,'interp', 0, @isnumeric)
 parse(p, RSK, channel, varargin{:})
 
 RSK = p.Results.RSK;
@@ -59,7 +66,7 @@ channel = p.Results.channel;
 profile = p.Results.profile;
 direction = p.Results.direction;
 reference = p.Results.reference;
-stretch = p.Results.stretch;
+interp = p.Results.interp;
 
 
 castidx = getdataindex(RSK, profile, direction);
@@ -72,6 +79,7 @@ for ndx = 1:length(castidx)-1
         error('The reference channel data of all the selected profiles must be identical. Use RSKbinaverage.m for selected cast direction.')
     end
 end
+Y = binCenter;
 
 binValues = NaN(length(binCenter), length(castidx));
 for ndx = 1:length(castidx)
@@ -79,23 +87,27 @@ for ndx = 1:length(castidx)
 end
 t = cellfun( @(x)  min(x), {RSK.data(castidx).tstamp});
 
-if stretch == 0;
+if interp == 0;
+    data2D = binValues;
+    X = t;
+    im = pcolor(t, binCenter, binValues);
+    shading interp
+    set(im, 'AlphaData', isfinite(binValues)) % plot NaN values in white.
+else
     N = round((t(end)-t(1))/(t(2)-t(1)));
     t_itp = linspace(t(1), t(end), N);
-
+    X = t_itp;
+    
     ind_mt = bsxfun(@(x,y) abs(x-y), t(:), reshape(t_itp,1,[]));
     [~, ind_itp] = min(ind_mt,[],2); 
     ind_nan = setxor(ind_itp, 1:length(t_itp));
 
     binValues_itp = interp1(t,binValues',t_itp)';
     binValues_itp(:,ind_nan) = NaN;
-
+    
+    data2D = binValues_itp;
     im = imagesc(t_itp, binCenter, binValues_itp);
     set(im, 'AlphaData', isfinite(binValues_itp)) % plot NaN values in white.
-else
-    im = pcolor(t, binCenter, binValues);
-    shading interp
-    set(im, 'AlphaData', isfinite(binValues)) % plot NaN values in white.
 end
 
 setcolormap(channel);
