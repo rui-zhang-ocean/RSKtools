@@ -92,7 +92,7 @@ if interp == 0;
     X = t;
     im = pcolor(t, binCenter, binValues);
     shading interp
-    set(im, 'AlphaData', isfinite(binValues)) % plot NaN values in white.
+    set(im, 'AlphaData', isfinite(binValues)); % plot NaN values in white.
 else
     N = round((t(end)-t(1))/(t(2)-t(1)));
     t_itp = linspace(t(1), t(end), N);
@@ -107,7 +107,7 @@ else
     
     data2D = binValues_itp;
     im = imagesc(t_itp, binCenter, binValues_itp);
-    set(im, 'AlphaData', isfinite(binValues_itp)) % plot NaN values in white.
+    set(im, 'AlphaData', isfinite(binValues_itp));
 end
 
 setcolormap(channel);
