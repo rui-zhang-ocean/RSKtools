@@ -26,15 +26,21 @@ function im = RSKplot2D(RSK, channel, varargin)
 %                reference - Channel that will be plotted as y. Default
 %                      'Sea Pressure', can be any other channel.
 %
+%                stretch - Plotting with stretching profiles or not (1 or
+%                      0). Default is 0.
+%
 % Output:
 %     im - Image object created, use to set properties.
+%
+% % Example: 
+%     im = RSKplot2D(RSK,'Temperature','direction','down','stretch',1); 
 %
 % See also: RSKbinaverage, RSKplotprofiles.
 %
 % Author: RBR Ltd. Ottawa ON, Canada
 % email: support@rbr-global.com
 % Website: www.rbr-global.com
-% Last revision: 2017-07-06
+% Last revision: 2018-03-21
 
 validDirections = {'down', 'up'};
 checkDirection = @(x) any(validatestring(x,validDirections));
@@ -45,6 +51,7 @@ addRequired(p, 'channel');
 addParameter(p, 'profile', [], @isnumeric);
 addParameter(p, 'direction', 'down', checkDirection);
 addParameter(p, 'reference', 'Sea Pressure', @ischar);
+addOptional(p,'stretch', 0, @isnumeric)
 parse(p, RSK, channel, varargin{:})
 
 RSK = p.Results.RSK;
@@ -52,7 +59,7 @@ channel = p.Results.channel;
 profile = p.Results.profile;
 direction = p.Results.direction;
 reference = p.Results.reference;
-
+stretch = p.Results.stretch;
 
 
 castidx = getdataindex(RSK, profile, direction);
@@ -72,20 +79,24 @@ for ndx = 1:length(castidx)
 end
 t = cellfun( @(x)  min(x), {RSK.data(castidx).tstamp});
 
-% Interpolation
-N = round((t(end)-t(1))/(t(2)-t(1)));
-t_itp = linspace(t(1), t(end), N);
+if stretch == 0;
+    N = round((t(end)-t(1))/(t(2)-t(1)));
+    t_itp = linspace(t(1), t(end), N);
 
-ind_mt = bsxfun(@(x,y) abs(x-y), t(:), reshape(t_itp,1,[]));
-[~, ind_itp] = min(ind_mt,[],2); 
-ind_nan = setxor(ind_itp, 1:length(t_itp));
+    ind_mt = bsxfun(@(x,y) abs(x-y), t(:), reshape(t_itp,1,[]));
+    [~, ind_itp] = min(ind_mt,[],2); 
+    ind_nan = setxor(ind_itp, 1:length(t_itp));
 
-binValues_itp = interp1(t,binValues',t_itp)';
-binValues_itp(:,ind_nan) = NaN;
+    binValues_itp = interp1(t,binValues',t_itp)';
+    binValues_itp(:,ind_nan) = NaN;
 
-% Plot
-im = imagesc(t_itp, binCenter, binValues_itp);
-set(im, 'AlphaData', isfinite(binValues_itp)) %plot NaN values in white.
+    im = imagesc(t_itp, binCenter, binValues_itp);
+    set(im, 'AlphaData', isfinite(binValues_itp)) % plot NaN values in white.
+else
+    im = pcolor(t, binCenter, binValues);
+    shading interp
+    set(im, 'AlphaData', isfinite(binValues)) % plot NaN values in white.
+end
 
 setcolormap(channel);
 cb = colorbar;
