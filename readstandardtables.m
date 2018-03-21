@@ -42,7 +42,7 @@ RSK = readpowertable(RSK);
 
 %% Nested function reading power table
     function RSK = readpowertable(RSK)
-    if ~isempty(doSelect(RSK, 'PRAGMA table_info(power)')) && ...
+    if ~isempty(doSelect(RSK, 'SELECT name FROM sqlite_master WHERE type="table" AND name="power"')) && ...
        isfield(RSK.instruments, 'firmwareType') && RSK.instruments.firmwareType > 103;
         RSK.power = doSelect(RSK, 'select * from power'); 
         if RSK.power.internalBatteryType == -1; 
