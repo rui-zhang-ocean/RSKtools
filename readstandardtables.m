@@ -42,7 +42,8 @@ RSK = readpowertable(RSK);
 
 %% Nested function reading power table
     function RSK = readpowertable(RSK)
-    if isfield(RSK.instruments, 'firmwareType') && RSK.instruments.firmwareType > 103;
+    if ~isempty(doSelect(RSK, 'PRAGMA table_info(power)')) && ...
+       isfield(RSK.instruments, 'firmwareType') && RSK.instruments.firmwareType > 103;
         RSK.power = doSelect(RSK, 'select * from power'); 
         if RSK.power.internalBatteryType == -1; 
             RSK.power = rmfield(RSK.power, {'internalBatteryType','internalBatteryCapacity','internalEnergyUsed'}); 
