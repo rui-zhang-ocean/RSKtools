@@ -29,6 +29,10 @@ function [im, data2D, X, Y] = RSKplot2D(RSK, channel, varargin)
 %                interp - Plotting with interpolated profiles onto a 
 %                       regular time grid, so that gaps between each
 %                       profile can be shown when set as 1. Default is 0. 
+%          
+%                threshold - Threshold to determine the length of gap shown
+%                       on the plot. If the gap is smaller than threshold,
+%                       it will not show. Unit in hours.
 %
 % Output:
 %     im - Image object created, use to set properties.
@@ -40,14 +44,16 @@ function [im, data2D, X, Y] = RSKplot2D(RSK, channel, varargin)
 %     Y - Y axis vector in sea pressure.
 %
 % Example: 
-%     im = RSKplot2D(RSK,'Temperature','direction','down','interp',1); 
+%     im = RSKplot2D(RSK,'Temperature','direction','down'); 
+%     OR
+%     [im, data2D, X, Y] = RSKplot2D(RSK,'Temperature','direction','down','interp',1,'threshold',1);
 %
 % See also: RSKbinaverage, RSKplotprofiles.
 %
 % Author: RBR Ltd. Ottawa ON, Canada
 % email: support@rbr-global.com
 % Website: www.rbr-global.com
-% Last revision: 2018-03-21
+% Last revision: 2018-03-27
 
 validDirections = {'down', 'up'};
 checkDirection = @(x) any(validatestring(x,validDirections));
@@ -58,7 +64,8 @@ addRequired(p, 'channel');
 addParameter(p, 'profile', [], @isnumeric);
 addParameter(p, 'direction', 'down', checkDirection);
 addParameter(p, 'reference', 'Sea Pressure', @ischar);
-addOptional(p,'interp', 0, @isnumeric)
+addParameter(p,'interp', 0, @isnumeric)
+addParameter(p,'threshold', [], @isnumeric)
 parse(p, RSK, channel, varargin{:})
 
 RSK = p.Results.RSK;
@@ -67,6 +74,7 @@ profile = p.Results.profile;
 direction = p.Results.direction;
 reference = p.Results.reference;
 interp = p.Results.interp;
+threshold = p.Results.threshold;
 
 
 castidx = getdataindex(RSK, profile, direction);
@@ -94,7 +102,8 @@ if interp == 0;
     shading interp
     set(im, 'AlphaData', isfinite(binValues)); % plot NaN values in white.
 else
-    N = round((t(end)-t(1))/(t(2)-t(1)));
+    unit_time = (t(2)-t(1)); 
+    N = round((t(end)-t(1))/unit_time);
     t_itp = linspace(t(1), t(end), N);
     X = t_itp;
     
@@ -104,10 +113,29 @@ else
 
     binValues_itp = interp1(t,binValues',t_itp)';
     binValues_itp(:,ind_nan) = NaN;
-    
     data2D = binValues_itp;
-    im = imagesc(t_itp, binCenter, binValues_itp);
-    set(im, 'AlphaData', isfinite(binValues_itp));
+    
+    if ~isempty(threshold);
+        diff_idx = diff(ind_itp);
+        gap_idx = find(diff_idx > 1);
+
+        remove_gap_idx = [];
+        for g = 1:length(gap_idx)
+            temp_idx = ind_itp(gap_idx(g))+1 : ind_itp(gap_idx(g))+1+diff_idx(gap_idx(g))-2;
+            if length(temp_idx)*unit_time*86400 < threshold * 3600; % seconds
+                remove_gap_idx = [remove_gap_idx, temp_idx];
+            end
+        end
+
+        binValues_itp(:,remove_gap_idx) = [];
+        t_itp(remove_gap_idx) = [];
+        
+        im = pcolor(t_itp, binCenter, binValues_itp);
+        shading interp
+    else
+        im = imagesc(t_itp, binCenter, binValues_itp);       
+    end 
+    set(im, 'AlphaData', isfinite(binValues_itp)); 
 end
 
 setcolormap(channel);
