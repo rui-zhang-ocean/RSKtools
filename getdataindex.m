@@ -50,7 +50,7 @@ end
 profilecast = size(RSK.profiles.order,2);
 ndata = length(RSK.data);
 
-if ~isempty(direction) && profilecast == 1 && ~strcmp(RSK.profiles.order, direction)
+if ~isempty(direction) && profilecast == 1 && ~strcmp(RSK.profiles.order, direction) && ~strcmp(direction,'both')
     error(['There is no ' direction 'cast in this RSK structure.']);
 end
 
