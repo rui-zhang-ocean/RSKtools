@@ -102,7 +102,7 @@ end
 % Check if the structure comes from RSKreaddata or RSKreadprofiles?
 isProfile = isfield(RSK.data,'direction');
 
-if isfield(RSK, 'data') && length(RSK.data) == 1 && (~isempty(profile) || ~isempty(direction))
+if ~isProfile && (~isempty(profile) || ~isempty(direction))
     warning('RSK structure does not contain any profile, use RSKreadprofiles.')
 end
 
