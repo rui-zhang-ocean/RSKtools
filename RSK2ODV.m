@@ -166,7 +166,7 @@ log = RSK.log(:,2);
 
 % Check if cast direction includes both upcast and downcast?
 directions = 1;
-if isfield(RSK.profiles,'order') && length(RSK.profiles.order) ~= 1 
+if isfield(RSK.profiles,'order') && length(RSK.profiles.order) ~= 1 && strcmp(direction,'both')
     directions = 2;
 end
 
@@ -185,7 +185,7 @@ else
     select_cast = 1;
 end
 
-for castidx = select_cast(1) : directions: select_cast(end); 
+for castidx = select_cast(1:directions:end); 
     
     for d = 1 : directions
         

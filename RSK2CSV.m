@@ -158,9 +158,9 @@ if ~isProfile,
 end
 log = RSK.log(:,2);
 
-% Check if cast direction includes both upcast and downcast?
+% Check if both upcast and downcast needs reading?
 directions = 1;
-if isfield(RSK.profiles,'order') && length(RSK.profiles.order) ~= 1 
+if isfield(RSK.profiles,'order') && length(RSK.profiles.order) ~= 1 && strcmp(direction,'both')
     directions = 2;
 end
 
@@ -179,7 +179,7 @@ else
     select_cast = 1;
 end
 
-for castidx = select_cast(1) : directions: select_cast(end); 
+for castidx = select_cast(1:directions:end); 
     
     for d = 1 : directions
         
@@ -239,7 +239,7 @@ for castidx = select_cast(1) : directions: select_cast(end);
     fclose(fid);
 
     fprintf('Wrote: %s/%s\n', outputdir, filename);
-    
+    save('all')
 end
 
 end
