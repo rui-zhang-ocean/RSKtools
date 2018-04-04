@@ -239,7 +239,7 @@ for castidx = select_cast(1:directions:end);
     fclose(fid);
 
     fprintf('Wrote: %s/%s\n', outputdir, filename);
-    save('all')
+    
 end
 
 end
