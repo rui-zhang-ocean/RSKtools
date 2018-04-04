@@ -110,7 +110,7 @@ if isempty(direction); direction = 'both'; end;
 
 if ~strcmp('both', direction) && isProfile && ...
     (all(strcmp('up',{RSK.data.direction})) && ~strcmp(direction,'up') || all(strcmp('down',{RSK.data.direction})) && ~strcmp(direction,'down'))
-    error('Requested cast direction does not exist in RSK structure, use RSKreadprofiles.')
+    error('Requested cast direction or profile does not exist in RSK structure, use RSKreadprofiles.')
 end
 
 % Set up metadata
