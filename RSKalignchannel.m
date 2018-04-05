@@ -149,7 +149,7 @@ for ndx =  castidx
     end
     RSK.data(ndx).values(:, channelCol) = channelShifted;
     if ndx == castidx(1) && diagnostic == 1; 
-        doDiagPlot(RSK,raw,'ndx',ndx,'channelidx',channelCol); 
+        doDiagPlot(RSK,raw,'ndx',ndx,'channelidx',channelCol,'fn',mfilename); 
     end 
 end
 

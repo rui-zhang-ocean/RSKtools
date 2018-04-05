@@ -90,7 +90,7 @@ for chanName = channelcell
         end      
         RSK.data(ndx).values(:,channelCol) = out;
         if strcmp(chanName, channelcell{1}) && ndx == castidx(1) && diagnostic == 1; 
-            doDiagPlot(RSK,raw,'ndx',ndx,'channelidx',channelCol); 
+            doDiagPlot(RSK,raw,'ndx',ndx,'channelidx',channelCol,'fn',mfilename); 
         end 
     end
     logdata = logentrydata(RSK, profile, direction);

@@ -117,7 +117,7 @@ for ndx = castidx
         RSK.data(ndx).values(:,chanCol) = binCenter;
     end
     if ndx == castidx(1) && diagnostic == 1; 
-        doDiagPlot(RSK,raw,'ndx',ndx); 
+        doDiagPlot(RSK,raw,'ndx',ndx,'fn',mfilename); 
     end 
     k = k+1;
 end

@@ -29,6 +29,8 @@ function [] = doDiagPlot(RSK, raw, varargin)
 %
 %                 channelidx - channel index (i.e. RSK.data.values(:,channelidx))
 %
+%                 fn - name of the function for data process
+%
 % Output:
 %     handles - Line object of the plot.
 %
@@ -37,20 +39,22 @@ function [] = doDiagPlot(RSK, raw, varargin)
 % Author: RBR Ltd. Ottawa ON, Canada
 % email: support@rbr-global.com
 % Website: www.rbr-global.com
-% Last revision: 2018-03-19
+% Last revision: 2018-04-05
 
 p = inputParser;
-addRequired(p, 'RSK', @isstruct);
-addRequired(p, 'raw', @isstruct);
-addParameter(p, 'index',[], @isnumeric);
-addParameter(p, 'ndx', 1, @isnumeric);
-addParameter(p, 'channelidx', 1, @isnumeric);
+addRequired(p,'RSK', @isstruct);
+addRequired(p,'raw', @isstruct);
+addParameter(p,'index', [], @isnumeric);
+addParameter(p,'ndx', 1, @isnumeric);
+addParameter(p,'channelidx', 1, @isnumeric);
+addParameter(p,'fn', '', @ischar);
 parse(p, RSK, raw, varargin{:})
 
 RSK = p.Results.RSK;
 raw = p.Results.raw;
 index = p.Results.index;
 ndx = p.Results.ndx;
+fn = p.Results.fn;
 channelidx = p.Results.channelidx;
 
 try
@@ -74,7 +78,9 @@ set(ax, 'ydir', 'reverse');
 xlabel([RSK.channels(channelidx).longName ' (' RSK.channels(channelidx).units ')']);
 ylabel([RSK.channels(presCol).longName ' (' RSK.channels(presCol).units ')']);
 if isfield(RSK.data,'profilenumber') && isfield(RSK.data,'direction')
-    title(['Profile ' num2str(RSK.data(ndx).profilenumber) ' ' RSK.data(ndx).direction 'cast']);
+    title(['Profile ' num2str(RSK.data(ndx).profilenumber) ' ' RSK.data(ndx).direction 'cast ' fn]);
+else
+    title(fn);
 end
 if isempty(index)
     legend('Original data','Processed data','Location','Best');
