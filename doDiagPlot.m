@@ -54,8 +54,8 @@ RSK = p.Results.RSK;
 raw = p.Results.raw;
 index = p.Results.index;
 ndx = p.Results.ndx;
-fn = p.Results.fn;
 channelidx = p.Results.channelidx;
+fn = p.Results.fn;
 
 try
     presCol = getchannelindex(RSK,'Sea Pressure');
