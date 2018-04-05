@@ -1,29 +1,35 @@
 function [RSK, flagidx] = RSKremoveloops(RSK, varargin)
 
-% RSKremoveloops - Remove data exceeding a threshold profiling rate and
-% with reversed pressure (loops).
+% RSKremoveloops - Remove data exceeding a threshold profiling rate or
+% acceleration rate (when specified) and with reversed pressure (loops).
 %
-% Syntax:  [RSK, flagidx] = RSKremoveloops(RSK, [OPTIONS])
+% Syntax: [RSK, flagidx] = RSKremoveloops(RSK, [OPTIONS])
 % 
 % Identifies and flags data obtained when the logger vertical profiling
 % speed falls below a threshold value or when the logger reversed the
-% desired cast direction (forming a loop). The flagged data is replaced 
-% with NaNs.  All logger channels except depth are affected.    
+% desired cast direction (forming a loop). Threshold for acceleration could
+% be jointly examined when users specifiy it. The flagged data is replaced 
+% with NaNs. All logger channels except depth are affected.    
 % 
-% Differenciates depth to estimate the profiling speed. The depth channel
-% is first smoothed with a 3-point running average to reduce noise. 
+% Profiling speed is estimated by differenciating depth. Acceleration is
+% estimated by differenciating velocity. The depth channel is first 
+% smoothed with a 3-point running average to reduce noise. 
 % 
 % Inputs:
 %   [Required] - RSK - RSK structure with logger data and metadata
 %
 %   [Optional] - profile - Profile number. Defaults to all profiles.
 %
-%                direction - 'up' for upcast, 'down' for downcast, or
-%                      'both' for all. Defaults to all directions
+%                direction - 'up' for upcast, 'down' for downcast, or 
+%                       'both' for all. Defaults to all directions
 %                       available.
 % 
-%                threshold - Minimum speed at which the profile must
-%                       be taken. Defaults to 0.25 m/s.
+%                threshold1 - Minimum speed at which the profile must be 
+%                       taken. Defaults to 0.25 m/s.
+%
+%                threshold2 - Maximum acceleration at which the profile
+%                       must be taken. Defaults to -Inf (i.e. will not work
+%                       unless specified by users)
 %
 % Outputs:
 %    RSK - Structure with data filtered by threshold profiling speed and
@@ -35,11 +41,13 @@ function [RSK, flagidx] = RSKremoveloops(RSK, varargin)
 %    RSK = RSKopen('file.rsk');
 %    RSK = RSKreadprofiles(RSK);
 %    RSK = RSKremoveloops(RSK);
+%    OR
+%    RSK = RSKremoveloops(RSK,'direction','down','profile',3,'threshold1',0.2,'threshold2',-1);
 %
 % Author: RBR Ltd. Ottawa ON, Canada
 % email: support@rbr-global.com
 % Website: www.rbr-global.com
-% Last revision: 2017-10-17
+% Last revision: 2018-04-05
 
 validDirections = {'down', 'up', 'both'};
 checkDirection = @(x) any(validatestring(x,validDirections));
@@ -48,13 +56,15 @@ p = inputParser;
 addRequired(p, 'RSK', @isstruct);
 addParameter(p, 'profile', [], @isnumeric);
 addParameter(p, 'direction', [], checkDirection);
-addParameter(p, 'threshold', 0.25, @isnumeric);
+addParameter(p, 'threshold1', 0.25, @isnumeric);
+addParameter(p, 'threshold2', -Inf, @isnumeric);
 parse(p, RSK, varargin{:})
 
 RSK = p.Results.RSK;
 profile = p.Results.profile;
 direction = p.Results.direction;
-threshold = p.Results.threshold;
+threshold1 = p.Results.threshold1;
+threshold2 = p.Results.threshold2;
 
 
 
@@ -73,15 +83,16 @@ for ndx = castidx
     time = RSK.data(ndx).tstamp;
 
     velocity = calculatevelocity(depth, time);
+    acc = calculatevelocity(velocity, time);
     
     if getcastdirection(depth, 'up')
-      flag = (velocity > -threshold);
-      cm = cummin(depth);
-      flag((depth - cm) > 0) = true;
+        flag = velocity > -threshold1 | acc > -threshold2;
+        cm = cummin(depth);
+        flag((depth - cm) > 0) = true;
     else
-      flag = velocity < threshold; 
-      cm = cummax(depth);
-      flag((depth - cm) < 0) = true;
+        flag = velocity < threshold1 | acc < threshold2; 
+        cm = cummax(depth);
+        flag((depth - cm) < 0) = true;
     end
     
     flagChannels = ~strcmpi('Depth', {RSK.channels.longName});    
@@ -92,7 +103,7 @@ end
 
 
 logdata = logentrydata(RSK, profile, direction);
-logentry = ['Samples measured at a profiling velocity less than ' num2str(threshold) ' m/s were replaced with NaN on ' logdata '.'];
+logentry = ['Samples measured at a profiling velocity less than ' num2str(threshold1) ' m/s were replaced with NaN on ' logdata '.'];
 
 RSK = RSKappendtolog(RSK, logentry);
 
