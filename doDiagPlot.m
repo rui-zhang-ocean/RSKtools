@@ -53,7 +53,13 @@ index = p.Results.index;
 ndx = p.Results.ndx;
 channelidx = p.Results.channelidx;
 
-presCol = getchannelindex(RSK,'Pressure');
+try
+    presCol = getchannelindex(RSK,'Sea Pressure');
+catch
+    RSK = RSKderiveseapressure(RSK);
+    raw = RSKderiveseapressure(raw);
+    presCol = getchannelindex(RSK,'Sea Pressure');
+end
 
 fig = figure;
 set(fig, 'position', [10 10 500 800]);
@@ -66,7 +72,7 @@ plot(raw.data(ndx).values(index,channelidx),raw.data(ndx).values(index,presCol),
 ax = findall(gcf,'type','axes');
 set(ax, 'ydir', 'reverse');
 xlabel([RSK.channels(channelidx).longName ' (' RSK.channels(channelidx).units ')']);
-ylabel(['Pressure (' RSK.channels(presCol).units ')']);
+ylabel([RSK.channels(presCol).longName ' (' RSK.channels(presCol).units ')']);
 if isfield(RSK.data,'profilenumber') && isfield(RSK.data,'direction')
     title(['Profile ' num2str(RSK.data(ndx).profilenumber) ' ' RSK.data(ndx).direction 'cast']);
 end
