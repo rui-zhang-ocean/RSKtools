@@ -24,12 +24,12 @@ function [RSK, flagidx] = RSKremoveloops(RSK, varargin)
 %                       'both' for all. Defaults to all directions
 %                       available.
 % 
-%                threshold1 - Minimum speed at which the profile must be 
+%                threshold - Minimum speed at which the profile must be 
 %                       taken. Defaults to 0.25 m/s.
 %
-%                threshold2 - Maximum acceleration at which the profile
-%                       must be taken. Defaults to -Inf (i.e. will not work
-%                       unless specified by users)
+%                accelerationThreshold - Maximum acceleration at which the 
+%                       profile must be taken. Defaults to -Inf (i.e. will 
+%                       not work unless specified by users)
 %
 % Outputs:
 %    RSK - Structure with data filtered by threshold profiling speed and
@@ -42,7 +42,7 @@ function [RSK, flagidx] = RSKremoveloops(RSK, varargin)
 %    RSK = RSKreadprofiles(RSK);
 %    RSK = RSKremoveloops(RSK);
 %    OR
-%    RSK = RSKremoveloops(RSK,'direction','down','profile',3,'threshold1',0.2,'threshold2',-1);
+%    RSK = RSKremoveloops(RSK,'direction','down','profile',3,'threshold',0.2,'accelerationThreshold',-1);
 %
 % Author: RBR Ltd. Ottawa ON, Canada
 % email: support@rbr-global.com
@@ -56,15 +56,15 @@ p = inputParser;
 addRequired(p, 'RSK', @isstruct);
 addParameter(p, 'profile', [], @isnumeric);
 addParameter(p, 'direction', [], checkDirection);
-addParameter(p, 'threshold1', 0.25, @isnumeric);
-addParameter(p, 'threshold2', -Inf, @isnumeric);
+addParameter(p, 'threshold', 0.25, @isnumeric);
+addParameter(p, 'accelerationThreshold', -Inf, @isnumeric);
 parse(p, RSK, varargin{:})
 
 RSK = p.Results.RSK;
 profile = p.Results.profile;
 direction = p.Results.direction;
-threshold1 = p.Results.threshold1;
-threshold2 = p.Results.threshold2;
+threshold = p.Results.threshold;
+accelerationThreshold = p.Results.accelerationThreshold;
 
 
 
@@ -86,11 +86,11 @@ for ndx = castidx
     acc = calculatevelocity(velocity, time);
     
     if getcastdirection(depth, 'up')
-        flag = velocity > -threshold1 | acc > -threshold2;
+        flag = velocity > -threshold | acc > -accelerationThreshold;
         cm = cummin(depth);
         flag((depth - cm) > 0) = true;
     else
-        flag = velocity < threshold1 | acc < threshold2; 
+        flag = velocity < threshold | acc < accelerationThreshold; 
         cm = cummax(depth);
         flag((depth - cm) < 0) = true;
     end
@@ -103,7 +103,7 @@ end
 
 
 logdata = logentrydata(RSK, profile, direction);
-logentry = ['Samples measured at a profiling velocity less than ' num2str(threshold1) ' m/s were replaced with NaN on ' logdata '.'];
+logentry = ['Samples measured at a profiling velocity less than ' num2str(threshold) ' m/s were replaced with NaN on ' logdata '.'];
 
 RSK = RSKappendtolog(RSK, logentry);
 
