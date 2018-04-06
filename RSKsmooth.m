@@ -29,10 +29,10 @@ function RSK = RSKsmooth(RSK, channel, varargin)
 %                 windowLength - The total size of the filter window. Must
 %                       be odd. Default is 3.
 %
-%                 diagnostic - To give a diagnostic plot on the first 
-%                       profile of the first channel or not (1 or 0). 
-%                       Original and processed data will be plotted to 
-%                       show users how the algorithm works. Default is 0.
+%                 diagnostic - To give a diagnostic plot on specified
+%                       profile number. Original and processed data will
+%                       be plotted to show users how the algorithm works.
+%                       Default is 0.
 %
 % Outputs:
 %    RSK - Structure with filtered values.
@@ -45,7 +45,7 @@ function RSK = RSKsmooth(RSK, channel, varargin)
 % Author: RBR Ltd. Ottawa ON, Canada
 % email: support@rbr-global.com
 % Website: www.rbr-global.com
-% Last revision: 2018-03-19
+% Last revision: 2018-04-06
 
 validFilterNames = {'median', 'boxcar', 'triangle'};
 checkFilter = @(x) any(validatestring(x,validFilterNames));
@@ -71,11 +71,11 @@ direction = p.Results.direction;
 windowLength = p.Results.windowLength;
 diagnostic = p.Results.diagnostic;
 
-if diagnostic == 1; raw = RSK; end % Save raw data if diagnostic plot is required
-
 channelcell = cellchannelnames(RSK, channel);
-
 castidx = getdataindex(RSK, profile, direction);
+
+[raw, diagndx] = checkDiagPlot(RSK, diagnostic, direction, castidx);
+
 for chanName = channelcell
     channelCol = getchannelindex(RSK, chanName);
     for ndx = castidx
@@ -89,7 +89,7 @@ for chanName = channelcell
                 out = runtriang(in, windowLength);
         end      
         RSK.data(ndx).values(:,channelCol) = out;
-        if strcmp(chanName, channelcell{1}) && ndx == castidx(1) && diagnostic == 1; 
+        if diagnostic ~= 0 && ndx == diagndx && strcmp(chanName, channelcell{1}); 
             doDiagPlot(RSK,raw,'ndx',ndx,'channelidx',channelCol,'fn',mfilename); 
         end 
     end

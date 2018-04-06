@@ -1,6 +1,6 @@
 function [RSK, spike] = RSKdespike(RSK, channel, varargin)
 
-%RSKdespike - Despike a time series.
+% RSKdespike - Despike a time series.
 %
 % Syntax:  [RSK, spike] = RSKdespike(RSK, channel, [OPTIONS])
 % 
@@ -16,10 +16,11 @@ function [RSK, spike] = RSKdespike(RSK, channel, varargin)
 % Inputs:
 %   [Required] - RSK - Structure containing logger data.
 %
-%                channel - Longname of channel to despike (e.g., temperature,
-%                      salinity, etc)
+%                channel - Longname of channel to despike (e.g., 
+%                      temperature, salinity, etc)
 %
-%   [Optional] - profile - Profile number. Default is all available profiles.
+%   [Optional] - profile - Profile number. Default is all available 
+%                      profiles.
 %
 %                direction - 'up' for upcast, 'down' for downcast, or
 %                      'both' for all. Default is all directions available.
@@ -30,18 +31,18 @@ function [RSK, spike] = RSKdespike(RSK, channel, varargin)
 %                windowLength - Total size of the filter window. Must be
 %                      odd. Default is 3. 
 %
-%                action - Action to perform on a spike. The default is 'nan',
-%                      whereby spikes are replaced with NaN.  Other options are 
-%                      'replace', whereby spikes are replaced with the 
-%                      corresponding reference value, and 'interp', 
+%                action - Action to perform on a spike. The default is 
+%                      'nan', whereby spikes are replaced with NaN. Other 
+%                      options are 'replace', whereby spikes are replaced 
+%                      with the corresponding reference value, and 'interp' 
 %                      whereby spikes are replaced with values calculated
 %                      by linearly interpolating from the neighbouring 
 %                      points.
 %
-%                diagnostic - To give a diagnostic plot on the first 
-%                      profile or not (1 or 0). Original, processed data 
-%                      and spikes will be plotted to show users how the 
-%                      algorithm works. Default is 0.
+%                diagnostic - To give a diagnostic plot on specified
+%                      profile number. Original, processed data and flagged
+%                      data will be plotted to show users how the algorithm
+%                      works. Default is 0.
 %
 % Outputs:
 %    RSK - Structure with de-spiked series.
@@ -51,16 +52,17 @@ function [RSK, spike] = RSKdespike(RSK, channel, varargin)
 %          profile.   
 %
 % Example: 
-%    [RSK, spike] = RSKdespike(RSK, 'Turbidity')
-%   OR
-%    [RSK, spike] = RSKdespike(RSK, 'Temperature', 'threshold', 4, 'windowLength', 11, 'action', 'nan', 'diagnostic', 1); 
+%    [RSK, spike] = RSKdespike(RSK,'Turbidity')
+%     OR
+%    [RSK, spike] = RSKdespike(RSK,'Temperature','profile',3:5,'direction','down',...
+%                   'threshold',4,'windowLength',11,'action','nan','diagnostic',4); 
 %
 % See also: RSKremoveloops, RSKsmooth.
 %
 % Author: RBR Ltd. Ottawa ON, Canada
 % email: support@rbr-global.com
 % Website: www.rbr-global.com
-% Last revision: 2018-03-02
+% Last revision: 2018-04-06
 
 validActions = {'replace', 'interp', 'nan'};
 checkAction = @(x) any(validatestring(x,validActions));
@@ -88,19 +90,20 @@ threshold = p.Results.threshold;
 action = p.Results.action;
 diagnostic = p.Results.diagnostic;
 
-if diagnostic == 1; raw = RSK; end % Save raw data if diagnostic plot is required
 
 channelCol = getchannelindex(RSK, channel);
 castidx = getdataindex(RSK, profile, direction);
-k = 1;
 
+[raw, diagndx] = checkDiagPlot(RSK, diagnostic, direction, castidx);
+
+k = 1;
 for ndx = castidx
     in = RSK.data(ndx).values(:,channelCol);
     intime = RSK.data(ndx).tstamp;
     [out, index] = despike(in, intime, threshold, windowLength, action);
     RSK.data(ndx).values(:,channelCol) = out;
     spike(k).index = index;    
-    if ndx == castidx(1) && diagnostic == 1; 
+    if diagnostic ~= 0 && ndx == diagndx; 
         doDiagPlot(RSK,raw,'index',index,'ndx',ndx,'channelidx',channelCol,'fn',mfilename); 
     end 
     k = k+1;

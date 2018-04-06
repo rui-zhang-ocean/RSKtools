@@ -26,24 +26,24 @@ function [RSK, holdpts] = RSKcorrecthold(RSK, varargin)
 %
 %
 %   [Optional] - channel - Longname of channel to correct the zero-order
-%                hold (e.g., temperature, salinity, etc)
+%                      hold (e.g., temperature, salinity, etc)
 %
 %                profile - Profile number. Default is all available
-%                profiles.
+%                      profiles.
 %
 %                direction - 'up' for upcast, 'down' for downcast, or
-%                'both' for all. Default is all directions available.
+%                      'both' for all. Default is all directions available.
 %
 %                action - Action to perform on a hold point. The default is
-%                'nan', whereby hold points are replaced with NaN. Another
-%                option is 'interp', whereby hold points are replaced with
-%                values calculated by linearly interpolating from the
-%                neighbouring points.
+%                      'nan', whereby hold points are replaced with NaN. 
+%                      Another option is 'interp', whereby hold points are
+%                      replaced with values calculated by linearly 
+%                      interpolating from the neighbouring points.
 %
-%                diagnostic - To give a diagnostic plot on the first 
-%                profile of the first channel or not (1 or 0). Original, 
-%                processed data and zero-order hold points will be plotted 
-%                to show users how the algorithm works. Default is 0.
+%                diagnostic - To give a diagnostic plot on specified
+%                      profile number. Original, processed data and flagged
+%                      data will be plotted to show users how the algorithm
+%                      works. Default is 0.
 %
 % Outputs:
 %    RSK - Structure with zero-order hold corrected values.
@@ -62,7 +62,7 @@ function [RSK, holdpts] = RSKcorrecthold(RSK, varargin)
 % Author: RBR Ltd. Ottawa ON, Canada
 % email: support@rbr-global.com
 % Website: www.rbr-global.com
-% Last revision: 2018-03-09
+% Last revision: 2018-04-06
 
 validActions = {'interp', 'nan'};
 checkAction = @(x) any(validatestring(x,validActions));
@@ -86,7 +86,6 @@ direction = p.Results.direction;
 action = p.Results.action;
 diagnostic = p.Results.diagnostic;
 
-if diagnostic == 1; raw = RSK; end % Save raw data if diagnostic plot is required
 
 chanCol = [];
 channels = cellchannelnames(RSK, channel);
@@ -94,6 +93,8 @@ for chan = channels
     chanCol = [chanCol getchannelindex(RSK, chan{1})];
 end
 castidx = getdataindex(RSK, profile, direction);
+
+[raw, diagndx] = checkDiagPlot(RSK, diagnostic, direction, castidx);
 
 %loop through channels
 for c = chanCol 
@@ -104,7 +105,7 @@ for c = chanCol
         [out, index] = correcthold(in, intime, action);  
         RSK.data(ndx).values(:,c) = out;
         holdpts(k).index{c} = index;
-        if c == chanCol(1) && ndx == castidx(1) && diagnostic == 1; 
+        if diagnostic ~= 0 && c == chanCol(1) && ndx == diagndx; 
             doDiagPlot(RSK,raw,'index',index,'ndx',ndx,'channelidx',chanCol(1),'fn',mfilename); 
         end 
         k = k+1;

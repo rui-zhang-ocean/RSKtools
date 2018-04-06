@@ -11,7 +11,8 @@ function RSK = RSKalignchannel(RSK, channel, lag, varargin)
 % Inputs: 
 %    [Required] - RSK - Input RSK structure
 %
-%                 channel - Longname of channel to align (e.g., temperature)
+%                 channel - Longname of channel to align (e.g., 
+%                       temperature)
 %
 %                 lag - The lag (in samples) to apply to the channel. A
 %                       negative lag shifts the channel backwards in time
@@ -19,11 +20,12 @@ function RSK = RSKalignchannel(RSK, channel, lag, varargin)
 %                       forward in time (later). To apply a different lag
 %                       to each data element, specify the lags in a vector.
 %
-%    [Optional] - profile - Profile number. Default is to operate
-%                       on all of data's elements. 
+%    [Optional] - profile - Profile number. Default is to operate on all of
+%                       data's elements. 
 %
 %                 direction - 'up' for upcast, 'down' for downcast, or
-%                       'both' for all. Defaults to all directions available.
+%                       'both' for all. Defaults to all directions 
+%                       available.
 %
 %                 shiftfill - Values that will fill the void left at the
 %                        beginning or end of the time series. 'nan', fills
@@ -40,17 +42,17 @@ function RSK = RSKalignchannel(RSK, channel, lag, varargin)
 %                 lagunits - Units of the lag entry. Can be seconds or
 %                        samples (default).
 %
-%                 diagnostic - To give a diagnostic plot on the first 
-%                        profile of the first channel or not (1 or 0). 
-%                        Original and processed data will be plotted to 
-%                        show users how the algorithm works. Default is 0.
+%                 diagnostic - To give a diagnostic plot on specified
+%                        profile number. Original and processed data will
+%                        be plotted to show users how the algorithm works.
+%                        Default is 0.
 %
 % Outputs:
 %    RSK - Structure with aligned channel values.
 %
 % Example: 
 %    rsk = RSKopen('file.rsk');
-%    rsk = RSKreadprofiles(rsk, 'profile', 1:10, 'direction', 'down'); % read first 10 downcasts
+%    rsk = RSKreadprofiles(rsk, 'profile', 1:10, 'direction', 'down'); 
 %
 %   1. Shift temperature channel of first four profiles with the same lag value.
 %    rsk = RSKalignchannel(rsk, 'temperature', 2, 'profile', 1:4);
@@ -68,7 +70,7 @@ function RSK = RSKalignchannel(RSK, channel, lag, varargin)
 % Author: RBR Ltd. Ottawa ON, Canada
 % email: support@rbr-global.com
 % Website: www.rbr-global.com
-% Last revision: 2018-03-19
+% Last revision: 2018-04-06
 
 validShiftfill = {'zeroorderhold', 'union', 'nan', 'mirror'};
 checkShiftfill = @(x) any(validatestring(x,validShiftfill));
@@ -99,13 +101,13 @@ shiftfill = p.Results.shiftfill;
 lagunits = p.Results.lagunits;
 diagnostic = p.Results.diagnostic;
 
-if diagnostic == 1; raw = RSK; end % Save raw data if diagnostic plot is required
+
 
 castidx = getdataindex(RSK, profile, direction);
 lags = checklag(lag, castidx, lagunits);
 channelCol = getchannelindex(RSK, channel);
 
-
+[raw, diagndx] = checkDiagPlot(RSK, diagnostic, direction, castidx);
 
 counter = 0;
 for ndx =  castidx
@@ -148,7 +150,7 @@ for ndx =  castidx
         end
     end
     RSK.data(ndx).values(:, channelCol) = channelShifted;
-    if ndx == castidx(1) && diagnostic == 1; 
+    if diagnostic ~= 0 && ndx == diagndx; 
         doDiagPlot(RSK,raw,'ndx',ndx,'channelidx',channelCol,'fn',mfilename); 
     end 
 end

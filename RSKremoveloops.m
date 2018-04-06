@@ -19,16 +19,15 @@ function [RSK, flagidx] = RSKremoveloops(RSK, varargin)
 %   [Optional] - profile - Profile number. Defaults to all profiles.
 %
 %                direction - 'up' for upcast, 'down' for downcast, or
-%                      'both' for all. Defaults to all directions
-%                       available.
+%                      'both' for all. Defaults to all directions available.
 % 
 %                threshold - Minimum speed at which the profile must
-%                       be taken. Defaults to 0.25 m/s.
+%                      be taken. Defaults to 0.25 m/s.
 %
-%                diagnostic - To give a diagnostic plot on the first 
-%                      profile of the first channel or not (1 or 0). 
-%                      Original, processed data and loops will be plotted 
-%                      to show users how the algorithm works. Default is 0.
+%                diagnostic - To give a diagnostic plot on specified
+%                      profile number. Original, processed data and flagged
+%                      data will be plotted to show users how the algorithm
+%                      works. Default is 0.
 %
 % Outputs:
 %    RSK - Structure with data filtered by threshold profiling speed and
@@ -41,12 +40,12 @@ function [RSK, flagidx] = RSKremoveloops(RSK, varargin)
 %    RSK = RSKreadprofiles(RSK);
 %    RSK = RSKremoveloops(RSK);
 %    OR
-%    RSK = RSKremoveloops(RSK,'profile',7:9,'direction','down','threshold',0.3,'diagnostic',1);
+%    RSK = RSKremoveloops(RSK,'profile',7:9,'direction','down','threshold',0.3,'diagnostic',8);
 %
 % Author: RBR Ltd. Ottawa ON, Canada
 % email: support@rbr-global.com
 % Website: www.rbr-global.com
-% Last revision: 2018-03-19
+% Last revision: 2018-04-06
 
 validDirections = {'down', 'up', 'both'};
 checkDirection = @(x) any(validatestring(x,validDirections));
@@ -73,9 +72,10 @@ catch
     error('RSKremoveloops requires a depth channel to calculate velocity (m/s). Use RSKderivedepth...');
 end
 
-if diagnostic == 1; raw = RSK; end % Save raw data if diagnostic plot is required
-
 castidx = getdataindex(RSK, profile, direction);
+
+[raw, diagndx] = checkDiagPlot(RSK, diagnostic, direction, castidx);
+
 k = 1;
 for ndx = castidx
     d = RSK.data(ndx).values(:,Dcol);
@@ -97,7 +97,7 @@ for ndx = castidx
     flagChannels = ~strcmpi('Depth', {RSK.channels.longName});    
     RSK.data(ndx).values(flag,flagChannels) = NaN;
     flagidx(k).index = find(flag);
-    if ndx == castidx(1) && diagnostic == 1; 
+    if diagnostic ~= 0 && ndx == diagndx; 
         doDiagPlot(RSK,raw,'index',find(flag),'ndx',ndx,'fn',mfilename); 
     end 
     k = k + 1;

@@ -35,11 +35,10 @@ function [RSK, trimidx] = RSKtrim(RSK, varargin)
 %                 action - Action to apply to the flagged values.  Can be 
 %                       'nan' (default) or 'remove' or 'interp'.
 %
-%                 diagnostic - To give a diagnostic plot on the first 
-%                       profile of the first channel or not (1 or 0). 
-%                       Original, processed data and flagged data will be 
-%                       plotted to show users how the algorithm works. 
-%                       Default is 0.
+%                 diagnostic - To give a diagnostic plot on specified
+%                       profile number. Original, processed data and  
+%                       flagged data will be plotted to show users how the 
+%                       algorithm works. Default is 0.
 %
 % Outputs:
 %    RSK - Structure with trimmed channel values.
@@ -54,7 +53,7 @@ function [RSK, trimidx] = RSKtrim(RSK, varargin)
 % Author: RBR Ltd. Ottawa ON, Canada
 % email: support@rbr-global.com
 % Website: www.rbr-global.com
-% Last revision: 2018-03-15
+% Last revision: 2018-04-06
 
 validAction = {'remove', 'nan','interp'};
 checkAction = @(x) any(validatestring(x,validAction));
@@ -82,7 +81,6 @@ channel = p.Results.channel;
 action = p.Results.action;
 diagnostic = p.Results.diagnostic;
 
-if diagnostic == 1; raw = RSK; end % Save raw data if diagnostic plot is required
 
 appliedchanCol = [];
 channels = cellchannelnames(RSK, channel);
@@ -90,6 +88,8 @@ for chan = channels
     appliedchanCol = [appliedchanCol getchannelindex(RSK, chan{1})];
 end
 castidx = getdataindex(RSK, profile, direction);
+
+[raw, diagndx] = checkDiagPlot(RSK, diagnostic, direction, castidx);
 
 for ndx =  castidx
     if strcmpi(reference, 'index')
@@ -122,7 +122,7 @@ for ndx =  castidx
         end
     end
     
-    if ndx == castidx(1) && diagnostic == 1; 
+    if diagnostic ~= 0 && ndx == diagndx;
         doDiagPlot(RSK,raw,'index',find(trimindex),'ndx',ndx,'channelidx',appliedchanCol(1),'fn',mfilename); 
     end 
 

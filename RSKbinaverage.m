@@ -36,10 +36,10 @@ function [RSK, samplesinbin] = RSKbinaverage(RSK, varargin)
 %                      Must have length(boundary) == length(binSize) or one
 %                      greater. Default[]; whole pressure range.
 %
-%                diagnostic - To give a diagnostic plot on the first 
-%                      profile of the first channel or not (1 or 0). 
-%                      Original and processed data will be plotted to 
-%                      show users how the algorithm works. Default is 0.
+%                diagnostic - To give a diagnostic plot on specified
+%                      profile number. Original and processed data will
+%                      be plotted to show users how the algorithm works.
+%                      Default is 0.
 %
 % Outputs:
 %    RSK - Structure with binned data
@@ -49,7 +49,7 @@ function [RSK, samplesinbin] = RSKbinaverage(RSK, varargin)
 % Author: RBR Ltd. Ottawa ON, Canada
 % email: support@rbr-global.com
 % Website: www.rbr-global.com
-% Last revision: 2018-03-19
+% Last revision: 2018-04-06
 
 validDirections = {'down', 'up'};
 checkDirection = @(x) any(validatestring(x,validDirections));
@@ -72,14 +72,16 @@ binSize = p.Results.binSize;
 boundary = p.Results.boundary;
 diagnostic = p.Results.diagnostic;
 
-if diagnostic == 1; raw = RSK; end % Save raw data if diagnostic plot is required
+
 
 binbytime = strcmpi(binBy, 'Time');
-
 castidx = getdataindex(RSK, profile, direction);
 alltstamp = {RSK.data(castidx).tstamp};
 maxlength = max(cellfun('size', alltstamp, 1));
 Y = NaN(maxlength, length(castidx));
+
+[raw, diagndx] = checkDiagPlot(RSK, diagnostic, direction, castidx);
+
 k=1;
 for ndx = castidx;
     if binbytime
@@ -116,7 +118,7 @@ for ndx = castidx
         RSK.data(ndx).tstamp = binnedValues(:,1);
         RSK.data(ndx).values(:,chanCol) = binCenter;
     end
-    if ndx == castidx(1) && diagnostic == 1; 
+    if diagnostic ~= 0 && ndx == diagndx;
         doDiagPlot(RSK,raw,'ndx',ndx,'fn',mfilename); 
     end 
     k = k+1;
