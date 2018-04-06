@@ -107,7 +107,7 @@ castidx = getdataindex(RSK, profile, direction);
 lags = checklag(lag, castidx, lagunits);
 channelCol = getchannelindex(RSK, channel);
 
-[raw, diagndx] = checkDiagPlot(RSK, diagnostic, direction, castidx);
+if diagnostic ~= 0; [raw, diagndx] = checkDiagPlot(RSK, diagnostic, direction, castidx); end
 
 counter = 0;
 for ndx =  castidx

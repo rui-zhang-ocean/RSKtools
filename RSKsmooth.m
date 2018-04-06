@@ -80,7 +80,8 @@ for chan = channels
 end
 
 castidx = getdataindex(RSK, profile, direction);
-[raw, diagndx] = checkDiagPlot(RSK, diagnostic, direction, castidx);
+
+if diagnostic ~= 0; [raw, diagndx] = checkDiagPlot(RSK, diagnostic, direction, castidx); end
 
 for c = chanCol
     for ndx = castidx

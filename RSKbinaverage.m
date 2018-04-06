@@ -80,7 +80,7 @@ alltstamp = {RSK.data(castidx).tstamp};
 maxlength = max(cellfun('size', alltstamp, 1));
 Y = NaN(maxlength, length(castidx));
 
-[raw, diagndx] = checkDiagPlot(RSK, diagnostic, direction, castidx);
+if diagnostic ~= 0; [raw, diagndx] = checkDiagPlot(RSK, diagnostic, direction, castidx); end
 diagChanCol = [getchannelindex(RSK,'Conductivity'), getchannelindex(RSK,'Temperature')];
 if any(strcmp({RSK.channels.longName},'Salinity'))
     diagChanCol = [diagChanCol, getchannelindex(RSK,'Salinity')];   

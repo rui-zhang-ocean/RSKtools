@@ -94,7 +94,7 @@ diagnostic = p.Results.diagnostic;
 channelCol = getchannelindex(RSK, channel);
 castidx = getdataindex(RSK, profile, direction);
 
-[raw, diagndx] = checkDiagPlot(RSK, diagnostic, direction, castidx);
+if diagnostic ~= 0; [raw, diagndx] = checkDiagPlot(RSK, diagnostic, direction, castidx); end
 
 k = 1;
 for ndx = castidx
