@@ -65,28 +65,30 @@ catch
     presCol = getchannelindex(RSK,'Sea Pressure');
 end
 
-fig = figure;
-set(fig, 'position', [10 10 500 800]);
-plot(raw.data(ndx).values(:,channelidx),raw.data(ndx).values(:,presCol),'-c','linewidth',2);
-hold on
-plot(RSK.data(ndx).values(:,channelidx),RSK.data(ndx).values(:,presCol),'--k'); 
-hold on
-plot(raw.data(ndx).values(index,channelidx),raw.data(ndx).values(index,presCol),...
-    'or','MarkerEdgeColor','r','MarkerSize',5);
-ax = findall(gcf,'type','axes');
-set(ax, 'ydir', 'reverse');
-xlabel([RSK.channels(channelidx).longName ' (' RSK.channels(channelidx).units ')']);
-ylabel([RSK.channels(presCol).longName ' (' RSK.channels(presCol).units ')']);
-if isfield(RSK.data,'profilenumber') && isfield(RSK.data,'direction')
-    title(['Profile ' num2str(RSK.data(ndx).profilenumber) ' ' RSK.data(ndx).direction 'cast ' fn]);
-else
-    title(fn);
+figure;
+n = 1;
+for chan = channelidx
+    subplot(1,length(channelidx),n)
+    plot(raw.data(ndx).values(:,chan),raw.data(ndx).values(:,presCol),'-c','linewidth',2);
+    hold on
+    plot(RSK.data(ndx).values(:,chan),RSK.data(ndx).values(:,presCol),'--k'); 
+    hold on
+    plot(raw.data(ndx).values(index,chan),raw.data(ndx).values(index,presCol),...
+        'or','MarkerEdgeColor','r','MarkerSize',5);
+    ax = findall(gcf,'type','axes');
+    set(ax, 'ydir', 'reverse');
+    xlabel([RSK.channels(chan).longName ' (' RSK.channels(chan).units ')']);
+    ylabel([RSK.channels(presCol).longName ' (' RSK.channels(presCol).units ')']);
+    if isfield(RSK.data,'profilenumber') && isfield(RSK.data,'direction')
+        title(['Profile ' num2str(RSK.data(ndx).profilenumber) ' ' RSK.data(ndx).direction 'cast ' fn]);
+    else
+        title(fn);
+    end
+    if isempty(index)
+        legend('Original data','Processed data','Location','Best');
+    else
+        legend('Original data','Processed data','Flagged data','Location','Best');
+    end
+    n = n + 1;
 end
-if isempty(index)
-    legend('Original data','Processed data','Location','Best');
-else
-    legend('Original data','Processed data','Flagged data','Location','Best');
-end
-set(findall(fig,'-property','FontSize'),'FontSize',15);
-
 end

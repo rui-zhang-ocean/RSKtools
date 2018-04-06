@@ -73,8 +73,8 @@ catch
 end
 
 castidx = getdataindex(RSK, profile, direction);
-
 [raw, diagndx] = checkDiagPlot(RSK, diagnostic, direction, castidx);
+diagChanCol = [getchannelindex(RSK, 'Conductivity'), getchannelindex(RSK, 'Temperature')];
 
 k = 1;
 for ndx = castidx
@@ -98,7 +98,7 @@ for ndx = castidx
     RSK.data(ndx).values(flag,flagChannels) = NaN;
     flagidx(k).index = find(flag);
     if diagnostic ~= 0 && ndx == diagndx; 
-        doDiagPlot(RSK,raw,'index',find(flag),'ndx',ndx,'fn',mfilename); 
+        doDiagPlot(RSK,raw,'index',find(flag),'ndx',diagndx,'channelidx',diagChanCol,'fn',mfilename); 
     end 
     k = k + 1;
 end

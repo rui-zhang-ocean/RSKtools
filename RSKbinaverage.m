@@ -81,8 +81,12 @@ maxlength = max(cellfun('size', alltstamp, 1));
 Y = NaN(maxlength, length(castidx));
 
 [raw, diagndx] = checkDiagPlot(RSK, diagnostic, direction, castidx);
+diagChanCol = [getchannelindex(RSK,'Conductivity'), getchannelindex(RSK,'Temperature')];
+if any(strcmp({RSK.channels.longName},'Salinity'))
+    diagChanCol = [diagChanCol, getchannelindex(RSK,'Salinity')];   
+end
 
-k=1;
+k = 1;
 for ndx = castidx;
     if binbytime
         ref = RSK.data(ndx).tstamp;
@@ -92,7 +96,7 @@ for ndx = castidx;
         ref = RSK.data(ndx).values(:,chanCol);
         Y(1:length(ref),k) = ref;
     end
-    k = k+1;
+    k = k + 1;
 end
 
 
@@ -118,13 +122,12 @@ for ndx = castidx
         RSK.data(ndx).tstamp = binnedValues(:,1);
         RSK.data(ndx).values(:,chanCol) = binCenter;
     end
-    if diagnostic ~= 0 && ndx == diagndx;
-        doDiagPlot(RSK,raw,'ndx',ndx,'fn',mfilename); 
-    end 
     k = k+1;
 end
 
-
+if diagnostic ~= 0;
+    doDiagPlot(RSK,raw,'ndx',diagndx,'channelidx',diagChanCol,'fn',mfilename); 
+end 
 
 if binbytime, 
     unit = 'tstamp';

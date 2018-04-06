@@ -71,15 +71,20 @@ direction = p.Results.direction;
 windowLength = p.Results.windowLength;
 diagnostic = p.Results.diagnostic;
 
-channelcell = cellchannelnames(RSK, channel);
-castidx = getdataindex(RSK, profile, direction);
 
+
+chanCol = [];
+channels = cellchannelnames(RSK, channel);
+for chan = channels
+    chanCol = [chanCol getchannelindex(RSK, chan{1})];
+end
+
+castidx = getdataindex(RSK, profile, direction);
 [raw, diagndx] = checkDiagPlot(RSK, diagnostic, direction, castidx);
 
-for chanName = channelcell
-    channelCol = getchannelindex(RSK, chanName);
+for c = chanCol
     for ndx = castidx
-        in = RSK.data(ndx).values(:,channelCol);
+        in = RSK.data(ndx).values(:,c);
         switch filter
             case 'boxcar'
                 out = runavg(in, windowLength);
@@ -88,14 +93,15 @@ for chanName = channelcell
             case 'triangle'
                 out = runtriang(in, windowLength);
         end      
-        RSK.data(ndx).values(:,channelCol) = out;
-        if diagnostic ~= 0 && ndx == diagndx && strcmp(chanName, channelcell{1}); 
-            doDiagPlot(RSK,raw,'ndx',ndx,'channelidx',channelCol,'fn',mfilename); 
-        end 
+        RSK.data(ndx).values(:,c) = out;
     end
     logdata = logentrydata(RSK, profile, direction);
-    logentry = sprintf('%s filtered using a %s filter with a %1.0f sample window on %s.', chanName{1}, filter, windowLength, logdata);
+    logentry = sprintf('%s filtered using a %s filter with a %1.0f sample window on %s.', RSK.channels(c).longName, filter, windowLength, logdata);
     RSK = RSKappendtolog(RSK, logentry);
 end
+
+if diagnostic ~= 0
+    doDiagPlot(RSK,raw,'ndx',diagndx,'channelidx',chanCol,'fn',mfilename); 
+end 
 
 end
