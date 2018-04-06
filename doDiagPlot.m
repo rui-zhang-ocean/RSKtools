@@ -5,11 +5,7 @@ function [] = doDiagPlot(RSK, raw, varargin)
 %
 % Syntax:  [handles] = doDiagPlot(RSK, raw, [OPTIONS])
 % 
-% Generates a plot to show original data, processed data and flagged data 
-% (if exists) against Pressure for profiles. It only plots the first 
-% profile of the first channel. Current RSKtools have functions below that 
-% could alter the data:
-%
+% Current RSKtools have functions below that could alter the data:
 % - RSKalignchannel
 % - RSKbinaverage
 % - RSKcorrecthold
@@ -17,7 +13,9 @@ function [] = doDiagPlot(RSK, raw, varargin)
 % - RSKremoveloops
 % - RSKsmooth
 % - RSKtrim
-% 
+% The function generates a plot to show original data, processed data and 
+% flagged data (if exists) against Sea Pressure or Time.
+%
 % Inputs:
 %    [Required] - RSK - RSK structure containing processed data.
 %
@@ -39,7 +37,7 @@ function [] = doDiagPlot(RSK, raw, varargin)
 % Author: RBR Ltd. Ottawa ON, Canada
 % email: support@rbr-global.com
 % Website: www.rbr-global.com
-% Last revision: 2018-04-05
+% Last revision: 2018-04-06
 
 p = inputParser;
 addRequired(p,'RSK', @isstruct);
@@ -69,16 +67,30 @@ figure;
 n = 1;
 for chan = channelidx
     subplot(1,length(channelidx),n)
-    plot(raw.data(ndx).values(:,chan),raw.data(ndx).values(:,presCol),'-c','linewidth',2);
-    hold on
-    plot(RSK.data(ndx).values(:,chan),RSK.data(ndx).values(:,presCol),'--k'); 
-    hold on
-    plot(raw.data(ndx).values(index,chan),raw.data(ndx).values(index,presCol),...
-        'or','MarkerEdgeColor','r','MarkerSize',5);
-    ax = findall(gcf,'type','axes');
-    set(ax, 'ydir', 'reverse');
-    xlabel([RSK.channels(chan).longName ' (' RSK.channels(chan).units ')']);
-    ylabel([RSK.channels(presCol).longName ' (' RSK.channels(presCol).units ')']);
+    
+    if strcmp(fn,'RSKcorrecthold') 
+        t = datetime(raw.data(ndx).tstamp,'ConvertFrom','datenum');
+        plot(t,raw.data(ndx).values(:,chan),'-c','linewidth',2);
+        hold on
+        plot(t,RSK.data(ndx).values(:,chan),'--k'); 
+        hold on
+        plot(t(index),raw.data(ndx).values(index,chan),...
+            'or','MarkerEdgeColor','r','MarkerSize',5);
+        xlabel('Time');
+        ylabel([RSK.channels(chan).longName ' (' RSK.channels(chan).units ')']);  
+    else
+        plot(raw.data(ndx).values(:,chan),raw.data(ndx).values(:,presCol),'-c','linewidth',2);
+        hold on
+        plot(RSK.data(ndx).values(:,chan),RSK.data(ndx).values(:,presCol),'--k'); 
+        hold on
+        plot(raw.data(ndx).values(index,chan),raw.data(ndx).values(index,presCol),...
+            'or','MarkerEdgeColor','r','MarkerSize',5);
+        ax = findall(gcf,'type','axes');
+        set(ax, 'ydir', 'reverse');
+        xlabel([RSK.channels(chan).longName ' (' RSK.channels(chan).units ')']);
+        ylabel([RSK.channels(presCol).longName ' (' RSK.channels(presCol).units ')']);    
+    end
+    
     if isfield(RSK.data,'profilenumber') && isfield(RSK.data,'direction')
         title(['Profile ' num2str(RSK.data(ndx).profilenumber) ' ' RSK.data(ndx).direction 'cast ' fn]);
     else
