@@ -37,7 +37,7 @@ else
 end
 
 if ~isempty(RSK.regionGeoData) && isfield(RSK,'geodata');
-    RSK = rmfiled(RSK, 'geodata'); % delete cell gps if annotation gps exists
+    RSK = rmfield(RSK, 'geodata'); % delete cell gps if annotation gps exists
 end
 
 ProfileRegionID = find(strcmpi({RSK.region.type},'PROFILE') == 1);
