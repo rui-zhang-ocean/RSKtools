@@ -213,14 +213,28 @@ for castidx = select_cast(1:directions:end);
     fprintf(fid,'%s\n','//Cruise:');
     fprintf(fid,'%s\n','//Station:');
     fprintf(fid,'%s\n','//Vessel:');
-    fprintf(fid,'%s\n','//Latitude:');
-    fprintf(fid,'%s\n','//Longitude:');
+    if isProfile && isfield(RSK.data,'latitude')
+        fprintf(fid,'%s\n',['//Latitude: ' num2str(RSK.data(castidx).latitude)]);
+    else
+        fprintf(fid,'%s\n','//Latitude:');
+    end
+    if isProfile && isfield(RSK.data,'longitude')
+        fprintf(fid,'%s\n',['//Longitude: ' num2str(RSK.data(castidx).longitude)]);
+    else
+        fprintf(fid,'%s\n','//Longitude:');
+    end
     fprintf(fid,'%s\n','//Bottom depth:');
     fprintf(fid,'%s\n','//Date and Time:');
     fprintf(fid,'%s\n','//Weather conditions:');
-    fprintf(fid,'%s\n','//Crew:');
-    if ~isempty(comment), fprintf(fid,'%s\n',['//Comment: ' comment]); end
-    fprintf(fid,'\n');    
+    fprintf(fid,'%s\n','//Crew:'); 
+    if isProfile && isfield(RSK.data,'comment');
+        temp = RSK.data(castidx).comment;
+        fprintf(fid,'%s\n',['//Comment: ' num2str(temp{1})]);
+        if ~isempty(comment), fprintf(fid,'%s\n',['//' comment]); end
+    else
+        if ~isempty(comment), fprintf(fid,'%s\n',['//Comment: ' comment]); end
+    end
+    fprintf(fid,'\n');   
     
     % Output time and variable names and/or cast_direction
     output_name = ['//Time(' fmt_time '),  ', channel_name_unit{:}];
