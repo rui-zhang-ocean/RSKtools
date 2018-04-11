@@ -176,10 +176,12 @@ for ndx = castidx
 
     data(k).direction = dir2fill{k};
     data(k).profilenumber = pronum2fill(k);
-    data(k).latitude = lat2fill(k);
-    data(k).longitude = lon2fill(k);
-    data(k).comment = comment2fill(k);
-    data(k).description = description2fill(k);
+    if hasGPS
+        data(k).latitude = lat2fill(k);
+        data(k).longitude = lon2fill(k);
+    end
+    if hasComment, data(k).comment = comment2fill(k); end
+    if hasDescription, data(k).description = description2fill(k); end
     k = k + 1;
     
 end
