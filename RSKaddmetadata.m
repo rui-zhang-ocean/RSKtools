@@ -16,9 +16,9 @@ function [RSK] = RSKaddmetadata(RSK, profile, varargin)
 %    
 %                profile - Profile number(s) to which metadata should be assigned.
 % 
-%   [Optional] - lat - Profile latitude coordinate
+%   [Optional] - latitude - Profile latitude coordinate
 %
-%                lon - Profile longitude coordinate
+%                longitude - Profile longitude coordinate
 %
 %                station - Cell array of strings with station name(s) 
 %                 
@@ -30,9 +30,11 @@ function [RSK] = RSKaddmetadata(RSK, profile, varargin)
 %    RSK - Updated structure containing metadata for specified profile(s).
 %
 % Example:
-%    RSK = RSKaddmetadata(RSK, 4,'lat',45,'lon',-25,'station',{'NA1'},'comment',{'NoComment'},'description',{'Cruise in North Atlantic with ..'})
+%    RSK = RSKaddmetadata(RSK, 4,'latitude',45,'longitude',-25,'station',...
+%    {'NA1'},'comment',{'NoComment'},'description',{'Cruise in North Atlantic with ..'})
 %    OR
-%    RSK = RSKaddmetadata(RSK, 4:6,'lat',[45,44,46],'lon',[-25,-24,-23],'comment',{'Comment1','Comment2','Comment3'});
+%    RSK = RSKaddmetadata(RSK, 4:6,'latitude',[45,44,46],'longitude',...
+%    [-25,-24,-23],'comment',{'Comment1','Comment2','Comment3'});
 % 
 % Author: RBR Ltd. Ottawa ON, Canada
 % email: support@rbr-global.com
@@ -43,8 +45,8 @@ function [RSK] = RSKaddmetadata(RSK, profile, varargin)
 p = inputParser;
 addRequired(p, 'RSK', @isstruct);
 addRequired(p, 'profile', @isnumeric);
-addParameter(p, 'lat', [], @isnumeric);
-addParameter(p, 'lon', [], @isnumeric);
+addParameter(p, 'latitude', [], @isnumeric);
+addParameter(p, 'longitude', [], @isnumeric);
 addParameter(p, 'station', '', @iscell);
 addParameter(p, 'comment', '', @iscell);
 addParameter(p, 'description', '', @iscell);
@@ -52,8 +54,8 @@ parse(p, RSK, profile, varargin{:})
 
 RSK = p.Results.RSK;
 profile = p.Results.profile;
-lat = p.Results.lat;
-lon = p.Results.lon;
+latitude = p.Results.latitude;
+longitude = p.Results.longitude;
 station = p.Results.station;
 comment = p.Results.comment;
 description = p.Results.description;
@@ -69,8 +71,8 @@ end
 
 k = 1;
 for i = 1:directions:length(castidx);    
-    RSK = assign_metadata(RSK, lat, castidx, i, directions, profile, k, 'latitude');
-    RSK = assign_metadata(RSK, lon, castidx, i, directions, profile, k, 'longitude');
+    RSK = assign_metadata(RSK, latitude, castidx, i, directions, profile, k, 'latitude');
+    RSK = assign_metadata(RSK, longitude, castidx, i, directions, profile, k, 'longitude');
     RSK = assign_metadata(RSK, station, castidx, i, directions, profile, k, 'station');
     RSK = assign_metadata(RSK, comment, castidx, i, directions, profile, k, 'comment');
     RSK = assign_metadata(RSK, description, castidx, i, directions, profile, k, 'description');
