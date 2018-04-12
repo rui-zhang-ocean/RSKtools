@@ -79,9 +79,6 @@ for i = 1:directions:length(castidx);
     k = k + 1;    
 end
 
-logentry = ['Metadata information added to profile ' num2str(profile) '.'];
-RSK = RSKappendtolog(RSK, logentry);
-
     %% Nested Functions
     function RSK = assign_metadata(RSK, meta, castidx, i, directions, profile, k, name)
     % Assign metadata to data structure
