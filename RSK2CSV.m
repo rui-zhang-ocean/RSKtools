@@ -211,7 +211,12 @@ for castidx = select_cast(1:directions:end);
     for l = 1:length(log), fprintf(fid,'%s\n',['//' log{l}]); end
     % For users to edit
     fprintf(fid,'%s\n','//Cruise:');
-    fprintf(fid,'%s\n','//Station:');
+    if isProfile && isfield(RSK.data,'station') && ~isempty(RSK.data(castidx).station)
+        temp = RSK.data(castidx).station;
+        fprintf(fid,'%s\n',['//Station: ' num2str(temp{1})]);
+    else
+        fprintf(fid,'%s\n','//Station:');
+    end
     fprintf(fid,'%s\n','//Vessel:');
     if isProfile && isfield(RSK.data,'latitude')
         fprintf(fid,'%s\n',['//Latitude: ' num2str(RSK.data(castidx).latitude)]);

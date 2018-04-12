@@ -193,8 +193,13 @@ for castidx = select_cast(1:directions:end);
         
         RBR(directionidx).sampletimes = cellstr(datestr(RSK.data(directionidx).tstamp, fmt_time));
         N = length(RBR(directionidx).sampletimes);
-        RBR(directionidx).cruise = repmat('C1', N,1);
-        RBR(directionidx).station = repmat('S1', N,1);
+        RBR(directionidx).cruise = repmat('C1', N,1);       
+        if isProfile && isfield(RSK.data,'station') && ~isempty(RSK.data(directionidx).station)
+            temp = RSK.data(castidx).station;
+            RBR(directionidx).station = repmat(num2str(temp{1}), N,1);
+        else
+            RBR(directionidx).station = repmat('S1', N,1);
+        end                  
         RBR(directionidx).type = repmat('C', N,1);
         if isProfile && isfield(RSK.data,'latitude') && ~isnan(RSK.data(directionidx).latitude)
             RBR(directionidx).latitude = (RSK.data(directionidx).latitude)*ones(N,1);
