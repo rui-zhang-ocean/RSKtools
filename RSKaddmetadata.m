@@ -1,8 +1,8 @@
-function [RSK] = RSKaddmetadata(RSK, profile, varargin)
+function [RSK] = RSKaddmetadata(RSK, varargin)
 
 % RSKaddmetadata - Add metadata information for specified profile(s).
 %
-% Syntax:  [RSK] = RSKaddmetadata(RSK, profile, [OPTIONS])
+% Syntax:  [RSK] = RSKaddmetadata(RSK, [OPTIONS])
 % 
 % Append station metadata to data structure with profiles, including
 % latitude, longitude, station name, comment, and description. The
@@ -13,10 +13,11 @@ function [RSK] = RSKaddmetadata(RSK, profile, varargin)
 %
 % Inputs: 
 %   [Required] - RSK - Structure containing data. 
-%    
-%                profile - Profile number(s) to which metadata should be assigned.
 % 
-%   [Optional] - latitude - Profile latitude coordinate
+%   [Optional] - profile - Profile number(s) to which metadata should be 
+%                assigned. Default to all profiles
+%
+%                latitude - Profile latitude coordinate
 %
 %                longitude - Profile longitude coordinate
 %
@@ -30,27 +31,27 @@ function [RSK] = RSKaddmetadata(RSK, profile, varargin)
 %    RSK - Updated structure containing metadata for specified profile(s).
 %
 % Example:
-%    RSK = RSKaddmetadata(RSK, 4,'latitude',45,'longitude',-25,'station',...
+%    RSK = RSKaddmetadata(RSK,'latitude',45,'longitude',-25,'station',...
 %    {'NA1'},'comment',{'NoComment'},'description',{'Cruise in North Atlantic with ..'})
-%    OR
-%    RSK = RSKaddmetadata(RSK, 4:6,'latitude',[45,44,46],'longitude',...
+%    -OR-
+%    RSK = RSKaddmetadata(RSK,'profile',4:6,'latitude',[45,44,46],'longitude',...
 %    [-25,-24,-23],'comment',{'Comment1','Comment2','Comment3'});
 % 
 % Author: RBR Ltd. Ottawa ON, Canada
 % email: support@rbr-global.com
 % Website: www.rbr-global.com
-% Last revision: 2018-04-11
+% Last revision: 2018-04-13
 
 
 p = inputParser;
 addRequired(p, 'RSK', @isstruct);
-addRequired(p, 'profile', @isnumeric);
+addParameter(p, 'profile', [], @isnumeric);
 addParameter(p, 'latitude', [], @isnumeric);
 addParameter(p, 'longitude', [], @isnumeric);
 addParameter(p, 'station', '', @iscell);
 addParameter(p, 'comment', '', @iscell);
 addParameter(p, 'description', '', @iscell);
-parse(p, RSK, profile, varargin{:})
+parse(p, RSK, varargin{:})
 
 RSK = p.Results.RSK;
 profile = p.Results.profile;
@@ -60,6 +61,12 @@ station = p.Results.station;
 comment = p.Results.comment;
 description = p.Results.description;
 
+
+if isempty([latitude longitude station comment description])
+    warning('No metadata input is found. Please specify at least one metadata field.')
+    return
+end
+    
 if length(RSK.data) == 1; RSK = RSKreadprofiles(RSK); end 
 
 castidx = getdataindex(RSK, profile);
