@@ -73,7 +73,7 @@ if isfield(RSK, 'profiles') && isfield(RSK.profiles, 'order') && any(strcmp(p.Us
     castidx = getdataindex(RSK, profile, direction);
 end
 if size(castidx,2) ~= 1 
-    error('RSKplotdata can only plot one cast, use RSKplotprofiles...')
+    error('RSKplotdata can only plot one cast and direction. To plot multiple casts or directions, use RSKplotprofiles.')
 end
     
 
