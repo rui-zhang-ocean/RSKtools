@@ -57,10 +57,7 @@ direction = p.Results.direction;
 
 
 if ~isfield(RSK,'data')
-    disp('You must read a section of data in first!');
-    disp('Use RSKreaddata...')
-    handles = [];
-    return
+    error('You must read a section of data in first! Use RSKreaddata...')
 end
 
 if length(RSK.data) == 1 && ~isempty('profile')
@@ -75,8 +72,7 @@ if isfield(RSK, 'profiles') && isfield(RSK.profiles, 'order') && any(strcmp(p.Us
     castidx = getdataindex(RSK, profile, direction);
 end
 if size(castidx,2) ~= 1 
-    disp('RSKplotdata can only plot one cast, use RSKplotprofiles...');
-    return
+    error('RSKplotdata can only plot one cast, use RSKplotprofiles...')
 end
     
 
