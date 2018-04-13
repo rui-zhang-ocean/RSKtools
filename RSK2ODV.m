@@ -103,7 +103,7 @@ end
 isProfile = isfield(RSK.data,'direction');
 
 if ~isProfile && (~isempty(profile) || ~isempty(direction))
-    warning('RSK structure is not organized into profiles. Writing data as a time series.')
+    error('RSK structure is not organized into profiles. Use RSKreadprofiles');
 end
 
 if isempty(direction); direction = 'both'; end;
