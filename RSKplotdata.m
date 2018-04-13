@@ -1,14 +1,15 @@
 function handles = RSKplotdata(RSK, varargin)
 
-% RSKplotdata - Plot summaries of logger data.
+% RSKplotdata - Plot a time series of logger data.
 %
 % Syntax:  [handles] = RSKplotdata(RSK, [OPTIONS])
 % 
-% Generates a plot, similar to the thumbnail plot, only using the full
-% 'data' that you read in. If data field has multiple casts, the default is
-% to use the first data element: RSK.data(1). When requesting profile
-% without specifying direction, the function will plot the first direction
-% (down or upcast) of the profile only.
+% Generates a plot displaying the logger data as a time series. If
+% data field has been arranged as profiles (using RSKreadprofiles),
+% then RSKplotdata will plot a time series of a (user selectable)
+% profile upcast or downcast. When a particular profile is chosen, but
+% not a cast direction, the function will plot the first direction
+% (downcast or upcast) of the profile only.
 % 
 % Inputs:
 %    [Required] - RSK - Structure containing the logger metadata and data.
@@ -33,7 +34,7 @@ function handles = RSKplotdata(RSK, varargin)
 %    -OR-
 %    handles = RSKplotdata(RSK, 'channel', {'Temperature', 'Conductivity'})
 %
-% See also: RSKplotprofiles, RSKplotburstdata.
+% See also: RSKplotprofiles, RSKplotburstdata, RSKreadprofiles, RSKplotthumbnail
 %
 % Author: RBR Ltd. Ottawa ON, Canada
 % email: support@rbr-global.com
