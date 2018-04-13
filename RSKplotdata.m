@@ -61,7 +61,7 @@ if ~isfield(RSK,'data')
     error('You must read a section of data in first! Use RSKreaddata...')
 end
 
-if length(RSK.data) == 1 && ~isempty('profile')
+if length(RSK.data) == 1 && ~isempty(profile)
     error('RSK structure does not contain any profile, use RSKreadprofiles.')
 end
 
