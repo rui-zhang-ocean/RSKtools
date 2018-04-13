@@ -78,23 +78,23 @@ end
 
 k = 1;
 for i = 1:directions:length(castidx);    
-    RSK = assign_metadata(RSK, latitude, castidx, i, directions, profile, k, 'latitude');
-    RSK = assign_metadata(RSK, longitude, castidx, i, directions, profile, k, 'longitude');
-    RSK = assign_metadata(RSK, station, castidx, i, directions, profile, k, 'station');
-    RSK = assign_metadata(RSK, comment, castidx, i, directions, profile, k, 'comment');
-    RSK = assign_metadata(RSK, description, castidx, i, directions, profile, k, 'description');
+    RSK = assign_metadata(RSK, latitude, castidx, i, directions, k, 'latitude');
+    RSK = assign_metadata(RSK, longitude, castidx, i, directions, k, 'longitude');
+    RSK = assign_metadata(RSK, station, castidx, i, directions, k, 'station');
+    RSK = assign_metadata(RSK, comment, castidx, i, directions, k, 'comment');
+    RSK = assign_metadata(RSK, description, castidx, i, directions, k, 'description');
     k = k + 1;    
 end
 
     %% Nested Functions
-    function RSK = assign_metadata(RSK, meta, castidx, i, directions, profile, k, name)
+    function RSK = assign_metadata(RSK, meta, castidx, i, directions, k, name)
     % Assign metadata to data structure
     if ~isempty(meta) && length(meta) == 1; 
         RSK.data(castidx(i)).(name) = meta;
         if directions == 2
             RSK.data(castidx(i+1)).(name) = meta;
         end        
-    elseif ~isempty(meta) && length(meta) ~= 1 && length(meta) == length(profile);
+    elseif ~isempty(meta) && length(meta) ~= 1 && length(meta) == length(castidx);
         RSK.data(castidx(i)).(name) = meta(k);
         if directions == 2
             RSK.data(castidx(i+1)).(name) = meta(k);
