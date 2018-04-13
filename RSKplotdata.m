@@ -1,12 +1,14 @@
 function handles = RSKplotdata(RSK, varargin)
 
-%RSKplotdata - Plot summaries of logger data.
+% RSKplotdata - Plot summaries of logger data.
 %
 % Syntax:  [handles] = RSKplotdata(RSK, [OPTIONS])
 % 
 % Generates a plot, similar to the thumbnail plot, only using the full
-% 'data' that you read in. If data field has many elements, many casts, the
-% default is to use the first data element; RSK.data(1).
+% 'data' that you read in. If data field has multiple casts, the default is
+% to use the first data element: RSK.data(1). When requesting profile
+% without specifying direction, the function will plot the first direction
+% (down or upcast) of the profile only.
 % 
 % Inputs:
 %    [Required] - RSK - Structure containing the logger metadata and data.
@@ -36,7 +38,7 @@ function handles = RSKplotdata(RSK, varargin)
 % Author: RBR Ltd. Ottawa ON, Canada
 % email: support@rbr-global.com
 % Website: www.rbr-global.com
-% Last revision: 2017-06-19
+% Last revision: 2018-04-13
 
 validDirections = {'down', 'up'};
 checkDirection = @(x) any(validatestring(x,validDirections));
@@ -44,7 +46,7 @@ checkDirection = @(x) any(validatestring(x,validDirections));
 p = inputParser;
 addRequired(p, 'RSK', @isstruct);
 addParameter(p, 'channel', 'all');
-addParameter(p, 'profile', 1);
+addParameter(p, 'profile', [], @isnumeric);
 addParameter(p, 'direction', [], checkDirection);
 parse(p, RSK, varargin{:})
 
@@ -54,7 +56,6 @@ profile = p.Results.profile;
 direction = p.Results.direction;
 
 
-
 if ~isfield(RSK,'data')
     disp('You must read a section of data in first!');
     disp('Use RSKreaddata...')
@@ -62,6 +63,11 @@ if ~isfield(RSK,'data')
     return
 end
 
+if length(RSK.data) == 1 && ~isempty('profile')
+    error('RSK structure does not contain any profile, use RSKreadprofiles.')
+end
+
+if isempty('profile'); profile = 1; end
 
 castidx = getdataindex(RSK, profile, direction);
 if isfield(RSK, 'profiles') && isfield(RSK.profiles, 'order') && any(strcmp(p.UsingDefaults, 'direction'))
