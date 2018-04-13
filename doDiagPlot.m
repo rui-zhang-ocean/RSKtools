@@ -69,13 +69,14 @@ for chan = channelidx
     subplot(1,length(channelidx),n)
     
     if strcmp(fn,'RSKcorrecthold') 
-        t = datetime(raw.data(ndx).tstamp,'ConvertFrom','datenum');
+        t = raw.data(ndx).tstamp;
         plot(t,raw.data(ndx).values(:,chan),'-c','linewidth',2);
         hold on
         plot(t,RSK.data(ndx).values(:,chan),'--k'); 
         hold on
         plot(t(index),raw.data(ndx).values(index,chan),...
             'or','MarkerEdgeColor','r','MarkerSize',5);
+        datetick('x','mmm-dd HH:MM','keeplimits');
         xlabel('Time');
         ylabel([RSK.channels(chan).longName ' (' RSK.channels(chan).units ')']);  
     else
