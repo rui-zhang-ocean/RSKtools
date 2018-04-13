@@ -62,7 +62,7 @@ if ~isfield(RSK,'data')
 end
 
 if length(RSK.data) == 1 && ~isempty(profile)
-    error('RSK structure does not contain any profile, use RSKreadprofiles.')
+    error('RSK structure does not contain any profiles, use RSKreadprofiles.')
 end
 
 if isempty(profile); profile = 1; end
@@ -85,6 +85,10 @@ for chan = channels
 end
 
 handles = channelsubplots(RSK, 'data', 'chanCol', chanCol, 'castidx', castidx);
+
+if isfield(RSK.data,'profilenumber') && isfield(RSK.data,'direction');
+    legend(['Profile ' num2str(RSK.data(castidx).profilenumber) ' ' RSK.data(castidx).direction 'cast']);
+end
 
 end
 
