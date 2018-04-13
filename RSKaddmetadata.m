@@ -77,7 +77,7 @@ if isfield(RSK.profiles,'order') && length(RSK.profiles.order) ~= 1
 end
 
 k = 1;
-for i = castidx(1:directions:end);    
+for i = 1:directions:length(castidx);    
     RSK = assign_metadata(RSK, latitude, castidx, i, directions, profile, k, 'latitude');
     RSK = assign_metadata(RSK, longitude, castidx, i, directions, profile, k, 'longitude');
     RSK = assign_metadata(RSK, station, castidx, i, directions, profile, k, 'station');
