@@ -65,7 +65,7 @@ if length(RSK.data) == 1 && ~isempty(profile)
     error('RSK structure does not contain any profile, use RSKreadprofiles.')
 end
 
-if isempty('profile'); profile = 1; end
+if isempty(profile); profile = 1; end
 
 castidx = getdataindex(RSK, profile, direction);
 if isfield(RSK, 'profiles') && isfield(RSK.profiles, 'order') && any(strcmp(p.UsingDefaults, 'direction'))
