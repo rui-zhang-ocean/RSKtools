@@ -45,10 +45,10 @@ RSK = readpowertable(RSK);
     if ~isempty(doSelect(RSK, 'SELECT name FROM sqlite_master WHERE type="table" AND name="power"')) && ...
        isfield(RSK.instruments, 'firmwareType') && RSK.instruments.firmwareType > 103;
         RSK.power = doSelect(RSK, 'select * from power'); 
-        if RSK.power.internalBatteryType == -1; 
+        if ~isempty(RSK.power) && RSK.power.internalBatteryType == -1; 
             RSK.power = rmfield(RSK.power, {'internalBatteryType','internalBatteryCapacity','internalEnergyUsed'}); 
         end
-        if RSK.power.externalBatteryType == -1; 
+        if ~isempty(RSK.power) && RSK.power.externalBatteryType == -1; 
             RSK.power = rmfield(RSK.power, {'externalBatteryType','externalBatteryCapacity','externalEnergyUsed'}); 
         end
     end
