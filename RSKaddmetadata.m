@@ -119,7 +119,7 @@ end
         if directions == 2
             RSK.data(castidx(i+1)).(name) = meta;
         end        
-    elseif ~isempty(meta) && length(meta) ~= 1 && length(meta) == length(castidx);
+    elseif ~isempty(meta) && length(meta) ~= 1 && length(meta) == length(castidx)/directions;
         RSK.data(castidx(i)).(name) = meta(k);
         if directions == 2
             RSK.data(castidx(i+1)).(name) = meta(k);
