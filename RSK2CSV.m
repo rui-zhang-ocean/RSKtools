@@ -210,52 +210,59 @@ for castidx = select_cast(1:directions:end);
     fprintf(fid,'%s\n','//Processing history:');
     for l = 1:length(log), fprintf(fid,'%s\n',['//' log{l}]); end
     
-    if isProfile
-        if isfield(RSK.data,'cruise') && ~isempty(RSK.data(castidx).cruise)
-            temp = RSK.data(castidx).cruise;
-            fprintf(fid,'%s\n',['//Cruise: ' num2str(temp{1})]);
-        end
-        if isfield(RSK.data,'station') && ~isempty(RSK.data(castidx).station)
-            temp = RSK.data(castidx).station;
-            fprintf(fid,'%s\n',['//Station: ' num2str(temp{1})]);
-        end
-        if isfield(RSK.data,'latitude')
-            fprintf(fid,'%s\n',['//Latitude: ' num2str(RSK.data(castidx).latitude)]);
-        end
-        if isfield(RSK.data,'longitude')
-            fprintf(fid,'%s\n',['//Longitude: ' num2str(RSK.data(castidx).longitude)]);
-        end
-        if isfield(RSK.data,'depth')
-            fprintf(fid,'%s\n',['//Depth: ' num2str(RSK.data(castidx).depth)]);
-        end
-        if isfield(RSK.data,'date') && ~isempty(RSK.data(castidx).date)
-            temp = RSK.data(castidx).date;
-            fprintf(fid,'%s\n',['//Date: ' num2str(temp{1})]);
-        end
-        if isfield(RSK.data,'weather') && ~isempty(RSK.data(castidx).weather)
-            temp = RSK.data(castidx).weather;
-            fprintf(fid,'%s\n',['//Weather: ' num2str(temp{1})]);
-        end
-        if isfield(RSK.data,'crew') && ~isempty(RSK.data(castidx).crew)
-            temp = RSK.data(castidx).crew;
-            fprintf(fid,'%s\n',['//Crew: ' num2str(temp{1})]);
-        end
-        if isfield(RSK.data,'comment');
-            temp = RSK.data(castidx).comment;
-            fprintf(fid,'%s\n',['//Comment: ' num2str(temp{1})]);
-            if ~isempty(comment), fprintf(fid,'%s\n',['//' comment]); end
-        end
+    if isProfile && isfield(RSK.data,'cruise') && ~isempty(RSK.data(castidx).cruise)
+        temp = RSK.data(castidx).cruise;
+        fprintf(fid,'%s\n',['//Cruise: ' num2str(temp{1})]);
     else
         fprintf(fid,'%s\n','//Cruise:');
+    end
+    if isProfile && isfield(RSK.data,'station') && ~isempty(RSK.data(castidx).station)
+        temp = RSK.data(castidx).station;
+        fprintf(fid,'%s\n',['//Station: ' num2str(temp{1})]);
+    else
         fprintf(fid,'%s\n','//Station:');
+    end
+    if isProfile && isfield(RSK.data,'latitude')
+        fprintf(fid,'%s\n',['//Latitude: ' num2str(RSK.data(castidx).latitude)]);
+    else
         fprintf(fid,'%s\n','//Latitude:');
+    end
+    if isProfile && isfield(RSK.data,'longitude')
+        fprintf(fid,'%s\n',['//Longitude: ' num2str(RSK.data(castidx).longitude)]);
+    else
         fprintf(fid,'%s\n','//Longitude:');
+    end
+    if isProfile && isfield(RSK.data,'depth')
+        fprintf(fid,'%s\n',['//Depth: ' num2str(RSK.data(castidx).depth)]);
+    else
         fprintf(fid,'%s\n','//Depth:');
+    end
+    if isProfile && isfield(RSK.data,'date') && ~isempty(RSK.data(castidx).date)
+        temp = RSK.data(castidx).date;
+        fprintf(fid,'%s\n',['//Date: ' num2str(temp{1})]);
+    else
         fprintf(fid,'%s\n','//Date:');
+    end
+    if isProfile && isfield(RSK.data,'weather') && ~isempty(RSK.data(castidx).weather)
+        temp = RSK.data(castidx).weather;
+        fprintf(fid,'%s\n',['//Weather: ' num2str(temp{1})]);
+    else
         fprintf(fid,'%s\n','//Weather:');
+    end
+    if isProfile && isfield(RSK.data,'crew') && ~isempty(RSK.data(castidx).crew)
+        temp = RSK.data(castidx).crew;
+        fprintf(fid,'%s\n',['//Crew: ' num2str(temp{1})]);
+    else
         fprintf(fid,'%s\n','//Crew:'); 
+    end
+    if isProfile && isfield(RSK.data,'comment');
+        temp = RSK.data(castidx).comment;
+        fprintf(fid,'%s\n',['//Comment: ' num2str(temp{1})]);
+        if ~isempty(comment), fprintf(fid,'%s\n',['//' comment]); end
+    else
         if ~isempty(comment), fprintf(fid,'%s\n',['//Comment: ' comment]); end
     end
+        
     fprintf(fid,'\n');   
     
     % Output time and variable names and/or cast_direction

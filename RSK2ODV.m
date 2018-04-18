@@ -192,36 +192,36 @@ for castidx = select_cast(1:directions:end);
         directionidx = castidx - 1 + d;
         
         RBR(directionidx).sampletimes = cellstr(datestr(RSK.data(directionidx).tstamp, fmt_time));
-        N = length(RBR(directionidx).sampletimes);
-        
-        if isProfile 
-            if isfield(RSK.data,'cruise') && ~isempty(RSK.data(directionidx).cruise)
-                temp = RSK.data(castidx).cruise;
-                RBR(directionidx).cruise = repmat(num2str(temp{1}), N,1);
-            end 
-            if isfield(RSK.data,'station') && ~isempty(RSK.data(directionidx).station)
-                temp = RSK.data(castidx).station;
-                RBR(directionidx).station = repmat(num2str(temp{1}), N,1);
-            end 
-            RBR(directionidx).type = repmat('C', N,1);
-            if isfield(RSK.data,'latitude') && ~isnan(RSK.data(directionidx).latitude)
-                RBR(directionidx).latitude = (RSK.data(directionidx).latitude)*ones(N,1);
-            end
-            if isfield(RSK.data,'longitude') && ~isnan(RSK.data(directionidx).longitude)
-                RBR(directionidx).longitude = (RSK.data(directionidx).longitude)*ones(N,1);
-            end  
-            if isfield(RSK.data,'depth') && ~isnan(RSK.data(directionidx).depth)
-                RBR(directionidx).bottomdepth = (RSK.data(directionidx).depth)*ones(N,1);
-            end  
+        N = length(RBR(directionidx).sampletimes);       
+
+        if isProfile && isfield(RSK.data,'cruise') && ~isempty(RSK.data(directionidx).cruise)
+            temp = RSK.data(castidx).cruise;
+            RBR(directionidx).cruise = repmat(num2str(temp{1}), N,1);
         else
             RBR(directionidx).cruise = repmat('C1', N,1);
+        end       
+        if isProfile && isfield(RSK.data,'station') && ~isempty(RSK.data(directionidx).station)
+            temp = RSK.data(castidx).station;
+            RBR(directionidx).station = repmat(num2str(temp{1}), N,1);
+        else
             RBR(directionidx).station = repmat('S1', N,1);
-            RBR(directionidx).type = repmat('C', N,1);
+        end 
+        RBR(directionidx).type = repmat('C', N,1);  
+        if isProfile && isfield(RSK.data,'latitude') && ~isnan(RSK.data(directionidx).latitude)
+            RBR(directionidx).latitude = (RSK.data(directionidx).latitude)*ones(N,1);
+        else
             RBR(directionidx).latitude = zeros(N,1);
-            RBR(directionidx).longitude = zeros(N,1);
-            RBR(directionidx).bottomdepth = zeros(N,1);
         end
-        
+        if isProfile && isfield(RSK.data,'longitude') && ~isnan(RSK.data(directionidx).longitude)
+            RBR(directionidx).longitude = (RSK.data(directionidx).longitude)*ones(N,1);
+        else
+            RBR(directionidx).longitude = zeros(N,1);
+        end  
+        if isProfile && isfield(RSK.data,'depth') && ~isnan(RSK.data(directionidx).depth)
+            RBR(directionidx).bottomdepth = (RSK.data(directionidx).depth)*ones(N,1);
+        else
+            RBR(directionidx).bottomdepth = zeros(N,1);
+        end  
         RBR(directionidx).data = RSK.data(directionidx).values(:,chanCol);
 
         if hasSP, % Put sea pressure as the first column of the data
