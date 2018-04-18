@@ -55,15 +55,15 @@ addRequired(p, 'RSK', @isstruct);
 addParameter(p, 'profile', [], @isnumeric);
 addParameter(p, 'latitude', [], @isnumeric);
 addParameter(p, 'longitude', [], @isnumeric);
-addParameter(p, 'station', '',@iscell);
-addParameter(p, 'cruise', '', @iscell);
-addParameter(p, 'vessel', '', @iscell);
+addParameter(p, 'station', '');
+addParameter(p, 'cruise', '');
+addParameter(p, 'vessel', '');
 addParameter(p, 'depth', [], @isnumeric);
-addParameter(p, 'date', '', @iscell);
-addParameter(p, 'weather', '', @iscell);
-addParameter(p, 'crew', '', @iscell);
-addParameter(p, 'comment', '', @iscell);
-addParameter(p, 'description', '', @iscell);
+addParameter(p, 'date', '');
+addParameter(p, 'weather', '');
+addParameter(p, 'crew', '');
+addParameter(p, 'comment', '');
+addParameter(p, 'description', '');
 parse(p, RSK, varargin{:})
 
 RSK = p.Results.RSK;
@@ -79,6 +79,15 @@ weather = p.Results.weather;
 crew = p.Results.crew;
 comment = p.Results.comment;
 description = p.Results.description;
+
+station = checkcell(station);
+cruise = checkcell(cruise);
+vessel = checkcell(vessel);
+date = checkcell(date);
+weather = checkcell(weather);
+crew = checkcell(crew);
+comment = checkcell(comment);
+description = checkcell(description);
 
 
 if isempty([latitude longitude station comment description])
@@ -110,6 +119,15 @@ for i = 1:directions:length(castidx);
     RSK = assign_metadata(RSK, description, castidx, i, directions, k, 'description');
     k = k + 1;    
 end
+
+    %% Nested Functions
+    function out = checkcell(in)        
+        if iscell(in)
+            out = in;
+        else
+            out = {in};
+        end
+    end
 
     %% Nested Functions
     function RSK = assign_metadata(RSK, meta, castidx, i, directions, k, name)
