@@ -63,7 +63,6 @@ catch
     presCol = getchannelindex(RSK,'Sea Pressure');
 end
 
-figure;
 n = 1;
 for chan = channelidx
     subplot(1,length(channelidx),n)

@@ -150,11 +150,14 @@ for ndx =  castidx
         end
     end
     RSK.data(ndx).values(:, channelCol) = channelShifted;
-    if diagnostic ~= 0 && ndx == diagndx; 
-        doDiagPlot(RSK,raw,'ndx',ndx,'channelidx',channelCol,'fn',mfilename); 
-    end 
 end
 
+if diagnostic ~= 0      
+    for d = diagndx;
+        figure
+        doDiagPlot(RSK,raw,'ndx',d,'channelidx',channelCol,'fn',mfilename); 
+    end
+end 
 
 %% Log entry
 if length(lag) == 1

@@ -100,7 +100,6 @@ for ndx = castidx;
 end
 
 
-
 [binArray, binCenter, boundary] = setupbins(Y, boundary, binSize, direction);
 samplesinbin = NaN(length(binArray)-1,1);
 k = 1;
@@ -122,11 +121,14 @@ for ndx = castidx
         RSK.data(ndx).tstamp = binnedValues(:,1);
         RSK.data(ndx).values(:,chanCol) = binCenter;
     end
-    k = k+1;
+    k = k + 1;
 end
 
-if diagnostic ~= 0;
-    doDiagPlot(RSK,raw,'ndx',diagndx,'channelidx',diagChanCol,'fn',mfilename); 
+if diagnostic ~= 0      
+    for d = diagndx;
+        figure
+        doDiagPlot(RSK,raw,'ndx',d,'channelidx',diagChanCol,'fn',mfilename); 
+    end
 end 
 
 if binbytime, 

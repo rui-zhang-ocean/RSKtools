@@ -122,8 +122,13 @@ for ndx =  castidx
         end
     end
     
-    if diagnostic ~= 0 && ndx == diagndx;
-        doDiagPlot(RSK,raw,'index',find(trimindex),'ndx',ndx,'channelidx',appliedchanCol(1),'fn',mfilename); 
+    if diagnostic ~= 0      
+        for d = diagndx;
+            if ndx == d;
+                figure
+                doDiagPlot(RSK,raw,'index',find(trimindex),'ndx',ndx,'channelidx',appliedchanCol(1),'fn',mfilename); 
+            end
+        end
     end 
 
 end

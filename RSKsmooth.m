@@ -94,15 +94,18 @@ for c = chanCol
             case 'triangle'
                 out = runtriang(in, windowLength);
         end      
-        RSK.data(ndx).values(:,c) = out;
+        RSK.data(ndx).values(:,c) = out;       
     end
     logdata = logentrydata(RSK, profile, direction);
     logentry = sprintf('%s filtered using a %s filter with a %1.0f sample window on %s.', RSK.channels(c).longName, filter, windowLength, logdata);
     RSK = RSKappendtolog(RSK, logentry);
 end
 
-if diagnostic ~= 0
-    doDiagPlot(RSK,raw,'ndx',diagndx,'channelidx',chanCol,'fn',mfilename); 
+if diagnostic ~= 0      
+    for d = diagndx;
+        figure
+        doDiagPlot(RSK,raw,'ndx',d,'channelidx',chanCol,'fn',mfilename); 
+    end
 end 
 
 end

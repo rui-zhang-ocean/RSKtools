@@ -96,9 +96,14 @@ for ndx = castidx
     
     flagChannels = ~strcmpi('Depth', {RSK.channels.longName});    
     RSK.data(ndx).values(flag,flagChannels) = NaN;
-    flagidx(k).index = find(flag);
-    if diagnostic ~= 0 && ndx == diagndx; 
-        doDiagPlot(RSK,raw,'index',find(flag),'ndx',diagndx,'channelidx',diagChanCol,'fn',mfilename); 
+    flagidx(k).index = find(flag);  
+    if diagnostic ~= 0      
+        for d = diagndx;
+            if ndx == d;
+                figure
+                doDiagPlot(RSK,raw,'index',find(flag),'ndx',ndx,'channelidx',diagChanCol,'fn',mfilename); 
+            end
+        end
     end 
     k = k + 1;
 end

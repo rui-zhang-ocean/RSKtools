@@ -103,8 +103,13 @@ for ndx = castidx
     [out, index] = despike(in, intime, threshold, windowLength, action);
     RSK.data(ndx).values(:,channelCol) = out;
     spike(k).index = index;    
-    if diagnostic ~= 0 && ndx == diagndx; 
-        doDiagPlot(RSK,raw,'index',index,'ndx',ndx,'channelidx',channelCol,'fn',mfilename); 
+    if diagnostic ~= 0      
+        for d = diagndx;
+            if ndx == d;
+                figure
+                doDiagPlot(RSK,raw,'index',index,'ndx',ndx,'channelidx',channelCol,'fn',mfilename); 
+            end
+        end
     end 
     k = k+1;
 end

@@ -104,10 +104,15 @@ for c = chanCol
         intime = RSK.data(ndx).tstamp; 
         [out, index] = correcthold(in, intime, action);  
         RSK.data(ndx).values(:,c) = out;
-        holdpts(k).index{c} = index;
-        if diagnostic ~= 0 && c == chanCol(1) && ndx == diagndx; 
-            doDiagPlot(RSK,raw,'index',index,'ndx',ndx,'channelidx',chanCol(1),'fn',mfilename); 
-        end 
+        holdpts(k).index{c} = index;       
+        if all(diagnostic ~= 0) && c == chanCol(1);    
+            for d = diagndx;
+                if ndx == d;
+                    figure
+                    doDiagPlot(RSK,raw,'index',index,'ndx',ndx,'channelidx',chanCol(1),'fn',mfilename); 
+                end
+            end
+        end        
         k = k+1;
     end     
 end
