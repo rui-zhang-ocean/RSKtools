@@ -36,8 +36,8 @@ function [RSK, samplesinbin] = RSKbinaverage(RSK, varargin)
 %                      Must have length(boundary) == length(binSize) or one
 %                      greater. Default[]; whole pressure range.
 %
-%                diagnostic - To give a diagnostic plot on specified
-%                      profile number. Original and processed data will
+%                visualize - To give a diagnostic plot on specified
+%                      profile number(s). Original and processed data will
 %                      be plotted to show users how the algorithm works.
 %                      Default is 0.
 %
@@ -61,7 +61,7 @@ addParameter(p, 'direction', 'down', checkDirection);
 addParameter(p, 'binBy', 'sea pressure', @ischar);
 addParameter(p, 'binSize', 1, @isnumeric);
 addParameter(p, 'boundary', [], @isnumeric);
-addParameter(p, 'diagnostic', 0, @isnumeric);
+addParameter(p, 'visualize', 0, @isnumeric);
 parse(p, RSK, varargin{:})
 
 RSK = p.Results.RSK;
@@ -70,7 +70,7 @@ direction = p.Results.direction;
 binBy = p.Results.binBy;
 binSize = p.Results.binSize;
 boundary = p.Results.boundary;
-diagnostic = p.Results.diagnostic;
+visualize = p.Results.visualize;
 
 
 
@@ -80,7 +80,7 @@ alltstamp = {RSK.data(castidx).tstamp};
 maxlength = max(cellfun('size', alltstamp, 1));
 Y = NaN(maxlength, length(castidx));
 
-if diagnostic ~= 0; [raw, diagndx] = checkDiagPlot(RSK, diagnostic, direction, castidx); end
+if visualize ~= 0; [raw, diagndx] = checkDiagPlot(RSK, visualize, direction, castidx); end
 diagChanCol = [getchannelindex(RSK,'Conductivity'), getchannelindex(RSK,'Temperature')];
 if any(strcmp({RSK.channels.longName},'Salinity'))
     diagChanCol = [diagChanCol, getchannelindex(RSK,'Salinity')];   
@@ -124,7 +124,7 @@ for ndx = castidx
     k = k + 1;
 end
 
-if diagnostic ~= 0      
+if visualize ~= 0      
     for d = diagndx;
         figure
         doDiagPlot(RSK,raw,'ndx',d,'channelidx',diagChanCol,'fn',mfilename); 

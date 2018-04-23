@@ -40,8 +40,8 @@ function [RSK, holdpts] = RSKcorrecthold(RSK, varargin)
 %                      replaced with values calculated by linearly 
 %                      interpolating from the neighbouring points.
 %
-%                diagnostic - To give a diagnostic plot on specified
-%                      profile number. Original, processed data and flagged
+%                visualize - To give a diagnostic plot on specified profile 
+%                      number(s). Original, processed data and flagged
 %                      data will be plotted to show users how the algorithm
 %                      works. Default is 0.
 %
@@ -55,7 +55,7 @@ function [RSK, holdpts] = RSKcorrecthold(RSK, varargin)
 % Example: 
 %    [RSK, holdpts] = RSKcorrecthold(RSK)
 %     OR
-%    [RSK, holdpts] = RSKcorrecthold(RSK, 'channel', 'Temperature', 'action', 'interp','diagnostic',1); 
+%    [RSK, holdpts] = RSKcorrecthold(RSK, 'channel', 'Temperature', 'action', 'interp','visualize',1); 
 %
 % See also: RSKdespike, RSKremoveloops, RSKsmooth.
 %
@@ -76,7 +76,7 @@ addParameter(p, 'channel','all');
 addParameter(p, 'profile', [], @isnumeric);
 addParameter(p, 'direction', [], checkDirection);
 addParameter(p, 'action', 'nan', checkAction);
-addParameter(p, 'diagnostic', 0, @isnumeric);
+addParameter(p, 'visualize', 0, @isnumeric);
 parse(p, RSK, varargin{:})
 
 RSK = p.Results.RSK;
@@ -84,7 +84,7 @@ channel = p.Results.channel;
 profile = p.Results.profile;
 direction = p.Results.direction;
 action = p.Results.action;
-diagnostic = p.Results.diagnostic;
+visualize = p.Results.visualize;
 
 
 chanCol = [];
@@ -94,7 +94,7 @@ for chan = channels
 end
 castidx = getdataindex(RSK, profile, direction);
 
-if diagnostic ~= 0; [raw, diagndx] = checkDiagPlot(RSK, diagnostic, direction, castidx); end
+if visualize ~= 0; [raw, diagndx] = checkDiagPlot(RSK, visualize, direction, castidx); end
 
 %loop through channels
 for c = chanCol 
@@ -105,7 +105,7 @@ for c = chanCol
         [out, index] = correcthold(in, intime, action);  
         RSK.data(ndx).values(:,c) = out;
         holdpts(k).index{c} = index;       
-        if all(diagnostic ~= 0) && c == chanCol(1);    
+        if all(visualize ~= 0) && c == chanCol(1);    
             for d = diagndx;
                 if ndx == d;
                     figure

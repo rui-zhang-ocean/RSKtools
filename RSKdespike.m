@@ -39,8 +39,8 @@ function [RSK, spike] = RSKdespike(RSK, channel, varargin)
 %                      by linearly interpolating from the neighbouring 
 %                      points.
 %
-%                diagnostic - To give a diagnostic plot on specified
-%                      profile number. Original, processed data and flagged
+%                visualize - To give a diagnostic plot on specified profile 
+%                      number(s). Original, processed data and flagged
 %                      data will be plotted to show users how the algorithm
 %                      works. Default is 0.
 %
@@ -55,7 +55,7 @@ function [RSK, spike] = RSKdespike(RSK, channel, varargin)
 %    [RSK, spike] = RSKdespike(RSK,'Turbidity')
 %     OR
 %    [RSK, spike] = RSKdespike(RSK,'Temperature','profile',3:5,'direction','down',...
-%                   'threshold',4,'windowLength',11,'action','nan','diagnostic',4); 
+%                   'threshold',4,'windowLength',11,'action','nan','visualize',4); 
 %
 % See also: RSKremoveloops, RSKsmooth.
 %
@@ -78,7 +78,7 @@ addParameter(p, 'direction', [], checkDirection);
 addParameter(p, 'threshold', 2, @isnumeric);
 addParameter(p, 'windowLength', 3, @isnumeric);
 addParameter(p, 'action', 'nan', checkAction);
-addParameter(p, 'diagnostic', 0, @isnumeric);
+addParameter(p, 'visualize', 0, @isnumeric);
 parse(p, RSK, channel, varargin{:})
 
 RSK = p.Results.RSK;
@@ -88,13 +88,13 @@ direction = p.Results.direction;
 windowLength = p.Results.windowLength;
 threshold = p.Results.threshold;
 action = p.Results.action;
-diagnostic = p.Results.diagnostic;
+visualize = p.Results.visualize;
 
 
 channelCol = getchannelindex(RSK, channel);
 castidx = getdataindex(RSK, profile, direction);
 
-if diagnostic ~= 0; [raw, diagndx] = checkDiagPlot(RSK, diagnostic, direction, castidx); end
+if visualize ~= 0; [raw, diagndx] = checkDiagPlot(RSK, visualize, direction, castidx); end
 
 k = 1;
 for ndx = castidx
@@ -103,7 +103,7 @@ for ndx = castidx
     [out, index] = despike(in, intime, threshold, windowLength, action);
     RSK.data(ndx).values(:,channelCol) = out;
     spike(k).index = index;    
-    if diagnostic ~= 0      
+    if visualize ~= 0      
         for d = diagndx;
             if ndx == d;
                 figure

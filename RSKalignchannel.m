@@ -42,10 +42,10 @@ function RSK = RSKalignchannel(RSK, channel, lag, varargin)
 %                 lagunits - Units of the lag entry. Can be seconds or
 %                        samples (default).
 %
-%                 diagnostic - To give a diagnostic plot on specified
-%                        profile number. Original and processed data will
-%                        be plotted to show users how the algorithm works.
-%                        Default is 0.
+%                 visualize - To give a diagnostic plot on specified
+%                        profile number(s). Original and processed data 
+%                        will be plotted to show users how the algorithm 
+%                        works. Default is 0.
 %
 % Outputs:
 %    RSK - Structure with aligned channel values.
@@ -89,7 +89,7 @@ addParameter(p, 'profile', [], @isnumeric);
 addParameter(p, 'direction', [], checkDirection);
 addParameter(p, 'shiftfill', 'zeroorderhold', checkShiftfill);
 addParameter(p, 'lagunits', 'samples', checklagunits);
-addParameter(p, 'diagnostic', 0, @isnumeric);
+addParameter(p, 'visualize', 0, @isnumeric);
 parse(p, RSK, channel, lag, varargin{:})
 
 RSK = p.Results.RSK;
@@ -99,7 +99,7 @@ profile = p.Results.profile;
 direction = p.Results.direction;
 shiftfill = p.Results.shiftfill;
 lagunits = p.Results.lagunits;
-diagnostic = p.Results.diagnostic;
+visualize = p.Results.visualize;
 
 
 
@@ -107,7 +107,7 @@ castidx = getdataindex(RSK, profile, direction);
 lags = checklag(lag, castidx, lagunits);
 channelCol = getchannelindex(RSK, channel);
 
-if diagnostic ~= 0; [raw, diagndx] = checkDiagPlot(RSK, diagnostic, direction, castidx); end
+if visualize ~= 0; [raw, diagndx] = checkDiagPlot(RSK, visualize, direction, castidx); end
 
 counter = 0;
 for ndx =  castidx
@@ -152,7 +152,7 @@ for ndx =  castidx
     RSK.data(ndx).values(:, channelCol) = channelShifted;
 end
 
-if diagnostic ~= 0      
+if visualize ~= 0      
     for d = diagndx;
         figure
         doDiagPlot(RSK,raw,'ndx',d,'channelidx',channelCol,'fn',mfilename); 

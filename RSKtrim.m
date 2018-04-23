@@ -35,8 +35,8 @@ function [RSK, trimidx] = RSKtrim(RSK, varargin)
 %                 action - Action to apply to the flagged values.  Can be 
 %                       'nan' (default) or 'remove' or 'interp'.
 %
-%                 diagnostic - To give a diagnostic plot on specified
-%                       profile number. Original, processed data and  
+%                 visualize - To give a diagnostic plot on specified
+%                       profile number(s). Original, processed data and  
 %                       flagged data will be plotted to show users how the 
 %                       algorithm works. Default is 0.
 %
@@ -69,7 +69,7 @@ addParameter(p, 'reference', 'index');
 addParameter(p, 'range', [], @isnumeric);
 addParameter(p, 'channel','all');
 addParameter(p, 'action', 'nan', checkAction);
-addParameter(p, 'diagnostic', 0, @isnumeric);
+addParameter(p, 'visualize', 0, @isnumeric);
 parse(p, RSK, varargin{:})
 
 RSK = p.Results.RSK;
@@ -79,7 +79,7 @@ reference = p.Results.reference;
 range = p.Results.range;
 channel = p.Results.channel;
 action = p.Results.action;
-diagnostic = p.Results.diagnostic;
+visualize = p.Results.visualize;
 
 
 appliedchanCol = [];
@@ -89,7 +89,7 @@ for chan = channels
 end
 castidx = getdataindex(RSK, profile, direction);
 
-if diagnostic ~= 0; [raw, diagndx] = checkDiagPlot(RSK, diagnostic, direction, castidx); end
+if visualize ~= 0; [raw, diagndx] = checkDiagPlot(RSK, visualize, direction, castidx); end
 
 for ndx =  castidx
     if strcmpi(reference, 'index')
@@ -122,7 +122,7 @@ for ndx =  castidx
         end
     end
     
-    if diagnostic ~= 0      
+    if visualize ~= 0      
         for d = diagndx;
             if ndx == d;
                 figure

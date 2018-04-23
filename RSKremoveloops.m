@@ -24,8 +24,8 @@ function [RSK, flagidx] = RSKremoveloops(RSK, varargin)
 %                threshold - Minimum speed at which the profile must
 %                      be taken. Defaults to 0.25 m/s.
 %
-%                diagnostic - To give a diagnostic plot on specified
-%                      profile number. Original, processed data and flagged
+%                visualize - To give a diagnostic plot on specified profile 
+%                      number(s). Original, processed data and flagged
 %                      data will be plotted to show users how the algorithm
 %                      works. Default is 0.
 %
@@ -40,7 +40,7 @@ function [RSK, flagidx] = RSKremoveloops(RSK, varargin)
 %    RSK = RSKreadprofiles(RSK);
 %    RSK = RSKremoveloops(RSK);
 %    OR
-%    RSK = RSKremoveloops(RSK,'profile',7:9,'direction','down','threshold',0.3,'diagnostic',8);
+%    RSK = RSKremoveloops(RSK,'profile',7:9,'direction','down','threshold',0.3,'visualize',8);
 %
 % Author: RBR Ltd. Ottawa ON, Canada
 % email: support@rbr-global.com
@@ -55,14 +55,14 @@ addRequired(p, 'RSK', @isstruct);
 addParameter(p, 'profile', [], @isnumeric);
 addParameter(p, 'direction', [], checkDirection);
 addParameter(p, 'threshold', 0.25, @isnumeric);
-addParameter(p, 'diagnostic', 0, @isnumeric);
+addParameter(p, 'visualize', 0, @isnumeric);
 parse(p, RSK, varargin{:})
 
 RSK = p.Results.RSK;
 profile = p.Results.profile;
 direction = p.Results.direction;
 threshold = p.Results.threshold;
-diagnostic = p.Results.diagnostic;
+visualize = p.Results.visualize;
 
 
 
@@ -73,7 +73,7 @@ catch
 end
 
 castidx = getdataindex(RSK, profile, direction);
-if diagnostic ~= 0; [raw, diagndx] = checkDiagPlot(RSK, diagnostic, direction, castidx); end
+if visualize ~= 0; [raw, diagndx] = checkDiagPlot(RSK, visualize, direction, castidx); end
 diagChanCol = [getchannelindex(RSK, 'Conductivity'), getchannelindex(RSK, 'Temperature')];
 
 k = 1;
@@ -97,7 +97,7 @@ for ndx = castidx
     flagChannels = ~strcmpi('Depth', {RSK.channels.longName});    
     RSK.data(ndx).values(flag,flagChannels) = NaN;
     flagidx(k).index = find(flag);  
-    if diagnostic ~= 0      
+    if visualize ~= 0      
         for d = diagndx;
             if ndx == d;
                 figure
