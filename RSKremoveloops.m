@@ -1,19 +1,17 @@
 function [RSK, flagidx] = RSKremoveloops(RSK, varargin)
 
-% RSKremoveloops - Remove data exceeding a threshold profiling rate or
-% acceleration rate (when specified) and with reversed pressure (loops).
+% RSKremoveloops - Remove data exceeding a threshold profiling rate and 
+% with reversed pressure (loops).
 %
 % Syntax: [RSK, flagidx] = RSKremoveloops(RSK, [OPTIONS])
 % 
 % Identifies and flags data obtained when the logger vertical profiling
 % speed falls below a threshold value or when the logger reversed the
-% desired cast direction (forming a loop). Threshold for acceleration could
-% be jointly examined when users specifiy it. The flagged data is replaced 
+% desired cast direction (forming a loop). The flagged data is replaced 
 % with NaNs. All logger channels except depth are affected.    
 % 
-% Profiling speed is estimated by differenciating depth. Acceleration is
-% estimated by differenciating velocity. The depth channel is first 
-% smoothed with a 3-point running average to reduce noise. 
+% Profiling speed is estimated by differenciating depth. The depth channel 
+% is first smoothed with a 3-point running average to reduce noise. 
 % 
 % Inputs:
 %   [Required] - RSK - RSK structure with logger data and metadata
@@ -42,12 +40,12 @@ function [RSK, flagidx] = RSKremoveloops(RSK, varargin)
 %    RSK = RSKreadprofiles(RSK);
 %    RSK = RSKremoveloops(RSK);
 %    OR
-%    RSK = RSKremoveloops(RSK,'direction','down','profile',3,'threshold',0.2,'accelerationThreshold',-1);
+%    RSK = RSKremoveloops(RSK,'direction','down','profile',3,'threshold',0.2);
 %
 % Author: RBR Ltd. Ottawa ON, Canada
 % email: support@rbr-global.com
 % Website: www.rbr-global.com
-% Last revision: 2018-04-05
+% Last revision: 2018-04-25
 
 validDirections = {'down', 'up', 'both'};
 checkDirection = @(x) any(validatestring(x,validDirections));
