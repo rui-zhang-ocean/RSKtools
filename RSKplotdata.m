@@ -129,9 +129,11 @@ if showcast == 1;
     % Add the patches
     hold on
     hPatch(1) = patch([dstart ; dend ; dend ; dstart],[dpmin ; dpmin ; dpmax ; dpmax],0.9*ones(1,3));
-    hPatch(2) = patch([ustart ; uend ; uend ; ustart],[upmin ; upmin ; upmax ; upmax],0.8*ones(1,3));
+    hPatch(2) = patch([ustart ; uend ; uend ; ustart],[upmin ; upmin ; upmax ; upmax],0.6*ones(1,3));
     alpha(0.2)
-    legend(hPatch,'downcast','upcast')
+    [~, L] = legend(hPatch,'downcast','upcast');
+    PatchInLegend = findobj(L, 'type', 'patch');
+    set(PatchInLegend, 'facea', 0.2);
     zoom on
 end
 
