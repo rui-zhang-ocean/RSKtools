@@ -121,11 +121,11 @@ for i = 1:directions:length(castidx);
 end
 
     %% Nested Functions
-    function out = checkcell(in)        
-        if iscell(in)
+    function out = checkcell(in) 
+        if isempty(in) || (~isempty(in) && iscell(in))
             out = in;
         else
-            out = {in};
+            out = {in};    
         end
     end
 
