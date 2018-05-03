@@ -1,4 +1,4 @@
-function handles = RSKplotdata(RSK, varargin)
+function [axes,handles] = RSKplotdata(RSK, varargin)
 
 % RSKplotdata - Plot a time series of logger data.
 %
@@ -27,13 +27,15 @@ function handles = RSKplotdata(RSK, varargin)
 %                       is the first string in RSK.profiles.order; the
 %                       first cast.
 %
-%                 showcast - 0 or 1 to show cast direction or not. Default
+%                 showcast - 1 or 0 to show cast direction or not. Default
 %                       is 0. It is recommended to show the cast direction 
 %                       patch for pressure or conductivity time series data 
 %                       only.
 %
 % Output:
 %     handles - Line object of the plot.
+%
+%     axes - Axes object of the plot.
 %
 % Example: 
 %    RSK = RSKopen('sample.rsk');   
@@ -49,7 +51,7 @@ function handles = RSKplotdata(RSK, varargin)
 % Author: RBR Ltd. Ottawa ON, Canada
 % email: support@rbr-global.com
 % Website: www.rbr-global.com
-% Last revision: 2018-04-25
+% Last revision: 2018-05-03
 
 validDirections = {'down', 'up'};
 checkDirection = @(x) any(validatestring(x,validDirections));
@@ -98,21 +100,20 @@ if size(castidx,2) ~= 1
 end
     
 
-
+pCol = getchannelindex(RSK,'Pressure');
 chanCol = [];
 channels = cellchannelnames(RSK, channel);
 for chan = channels
     chanCol = [chanCol getchannelindex(RSK, chan{1})];
 end
 
-handles = channelsubplots(RSK, 'data', 'chanCol', chanCol, 'castidx', castidx);
+[axes,handles] = channelsubplots(RSK, 'data', 'chanCol', chanCol, 'castidx', castidx);
 
 if isfield(RSK.data,'profilenumber') && isfield(RSK.data,'direction');
     legend(['Profile ' num2str(RSK.data(castidx).profilenumber) ' ' RSK.data(castidx).direction 'cast']);
 end
 
 if showcast == 1;      
-    getchannelindex(RSK,'Pressure');
     pCol = getchannelindex(RSK,'Pressure');
     pmax = max(RSK.data.values(:,pCol));
     
@@ -128,9 +129,10 @@ if showcast == 1;
 
     % Add the patches
     hold on
-    hPatch(1) = patch([dstart ; dend ; dend ; dstart],[dpmin ; dpmin ; dpmax ; dpmax],0.9*ones(1,3));
-    hPatch(2) = patch([ustart ; uend ; uend ; ustart],[upmin ; upmin ; upmax ; upmax],0.6*ones(1,3));
-    alpha(0.2)
+    hPatch(1) = patch([dstart ; dend ; dend ; dstart],[dpmin ; dpmin ; dpmax ; dpmax],0.9*ones(1,3),'parent',axes(pCol == chanCol));
+    hPatch(2) = patch([ustart ; uend ; uend ; ustart],[upmin ; upmin ; upmax ; upmax],0.6*ones(1,3),'parent',axes(pCol == chanCol));
+    alpha(hPatch(1),0.2);
+    alpha(hPatch(2),0.2);
     [~, L] = legend(hPatch,'downcast','upcast');
     PatchInLegend = findobj(L, 'type', 'patch');
     set(PatchInLegend, 'facea', 0.2);
