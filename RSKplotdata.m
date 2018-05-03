@@ -29,8 +29,7 @@ function [axes,handles] = RSKplotdata(RSK, varargin)
 %
 %                 showcast - 1 or 0 to show cast direction or not. Default
 %                       is 0. It is recommended to show the cast direction 
-%                       patch for pressure or conductivity time series data 
-%                       only.
+%                       patch for time series data only.
 %
 % Output:
 %     handles - Line object of the plot.
@@ -105,6 +104,10 @@ chanCol = [];
 channels = cellchannelnames(RSK, channel);
 for chan = channels
     chanCol = [chanCol getchannelindex(RSK, chan{1})];
+end
+
+if ~ismember(pCol, chanCol) && showcast == 1;
+    error('No pressure channel found for showcast, please specify pressure in channel input.')
 end
 
 [axes,handles] = channelsubplots(RSK, 'data', 'chanCol', chanCol, 'castidx', castidx);
