@@ -40,10 +40,7 @@ profile = p.Results.profile;
 direction = p.Results.direction;
 
 
-[M,N] = size(profile);
-if M > 1 && N == 1;
-    profile = profile';
-end
+profile = profile(:)';
 
 if size(RSK.data,2) == 1
     castidx = 1;
