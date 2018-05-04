@@ -24,7 +24,8 @@ function castidx = getdataindex(RSK, varargin)
 % Author: RBR Ltd. Ottawa ON, Canada
 % email: support@rbr-global.com
 % Website: www.rbr-global.com
-% Last revision: 2017-06-20
+% Last revision: 2018-05-04
+
 
 validationFcn = @(x) ischar(x) || isempty(x);
 
@@ -38,6 +39,11 @@ RSK = p.Results.RSK;
 profile = p.Results.profile;
 direction = p.Results.direction;
 
+
+[M,N] = size(profile);
+if M > 1 && N == 1;
+    profile = profile';
+end
 
 if size(RSK.data,2) == 1
     castidx = 1;
