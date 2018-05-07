@@ -18,16 +18,16 @@ function [RSK, flagidx] = RSKremoveloops(RSK, varargin)
 %
 %   [Optional] - profile - Profile number. Defaults to all profiles.
 %
-%                direction - 'up' for upcast, 'down' for downcast, or 
-%                       'both' for all. Defaults to all directions
-%                       available.
+%                direction - 'up' for upcast, 'down' for downcast, or
+%                      'both' for all. Defaults to all directions available.
 % 
-%                threshold - Minimum speed at which the profile must be 
-%                       taken. Defaults to 0.25 m/s.
+%                threshold - Minimum speed at which the profile must
+%                      be taken. Defaults to 0.25 m/s.
 %
-%                accelerationThreshold - Maximum acceleration at which the 
-%                       profile must be taken. Defaults to -Inf (i.e. will 
-%                       not work unless specified by users)
+%                visualize - To give a diagnostic plot on specified profile 
+%                      number(s). Original, processed data and flagged
+%                      data will be plotted to show users how the algorithm
+%                      works. Default is 0.
 %
 % Outputs:
 %    RSK - Structure with data filtered by threshold profiling speed and
@@ -40,12 +40,13 @@ function [RSK, flagidx] = RSKremoveloops(RSK, varargin)
 %    RSK = RSKreadprofiles(RSK);
 %    RSK = RSKremoveloops(RSK);
 %    OR
-%    RSK = RSKremoveloops(RSK,'direction','down','profile',3,'threshold',0.2);
+%    RSK = RSKremoveloops(RSK,'profile',7:9,'direction','down','threshold',0.3,'visualize',8);
 %
 % Author: RBR Ltd. Ottawa ON, Canada
 % email: support@rbr-global.com
 % Website: www.rbr-global.com
-% Last revision: 2018-04-25
+% Last revision: 2018-05-07
+
 
 validDirections = {'down', 'up', 'both'};
 checkDirection = @(x) any(validatestring(x,validDirections));
@@ -56,6 +57,7 @@ addParameter(p, 'profile', [], @isnumeric);
 addParameter(p, 'direction', [], checkDirection);
 addParameter(p, 'threshold', 0.25, @isnumeric);
 addParameter(p, 'accelerationThreshold', -Inf, @isnumeric);
+addParameter(p, 'visualize', 0, @isnumeric);
 parse(p, RSK, varargin{:})
 
 RSK = p.Results.RSK;
@@ -63,7 +65,7 @@ profile = p.Results.profile;
 direction = p.Results.direction;
 threshold = p.Results.threshold;
 accelerationThreshold = p.Results.accelerationThreshold;
-
+visualize = p.Results.visualize;
 
 
 try
@@ -72,9 +74,11 @@ catch
     error('RSKremoveloops requires a depth channel to calculate velocity (m/s). Use RSKderivedepth...');
 end
 
-
-
 castidx = getdataindex(RSK, profile, direction);
+if visualize ~= 0; [raw, diagndx] = checkDiagPlot(RSK, visualize, direction, castidx); end
+diagChanCol = [getchannelindex(RSK, 'Conductivity'), getchannelindex(RSK, 'Temperature')];
+
+k = 1;
 for ndx = castidx
     d = RSK.data(ndx).values(:,Dcol);
     depth = runavg(d, 3, 'nan');
@@ -95,14 +99,21 @@ for ndx = castidx
     
     flagChannels = ~strcmpi('Depth', {RSK.channels.longName});    
     RSK.data(ndx).values(flag,flagChannels) = NaN;
-    flagidx(ndx).index = find(flag);
+    flagidx(k).index = find(flag);  
+    if visualize ~= 0      
+        for d = diagndx;
+            if ndx == d;
+                figure
+                doDiagPlot(RSK,raw,'index',find(flag),'ndx',ndx,'channelidx',diagChanCol,'fn',mfilename); 
+            end
+        end
+    end 
+    k = k + 1;
 end
-
 
 
 logdata = logentrydata(RSK, profile, direction);
 logentry = ['Samples measured at a profiling velocity less than ' num2str(threshold) ' m/s were replaced with NaN on ' logdata '.'];
-
 RSK = RSKappendtolog(RSK, logentry);
 
 end

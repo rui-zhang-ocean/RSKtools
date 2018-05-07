@@ -35,6 +35,11 @@ function [RSK, trimidx] = RSKtrim(RSK, varargin)
 %                 action - Action to apply to the flagged values.  Can be 
 %                       'nan' (default) or 'remove' or 'interp'.
 %
+%                 visualize - To give a diagnostic plot on specified
+%                       profile number(s). Original, processed data and  
+%                       flagged data will be plotted to show users how the 
+%                       algorithm works. Default is 0.
+%
 % Outputs:
 %    RSK - Structure with trimmed channel values.
 %
@@ -48,7 +53,7 @@ function [RSK, trimidx] = RSKtrim(RSK, varargin)
 % Author: RBR Ltd. Ottawa ON, Canada
 % email: support@rbr-global.com
 % Website: www.rbr-global.com
-% Last revision: 2018-03-15
+% Last revision: 2018-05-07
 
 validAction = {'remove', 'nan','interp'};
 checkAction = @(x) any(validatestring(x,validAction));
@@ -64,6 +69,7 @@ addParameter(p, 'reference', 'index');
 addParameter(p, 'range', [], @isnumeric);
 addParameter(p, 'channel','all');
 addParameter(p, 'action', 'nan', checkAction);
+addParameter(p, 'visualize', 0, @isnumeric);
 parse(p, RSK, varargin{:})
 
 RSK = p.Results.RSK;
@@ -73,6 +79,7 @@ reference = p.Results.reference;
 range = p.Results.range;
 channel = p.Results.channel;
 action = p.Results.action;
+visualize = p.Results.visualize;
 
 
 appliedchanCol = [];
@@ -82,6 +89,7 @@ for chan = channels
 end
 castidx = getdataindex(RSK, profile, direction);
 
+if visualize ~= 0; [raw, diagndx] = checkDiagPlot(RSK, visualize, direction, castidx); end
 
 for ndx =  castidx
     if strcmpi(reference, 'index')
@@ -113,12 +121,19 @@ for ndx =  castidx
             RSK.data(ndx).values(:,c) = y;
         end
     end
+    
+    if visualize ~= 0      
+        for d = diagndx;
+            if ndx == d;
+                figure
+                doDiagPlot(RSK,raw,'index',find(trimindex),'ndx',ndx,'channelidx',appliedchanCol(1),'fn',mfilename); 
+            end
+        end
+    end 
 
 end
 
-
-
-%% Log entry
+% Log entry
 logdata = logentrydata(RSK, profile, direction);
 logentry = ['Data samples with ' reference ' between ' num2str(range(1)) '  and ' num2str(range(2)) ' trimmed by ' action ' on ' channel ' channels of ' logdata '.'];
 RSK = RSKappendtolog(RSK, logentry);
