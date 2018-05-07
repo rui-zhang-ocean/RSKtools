@@ -1,8 +1,8 @@
 %% RSKtools for Matlab access to RBR data
-% RSKtools v2.2.0;
+% RSKtools v2.3.0;
 % RBR Ltd. Ottawa ON, Canada;
 % support@rbr-global.com;
-% 2018-01-25
+% 2018-05-08
 
 %% Introduction 
 % |RSKtools| provides convenient functions for data extraction (e.g.,
@@ -142,7 +142,7 @@ o2          = rsk.data(profind).values(:,o2col);
 % * The <https://docs.rbr-global.com/rsktools RSKtools on-line user
 % manual> for detailed RSKtools function documentation.
 %
-% * The <http://rbr-global.com/wp-content/uploads/2018/01/PostProcessing.pdf
+% * The <http://rbr-global.com/wp-content/uploads/2018/05/PostProcessing.pdf
 % RSKtools post-processing guide> for an introduction on how to
 % process RBR profiles with RSKtools.  The post-processing suite
 % contains, among other things, functions to low-pass filter, align,

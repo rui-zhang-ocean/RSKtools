@@ -1,11 +1,11 @@
 %% RSKtools for Matlab processing RBR data
-% RSKtools v2.2.0;
+% RSKtools v2.3.0;
 % RBR Ltd. Ottawa ON, Canada;
 % support@rbr-global.com;
-% 2018-01-25
+% 2018-05-08
 
 %% Introduction
-% A suite of new functions are included in RSKtools v2.0.0 to
+% A suite of new functions are included since RSKtools v2.0.0 to
 % post-process RBR logger data. Below we show how to implement some
 % common processing steps to obtain the highest quality data possible.
 
@@ -29,6 +29,7 @@ rsk = RSKreadprofiles(rsk, 'profile', 1:20, 'direction', 'up');
 % plot the raw data of temperature, conductivity, and chlorophyll as profiles
 RSKplotprofiles(rsk,'profile',[1 10 20],...
     'channel',{'temperature','conductivity','chlorophyll'});
+
 
 %% Remove atmospheric pressure from measured total pressure
 % We suggest deriving sea pressure first, especially when an
@@ -71,9 +72,13 @@ raw = RSKderivesalinity(raw);
 % time).  In this example, the logger samples at 6 Hz
 % (|rsk.continuous.samplingPeriod|), so a 5 sample running average
 % should provide sufficient smoothing.
+%
+% All functions that could alter the data has an optional input 
+% 'visualize' which plot data before and after applying the function.
+% Users can specify which profile(s) to visualize.
 
 rsk = RSKsmooth(rsk,{'temperature','conductivity'}, 'windowLength', 5);
-rsk = RSKsmooth(rsk,'chlorophyll', 'windowLength', 9);
+rsk = RSKsmooth(rsk,'chlorophyll', 'windowLength', 9, 'visualize', 10);
 
 
 %% Alignment of conductivity to temperature and pressure 
@@ -115,7 +120,7 @@ rsk = RSKderivedepth(rsk);
 rsk = RSKderivevelocity(rsk);
 
 % Apply the algorithm
-rsk = RSKremoveloops(rsk, 'threshold', 0.3);
+rsk = RSKremoveloops(rsk, 'threshold', 0.3, 'visualize', 7);
 
 
 %% Derive practical salinity
@@ -144,7 +149,7 @@ rsk = RSKaddchannel(rsk,sa,'Absolute Salinity','g/kg');
 
 %% Bin average all channels
 % Average the data into 0.25 dbar bins using |RSKbinaverage|.
-rsk = RSKbinaverage(rsk, 'binBy', 'Sea Pressure', 'binSize', 0.25, 'direction', 'up');
+rsk = RSKbinaverage(rsk, 'binBy', 'Sea Pressure', 'binSize', 0.25, 'direction', 'up', 'visualize', 10);
 
 %% Plot the bin averaged profiles
 % Compare the binned data to the raw data for a few example profiles,
@@ -162,7 +167,7 @@ set(h2,{'linewidth'},{3})
 % |RSKbinaverage| has achieved this here. 
 
 clf
-RSKplot2D(rsk, 'Salinity'); 
+RSKplot2D(rsk, 'Salinity','direction','up'); 
 
 %% Display a summary of all the processing steps
 % Type |rsk.log{:,2}| at the command prompt.
@@ -176,7 +181,7 @@ RSKplot2D(rsk, 'Salinity');
 % manual> for detailed RSKtools function documentation.
 %
 % * the
-% <http://rbr-global.com/wp-content/uploads/2018/01/Standard.pdf
+% <http://rbr-global.com/wp-content/uploads/2018/05/Standard.pdf
 % RSKtools Getting Started> for an introduction on how to load RBR
 % data into Matlab from RSK files, make plots, and access the data.
 
