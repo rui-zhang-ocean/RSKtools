@@ -91,11 +91,14 @@ for chan = channelidx
         ylabel([RSK.channels(presCol).longName ' (' RSK.channels(presCol).units ')']);    
     end
     
-    if isfield(RSK.data,'profilenumber') && isfield(RSK.data,'direction')
-        title(['Profile ' num2str(RSK.data(ndx).profilenumber) ' ' RSK.data(ndx).direction 'cast ' fn]);
-    else
-        title(fn);
+    if n == 1;
+        if isfield(RSK.data,'profilenumber') && isfield(RSK.data,'direction')
+            title(['Profile ' num2str(RSK.data(ndx).profilenumber) ' ' RSK.data(ndx).direction 'cast ' fn]);
+        else
+            title(fn);
+        end
     end
+    
     if isempty(index)
         legend('Original data','Processed data','Location','Best');
     else
