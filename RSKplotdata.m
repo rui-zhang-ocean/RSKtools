@@ -32,9 +32,9 @@ function [axes,handles] = RSKplotdata(RSK, varargin)
 %                       patch for time series data only.
 %
 % Output:
-%     handles - Line object of the plot.
-%
 %     axes - Axes object of the plot.
+%
+%     handles - Line object of the plot.
 %
 % Example: 
 %    RSK = RSKopen('sample.rsk');   

@@ -164,7 +164,10 @@ set(h2,{'linewidth'},{3})
 % |RSKplot2D| generates a plot of the profiles over time. The x-axis 
 % is time; the y-axis is a reference channel (default is sea pressure). 
 % All data elements must have identical reference channel samples. 
-% |RSKbinaverage| has achieved this here. 
+% |RSKbinaverage| has achieved this here. The function also support 
+% customizable rendering to determine the length of gap shown on the 
+% plot. Details see <https://docs.rbr-global.com/rsktools 
+% RSKtools on-line user manual>
 
 clf
 RSKplot2D(rsk, 'Salinity','direction','up'); 
