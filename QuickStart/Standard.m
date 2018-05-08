@@ -71,8 +71,9 @@ rsk.data
 % made very easily using the |RSKplotprofiles| function.
 %
 % RSKtools includes a convenient plotting option to overlay the
-% pressure data with information about the profile events:
-RSKplotdata(rsk,'channel','pressure','showcast',1)
+% pressure data with information about the profile events, for details
+% please check <https://docs.rbr-global.com/rsktools/plotting/rskplotdata-m
+% RSKtools on-line user manual - RSKplotdata>
 
 % load the upcast and downcast of profiles 6 to 8
 rsk = RSKreadprofiles(rsk, 'profile', 6:8, 'direction', 'both');
