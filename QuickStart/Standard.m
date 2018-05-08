@@ -31,11 +31,15 @@
 % The first step is to make a connection to the RSK file with
 % |RSKopen|. Note that |RSKopen| does not actually read the data;
 % instead it reads a "thumbnail" of the data, which is up to 4000
-% samples long. The structure returned after opening an RSK looks
-% something like:
+% samples long. 
 
 file = '../sample.rsk';
-rsk = RSKopen(file)
+rsk = RSKopen(file);
+
+
+%%
+% The structure returned after opening an RSK looks something like:
+disp(rsk)
 
 %%
 % To read the full dataset, use the |RSKreaddata| function.
@@ -68,18 +72,18 @@ rsk.data
 % record profile upcast and downcast "events" automatically. The
 % function |RSKreadprofiles| uses the profile event time stamps to
 % organize the data into profiles. Then, a plot of the profiles can be
-% made very easily using the |RSKplotprofiles| function.
-%
-% RSKtools includes a convenient plotting option to overlay the
-% pressure data with information about the profile events, for details
-% please check <https://docs.rbr-global.com/rsktools/plotting/rskplotdata-m
-% RSKtools on-line user manual - RSKplotdata>
-
-% load the upcast and downcast of profiles 6 to 8
+% made very easily using the |RSKplotprofiles| function.  For
+% example, to read the upcast and downcast of profiles 6 to 8 from
+% the sample data set, run:
 rsk = RSKreadprofiles(rsk, 'profile', 6:8, 'direction', 'both');
 
-
 %%
+% RSKtools includes a convenient plotting option to overlay the
+% pressure data with information about the profile events. For details
+% please read the RSKplotdata page in the
+% <https://docs.rbr-global.com/rsktools/plotting/rskplotdata-m
+% RSKtools on-line user manual>.
+%
 % Note: If profiles have not been detected by the logger or Ruskin, or
 % if the profile time stamps do not correctly parse the data into
 % profiles, the function |RSKfindprofiles| can be used. The
@@ -93,7 +97,7 @@ rsk = RSKreadprofiles(rsk, 'profile', 6:8, 'direction', 'both');
 %% Deriving new channels from measured channels
 % In this particular example, Practical Salinity can be derived from
 % conductivity, temperature, and pressure because the file comes from
-% a "CTD"-type instrument.  |RSKderivesalinity| is a wrapper for the
+% a CTD-type instrument.  |RSKderivesalinity| is a wrapper for the
 % TEOS-10 GSW function |gsw_SP_from_C|, and it adds a new channel
 % called |Salinity| as a column in |rsk.data.values|.  The TEOS-10 GSW
 % Matlab toolbox is freely available from
@@ -107,26 +111,29 @@ rsk = RSKderivesalinity(rsk);
 
 
 %%
-% Note: Salinity, sea pressure, and other channels derived by RSKtools
+% Note: Salinity, sea pressure, and other channels added by RSKtools
 % should be derived after using |RSKreadprofiles| because in some
 % circumstances |RSKreadprofiles| will read raw data from the Ruskin
 % RSK data _file_, instead of referring to the data in the Matlab RSK
 % _structure_.
 
 %% Plotting
-% RSKtool contains a number of convenient plotting utilities.  To plot
-% profiles, use |RSKplotprofiles|.  For example, to plot the upcasts
-% of temperature, salinity, and chlorophyll, from this example, run:
+% RSKtools contains a number of convenient plotting utilities.  To
+% plot profiles, use |RSKplotprofiles|.  For example, to plot the
+% upcasts of temperature, salinity, and chlorophyll, from this
+% example, run:
 handles = RSKplotprofiles(rsk, 'channel', {'temperature','salinity','chlorophyll'}, 'direction', 'up');
 
 
 %% Customising plots
-% The plotting functions return a handle enabling access to the line
-% objects. The output is a matrix containing a column for each channel
-% subplot and a row for each profile.
-handles
+% The plotting functions returns graphics handles enabling access to
+% the line objects. The output is a matrix containing a column for
+% each channel subplot and a row for each profile.
+disp(handles)
 
-% To increase the line width of the first profile in all subplots
+%% 
+% To increase the line width of the first profile in all subplots,
+% run:
 set(handles(1,:),{'linewidth'},{3});
 
 
