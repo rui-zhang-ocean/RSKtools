@@ -5,19 +5,22 @@
 % 2018-05-08
 
 %% Introduction
-% A suite of new functions are included since RSKtools v2.0.0 to
-% post-process RBR logger data. Below we show how to implement some
-% common processing steps to obtain the highest quality data possible.
+% Version 2.0.0 of RSKtools included new functions to post-process RBR
+% logger data. Below we show how to implement some common processing
+% steps to obtain the highest quality data possible.
 
 %% RSKtools help
 % All post-processing functions are customisable with name-value pair
-% input arguments. To process all data using the default parameters
-% no name-value pair arguments are required.  All the information
-% above is available for each function using |help|, for example:
-% |>> help RSKsmooth|.
+% input arguments.  Documentation for each function can be accessed
+% using the Matlab commands |doc| and |help|.  For example, to open
+% the help page for |RSKsmooth|, type: |doc RSKsmooth| at the Matlab
+% command prompt.
 
 %% Getting set up
-% Review Standard for help.
+% Review
+% <http://rbr-global.com/wp-content/uploads/2018/05/Standard.pdf
+% RSKtools Getting Started> for an introduction on how to load RBR
+% data into Matlab from RSK files, make plots, and access the data.
 
 % First, open a connection to the RSK logger database file:
 file = '../sample.rsk';
@@ -66,16 +69,17 @@ raw = RSKderivesalinity(raw);
 % chlorophyll).  RSKtools includes a function called |RSKsmooth| for
 % this purpose.
 %
-% The standard RBR thermistor on profiling instruments has time
-% constant of about 0.6 s, so the conductivity should be smoothed to
-% match that value (RBR's fast thermistors have a 0.1 s response
-% time).  In this example, the logger samples at 6 Hz
-% (|rsk.continuous.samplingPeriod|), so a 5 sample running average
-% should provide sufficient smoothing.
+% Most RBR profiling instruments ("|fast") are equipped with
+% thermistors that have a time constant of 100 msec, so the
+% conductivity should be smoothed to match that value.  In this
+% example, the logger sampled at 6 Hz (found using
+% |RSKsamplingperiod(rsk)|), so a 5 sample running average should
+% provide sufficient smoothing.
 %
-% All functions that could alter the data has an optional input 
-% 'visualize' which plot data before and after applying the function.
-% Users can specify which profile(s) to visualize.
+% Note: All functions that alter the data have an optional input
+% called |'visualize'| that, when activated, plots data before and
+% after applying the function.  Users specify which profile(s) to
+% visualize.
 
 rsk = RSKsmooth(rsk,{'temperature','conductivity'}, 'windowLength', 5);
 rsk = RSKsmooth(rsk,'chlorophyll', 'windowLength', 9, 'visualize', 10);
@@ -85,18 +89,28 @@ rsk = RSKsmooth(rsk,'chlorophyll', 'windowLength', 9, 'visualize', 10);
 % Conductivity, temperature, and pressure need to be aligned in time
 % to account for the fact these sensors are not physically co-located
 % on the logger.  In other words, at any instant, the sensors are
-% measuring a slightly different parcel of water.  When temperature
-% and conductivity are misaligned, the salinity will contain spikes at
-% sharp interfaces and may even be biased.  Properly aligning the
-% sensors, together with matching the time response, will minimize
-% spiking and bias in salinity.
+% measuring a slightly different parcel of water.  Furthermore,
+% sensors with long time constants introduce a time lag to the data.
+% Dissolved oxygen sensors often have a long time constant.
 %
-% The classic approach is to compute the salinity for a range of lags,
-% plot each curve, and choose the curve (often by eye) with the
-% smallest salinity spikes at sharp interfaces.  As an alternative,
-% RSKtools provides a function called |RSKcalculateCTlag| that
-% estimates the optimal lag between conductivity and temperature by
-% minimising salinity spiking. See |help RSKcalculateCTlag|.
+% When temperature and conductivity are misaligned, the salinity will
+% contain spikes at sharp interfaces and may even be biased.  Properly
+% aligning the sensors, together with matching the time response, will
+% minimize spiking and bias in salinity.
+%
+% In the case of RBR instruments, the pressure sensor is effectively
+% an instantaneous measurement, and does not need to be lagged.
+% However, conductivity and temperature must be aligned with respect
+% to each other.  In this example, we align conductivity to
+% temperature by shifting conductivity in time.
+%
+% The classic approach to choose the optimal lag is to compute the
+% salinity for a range of lags, plot each curve, and choose the curve
+% (often by eye) with the smallest salinity spikes at sharp
+% interfaces.  As an alternative approach, RSKtools provides a
+% function called |RSKcalculateCTlag| that estimates the optimal lag
+% between conductivity and temperature by minimising salinity
+% spiking. See the |RSKcalculateCTlag| help page for more information.
 
 lag = RSKcalculateCTlag(rsk);
 rsk = RSKalignchannel(rsk, 'Conductivity', lag);
@@ -110,11 +124,12 @@ rsk = RSKalignchannel(rsk, 'Conductivity', lag);
 % regions of strong gradients. The measurements taken when the
 % instrument is profiling too slowly or during a pressure reversal
 % should not be used for further analysis. We recommend using
-% |RSKremoveloops| to find and NaN the data when the instrument 1)
+% |RSKremoveloops| to flag and treat the data when the instrument 1)
 % falls below a threshold speed and 2) when the pressure reverses (the
 % CTD "loops").  Before using |RSKremoveloops|, use |RSKderivedepth|
 % to calculate depth from sea pressure, and then use
-% |RSKderivevelocity| to calculate profiling rate.
+% |RSKderivevelocity| to calculate profiling rate.  In this particular
+% example, the |RSKremoveloops| algorithm removes the surface soak.
 
 rsk = RSKderivedepth(rsk);
 rsk = RSKderivevelocity(rsk);
@@ -147,13 +162,14 @@ end
 
 rsk = RSKaddchannel(rsk,sa,'Absolute Salinity','g/kg');
 
-%% Bin average all channels
+%% Bin average all channels by pressure
 % Average the data into 0.25 dbar bins using |RSKbinaverage|.
 rsk = RSKbinaverage(rsk, 'binBy', 'Sea Pressure', 'binSize', 0.25, 'direction', 'up', 'visualize', 10);
 
 %% Plot the bin averaged profiles
-% Compare the binned data to the raw data for a few example profiles,
-% processed data are represented with thicker lines.
+% Use |RSKplotprofiles| to compare the binned data to the raw data for
+% a few example profiles.  Processed data are represented with thicker
+% lines.
 clf
 h1 = RSKplotprofiles(raw,'profile',[1 10 20],'channel',{'salinity','temperature','chlorophyll'});
 h2 = RSKplotprofiles(rsk,'profile',[1 10 20],'channel',{'salinity','temperature','chlorophyll'});
@@ -165,7 +181,7 @@ set(h2,{'linewidth'},{3})
 % is time; the y-axis is a reference channel (default is sea pressure). 
 % All data elements must have identical reference channel samples. 
 % |RSKbinaverage| has achieved this here. The function also support 
-% customizable rendering to determine the length of gap shown on the 
+% customisable rendering to determine the length of gap shown on the 
 % plot. Details see <https://docs.rbr-global.com/rsktools 
 % RSKtools on-line user manual>
 
