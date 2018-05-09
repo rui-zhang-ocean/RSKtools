@@ -166,7 +166,7 @@ if length(lag) == 1
     RSK = RSKappendtolog(RSK, logentry);
 else
     for ndx = 1:length(castidx)
-        logdata = logentrydata(RSK, profile, direction);
+        logdata = logentrydata(RSK, ndx, direction);
         logentry = [channel ' aligned using a ' num2str(lags(ndx)) ' ' lagunits ' lag and ' shiftfill ' shiftfill on ' logdata '.'];
         RSK = RSKappendtolog(RSK, logentry);
     end
