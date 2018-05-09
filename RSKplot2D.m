@@ -8,8 +8,11 @@ function [im, data2D, X, Y] = RSKplot2D(RSK, channel, varargin)
 % y-axis is a reference channel. All data elements must have identical
 % reference channel samples. Use RSKbinaverage.m to achieve this. 
 %
-% Note: To have access to colormaps download the cmocean toolbox :
-% https://www.mathworks.com/matlabcentral/fileexchange/57773-cmocean-perceptually-uniform-colormaps
+% Note: If installed, RSKplot2D will use the perceptually uniform oceanographic
+%       colourmaps in the cmocean toolbox:
+%       https://www.mathworks.com/matlabcentral/fileexchange/57773-cmocean-perceptually-uniform-colormaps
+%        
+%       http://dx.doi.org/10.5670/oceanog.2016.66        
 %
 % Inputs:
 %   [Required] - RSK - Structure, with profiles as read using RSKreadprofiles.
@@ -30,9 +33,9 @@ function [im, data2D, X, Y] = RSKplot2D(RSK, channel, varargin)
 %                       regular time grid, so that gaps between each
 %                       profile can be shown when set as 1. Default is 0. 
 %          
-%                threshold - Threshold to determine the length of gap shown
-%                       on the plot. If the gap is smaller than threshold,
-%                       it will not show. Unit in hours.
+%                threshold - Time threshold in hours to determine the
+%                            maximum  gap length shown on the plot. If the 
+%                            gap is smaller than threshold, it will not show. 
 %
 % Output:
 %     im - Image object created, use to set properties.
@@ -53,7 +56,7 @@ function [im, data2D, X, Y] = RSKplot2D(RSK, channel, varargin)
 % Author: RBR Ltd. Ottawa ON, Canada
 % email: support@rbr-global.com
 % Website: www.rbr-global.com
-% Last revision: 2018-03-27
+% Last revision: 2018-05-09
 
 validDirections = {'down', 'up'};
 checkDirection = @(x) any(validatestring(x,validDirections));
@@ -141,18 +144,14 @@ end
 setcolormap(channel);
 cb = colorbar;
 ylabel(cb, RSK.channels(chanCol).units)
-set(gcf, 'Position', [1 1 800 450]);
-datetick('x', 'HH', 'keepticks')
 axis tight
 
 ylabel(cb, RSK.channels(chanCol).units, 'FontSize', 12)
-xlabel(sprintf('Time (UTC)'))
 ylabel(sprintf('%s (%s)', RSK.channels(YCol).longName, RSK.channels(YCol).units));
 set(gca, 'YDir', 'reverse')
 
-h = title(sprintf('%s on %s', RSK.channels(chanCol).longName, datestr(t(end))));
+h = title(RSK.channels(chanCol).longName);
 p = get(h,'Position');
-set(h, 'Position', [t(end) p(2) p(3)], 'HorizontalAlignment', 'right')
 
 set(gcf, 'Renderer', 'painters')
 set(h, 'EdgeColor', 'none');
