@@ -2,7 +2,7 @@
 % RSKtools v2.3.0;
 % RBR Ltd. Ottawa ON, Canada;
 % support@rbr-global.com;
-% 2018-05-08
+% 2018-05-09
 
 %% Introduction
 % Version 2.0.0 of RSKtools included new functions to post-process RBR
@@ -187,6 +187,36 @@ set(h2,{'linewidth'},{3})
 
 clf
 RSKplot2D(rsk, 'Salinity','direction','up'); 
+
+
+%% Add station metadata
+% |RSKaddmetadata| appends station metadata to data structure with 
+% profiles, including latitude, longitude, station, cruise, vessel, 
+% depth, date, weather, crew, comment and description. The appended 
+% metadata could export into CSV or ODV files with |RSK2CSV| or |RSK2ODV|.
+% The function is vectorized, which allows multiple metadata inputs 
+% for multiple profiles. But when there is only one metadata input for 
+% multiple profiles, all profiles will be assigned with the same value.
+
+% Example
+rsk = RSKaddmetadata(rsk,'latitude',45,'longitude',-25,'station',{'SK1'},'vessel',{'R/V RBR'},'cruise',{'Skootamatta Lake 1'});
+% -OR-
+rsk = RSKaddmetadata(rsk,'profile',4:6,'latitude',[45,44,46],'longitude',[-25,-24,-23],'comment',{'Comment1','Comment2','Comment3'});
+
+
+%% Output rsk structure as CSV files
+% |RSK2CSV| outputs the RSK structure format into one or more CSV file.
+% The CSV file contains important logger metadata and a row of variable
+% names and units above each column of channel data. If the data has 
+% been parsed into profiles, then one file will be written for each
+% profile. Besides, an extra column called 'cast_direction' will be 
+% included.  The column will contain 'd' or 'u' to indicate whether the
+% sample is part of the downcast or upcast, respectively. Users can 
+% customize which channel, profile for outputs, output directory and 
+% comments attached to the end of the header.
+
+% Example
+RSK2CSV(rsk,'channel',{'Conductivity','Pressure','Dissolved O2'},'profile', 1:3 ,'comment','Hey Jude');
 
 %% Display a summary of all the processing steps
 % Type |rsk.log{:,2}| at the command prompt.

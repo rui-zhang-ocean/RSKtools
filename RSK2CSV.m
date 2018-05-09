@@ -257,7 +257,7 @@ for castidx = select_cast(1:directions:end);
     end
     if isProfile && isfield(RSK.data,'comment');
         temp = RSK.data(castidx).comment;
-        fprintf(fid,'%s\n',['//Comment: ' num2str(temp{1})]);
+        if ~isempty(temp), fprintf(fid,'%s\n',['//Comment: ' num2str(temp{1})]); end
         if ~isempty(comment), fprintf(fid,'%s\n',['//' comment]); end
     else
         if ~isempty(comment), fprintf(fid,'%s\n',['//Comment: ' comment]); end
