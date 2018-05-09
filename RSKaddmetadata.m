@@ -5,11 +5,11 @@ function [RSK] = RSKaddmetadata(RSK, varargin)
 % Syntax:  [RSK] = RSKaddmetadata(RSK, [OPTIONS])
 % 
 % Append station metadata to data structure with profiles, including
-% latitude, longitude, station name, comment, and description. The
-% function is vectorized, which allows multiple metadata inputs for
-% multiple profiles. But when there is only one metadata input for
-% multiple profiles, all profiles will be assigned with the same
-% value.
+% latitude, longitude, station, cruise, vessel, depth, date, weather, crew,
+% comment and description. The function is vectorized, which allows 
+% multiple metadata inputs for multiple profiles. But when there is only 
+% one metadata input for multiple profiles, all profiles will be assigned 
+% with the same value.
 %
 % Inputs: 
 %   [Required] - RSK - Structure containing data. 
@@ -17,15 +17,14 @@ function [RSK] = RSKaddmetadata(RSK, varargin)
 %   [Optional] - One or more of the following:
 %
 %                profile - Profile number(s) to which metadata should
-%                be assigned. Defaults to all profiles
-%                
+%                          be assigned. Defaults to all profiles             
 %                latitude - must be of data type numerical
 %                longitude - must be of data type numerical
 %                station - Nx1 character array or cell array of strings with
 %                          length equal to the number of profiles 
 %                cruise - character array or cell array of strings
 %                vessel - character array or cell array of strings
-%                depth - numerical 
+%                depth - must be of data type numerical
 %                date - character array or cell array of strings
 %                weather - character array or cell array of strings
 %                crew - character array or cell array of strings
@@ -47,7 +46,7 @@ function [RSK] = RSKaddmetadata(RSK, varargin)
 % Author: RBR Ltd. Ottawa ON, Canada
 % email: support@rbr-global.com
 % Website: www.rbr-global.com
-% Last revision: 2018-04-17
+% Last revision: 2018-05-09
 
 
 p = inputParser;

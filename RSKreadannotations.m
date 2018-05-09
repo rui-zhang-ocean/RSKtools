@@ -40,6 +40,10 @@ if ~isempty(RSK.regionGeoData) && isfield(RSK,'geodata');
     RSK = rmfield(RSK, 'geodata'); % delete cell gps if annotation gps exists
 end
 
+if any(cellfun(@isempty,{RSK.region.description}))
+    RSK.region = rmfield(RSK.region, 'description');
+end
+
 ProfileRegionID = find(strcmpi({RSK.region.type},'PROFILE') == 1);
 GPSRegionID = find(strcmpi({RSK.region.type},'GPS') == 1);
 CommentRegionID = find(strcmpi({RSK.region.type},'COMMENT') == 1);
