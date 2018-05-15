@@ -24,7 +24,7 @@ newfile = [strtok(file,'.rsk') '_' datestr(now,'yyyymmddTHHMM') '.rsk'];
 copyfile([fromDir file], [toDir newfile]);
 
 mksqlite('open',[toDir newfile]);
-mksqlite(['UPDATE deployments SET name = "' newfile '"']);
+mksqlite(['UPDATE deployments SET name = "' newfile '" where deploymentID = 1']);
 mksqlite('close')
 
 end
