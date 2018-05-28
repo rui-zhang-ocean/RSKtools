@@ -153,5 +153,53 @@ if isfield(RSK,'regionComment');
     RSK = rmfield(RSK,'regionComment');
 end
 
+% Check down or upcast comes first
+if upstart(1) > downstart(1)
+    firstdir = RSK.profiles.downcast;
+    lastdir = RSK.profiles.upcast;
+    firstType = 'DOWN';
+    lastType = 'UP';
+else
+    firstdir = RSK.profiles.upcast;
+    lastdir = RSK.profiles.downcast;
+    firstType = 'UP';
+    lastType = 'DOWN';
+end
+
+% Remove RSK.region and RSK.regionCast
+if isfield(RSK, 'region')
+    RSK = rmfield(RSK, 'region');
+end
+if isfield(RSK, 'regionCast')
+    RSK = rmfield(RSK, 'regionCast');
+end
+
+% Create new RSK.region and RSK.regionCast
+for n = 1:length(upstart)
+    nprofile = n*3-2;
+    RSK.region(nprofile).regionID = nprofile;
+    RSK.region(nprofile).type = 'PROFILE';
+    RSK.region(nprofile).tstamp1 = firstdir.tstart(n);
+    RSK.region(nprofile).tstamp2 = lastdir.tend(n);
+    
+    RSK.region(nprofile+1).regionID = nprofile+1;
+    RSK.region(nprofile+1).type = 'CAST'; 
+    RSK.region(nprofile+1).tstamp1 = firstdir.tstart(n);
+    RSK.region(nprofile+1).tstamp2 = firstdir.tend(n);
+
+    RSK.region(nprofile+2).regionID = nprofile+2;    
+    RSK.region(nprofile+2).type = 'CAST';
+    RSK.region(nprofile+2).tstamp1 = lastdir.tstart(n);
+    RSK.region(nprofile+2).tstamp2 = lastdir.tend(n);
+    
+    nregionCast = n*2-1;
+    RSK.regionCast(nregionCast).regionID = nprofile+1;
+    RSK.regionCast(nregionCast).regionProfileID = nprofile;
+    RSK.regionCast(nregionCast).type = firstType;
+    RSK.regionCast(nregionCast+1).regionID = nprofile+2;
+    RSK.regionCast(nregionCast+1).regionProfileID = nprofile;
+    RSK.regionCast(nregionCast+1).type = lastType;
+end
+
 end
             
