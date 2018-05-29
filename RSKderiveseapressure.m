@@ -1,6 +1,6 @@
 function [RSK] = RSKderiveseapressure(RSK, varargin)
 
-%RSKderiveseapressure - Calculate sea pressure.
+% RSKderiveseapressure - Calculate sea pressure.
 %
 % Syntax:  [RSK] = RSKderiveseapressure(RSK, [OPTIONS])
 % 
@@ -22,7 +22,7 @@ function [RSK] = RSKderiveseapressure(RSK, varargin)
 % Author: RBR Ltd. Ottawa ON, Canada
 % email: support@rbr-global.com
 % Website: www.rbr-global.com
-% Last revision: 2017-07-04
+% Last revision: 2018-05-29
 
 p = inputParser;
 addRequired(p, 'RSK', @isstruct);
@@ -45,7 +45,7 @@ end
 
 
 
-RSK = addchannelmetadata(RSK, 'Sea Pressure', 'dbar');
+RSK = addchannelmetadata(RSK, 'pres08', 'Sea Pressure', 'dbar');
 SPcol = getchannelindex(RSK, 'Sea Pressure');
 
 
