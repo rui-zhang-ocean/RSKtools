@@ -37,7 +37,7 @@ alpha = p.Results.alpha;
 Ccol = getchannelindex(RSK, 'Conductivity');
 Tcol = getchannelindex(RSK, 'Temperature');
 
-RSK = addchannelmetadata(RSK, 'cond08', 'Specific Conductivity', 'µS/cm'); % cond08 is a temporary solution for Ruskin to read, will change in future
+RSK = addchannelmetadata(RSK, 'scon00', 'Specific Conductivity', 'µS/cm'); % cond08 is a temporary solution for Ruskin to read, will change in future
 SCcol = getchannelindex(RSK, 'Specific Conductivity');
 
 castidx = getdataindex(RSK);
