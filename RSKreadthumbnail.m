@@ -29,11 +29,15 @@ parse(p, RSK);
 RSK = p.Results.RSK;
 
 sql = 'select tstamp/1.0 as tstamp, * from thumbnailData order by tstamp';
-results = doSelect(RSK, sql);
-if isempty(results)
+
+if ~isempty(doSelect(RSK, 'SELECT name FROM sqlite_master WHERE type="table" AND name="thumbnailData"'))
+    results = doSelect(RSK, sql);
+    if isempty(results)
+        return
+    end
+else
     return
 end
-
 
 
 results = removeunuseddatacolumns(results);
