@@ -41,7 +41,7 @@ function RSK = RSKfindprofiles(RSK, varargin)
 % Author: RBR Ltd. Ottawa ON, Canada
 % email: support@rbr-global.com
 % Website: www.rbr-global.com
-% Last revision: 2018-05-29
+% Last revision: 2018-05-30
 
 p = inputParser;
 addRequired(p, 'RSK', @isstruct);
@@ -143,9 +143,6 @@ if isfield(RSK.region,'description') || isfield(RSK,'regionGeoData') || isfield(
     warning('Annotations from Ruskin is deleted due to potential mismatch between previous and current detected profiles.');
 end
 
-if isfield(RSK.region,'description');
-    RSK.region = rmfield(RSK.region,'description');
-end
 if isfield(RSK,'regionGeoData');
     RSK = rmfield(RSK,'regionGeoData');
 end
