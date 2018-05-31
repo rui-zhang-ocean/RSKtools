@@ -202,10 +202,10 @@ for n = 1:length(upstart)
     nregionCast = n*2-1;
     RSK.regionCast(nregionCast).regionID = nprofile+1;
     RSK.regionCast(nregionCast).regionProfileID = nprofile;
-    RSK.regionCast(nregionCast).type = firstType;
+    RSK.regionCast(nregionCast).type = upper(firstType);
     RSK.regionCast(nregionCast+1).regionID = nprofile+2;
     RSK.regionCast(nregionCast+1).regionProfileID = nprofile;
-    RSK.regionCast(nregionCast+1).type = lastType;
+    RSK.regionCast(nregionCast+1).type = upper(lastType);
 end
 
 end
