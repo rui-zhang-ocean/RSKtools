@@ -67,7 +67,13 @@ if ~isfield(RSK, 'profiles')
     error('No profiles in this RSK, try RSKreaddata or RSKfindprofiles');
 end
 if strcmpi(direction{1}, 'both')
-    direction = {'down', 'up'};
+    if any(strcmpi({RSK.regionCast.type},'down')) && any(strcmpi({RSK.regionCast.type},'up'))
+        direction = {'down', 'up'};
+    elseif any(strcmpi({RSK.regionCast.type},'down'))==1 && any(strcmpi({RSK.regionCast.type},'up'))~=1
+        direction = {'down'};    
+    elseif any(strcmpi({RSK.regionCast.type},'down'))~=1 && any(strcmpi({RSK.regionCast.type},'up'))==1
+        direction = {'up'};
+    end
 end
 
 hasGPS = isfield(RSK.profiles,'GPS');

@@ -45,17 +45,30 @@ else
     return
 end
 
-
-
-for ndx = 1:length(RSK.regionCast)/2
-    nregionCast = (ndx*2)-1;
-    
-    regionID = RSK.regionCast(nregionCast).regionID;
-    RSK.profiles.(firstdir).tstart(ndx,1) = RSKtime2datenum(RSK.region(regionID).tstamp1); 
-    RSK.profiles.(firstdir).tend(ndx,1) = RSKtime2datenum(RSK.region(regionID).tstamp2);
-    
-    regionID2 = RSK.regionCast(nregionCast+1).regionID;
-    RSK.profiles.(lastdir).tstart(ndx,1) = RSKtime2datenum(RSK.region(regionID2).tstamp1);
-    RSK.profiles.(lastdir).tend(ndx,1) = RSKtime2datenum(RSK.region(regionID2).tstamp2);
+d = 0; u = 0;
+for ndx = 1:length(RSK.regionCast)
+    regionID = RSK.regionCast(ndx).regionID;
+    if strcmpi(RSK.regionCast(ndx).type,'down'); 
+        d = d + 1; 
+        RSK.profiles.('downcast').tstart(d,1) = RSKtime2datenum(RSK.region([RSK.region.regionID] == regionID).tstamp1); 
+        RSK.profiles.('downcast').tend(d,1) = RSKtime2datenum(RSK.region([RSK.region.regionID] == regionID).tstamp2);
+    end
+    if strcmpi(RSK.regionCast(ndx).type,'up'); 
+        u = u + 1; 
+        RSK.profiles.('upcast').tstart(u,1) = RSKtime2datenum(RSK.region([RSK.region.regionID] == regionID).tstamp1); 
+        RSK.profiles.('upcast').tend(u,1) = RSKtime2datenum(RSK.region([RSK.region.regionID] == regionID).tstamp2);
+    end  
 end
+
+% for ndx = 1:length(RSK.regionCast)/2
+%     nregionCast = (ndx*2)-1;
+%     
+%     regionID = RSK.regionCast(nregionCast).regionID;
+%     RSK.profiles.(firstdir).tstart(ndx,1) = RSKtime2datenum(RSK.region(regionID).tstamp1); 
+%     RSK.profiles.(firstdir).tend(ndx,1) = RSKtime2datenum(RSK.region(regionID).tstamp2);
+%     
+%     regionID2 = RSK.regionCast(nregionCast+1).regionID;
+%     RSK.profiles.(lastdir).tstart(ndx,1) = RSKtime2datenum(RSK.region(regionID2).tstamp1);
+%     RSK.profiles.(lastdir).tend(ndx,1) = RSKtime2datenum(RSK.region(regionID2).tstamp2);
+% end
 end
