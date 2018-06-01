@@ -1,16 +1,16 @@
 function [RSK, flagidx] = RSKremoveloops(RSK, varargin)
 
-% RSKremoveloops - Remove data exceeding a threshold profiling rate and
+% RSKremoveloops - Remove data exceeding a threshold profiling rate and 
 % with reversed pressure (loops).
 %
-% Syntax:  [RSK, flagidx] = RSKremoveloops(RSK, [OPTIONS])
+% Syntax: [RSK, flagidx] = RSKremoveloops(RSK, [OPTIONS])
 % 
 % Identifies and flags data obtained when the logger vertical profiling
 % speed falls below a threshold value or when the logger reversed the
 % desired cast direction (forming a loop). The flagged data is replaced 
-% with NaNs.  All logger channels except depth are affected.    
+% with NaNs. All logger channels except depth are affected.    
 % 
-% Differenciates depth to estimate the profiling speed. The depth channel
+% Profiling speed is estimated by differenciating depth. The depth channel 
 % is first smoothed with a 3-point running average to reduce noise. 
 % 
 % Inputs:
@@ -45,7 +45,7 @@ function [RSK, flagidx] = RSKremoveloops(RSK, varargin)
 % Author: RBR Ltd. Ottawa ON, Canada
 % email: support@rbr-global.com
 % Website: www.rbr-global.com
-% Last revision: 2018-04-06
+% Last revision: 2018-05-07
 
 validDirections = {'down', 'up', 'both'};
 checkDirection = @(x) any(validatestring(x,validDirections));
@@ -55,6 +55,8 @@ addRequired(p, 'RSK', @isstruct);
 addParameter(p, 'profile', [], @isnumeric);
 addParameter(p, 'direction', [], checkDirection);
 addParameter(p, 'threshold', 0.25, @isnumeric);
+
+addParameter(p, 'accelerationThreshold', -Inf, @isnumeric);
 addParameter(p, 'visualize', 0, @isnumeric);
 parse(p, RSK, varargin{:})
 
@@ -62,8 +64,8 @@ RSK = p.Results.RSK;
 profile = p.Results.profile;
 direction = p.Results.direction;
 threshold = p.Results.threshold;
+accelerationThreshold = p.Results.accelerationThreshold;
 visualize = p.Results.visualize;
-
 
 
 try
@@ -83,15 +85,16 @@ for ndx = castidx
     time = RSK.data(ndx).tstamp;
 
     velocity = calculatevelocity(depth, time);
+    acc = calculatevelocity(velocity, time);
     
     if getcastdirection(depth, 'up')
-      flag = (velocity > -threshold);
-      cm = cummin(depth);
-      flag((depth - cm) > 0) = true;
+        flag = velocity > -threshold | acc > -accelerationThreshold;
+        cm = cummin(depth);
+        flag((depth - cm) > 0) = true;
     else
-      flag = velocity < threshold; 
-      cm = cummax(depth);
-      flag((depth - cm) < 0) = true;
+        flag = velocity < threshold | acc < accelerationThreshold; 
+        cm = cummax(depth);
+        flag((depth - cm) < 0) = true;
     end
     
     flagChannels = ~strcmpi('Depth', {RSK.channels.longName});    

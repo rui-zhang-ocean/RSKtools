@@ -53,7 +53,7 @@ function [RSK, trimidx] = RSKtrim(RSK, varargin)
 % Author: RBR Ltd. Ottawa ON, Canada
 % email: support@rbr-global.com
 % Website: www.rbr-global.com
-% Last revision: 2018-04-06
+% Last revision: 2018-05-07
 
 validAction = {'remove', 'nan','interp'};
 checkAction = @(x) any(validatestring(x,validAction));
