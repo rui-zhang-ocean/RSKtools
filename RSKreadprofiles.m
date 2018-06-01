@@ -1,13 +1,15 @@
 function RSK = RSKreadprofiles(RSK, varargin)
 
-%RSKreadprofiles - Read individual casts from RSK SQLite database.
+% RSKreadprofiles - Read individual casts from RSK SQLite database or
+% existing RSK.data field.
 %
 % Syntax:  [RSK] = RSKreadprofiles(RSK, [OPTIONS])
 % 
 % Reads profile, including upcasts, downcasts, or both from the events 
 % contained in a .rsk file. Each cast is an element in the data field 
 % matrix. The cast direction is indicated as 'up' or 'down' in 
-% RSK.data.direction.
+% RSK.data.direction. The function will parse annotations (GPS, comment)
+% and profile description/detail field available into the data structure.
 %
 % The profile events are parsed from the events table using the
 % following types (see RSKconstants.m):
@@ -44,7 +46,7 @@ function RSK = RSKreadprofiles(RSK, varargin)
 % Author: RBR Ltd. Ottawa ON, Canada
 % email: support@rbr-global.com
 % Website: www.rbr-global.com
-% Last revision: 2017-10-05
+% Last revision: 2018-02-23
 
 validDirections = {'down', 'up', 'both'};
 checkDirection = @(x) any(validatestring(x,validDirections));
@@ -68,6 +70,10 @@ if strcmpi(direction{1}, 'both')
     direction = {'down', 'up'};
 end
 
+hasGPS = isfield(RSK.profiles,'GPS');
+hasComment = isfield(RSK.profiles,'comment');
+hasDescription = isfield(RSK.region,'description');
+ProfileRegionID = strcmpi({RSK.region.type},'PROFILE') == 1;
 
 
 alltstart = [];
@@ -108,10 +114,30 @@ dir2fill = cell(length(castidx),1); % append data.direction to each cast
 if size(RSK.profiles.order, 2) == 1
     dir2fill(:) = direction;
     pronum2fill = castidx;
+    if hasGPS
+        lat2fill(:) = RSK.profiles.GPS.latitude;
+        lon2fill(:) = RSK.profiles.GPS.longitude;
+    end
+    if hasComment
+        comment2fill(:) = RSK.profiles.comment;
+    end
+    if hasDescription
+        description2fill(:) = {RSK.region(ProfileRegionID).description};
+    end
 else
     dir2fill(1:2:end) = RSK.profiles.order(1);
     dir2fill(2:2:end) = RSK.profiles.order(2);
     pronum2fill = reshape(repmat(castidx(1:length(castidx)/2), 2, 1),length(castidx),1);
+    if hasGPS
+        lat2fill(:) = reshape(repmat(RSK.profiles.GPS.latitude', 2 ,1),length(castidx),1);
+        lon2fill(:) = reshape(repmat(RSK.profiles.GPS.longitude', 2 ,1),length(castidx),1);
+    end
+    if hasComment
+        comment2fill(:) = reshape(repmat(RSK.profiles.comment', 2 ,1),length(castidx),1);
+    end
+    if hasDescription
+        description2fill(:) = reshape(repmat({RSK.region(ProfileRegionID).description}, 2 ,1),length(castidx),1);
+    end
 end
 
 k = 1;
@@ -120,16 +146,47 @@ data(length(castidx)).values = [];
 data(length(castidx)).direction = [];
 data(length(castidx)).profilenumber = [];
 
+if hasGPS
+    data(length(castidx)).latitude = [];
+    data(length(castidx)).longitude = [];
+end
+if hasComment, data(length(castidx)).comment = []; end
+if hasDescription, data(length(castidx)).description = []; end
+
 for ndx = castidx
-    tmp = RSKreaddata(RSK, 't1', alltstart(ndx), 't2', alltend(ndx));
-    data(k).tstamp = tmp.data.tstamp;
-    data(k).values = tmp.data.values;
+    
+    if isfield(RSK, 'data')
+        ind_start = (find(RSK.data.tstamp == alltstart(ndx)));
+        ind_end = (find(RSK.data.tstamp == alltend(ndx)));
+        
+        if isempty(ind_start) || isempty(ind_end)
+            tmp = RSKreaddata(RSK, 't1', alltstart(ndx), 't2', alltend(ndx));
+            data(k).tstamp = tmp.data.tstamp;
+            data(k).values = tmp.data.values;
+        else
+            data(k).tstamp = RSK.data.tstamp(ind_start:ind_end);
+            data(k).values = RSK.data.values(ind_start:ind_end,:);
+        end
+        
+    else
+        tmp = RSKreaddata(RSK, 't1', alltstart(ndx), 't2', alltend(ndx));
+        data(k).tstamp = tmp.data.tstamp;
+        data(k).values = tmp.data.values;
+    end
+
     data(k).direction = dir2fill{k};
     data(k).profilenumber = pronum2fill(k);
+    if hasGPS
+        data(k).latitude = lat2fill(k);
+        data(k).longitude = lon2fill(k);
+    end
+    if hasComment, data(k).comment = comment2fill(k); end
+    if hasDescription, data(k).description = description2fill(k); end
     k = k + 1;
+    
 end
 
-RSK = readchannels(RSK);
+if ~isfield(RSK, 'data'), RSK = readchannels(RSK); end
 RSK.data = data;
 
 end

@@ -1,6 +1,6 @@
 function RSK = RSKfindprofiles(RSK, varargin)
 
-%RSKfindprofiles - Find profiles in a time series using pressure
+% RSKfindprofiles - Find profiles in a time series using pressure
 %                  and conductivity data (if it exists). 
 %
 % Syntax:  [RSK] = RSKfindprofiles(RSK, [OPTIONS])
@@ -9,7 +9,8 @@ function RSK = RSKfindprofiles(RSK, varargin)
 % upcasts or downcasts by looking for pressure reversals.  The
 % algorithm distinguishes between upcasts and downcasts, and stores
 % the start and end time for each as 'tstart' and 'tend' in the
-% profile field of the RSK structure.
+% profile field of the RSK structure. If RSK.profiles already exists, it
+% will be removed and replaced.
 %
 % Inputs: 
 %    [Required] - RSK - Structure containing logger metadata and data
@@ -30,7 +31,7 @@ function RSK = RSKfindprofiles(RSK, varargin)
 %         Use RSKreadprofiles to parse and organize the time series into 
 %         profiles by applying the start and end times.
 %
-% Ex:
+% Example:
 %    RSK = RSKopen(fname);
 %    RSK = RSKreaddata(RSK);
 %    RSK = RSKfindprofiles(RSK, 'pressureThreshold', 1);
@@ -40,7 +41,7 @@ function RSK = RSKfindprofiles(RSK, varargin)
 % Author: RBR Ltd. Ottawa ON, Canada
 % email: support@rbr-global.com
 % Website: www.rbr-global.com
-% Last revision: 2017-07-05
+% Last revision: 2018-05-07
 
 p = inputParser;
 addRequired(p, 'RSK', @isstruct);
@@ -55,7 +56,7 @@ conductivityThreshold = p.Results.conductivityThreshold;
 
 
 if isfield(RSK, 'profiles')
-    error('Profiles are already found, get data using RSKreadprofiles.m');
+    RSK = rmfield(RSK, 'profiles');
 end
 
 
@@ -136,12 +137,21 @@ RSK.profiles.upcast.tstart = upstart;
 RSK.profiles.upcast.tend = upend';
 RSK.profiles.downcast.tstart = downstart;
 RSK.profiles.downcast.tend = downend';
- 
+
+% Remove region.description, regionGeoData and regionComment field if exist
+if isfield(RSK.region,'description') || isfield(RSK,'regionGeoData') || isfield(RSK,'regionComment');
+    warning('Annotations from Ruskin is deleted due to potential mismatch between previous and current detected profiles.');
+end
+
+if isfield(RSK.region,'description');
+    RSK.region = rmfield(RSK.region,'description');
+end
+if isfield(RSK,'regionGeoData');
+    RSK = rmfield(RSK,'regionGeoData');
+end
+if isfield(RSK,'regionComment');
+    RSK = rmfield(RSK,'regionComment');
+end
+
 end
             
-   
-
-
-
-
-    
