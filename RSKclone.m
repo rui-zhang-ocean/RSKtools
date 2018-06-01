@@ -1,13 +1,13 @@
-function [newfile] = RSKclone(fromDir, toDir, file)
+function [newfile] = RSKclone(inputdir, outputdir, file)
 
 % RSKclone - Clone rsk file to specified directory.
 %
-% Syntax:  [newfile] = RSKclone(fromDir, toDir, file)
+% Syntax:  [newfile] = RSKclone(inputdir, outputdir, file)
 % 
 % Inputs: 
-%    fromDir - Directory that contains original rsk file. 
+%    inputdir - Directory that contains original rsk file. 
 %    
-%    toDir - Directory where the file will be copied to.
+%    outputdir - Directory where the file will be copied to.
 % 
 %    file - file name.
 %
@@ -17,13 +17,13 @@ function [newfile] = RSKclone(fromDir, toDir, file)
 % Author: RBR Ltd. Ottawa ON, Canada
 % email: support@rbr-global.com
 % Website: www.rbr-global.com
-% Last revision: 2018-05-15
+% Last revision: 2018-06-01
 
 
 newfile = [strtok(file,'.rsk') '_' datestr(now,'yyyymmddTHHMM') '.rsk'];
-copyfile([fromDir file], [toDir newfile]);
+copyfile([inputdir '/' file], [outputdir '/' newfile]);
 
-mksqlite('open',[toDir newfile]);
+mksqlite('open',[outputdir '/' newfile]);
 mksqlite(['UPDATE deployments SET name = "' newfile '" where deploymentID = 1']);
 mksqlite('close')
 
