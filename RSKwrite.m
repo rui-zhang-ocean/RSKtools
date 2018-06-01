@@ -2,7 +2,7 @@ function newfile = RSKwrite(RSK, varargin)
 
 % RSKwrite - Write modified rsk structure into a new rsk file.
 %
-% Syntax: RSKwrite(RSKfile, [OPTIONS])
+% Syntax: newfile = RSKwrite(RSKfile, [OPTIONS])
 %
 % RSKwrite outputs a new rsk file with updated data, profiles, channels and
 % metadata information in current rsk structure. It is designed to store
@@ -24,7 +24,7 @@ function newfile = RSKwrite(RSK, varargin)
 %    RSK = RSKreadprofiles(RSK);
 %    RSK = RSKaddmetadata(RSK,'profile',1:3,'latitude',[45,44,46],'longitude',[-25,-24,-23]});
 %    outputdir = '/Users/Tom/Jerry';
-%    RSKwrite(RSK, outputdir)
+%    newfile = RSKwrite(RSK, outputdir);
 %
 % Author: RBR Ltd. Ottawa ON, Canada
 % email: support@rbr-global.com
