@@ -63,7 +63,7 @@ RSK.toolSettings.rhc = rhc;
 RSK.dbInfo = doSelect(RSK, 'select version,type from dbInfo');
 
 if iscompatibleversion(RSK, latestRSKversionMajor, latestRSKversionMinor, latestRSKversionPatch+1)
-    warning(['RSK version ' vsnString ' is newer than your RSKtools version. It is recommended to update RSKtools at https://rbr-global.com/support/matlab-tools']);
+    warning(['RSK version ' latestRSKversion ' is newer than your RSKtools version. It is recommended to update RSKtools at https://rbr-global.com/support/matlab-tools']);
 end
 
 
@@ -87,7 +87,7 @@ end
 
 RSK = RSKgetprofiles(RSK);
 
-
+RSK = RSKreadannotations(RSK);
 
 logentry = [fname ' opened using RSKtools v' RSKtoolsversion '.'];
 RSK = RSKappendtolog(RSK, logentry);

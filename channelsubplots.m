@@ -1,6 +1,6 @@
-function handles = channelsubplots(RSK, field, varargin)
+function [axes,handles] = channelsubplots(RSK, field, varargin)
 
-%CHANNELSUBPLOTS - Plot each channel specified in a different subplot.
+% CHANNELSUBPLOTS - Plot each channel specified in a different subplot.
 %
 % Syntax:  [handles] = CHANNELSUBPLOT(RSK, field, [OPTIONS])
 % 
@@ -24,22 +24,24 @@ function handles = channelsubplots(RSK, field, varargin)
 % Outputs:
 %    handles - Line object of the plot.
 %
+%    axes - Axes object of the plot.
+%
 % See also: RSKplotthumbnail, RSKplotburstdata, RSKplotdata.
 %
 % Author: RBR Ltd. Ottawa ON, Canada
 % email: support@rbr-global.com
 % Website: www.rbr-global.com
-% Last revision: 2017-06-19
+% Last revision: 2018-05-03
 
-validFields = {'burstData', 'thumbnailData', 'data'};
+validFields = {'burstData', 'thumbnailData', 'data','downsample'};
 checkField = @(x) any(validatestring(x,validFields));
 
 p = inputParser;
 addRequired(p, 'RSK', @isstruct);
-addRequired(p, 'field', checkField)
+addRequired(p, 'field', checkField);
 addParameter(p, 'chanCol', [], @isnumeric);
 addParameter(p, 'castidx', 1);
-parse(p, RSK, field, varargin{:})
+parse(p, RSK, field, varargin{:});
 
 RSK = p.Results.RSK;
 field = p.Results.field;
@@ -59,12 +61,12 @@ for chan = chanCol
     handles(n) = plot(RSK.(field)(castidx).tstamp, RSK.(field)(castidx).values(:,chan),'-');
     title(RSK.channels(chan).longName);
     ylabel(RSK.channels(chan).units);
-    ax(n)=gca;
-    datetick('x')
-    n = n+1 ;
+    axes(n)=gca;
+    datetick('x');
+    n = n+1;
 end
 
-linkaxes(ax,'x')
+linkaxes(axes,'x');
 shg
 
 end

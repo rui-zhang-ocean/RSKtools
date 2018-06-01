@@ -1,6 +1,6 @@
 function RSK = readstandardtables(RSK)
 
-%READSTANDARDTABLES- Read tables that are populated in all .rsk files.
+% READSTANDARDTABLES- Read tables that are populated in all .rsk files.
 %
 % Syntax:  [RSK] = READSTANDARDTABLES(RSK)
 %
@@ -18,7 +18,13 @@ function RSK = readstandardtables(RSK)
 % Author: RBR Ltd. Ottawa ON, Canada
 % email: support@rbr-global.com
 % Website: www.rbr-global.com
-% Last revision: 2017-06-21
+% Last revision: 2018-01-16
+
+p = inputParser;
+addRequired(p, 'RSK', @isstruct);
+parse(p, RSK)
+
+RSK = p.Results.RSK;
 
 p = inputParser;
 addRequired(p, 'RSK', @isstruct);
@@ -37,5 +43,21 @@ RSK.schedules = doSelect(RSK, 'select * from schedules');
 RSK.deployments = doSelect(RSK, 'select * from deployments');
 
 RSK.instruments = doSelect(RSK, 'select * from instruments');
+
+RSK = readpowertable(RSK);
+
+%% Nested function reading power table
+    function RSK = readpowertable(RSK)
+    if ~isempty(doSelect(RSK, 'SELECT name FROM sqlite_master WHERE type="table" AND name="power"')) && ...
+       isfield(RSK.instruments, 'firmwareType') && RSK.instruments.firmwareType > 103;
+        RSK.power = doSelect(RSK, 'select * from power'); 
+        if ~isempty(RSK.power) && RSK.power.internalBatteryType == -1; 
+            RSK.power = rmfield(RSK.power, {'internalBatteryType','internalBatteryCapacity','internalEnergyUsed'}); 
+        end
+        if ~isempty(RSK.power) && RSK.power.externalBatteryType == -1; 
+            RSK.power = rmfield(RSK.power, {'externalBatteryType','externalBatteryCapacity','externalEnergyUsed'}); 
+        end
+    end
+    end
 
 end
