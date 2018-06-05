@@ -1,3 +1,11 @@
+*~
+*.bak
+*.html
+*.pdf
+._*
+.DS_Store
+.#*
+QuickStart/html/
 
 # Created by https://www.gitignore.io/api/osx,java,emacs,matlab,windows,eclipse,sublimetext,visualstudiocode
 
