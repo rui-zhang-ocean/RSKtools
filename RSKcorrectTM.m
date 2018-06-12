@@ -17,12 +17,12 @@ function RSK = RSKcorrectTM(RSK, varargin)
 %
 % Inputs: 
 %   [Required] - RSK - Structure containing the logger data.
+%
+%                alpha - Coefficient alpha.
+%
+%                beta - Coefficient beta.
 %               
-%   [Optional] - alpha - Coefficient alpha. Default is 0.04
-%
-%                beta - Coefficient beta. Default is 0.1
-%
-%                gamma - Scale factor. Default is 1 when conductivity is
+%   [Optional] - gamma - Scale factor. Default is 1 when conductivity is
 %                      measured in mS/cm
 %
 %                profile - Profile number. Default is all available
@@ -40,7 +40,7 @@ function RSK = RSKcorrectTM(RSK, varargin)
 %    RSK - Structure with processed values.
 %
 % Example: 
-%    RSK = RSKcorrectTM(RSK)
+%    RSK = RSKcorrectTM(RSK, 0.04, 0.1)
 %
 % Author: RBR Ltd. Ottawa ON, Canada
 % email: support@rbr-global.com
@@ -53,8 +53,8 @@ checkDirection = @(x) any(validatestring(x,validDirections));
 
 p = inputParser;
 addRequired(p, 'RSK', @isstruct);
-addParameter(p, 'alpha', 0.04, @isnumeric);
-addParameter(p, 'beta', 0.1, @isnumeric);
+addRequired(p, 'alpha', @isnumeric);
+addRequired(p, 'beta', @isnumeric);
 addParameter(p, 'gamma', 1, @isnumeric);
 addParameter(p, 'profile', [], @isnumeric);
 addParameter(p, 'direction', [], checkDirection);
@@ -97,7 +97,7 @@ if visualize ~= 0
     end
 end 
 
-logentry = ['Thermal mass correction applied with gamma = ' num2str(gamma) ',alpha = ' num2str(alpha) 'and beta = ' num2str(beta) '.'];
+logentry = ['Thermal mass correction applied with alpha = ' num2str(alpha) ' beta = ' num2str(beta) ' and gamma = ' num2str(gamma) '.'];
 RSK = RSKappendtolog(RSK, logentry);
     
 end
