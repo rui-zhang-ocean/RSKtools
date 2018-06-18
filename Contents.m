@@ -16,15 +16,7 @@
 % and a thumbnail of the data, but without slurping in a massive amount of 
 % data.
 %
-% 3.  Plotting the thumbnail data provides an overview of the dataset:
-%
-% RSKplotthumbnail(RSK) 
-% 
-% This is usually a plot of 4000 points.  Each time value has a max
-% and a min data value so that all spikes are visible even though the 
-% dataset is down-sampled.
-%
-% 4.  Use RSKreaddata to read a block of data from the database on disk
+% 3.  Use RSKreaddata to read a block of data from the database on disk
 %
 % RSK = RSKreaddata(RSK, 't1', <starttime>, 't2', <endtime>); 
 %
@@ -40,7 +32,7 @@
 % reference points - these are contained in the RSK structure as the
 % RSK.epochs.starttime and RSK.epochs.endtime fields.
 %
-% 5.  Plot the data!
+% 4.  Plot the data!
 %
 % RSKplotdata(RSK)
 %
@@ -52,10 +44,6 @@
 %
 % User files
 %   RSKopen              - Open an RBR RSK file and read metadata and thumbnails
-%   RSKreadthumbnail     - read thumbnail data from database
-%   RSKplotthumbnail     - plot thumbnail data
-%   RSKreaddownsample    - read downsample data from database
-%   RSKplotdownsample    - plot downsample data
 %   RSKreaddata          - read full dataset from database
 %   RSKplotdata          - plot data as a time series
 %   RSKplot2D            - display bin averaged data in a time-depth heat map
@@ -64,6 +52,8 @@
 %   RSKfindprofiles      - detect profile start and end times using pressure and conductivity
 %   RSKreadprofiles      - reads and organized data into a series of profiles
 %   RSKplotprofiles      - plot depth profiles for each channel
+%   RSKreaddownsample    - read downsample data from database
+%   RSKplotdownsample    - plot downsample data
 %   RSKselectdowncast    - keep only the down casts in the RSK structure
 %   RSKselectupcast      - keep only the up casts in the RSK structure
 %   RSKreadburstdata     - read burst data from database
@@ -93,10 +83,7 @@
 %   RSK2ODV              - write channel data and metadata to one or more ODV files
 %
 %
-% Helper files
-%   mksqlite           - the library for SQLite files (the .rsk file format)
-%   arrangedata        - rearrange a structure into a cell array for convenience
-%   addchannelmetadata - add the metadata for a new channel
+% Additional useful files
 %   getchannelindex    - returns column index to the data table given a channel name
 %   getdataindex       - returns index into the RSK data array given profile numbers and cast directions
 %
