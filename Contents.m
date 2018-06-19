@@ -13,22 +13,20 @@
 % RSK = RSKopen('sample.rsk');  
 %
 % This generates an RSK structure with all the metadata from the database, 
-% and a thumbnail of the data, but without slurping in a massive amount of 
-% data.
+% and a downsampled version of the data.  The downsampled version is useful
+% for generating figures of very large data sets.
 %
-% 3.  Use RSKreaddata to read a block of data from the database on disk
+% 3.  Use RSKreaddata to read data from the RSK file:
 %
 % RSK = RSKreaddata(RSK, 't1', <starttime>, 't2', <endtime>); 
 %
 % This reads a portion of the 'data' table into the RSK structure
 % (replacing any previous data that was read this way).  The <starttime>
 % and <endtime> values are the range of data to be read.  Depending on the
-% amount of data in your dataset, and the amount of memory in your 
-% computer, you can read bigger or smaller chunks before Matlab will 
-% complain and run out of memory.  The times are specified using the Matlab
-% 'datenum' format - there are some conversion utilities (see below) that 
-% work behind the scenes to convert to the time format used in the
-% database. You will find the start and end times of the deployment useful
+% amount of data in your dataset, and the amount of memory in your
+% computer, you can read bigger or smaller chunks before Matlab will
+% run out of memory.  The times are specified using the Matlab 'datenum' 
+% format. You will find the start and end times of the deployment useful
 % reference points - these are contained in the RSK structure as the
 % RSK.epochs.starttime and RSK.epochs.endtime fields.
 %
@@ -36,14 +34,14 @@
 %
 % RSKplotdata(RSK)
 %
-% This generates a time series plot, similar to the thumbnail plot, only
-% using the full 'data' that you read in, rather than just the thumbnail
-% view.  It tries to be intelligent about the subplots and channel names,
-% so you can get an idea of how to do better processing.
+% This generates a time series plot using the full 'data' that you read in,
+% rather than just the downsampled version.  It labels each sublot with the 
+% appropriate channel name, so you can get an idea of how to do
+% better processing.
 %
 %
 % User files
-%   RSKopen              - Open an RBR RSK file and read metadata and thumbnails
+%   RSKopen              - Open an RBR RSK file and read metadata and downsampled data
 %   RSKreaddata          - read full dataset from database
 %   RSKplotdata          - plot data as a time series
 %   RSKplot2D            - display bin averaged data in a time-depth heat map
@@ -61,7 +59,7 @@
 %   RSKsamplingperiod    - read logger sampling period information from RSK file
 %   RSKreadevents        - read events from database
 %   RSKreadgeodata       - read geodata
-%   RSKreadcalibrations  - read the calibrations table of a RSK file
+%   RSKreadcalibrations  - read the calibrations table of an RSK file
 %   RSKderivesalinity    - derive salinity from conductivity, temperature, and sea pressure
 %   RSKderiveseapressure - derive sea pressure from pressure
 %   RSKderivedepth       - derive depth from pressure
