@@ -23,7 +23,12 @@ and
 rsk = RSKopen('sample.rsk');
 ```
 
-* Plot time series:
+* Read data from RSK files:
+```matlab
+rsk = RSKreaddata(rsk);
+```
+
+* Plot a time series of the data:
 ```matlab
 RSKplotdata(rsk);
 ```
@@ -74,7 +79,7 @@ channel in the RSK structure.
 
     - Fixed bug in RSKcorrecthold when one channel contains zero value only
     - Changed input variable name pressure to seapressure in calculatedepth.m
-    - Removed thumbnail data, users are recommended to use downsample for a quick overview of the dataset.
+    - Removed thumbnail data from the rsk structure; use downsample for a quick overview of the dataset
 
 * Version 2.3.0 (2018-05-09)
 
