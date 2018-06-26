@@ -1,8 +1,8 @@
-function [axes,handles] = RSKplotdata(RSK, varargin)
+function [handles,axes] = RSKplotdata(RSK, varargin)
 
 % RSKplotdata - Plot a time series of logger data.
 %
-% Syntax:  [handles] = RSKplotdata(RSK, [OPTIONS])
+% Syntax:  [handles,axes] = RSKplotdata(RSK, [OPTIONS])
 % 
 % Generates a plot displaying the logger data as a time series. If data 
 % field has been arranged as profiles (using RSKreadprofiles), then 
@@ -32,9 +32,9 @@ function [axes,handles] = RSKplotdata(RSK, varargin)
 %                       patch for time series data only.
 %
 % Output:
-%     axes - Axes object of the plot.
-%
 %     handles - Line object of the plot.
+%
+%     axes - Axes object of the plot.
 %
 % Example: 
 %    RSK = RSKopen('sample.rsk');   
@@ -50,7 +50,7 @@ function [axes,handles] = RSKplotdata(RSK, varargin)
 % Author: RBR Ltd. Ottawa ON, Canada
 % email: support@rbr-global.com
 % Website: www.rbr-global.com
-% Last revision: 2018-05-03
+% Last revision: 2018-06-26
 
 validDirections = {'down', 'up'};
 checkDirection = @(x) any(validatestring(x,validDirections));
@@ -110,7 +110,7 @@ if ~ismember(pCol, chanCol) && showcast == 1;
     error('No pressure channel found for showcast, please specify pressure in channel input.')
 end
 
-[axes,handles] = channelsubplots(RSK, 'data', 'chanCol', chanCol, 'castidx', castidx);
+[handles,axes] = channelsubplots(RSK, 'data', 'chanCol', chanCol, 'castidx', castidx);
 
 if isfield(RSK.data,'profilenumber') && isfield(RSK.data,'direction');
     legend(['Profile ' num2str(RSK.data(castidx).profilenumber) ' ' RSK.data(castidx).direction 'cast']);

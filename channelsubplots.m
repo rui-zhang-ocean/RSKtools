@@ -1,8 +1,8 @@
-function [axes,handles] = channelsubplots(RSK, field, varargin)
+function [handles,axes] = channelsubplots(RSK, field, varargin)
 
 % CHANNELSUBPLOTS - Plot each channel specified in a different subplot.
 %
-% Syntax:  [handles] = CHANNELSUBPLOT(RSK, field, [OPTIONS])
+% Syntax:  [handles,axes] = CHANNELSUBPLOT(RSK, field, [OPTIONS])
 % 
 % Generates subplots and plots each channel in the chosen data element.
 % If data has many fields and none are specified, the first one is
@@ -31,7 +31,7 @@ function [axes,handles] = channelsubplots(RSK, field, varargin)
 % Author: RBR Ltd. Ottawa ON, Canada
 % email: support@rbr-global.com
 % Website: www.rbr-global.com
-% Last revision: 2018-05-03
+% Last revision: 2018-06-26
 
 validFields = {'burstData', 'thumbnailData', 'data','downsample'};
 checkField = @(x) any(validatestring(x,validFields));
