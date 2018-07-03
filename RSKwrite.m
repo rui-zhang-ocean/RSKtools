@@ -108,10 +108,14 @@ mksqlite('DROP table if exists regionProfile');
 mksqlite('CREATE table regionProfile (regionID INTEGER,FOREIGN KEY(regionID) REFERENCES REGION(regionID) ON DELETE CASCADE )');
 
 mksqlite('DROP table if exists regionGeoData');
-mksqlite('CREATE TABLE regionGeoData (regionID INTEGER,latitude DOUBLE,longitude DOUBLE,FOREIGN KEY(regionID) REFERENCES REGION(regionID) ON DELETE CASCADE )');
+if isfield(RSK,'regionGeoData');
+    mksqlite('CREATE TABLE regionGeoData (regionID INTEGER,latitude DOUBLE,longitude DOUBLE,FOREIGN KEY(regionID) REFERENCES REGION(regionID) ON DELETE CASCADE )');
+end
 
 mksqlite('DROP table if exists regionComment');
-mksqlite('CREATE TABLE regionComment (regionID INTEGER,content VARCHAR(1024),FOREIGN KEY(regionID) REFERENCES REGION(regionID) ON DELETE CASCADE )');
+if isfield(RSK,'regionComment');
+    mksqlite('CREATE TABLE regionComment (regionID INTEGER,content VARCHAR(1024),FOREIGN KEY(regionID) REFERENCES REGION(regionID) ON DELETE CASCADE )');
+end
 
 mksqlite('begin');
 if isfield(RSK.region,'description');
@@ -129,11 +133,15 @@ end
 for i = 1:length(profileidx)
     mksqlite(sprintf('INSERT INTO regionProfile VALUES (%i)',profileidx(i))); 
 end
-for i = 1:length(RSK.regionGeoData)
-    mksqlite(sprintf('INSERT INTO regionGeoData VALUES (%i,%f,%f)',RSK.regionGeoData(i).regionID, RSK.regionGeoData(i).latitude, RSK.regionGeoData(i).longitude));
+if isfield(RSK,'regionGeoData');
+    for i = 1:length(RSK.regionGeoData)
+        mksqlite(sprintf('INSERT INTO regionGeoData VALUES (%i,%f,%f)',RSK.regionGeoData(i).regionID, RSK.regionGeoData(i).latitude, RSK.regionGeoData(i).longitude));
+    end
 end
-for i = 1:length(RSK.regionComment)
-    mksqlite(sprintf('INSERT INTO regionComment VALUES (%i,"NULL")',RSK.regionComment(i).regionID));
+if isfield(RSK,'regionComment');
+    for i = 1:length(RSK.regionComment)
+        mksqlite(sprintf('INSERT INTO regionComment VALUES (%i,"NULL")',RSK.regionComment(i).regionID));
+    end
 end
 mksqlite('commit');
 
