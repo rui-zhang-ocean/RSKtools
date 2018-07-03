@@ -96,8 +96,11 @@ end
 profileidx = find(strcmp({RSK.region.type},'PROFILE'));
 
 mksqlite('DROP table if exists region');
-mksqlite('CREATE table region (datasetID INTEGER NOT NULL,regionID INTEGER PRIMARY KEY,type VARCHAR(50),tstamp1 LONG,tstamp2 LONG,label VARCHAR(512),`description` TEXT)');
-
+if isfield(RSK.region,'description');
+    mksqlite('CREATE table region (datasetID INTEGER NOT NULL,regionID INTEGER PRIMARY KEY,type VARCHAR(50),tstamp1 LONG,tstamp2 LONG,label VARCHAR(512),`description` TEXT)');
+else
+    mksqlite('CREATE table region (datasetID INTEGER NOT NULL,regionID INTEGER PRIMARY KEY,type VARCHAR(50),tstamp1 LONG,tstamp2 LONG,label VARCHAR(512))'); 
+end
 mksqlite('DROP table if exists regionCast');
 mksqlite('CREATE table regionCast (regionID INTEGER,regionProfileID INTEGER,type STRING,FOREIGN KEY(regionID) REFERENCES REGION(regionID) ON DELETE CASCADE )');
 
@@ -111,8 +114,14 @@ mksqlite('DROP table if exists regionComment');
 mksqlite('CREATE TABLE regionComment (regionID INTEGER,content VARCHAR(1024),FOREIGN KEY(regionID) REFERENCES REGION(regionID) ON DELETE CASCADE )');
 
 mksqlite('begin');
-for i = 1:length(RSK.region) % Replace double quote in description field before inserting into DB!!!
-    mksqlite(sprintf('INSERT INTO region VALUES (%i,%i,"%s",%i,%i,"%s","%s")',RSK.region(i).datasetID, RSK.region(i).regionID, RSK.region(i).type, tstamp1(i), tstamp2(i), RSK.region(i).label, RSK.region(i).description));
+if isfield(RSK.region,'description');
+    for i = 1:length(RSK.region) % Replace double quote in description field before inserting into DB!!!
+        mksqlite(sprintf('INSERT INTO region VALUES (%i,%i,"%s",%i,%i,"%s","%s")',RSK.region(i).datasetID, RSK.region(i).regionID, RSK.region(i).type, tstamp1(i), tstamp2(i), RSK.region(i).label, RSK.region(i).description));
+    end
+else
+    for i = 1:length(RSK.region)
+        mksqlite(sprintf('INSERT INTO region VALUES (%i,%i,"%s",%i,%i,"%s")',RSK.region(i).datasetID, RSK.region(i).regionID, RSK.region(i).type, tstamp1(i), tstamp2(i), RSK.region(i).label));
+    end
 end
 for i = 1:length(RSK.regionCast)
     mksqlite(sprintf('INSERT INTO regionCast VALUES (%i,%i,"%s")',RSK.regionCast(i).regionID, RSK.regionCast(i).regionProfileID, RSK.regionCast(i).type));
