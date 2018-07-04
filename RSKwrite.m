@@ -154,12 +154,20 @@ mksqlite('DROP table if exists channels');
 mksqlite('CREATE TABLE channels (channelID INTEGER PRIMARY KEY,shortName TEXT NOT NULL,longName TEXT NOT NULL,units TEXT,isMeasured BOOLEAN,isDerived BOOLEAN)');
 
 mksqlite('DROP table if exists instrumentChannels');
-mksqlite('CREATE TABLE instrumentChannels (serialID INTEGER,channelID INTEGER,channelOrder INTEGER,channelStatus INTEGER,PRIMARY KEY (serialID, channelID, channelOrder))');
+if isfield(RSK.deployments,'serialID')
+    mksqlite('CREATE TABLE instrumentChannels (serialID INTEGER,channelID INTEGER,channelOrder INTEGER,channelStatus INTEGER,PRIMARY KEY (serialID, channelID, channelOrder))');
+else
+    mksqlite('CREATE TABLE instrumentChannels (instrumentID INTEGER,channelID INTEGER,channelOrder INTEGER,channelStatus INTEGER,PRIMARY KEY (instrumentID, channelID, channelOrder))')
+end
 
 mksqlite('begin');
 for i = 1:length(RSK.channels)
     mksqlite(sprintf('INSERT INTO channels VALUES (%i,"%s","%s","%s",1,0)',i, RSK.channels(i).shortName, RSK.channels(i).longName, RSK.channels(i).units)); 
-    mksqlite(sprintf('INSERT INTO instrumentChannels VALUES (%i,%i,%i,0)', RSK.deployments.serialID, i, i)); 
+    if isfield(RSK.deployments,'serialID')
+        mksqlite(sprintf('INSERT INTO instrumentChannels VALUES (%i,%i,%i,0)', RSK.deployments.serialID, i, i)); 
+    else
+        mksqlite(sprintf('INSERT INTO instrumentChannels VALUES (1,%i,%i,0)', i, i)); 
+    end
 end
 mksqlite('commit');
 
