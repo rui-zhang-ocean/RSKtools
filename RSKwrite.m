@@ -59,6 +59,7 @@ if ~isempty(mksqlite('SELECT name FROM sqlite_master WHERE type="table" AND name
         mksqlite(['DROP table if exists ' tablename(i).tablename]); 
     end
 end
+mksqlite('DROP table if exists data');
 mksqlite('DROP table if exists downsample_caches');
 mksqlite('DROP table if exists breaksdata');
 mksqlite('DROP table if exists downloads');
@@ -90,55 +91,54 @@ end
 mksqlite('commit');
 
 % Populate table region/regionCast/regionProfile/regionGeoData/regionComment
-profileidx = find(strcmp({RSK.region.type},'PROFILE'));
-
-mksqlite('DROP table if exists region');
-if isfield(RSK.region,'description');
-    mksqlite('CREATE table region (datasetID INTEGER NOT NULL,regionID INTEGER PRIMARY KEY,type VARCHAR(50),tstamp1 LONG,tstamp2 LONG,label VARCHAR(512),`description` TEXT)');
-else
-    mksqlite('CREATE table region (datasetID INTEGER NOT NULL,regionID INTEGER PRIMARY KEY,type VARCHAR(50),tstamp1 LONG,tstamp2 LONG,label VARCHAR(512))'); 
-end
-mksqlite('DROP table if exists regionCast');
-mksqlite('CREATE table regionCast (regionID INTEGER,regionProfileID INTEGER,type STRING,FOREIGN KEY(regionID) REFERENCES REGION(regionID) ON DELETE CASCADE )');
-
-mksqlite('DROP table if exists regionProfile');
-mksqlite('CREATE table regionProfile (regionID INTEGER,FOREIGN KEY(regionID) REFERENCES REGION(regionID) ON DELETE CASCADE )');
-
-mksqlite('DROP table if exists regionGeoData');
-if isfield(RSK,'regionGeoData');
-    mksqlite('CREATE TABLE regionGeoData (regionID INTEGER,latitude DOUBLE,longitude DOUBLE,FOREIGN KEY(regionID) REFERENCES REGION(regionID) ON DELETE CASCADE )');
-end
-
-mksqlite('DROP table if exists regionComment');
-if isfield(RSK,'regionComment');
-    mksqlite('CREATE TABLE regionComment (regionID INTEGER,content VARCHAR(1024),FOREIGN KEY(regionID) REFERENCES REGION(regionID) ON DELETE CASCADE )');
-end
-
 mksqlite('begin');
-if isfield(RSK.region,'description');
-    for i = 1:length(RSK.region) % Replace double quote in description field before inserting into DB!!!
-        mksqlite(sprintf('INSERT INTO region VALUES (%i,%i,"%s",%i,%i,"%s","%s")',RSK.region(i).datasetID, RSK.region(i).regionID, RSK.region(i).type, RSK.region(i).tstamp1, RSK.region(i).tstamp2, RSK.region(i).label, RSK.region(i).description));
+
+if isfield(RSK,'region')
+    
+    mksqlite('DROP table if exists region');
+    if isfield(RSK.region,'description');
+        mksqlite('CREATE table region (datasetID INTEGER NOT NULL,regionID INTEGER PRIMARY KEY,type VARCHAR(50),tstamp1 LONG,tstamp2 LONG,label VARCHAR(512),`description` TEXT)');
+        for i = 1:length(RSK.region) % Replace double quote in description field before inserting into DB!!!
+            mksqlite(sprintf('INSERT INTO region VALUES (%i,%i,"%s",%i,%i,"%s","%s")',RSK.region(i).datasetID, RSK.region(i).regionID, RSK.region(i).type, RSK.region(i).tstamp1, RSK.region(i).tstamp2, RSK.region(i).label, RSK.region(i).description));
+        end
+    else
+        mksqlite('CREATE table region (datasetID INTEGER NOT NULL,regionID INTEGER PRIMARY KEY,type VARCHAR(50),tstamp1 LONG,tstamp2 LONG,label VARCHAR(512))'); 
+        for i = 1:length(RSK.region)
+            mksqlite(sprintf('INSERT INTO region VALUES (%i,%i,"%s",%i,%i,"%s")',RSK.region(i).datasetID, RSK.region(i).regionID, RSK.region(i).type, RSK.region(i).tstamp1, RSK.region(i).tstamp2, RSK.region(i).label));
+        end
     end
-else
-    for i = 1:length(RSK.region)
-        mksqlite(sprintf('INSERT INTO region VALUES (%i,%i,"%s",%i,%i,"%s")',RSK.region(i).datasetID, RSK.region(i).regionID, RSK.region(i).type, RSK.region(i).tstamp1, RSK.region(i).tstamp2, RSK.region(i).label));
+    
+    mksqlite('DROP table if exists regionCast');
+    if isfield(RSK,'regionCast');
+        mksqlite('CREATE table regionCast (regionID INTEGER,regionProfileID INTEGER,type STRING,FOREIGN KEY(regionID) REFERENCES REGION(regionID) ON DELETE CASCADE )');
+        for i = 1:length(RSK.regionCast)
+            mksqlite(sprintf('INSERT INTO regionCast VALUES (%i,%i,"%s")',RSK.regionCast(i).regionID, RSK.regionCast(i).regionProfileID, RSK.regionCast(i).type));
+        end    
     end
-end
-for i = 1:length(RSK.regionCast)
-    mksqlite(sprintf('INSERT INTO regionCast VALUES (%i,%i,"%s")',RSK.regionCast(i).regionID, RSK.regionCast(i).regionProfileID, RSK.regionCast(i).type));
-end
-for i = 1:length(profileidx)
-    mksqlite(sprintf('INSERT INTO regionProfile VALUES (%i)',profileidx(i))); 
-end
-if isfield(RSK,'regionGeoData');
-    for i = 1:length(RSK.regionGeoData)
-        mksqlite(sprintf('INSERT INTO regionGeoData VALUES (%i,%f,%f)',RSK.regionGeoData(i).regionID, RSK.regionGeoData(i).latitude, RSK.regionGeoData(i).longitude));
+    
+    mksqlite('DROP table if exists regionProfile');
+    mksqlite('CREATE table regionProfile (regionID INTEGER,FOREIGN KEY(regionID) REFERENCES REGION(regionID) ON DELETE CASCADE )');
+    profileidx = find(strcmp({RSK.region.type},'PROFILE'));
+    for i = 1:length(profileidx)
+        mksqlite(sprintf('INSERT INTO regionProfile VALUES (%i)',profileidx(i))); 
     end
-end
-if isfield(RSK,'regionComment');
-    for i = 1:length(RSK.regionComment)
-        mksqlite(sprintf('INSERT INTO regionComment VALUES (%i,"NULL")',RSK.regionComment(i).regionID));
+    
+    mksqlite('DROP table if exists regionGeoData');
+    if isfield(RSK,'regionGeoData');
+        mksqlite('CREATE TABLE regionGeoData (regionID INTEGER,latitude DOUBLE,longitude DOUBLE,FOREIGN KEY(regionID) REFERENCES REGION(regionID) ON DELETE CASCADE )');
+        for i = 1:length(RSK.regionGeoData)
+            mksqlite(sprintf('INSERT INTO regionGeoData VALUES (%i,%f,%f)',RSK.regionGeoData(i).regionID, RSK.regionGeoData(i).latitude, RSK.regionGeoData(i).longitude));
+        end
     end
+
+    mksqlite('DROP table if exists regionComment');
+    if isfield(RSK,'regionComment');
+       mksqlite('CREATE TABLE regionComment (regionID INTEGER,content VARCHAR(1024),FOREIGN KEY(regionID) REFERENCES REGION(regionID) ON DELETE CASCADE )');
+       for i = 1:length(RSK.regionComment)
+           mksqlite(sprintf('INSERT INTO regionComment VALUES (%i,"NULL")',RSK.regionComment(i).regionID));
+       end
+    end    
+    
 end
 mksqlite('commit');
 
