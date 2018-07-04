@@ -53,9 +53,11 @@ mksqlite('OPEN',[outputdir '/' newfile]);
 mksqlite('UPDATE dbinfo SET type = "EPdesktop"')
 
 % Drop table data/downsampleXX/downsample_caches/breaksdata/downloads
-tablename = mksqlite('SELECT tablename from downsample_caches');
-for i = 1:length(tablename)
-    mksqlite(['DROP table if exists ' tablename(i).tablename]); 
+if ~isempty(mksqlite('SELECT name FROM sqlite_master WHERE type="table" AND name="downsample_caches"'))
+    tablename = mksqlite('SELECT tablename from downsample_caches');
+    for i = 1:length(tablename)
+        mksqlite(['DROP table if exists ' tablename(i).tablename]); 
+    end
 end
 mksqlite('DROP table if exists downsample_caches');
 mksqlite('DROP table if exists breaksdata');
