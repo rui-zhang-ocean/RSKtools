@@ -88,11 +88,6 @@ end
 mksqlite('commit');
 
 % Populate table region/regionCast/regionProfile/regionGeoData/regionComment
-tstamp1 = zeros(length(RSK.region),1); tstamp2 = zeros(length(RSK.region),1); 
-for ndx = 1:length(RSK.region)
-    tstamp1(ndx) = round(datenum2RSKtime(RSK.region(ndx).tstamp1));
-    tstamp2(ndx) = round(datenum2RSKtime(RSK.region(ndx).tstamp2));
-end
 profileidx = find(strcmp({RSK.region.type},'PROFILE'));
 
 mksqlite('DROP table if exists region');
@@ -120,11 +115,11 @@ end
 mksqlite('begin');
 if isfield(RSK.region,'description');
     for i = 1:length(RSK.region) % Replace double quote in description field before inserting into DB!!!
-        mksqlite(sprintf('INSERT INTO region VALUES (%i,%i,"%s",%i,%i,"%s","%s")',RSK.region(i).datasetID, RSK.region(i).regionID, RSK.region(i).type, tstamp1(i), tstamp2(i), RSK.region(i).label, RSK.region(i).description));
+        mksqlite(sprintf('INSERT INTO region VALUES (%i,%i,"%s",%i,%i,"%s","%s")',RSK.region(i).datasetID, RSK.region(i).regionID, RSK.region(i).type, RSK.region(i).tstamp1, RSK.region(i).tstamp2, RSK.region(i).label, RSK.region(i).description));
     end
 else
     for i = 1:length(RSK.region)
-        mksqlite(sprintf('INSERT INTO region VALUES (%i,%i,"%s",%i,%i,"%s")',RSK.region(i).datasetID, RSK.region(i).regionID, RSK.region(i).type, tstamp1(i), tstamp2(i), RSK.region(i).label));
+        mksqlite(sprintf('INSERT INTO region VALUES (%i,%i,"%s",%i,%i,"%s")',RSK.region(i).datasetID, RSK.region(i).regionID, RSK.region(i).type, RSK.region(i).tstamp1, RSK.region(i).tstamp2, RSK.region(i).label));
     end
 end
 for i = 1:length(RSK.regionCast)
