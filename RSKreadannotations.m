@@ -19,7 +19,7 @@ function RSK = RSKreadannotations(RSK)
 % Author: RBR Ltd. Ottawa ON, Canada
 % email: support@rbr-global.com
 % Website: www.rbr-global.com
-% Last revision: 2018-02-22
+% Last revision: 2018-07-04
 
 tables = doSelect(RSK, 'SELECT name FROM sqlite_master WHERE type="table"');
 
@@ -34,20 +34,22 @@ if ~isempty(RSK.regionGeoData) && isfield(RSK,'geodata');
     RSK = rmfield(RSK, 'geodata'); % delete cell gps if annotation gps exists
 end
 
-if any(cellfun(@isempty,{RSK.region.description}))
-    RSK.region = rmfield(RSK.region, 'description');
-end
+if isempty(RSK.regionGeoData), RSK = rmfield(RSK,'regionGeoData'); end
+if isempty(RSK.regionComment), RSK = rmfield(RSK,'regionComment'); end
 
-ProfileRegionID = find(strcmpi({RSK.region.type},'PROFILE') == 1);
-GPSRegionID = find(strcmpi({RSK.region.type},'GPS') == 1);
-CommentRegionID = find(strcmpi({RSK.region.type},'COMMENT') == 1);
+if isfield(RSK,'region')
 
-GPSAssignID = zeros(length(GPSRegionID),1);
-CommentAssignID = zeros(length(CommentRegionID),1);
+    if isfield(RSK.region,'description') && any(cellfun(@isempty,{RSK.region.description}))
+        RSK.region = rmfield(RSK.region, 'description');
+    end
 
-if isempty(RSK.regionGeoData)
-    RSK = rmfield(RSK, 'regionGeoData');
-else
+    ProfileRegionID = find(strcmpi({RSK.region.type},'PROFILE') == 1);
+    GPSRegionID = find(strcmpi({RSK.region.type},'GPS') == 1);
+    CommentRegionID = find(strcmpi({RSK.region.type},'COMMENT') == 1);
+
+    GPSAssignID = zeros(length(GPSRegionID),1);
+    CommentAssignID = zeros(length(CommentRegionID),1);
+
     for g = 1:length(GPSRegionID)
         for p = 1:length(ProfileRegionID)
             if RSK.region(GPSRegionID(g)).tstamp1 >= RSK.region(ProfileRegionID(p)).tstamp1 && ...
@@ -67,11 +69,7 @@ else
             RSK.profiles.GPS.longitude(ndx,1) = nan;
         end
     end
-end
 
-if isempty(RSK.regionComment)
-    RSK = rmfield(RSK, 'regionComment');
-else
     for g = 1:length(CommentRegionID)
         for p = 1:length(ProfileRegionID)
             if RSK.region(CommentRegionID(g)).tstamp1 >= RSK.region(ProfileRegionID(p)).tstamp1 && ...
@@ -89,7 +87,4 @@ else
             RSK.profiles.comment{ndx,1} = nan;
         end
     end
-end
-
-
 end
