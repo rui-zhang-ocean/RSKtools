@@ -143,8 +143,12 @@ end
 mksqlite('commit');
 
 % Remove rows in events and errors table where data is removed
-mksqlite('DELETE from events WHERE tstamp NOT IN (SELECT tstamp FROM data)');
-mksqlite('DELETE from errors WHERE tstamp NOT IN (SELECT tstamp FROM data)');
+if ~isempty(mksqlite('SELECT name FROM sqlite_master WHERE type="table" AND name="events"'))
+    mksqlite('DELETE from events WHERE tstamp NOT IN (SELECT tstamp FROM data)');
+end
+if ~isempty(mksqlite('SELECT name FROM sqlite_master WHERE type="table" AND name="errors"'))
+    mksqlite('DELETE from errors WHERE tstamp NOT IN (SELECT tstamp FROM data)');
+end
 
 % Populate table channel and instrumentChannel
 mksqlite('DROP table if exists channels');
@@ -169,7 +173,9 @@ end
 mksqlite('commit');
 
 % Delete table calibrations
-mksqlite('DELETE from calibrations');
+if ~isempty(mksqlite('SELECT name FROM sqlite_master WHERE type="table" AND name="calibrations"'))
+    mksqlite('DELETE from calibrations');
+end
 
 mksqlite('close')
 
