@@ -39,7 +39,7 @@ if isempty(RSK.regionComment), RSK = rmfield(RSK,'regionComment'); end
 
 if isfield(RSK,'region')
 
-    if any(cellfun(@isempty,{RSK.region.description}))
+    if isfield(RSK.region,'description') && any(cellfun(@isempty,{RSK.region.description}))
         RSK.region = rmfield(RSK.region, 'description');
     end
 
