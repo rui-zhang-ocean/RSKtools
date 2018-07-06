@@ -1,8 +1,8 @@
-function [newfile] = RSKclone(inputdir, outputdir, file)
+function [newfile] = RSKclone(inputdir, outputdir, file, suffix)
 
 % RSKclone - Clone rsk file to specified directory.
 %
-% Syntax:  [newfile] = RSKclone(inputdir, outputdir, file)
+% Syntax:  [newfile] = RSKclone(inputdir, outputdir, file, suffix)
 % 
 % Inputs: 
 %    inputdir - Directory that contains original rsk file. 
@@ -11,16 +11,22 @@ function [newfile] = RSKclone(inputdir, outputdir, file)
 % 
 %    file - file name.
 %
+%    suffix - suffix add to file name for new file name, default is current
+%    time in format of YYYYMMDDTHHMM.
+%
 % Outputs:
-%    newfile - copied file name, with current time appended to the end.
+%    newfile - output new file name.
 %
 % Author: RBR Ltd. Ottawa ON, Canada
 % email: support@rbr-global.com
 % Website: www.rbr-global.com
-% Last revision: 2018-06-01
+% Last revision: 2018-06-06
 
+if isempty(suffix)
+    suffix = datestr(now,'yyyymmddTHHMM');
+end
 
-newfile = [strtok(file,'.rsk') '_' datestr(now,'yyyymmddTHHMM') '.rsk'];
+newfile = [strtok(file,'.rsk') '_' suffix '.rsk'];
 copyfile([inputdir '/' file], [outputdir '/' newfile]);
 
 mksqlite('open',[outputdir '/' newfile]);

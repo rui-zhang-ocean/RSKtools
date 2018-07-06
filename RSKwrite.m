@@ -15,36 +15,40 @@ function newfile = RSKwrite(RSK, varargin)
 %    [Optional] - outputdir - directory for output rsk file, default is
 %                 current directory.
 %
+%               - suffix - suffix for output rsk file name, default is
+%                 current time in format of YYYYMMDDTHHMM.
+%
 % Outputs:
-%    newfile - file name if output RSK file containing data in current rsk
-%              structure.
+%    newfile - file name of output rsk file
 %
 % Example:
 %    RSK = RSKopen('fname');
 %    RSK = RSKreadprofiles(RSK);
 %    RSK = RSKaddmetadata(RSK,'profile',1:3,'latitude',[45,44,46],'longitude',[-25,-24,-23]});
 %    outputdir = '/Users/Tom/Jerry';
-%    newfile = RSKwrite(RSK, outputdir);
+%    newfile = RSKwrite(RSK,'outputdir',outputdir,'suffix','processed');
 %
 % Author: RBR Ltd. Ottawa ON, Canada
 % email: support@rbr-global.com
 % Website: www.rbr-global.com
-% Last revision: 2018-06-01
+% Last revision: 2018-06-06
 
 
 p = inputParser;
 addRequired(p, 'RSK', @isstruct);
-addOptional(p, 'outputdir', pwd, @ischar);
+addParameter(p, 'outputdir', pwd, @ischar);
+addParameter(p, 'suffix', '', @ischar);
 parse(p, RSK, varargin{:})
 
 RSK = p.Results.RSK;
 outputdir = p.Results.outputdir;
+suffix = p.Results.suffix;
 
 
 % Copy original rsk file and rename it
 [inputdir,name,ext] = fileparts(RSK.toolSettings.filename);
 if isempty(inputdir); inputdir = pwd; end
-newfile = RSKclone(inputdir, outputdir, [name ext]);
+newfile = RSKclone(inputdir, outputdir, [name ext], suffix);
 
 % Open the file
 mksqlite('OPEN',[outputdir '/' newfile]);
