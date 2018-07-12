@@ -1,29 +1,42 @@
 function RSK = RSKcorrectTM(RSK, varargin) 
     
-% RSKcorrectTM - Apply thermal mass correction to conductivity.
+% RSKcorrectTM - Apply a thermal mass correction to conductivity using
+%                the model of Lueck and Picklo (1990).
 %
 % Syntax:  [RSK] = RSKcorrectTM(RSK, [OPTIONS])
-% 
-% The conductivity cell itself could store heat and provides "inertia" 
-% against temperature fluctuations, which introduces bias when deriving
-% salinity, known as thermal mass effect. The function applies an algorithm
-% introduced by Lueck and Picklo 1990 to eliminate the effect. To determine
-% the values of the coefficients, please see:
-% Lueck, R. G., 1990: Thermal inertia of conductivity cells: Theory. 
-% J. Atmos. Oceanic Technol., 7, 741?755
-% Lueck, R. G., and J. J. Picklo, 1990: Thermal inertia of conductivity 
-% cells: Observations with a Sea-Bird cell. J. Atmos. Oceanic Technol.,
-% 7, 756?768
+%
+% RSKcorrectTM applies the algorithm developed by Lueck and Picklo
+% (1990) to minimize the effect of conductivity cell thermal mass on
+% measured conductivity.  Conductivity cells exchange heat with the
+% water as they travel through temperature gradients.  The heat
+% transfer changes the water temperature and hence the measured
+% conductivity.  This effect will impact the derived salinity and
+% density in the form of sharp spikes and even a bias under certain
+% conditions.
+%
+% References:
+%
+%    Lueck, R. G., 1990: Thermal inertia of conductivity cells: Theory.  
+%           J. Atmos. Oceanic Technol., 7, pp. 741 - 755.
+%           https://doi.org/10.1175/1520-0426(1990)007<0741:TIOCCT>2.0.CO;2    
+%
+%    Lueck, R. G. and J. J. Picklo, 1990: Thermal inertia of conductivity 
+%           cells: Observations with a Sea-Bird cell. J. Atmos. Oceanic 
+%           Technol., 7, pp. 756 - 768.  
+%           https://doi.org/10.1175/1520-0426(1990)007<0756:TIOCCO>2.0.CO;2
 %
 % Inputs: 
 %   [Required] - RSK - Structure containing the logger data.
 %
-%                alpha - Coefficient alpha.
+%                alpha - Volume-weighted magnitude of the initial fluid 
+%                        thermal anomaly.
 %
-%                beta - Coefficient beta.
+%                beta - Inverse relaxation time of the adjustment.
 %               
-%   [Optional] - gamma - Scale factor. Default is 1 when conductivity is
-%                      measured in mS/cm
+%   [Optional] - gamma - Temperature coefficient of conductivity (dC/dT). 
+%                        Default is 1, which is suitable for waters with 
+%                        "oceanographic" temperature and salinity and when
+%                        conductivity is measured in mS/cm.    
 %
 %                profile - Profile number. Default is all available
 %                      profiles.
@@ -33,8 +46,7 @@ function RSK = RSKcorrectTM(RSK, varargin)
 % 
 %                visualize - To give a diagnostic plot on specified
 %                      profile number(s). Original and processed data will
-%                      be plotted to show users how the algorithm works.
-%                      Default is 0.
+%                      be plotted to illustrate the correction. Default is 0.
 %
 % Outputs:
 %    RSK - Structure with processed values.
@@ -45,7 +57,7 @@ function RSK = RSKcorrectTM(RSK, varargin)
 % Author: RBR Ltd. Ottawa ON, Canada
 % email: support@rbr-global.com
 % Website: www.rbr-global.com
-% Last revision: 2018-06-12
+% Last revision: 2018-07-12
 
 
 validDirections = {'down', 'up', 'both'};
@@ -97,7 +109,7 @@ if visualize ~= 0
     end
 end 
 
-logentry = ['Thermal mass correction applied with alpha = ' num2str(alpha) ' beta = ' num2str(beta) ' and gamma = ' num2str(gamma) '.'];
+logentry = ['Thermal mass correction applied to conductivity with alpha = ' num2str(alpha) ', beta = ' num2str(beta) ' s^-1, and gamma = ' num2str(gamma) '.'];
 RSK = RSKappendtolog(RSK, logentry);
     
 end
