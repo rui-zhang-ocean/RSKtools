@@ -9,6 +9,8 @@ function newfile = RSKwrite(RSK, varargin)
 % data after post-processing in RSKtools in rsk format which is also
 % readable in Ruskin. The new rsk file will be in EPdesktop format.
 %
+% Notes: This function is not thread safe.
+%
 % Inputs:
 %    [Required] - RSK - rsk structure
 %
@@ -31,7 +33,7 @@ function newfile = RSKwrite(RSK, varargin)
 % Author: RBR Ltd. Ottawa ON, Canada
 % email: support@rbr-global.com
 % Website: www.rbr-global.com
-% Last revision: 2018-06-06
+% Last revision: 2018-07-18
 
 
 p = inputParser;
