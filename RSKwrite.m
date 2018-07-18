@@ -87,64 +87,76 @@ datanew.values = datanew.values(idx,:);
 
 % Populate table data
 fmt = strcat(repmat(',%f',[1,nchannel]));
+temptime = round(datenum2RSKtime(datanew.tstamp));
 mksqlite('begin');
 for i = 1:length(datanew.tstamp)
-    temptime = round(datenum2RSKtime(datanew.tstamp(i,1)));
-    mksqlite(strrep(sprintf(['INSERT INTO data VALUES (%i' fmt ')'],temptime,datanew.values(i,:)),'NaN','null'));
+    mksqlite(strrep(sprintf(['INSERT INTO data VALUES (%i' fmt ')'],temptime(i,1),datanew.values(i,:)),'NaN','null'));
 end
 mksqlite('commit');
 
 % Populate table region/regionCast/regionProfile/regionGeoData/regionComment
-mksqlite('begin');
+if isfield(RSK,'region')
+    mksqlite('DROP table if exists region');
+    mksqlite('DROP table if exists regionCast');
+    mksqlite('DROP table if exists regionProfile');
+    mksqlite('DROP table if exists regionGeoData');
+    mksqlite('DROP table if exists regionComment');
+end
 
 if isfield(RSK,'region')
     
-    mksqlite('DROP table if exists region');
     if isfield(RSK.region,'description');
         mksqlite('CREATE table region (datasetID INTEGER NOT NULL,regionID INTEGER PRIMARY KEY,type VARCHAR(50),tstamp1 LONG,tstamp2 LONG,label VARCHAR(512),`description` TEXT)');
-        for i = 1:length(RSK.region) % Replace double quote in description field before inserting into DB!!!
+        mksqlite('begin');
+        for i = 1:length(RSK.region) 
             mksqlite(sprintf('INSERT INTO region VALUES (%i,%i,"%s",%i,%i,"%s","%s")',RSK.region(i).datasetID, RSK.region(i).regionID, RSK.region(i).type, RSK.region(i).tstamp1, RSK.region(i).tstamp2, RSK.region(i).label, RSK.region(i).description));
         end
+        mksqlite('commit');
     else
         mksqlite('CREATE table region (datasetID INTEGER NOT NULL,regionID INTEGER PRIMARY KEY,type VARCHAR(50),tstamp1 LONG,tstamp2 LONG,label VARCHAR(512))'); 
+        mksqlite('begin');
         for i = 1:length(RSK.region)
             mksqlite(sprintf('INSERT INTO region VALUES (%i,%i,"%s",%i,%i,"%s")',RSK.region(i).datasetID, RSK.region(i).regionID, RSK.region(i).type, RSK.region(i).tstamp1, RSK.region(i).tstamp2, RSK.region(i).label));
         end
+        mksqlite('commit');
     end
     
-    mksqlite('DROP table if exists regionCast');
     if isfield(RSK,'regionCast');
         mksqlite('CREATE table regionCast (regionID INTEGER,regionProfileID INTEGER,type STRING,FOREIGN KEY(regionID) REFERENCES REGION(regionID) ON DELETE CASCADE )');
+        mksqlite('begin');
         for i = 1:length(RSK.regionCast)
             mksqlite(sprintf('INSERT INTO regionCast VALUES (%i,%i,"%s")',RSK.regionCast(i).regionID, RSK.regionCast(i).regionProfileID, RSK.regionCast(i).type));
-        end    
+        end  
+        mksqlite('commit');
     end
     
-    mksqlite('DROP table if exists regionProfile');
     mksqlite('CREATE table regionProfile (regionID INTEGER,FOREIGN KEY(regionID) REFERENCES REGION(regionID) ON DELETE CASCADE )');
     profileidx = find(strcmp({RSK.region.type},'PROFILE'));
+    mksqlite('begin');
     for i = 1:length(profileidx)
         mksqlite(sprintf('INSERT INTO regionProfile VALUES (%i)',profileidx(i))); 
     end
+    mksqlite('commit');
     
-    mksqlite('DROP table if exists regionGeoData');
     if isfield(RSK,'regionGeoData');
         mksqlite('CREATE TABLE regionGeoData (regionID INTEGER,latitude DOUBLE,longitude DOUBLE,FOREIGN KEY(regionID) REFERENCES REGION(regionID) ON DELETE CASCADE )');
+        mksqlite('begin');
         for i = 1:length(RSK.regionGeoData)
             mksqlite(sprintf('INSERT INTO regionGeoData VALUES (%i,%f,%f)',RSK.regionGeoData(i).regionID, RSK.regionGeoData(i).latitude, RSK.regionGeoData(i).longitude));
         end
+        mksqlite('commit');
     end
 
-    mksqlite('DROP table if exists regionComment');
     if isfield(RSK,'regionComment');
        mksqlite('CREATE TABLE regionComment (regionID INTEGER,content VARCHAR(1024),FOREIGN KEY(regionID) REFERENCES REGION(regionID) ON DELETE CASCADE )');
+       mksqlite('begin');
        for i = 1:length(RSK.regionComment)
            mksqlite(sprintf('INSERT INTO regionComment VALUES (%i,"NULL")',RSK.regionComment(i).regionID));
        end
+       mksqlite('commit');
     end    
     
 end
-mksqlite('commit');
 
 % Remove rows in events and errors table where data is removed
 if ~isempty(mksqlite('SELECT name FROM sqlite_master WHERE type="table" AND name="events"'))
@@ -181,6 +193,7 @@ if ~isempty(mksqlite('SELECT name FROM sqlite_master WHERE type="table" AND name
     mksqlite('DELETE from calibrations');
 end
 
+mksqlite('vacuum')
 mksqlite('close')
 
 fprintf('Wrote: %s/%s\n', outputdir, newfile);
