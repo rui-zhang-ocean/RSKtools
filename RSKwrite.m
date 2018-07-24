@@ -88,11 +88,37 @@ datanew.values = cat(1,RSK.data(1:end).values);
 datanew.values = datanew.values(idx,:);
 
 % Populate table data
-fmt = strcat(repmat(',%f',[1,nchannel]));
+fmt = strcat('%i',repmat(',%f',[1,nchannel]));
 temptime = round(datenum2RSKtime(datanew.tstamp));
+
+N = 5000;
+seg = 1:ceil(length(datanew.tstamp)/N);
+
 mksqlite('begin');
-for i = 1:length(datanew.tstamp)
-    mksqlite(strrep(sprintf(['INSERT INTO data VALUES (%i' fmt ')'],temptime(i,1),datanew.values(i,:)),'NaN','null'));
+for k = seg
+    if k == seg(end);
+        ind = 1+N*(k-1) : length(datanew.tstamp);       
+    else
+        ind = 1+N*(k-1) : N*k;   
+%         sprintf(['INSERT INTO data VALUES (' repmat([fmt '),('],[1,N-1]) fmt ')'],temptime(i,1),datanew.values(i,:),temptime(i+1,1),datanew.values(i+1,:))
+%         mksqlite(strrep(sprintf(['INSERT INTO data VALUES (' repmat([fmt '),('],[1,N-1]) fmt ')'],temptime(i,1),datanew.values(i,:),temptime(i+1,1),datanew.values(i+1,:)),'NaN','null'));   
+    end
+    
+    temp = cell(1,length(ind));
+    for i = 1:length(temp);
+        if i == length(temp);
+            temp{i} = ['temptime(' num2str(ind(i)) ',1),datanew.values(' num2str(ind(i)) ',:)']; 
+        else
+            temp{i} = ['temptime(' num2str(ind(i)) ',1),datanew.values(' num2str(ind(i)) ',:),'];                
+        end  
+    end
+    d_str = strcat(temp{:});
+
+    tempstr = ['INSERT INTO data VALUES (' repmat([fmt '),('],[1,length(ind)-1]) fmt ')'];
+    eval(['s = sprintf(' ''''  tempstr ''','  d_str ');']);
+    mksqlite(strrep(s, 'NaN','null'));
+    
+    clear temp tempstr
 end
 mksqlite('commit');
 
