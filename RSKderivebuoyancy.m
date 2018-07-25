@@ -8,6 +8,8 @@ function [RSK] = RSKderivebuoyancy(RSK,varargin)
 % (http://www.teos-10.org/software.htm). The result is added to the
 % RSK data structure, and the channel list is updated. 
 %
+% Note: The function assumes reference salinity equals abolute salinity.
+%
 % Inputs: 
 %   [Required] - RSK - Structure containing the logger metadata and data
 %
@@ -23,7 +25,7 @@ function [RSK] = RSKderivebuoyancy(RSK,varargin)
 % Author: RBR Ltd. Ottawa ON, Canada
 % email: support@rbr-global.com
 % Website: www.rbr-global.com
-% Last revision: 2018-07-17
+% Last revision: 2018-07-25
 
 
 p = inputParser;
@@ -34,6 +36,7 @@ parse(p, RSK, varargin{:})
 RSK = p.Results.RSK;
 latitude = p.Results.latitude;
  
+
 hasTEOS = ~isempty(which('gsw_Nsquared'));
 if ~hasTEOS
     error('Must install TEOS-10 toolbox. Download it from here: http://www.teos-10.org/software.htm');
@@ -59,7 +62,7 @@ STcol = getchannelindex(RSK, 'Stability');
 
 castidx = getdataindex(RSK);
 for ndx = castidx
-    SA = gsw_SA_from_SP(RSK.data(ndx).values(:, Scol), RSK.data(ndx).values(:, SPcol), 20, 58); % Use Baltic sea lat/lon for now
+    SA = gsw_SR_from_SP(RSK.data(ndx).values(:,Scol)); % Assume SA ~= SR
     CT = gsw_CT_from_t(SA, RSK.data(ndx).values(:,Tcol), RSK.data(ndx).values(:,SPcol));
     if isempty(latitude)
         [N2_mid, p_mid] = gsw_Nsquared(SA, CT, RSK.data(ndx).values(:,SPcol));
@@ -78,5 +81,4 @@ logentry = ('Buoyancy frequency and stability derived using TEOS-10 GSW toolbox.
 RSK = RSKappendtolog(RSK, logentry);
 
 end
-
 
