@@ -8,14 +8,15 @@ function [RSK] = RSKderivebuoyancy(RSK,varargin)
 % (http://www.teos-10.org/software.htm). The result is added to the
 % RSK data structure, and the channel list is updated. 
 %
-% Note: The function assumes reference salinity equals abolute salinity.
+% Note: This function makes the assumption that the Absolute Salinity anomaly
+%       is zero to simplify the calculation.  In other words, SA = SR.
 %
 % Inputs: 
 %   [Required] - RSK - Structure containing the logger metadata and data
 %
 %   [Optional] - latitude - Latitude in decimal degrees north [-90 ... +90]
-%                If latitude is not provides, a default gravitational
-%                acceleration 9.7963 will be used (see gsw_grav)
+%                If latitude is not provided, a default gravitational
+%                acceleration, 9.7963 m/s^2 will be used (see gsw_grav)
 %
 % Outputs:
 %    RSK - Updated structure containing buoyancy frequency and stability.
@@ -25,7 +26,7 @@ function [RSK] = RSKderivebuoyancy(RSK,varargin)
 % Author: RBR Ltd. Ottawa ON, Canada
 % email: support@rbr-global.com
 % Website: www.rbr-global.com
-% Last revision: 2018-07-25
+% Last revision: 2018-07-27
 
 
 p = inputParser;
@@ -46,17 +47,17 @@ Tcol = getchannelindex(RSK, 'Temperature');
 try
     Scol = getchannelindex(RSK, 'Salinity');
 catch
-    error('RSKderivebuoyance requires salinity channel. Use RSKderivesalinity...');
+    error('RSKderivebuoyancy requires practical salinity. Use RSKderivesalinity...');
 end
 try
     SPcol = getchannelindex(RSK, 'Sea Pressure');
 catch
-    error('RSKcalculatevelocity requires sea pressure channel. Use RSKderiveseapressure...');
+    error('RSKderivebuoyancy requires sea pressure. Use RSKderiveseapressure...');
 end
 
-RSK = addchannelmetadata(RSK, 'Buoyance Frequency', 's-2');
+RSK = addchannelmetadata(RSK, 'Buoyancy Frequency Squared', 's-2');
 RSK = addchannelmetadata(RSK, 'Stability', 'm-1');
-N2col = getchannelindex(RSK, 'Buoyance Frequency');
+N2col = getchannelindex(RSK, 'Buoyancy Frequency Squared');
 STcol = getchannelindex(RSK, 'Stability');
 
 
@@ -77,7 +78,7 @@ for ndx = castidx
     RSK.data(ndx).values(:,STcol) = ST;
 end
 
-logentry = ('Buoyancy frequency and stability derived using TEOS-10 GSW toolbox.');
+logentry = ('Buoyancy frequency squared and stability derived using TEOS-10 GSW toolbox.');
 RSK = RSKappendtolog(RSK, logentry);
 
 end
