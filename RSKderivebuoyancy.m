@@ -74,7 +74,7 @@ for ndx = castidx
     end
     N2 = interp1(p_mid, N2_mid, RSK.data(ndx).values(:,SPcol), 'linear', 'extrap');
     RSK.data(ndx).values(:,N2col) = N2;
-    ST = -N2./grav;
+    ST = N2./grav;
     RSK.data(ndx).values(:,STcol) = ST;
 end
 
