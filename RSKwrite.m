@@ -33,7 +33,7 @@ function newfile = RSKwrite(RSK, varargin)
 % Author: RBR Ltd. Ottawa ON, Canada
 % email: support@rbr-global.com
 % Website: www.rbr-global.com
-% Last revision: 2018-07-27 ?
+% Last revision: 2018-07-27
 
 
 p = inputParser;
@@ -87,7 +87,7 @@ datanew.values = cat(1,RSK.data(1:end).values);
 [datanew.tstamp,idx,~] = unique(datanew.tstamp,'stable');
 datanew.values = datanew.values(idx,:);
 
-% Populate table data in batches
+% Populate table data in batches to avoid exceeding max limit of sql INSERT
 N = 5000;
 seg = 1:ceil(length(datanew.tstamp)/N);
 for k = seg
