@@ -5,7 +5,7 @@ function [] = doDiagPlot(RSK, raw, varargin)
 %
 % Syntax:  [handles] = doDiagPlot(RSK, raw, [OPTIONS])
 % 
-% Current RSKtools have functions below that could alter the data:
+% Current RSKtools (v2.3.1) have functions below that could alter the data:
 % - RSKalignchannel
 % - RSKbinaverage
 % - RSKcorrecthold
@@ -37,7 +37,7 @@ function [] = doDiagPlot(RSK, raw, varargin)
 % Author: RBR Ltd. Ottawa ON, Canada
 % email: support@rbr-global.com
 % Website: www.rbr-global.com
-% Last revision: 2018-04-06
+% Last revision: 2018-06-29
 
 p = inputParser;
 addRequired(p,'RSK', @isstruct);
@@ -87,6 +87,7 @@ for chan = channelidx
             'or','MarkerEdgeColor','r','MarkerSize',5);
         ax = findall(gcf,'type','axes');
         set(ax, 'ydir', 'reverse');
+        linkaxes(ax,'y');
         xlabel([RSK.channels(chan).longName ' (' RSK.channels(chan).units ')']);
         ylabel([RSK.channels(presCol).longName ' (' RSK.channels(presCol).units ')']);    
     end
