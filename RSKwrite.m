@@ -33,7 +33,7 @@ function newfile = RSKwrite(RSK, varargin)
 % Author: RBR Ltd. Ottawa ON, Canada
 % email: support@rbr-global.com
 % Website: www.rbr-global.com
-% Last revision: 2018-07-18
+% Last revision: 2018-07-27 ?
 
 
 p = inputParser;
@@ -87,40 +87,22 @@ datanew.values = cat(1,RSK.data(1:end).values);
 [datanew.tstamp,idx,~] = unique(datanew.tstamp,'stable');
 datanew.values = datanew.values(idx,:);
 
-% Populate table data
-fmt = strcat('%i',repmat(',%f',[1,nchannel]));
-temptime = round(datenum2RSKtime(datanew.tstamp));
-
+% Populate table data in batches
 N = 5000;
 seg = 1:ceil(length(datanew.tstamp)/N);
-
-mksqlite('begin');
 for k = seg
     if k == seg(end);
         ind = 1+N*(k-1) : length(datanew.tstamp);       
     else
         ind = 1+N*(k-1) : N*k;   
-%         sprintf(['INSERT INTO data VALUES (' repmat([fmt '),('],[1,N-1]) fmt ')'],temptime(i,1),datanew.values(i,:),temptime(i+1,1),datanew.values(i+1,:))
-%         mksqlite(strrep(sprintf(['INSERT INTO data VALUES (' repmat([fmt '),('],[1,N-1]) fmt ')'],temptime(i,1),datanew.values(i,:),temptime(i+1,1),datanew.values(i+1,:)),'NaN','null'));   
-    end
-    
-    temp = cell(1,length(ind));
-    for i = 1:length(temp);
-        if i == length(temp);
-            temp{i} = ['temptime(' num2str(ind(i)) ',1),datanew.values(' num2str(ind(i)) ',:)']; 
-        else
-            temp{i} = ['temptime(' num2str(ind(i)) ',1),datanew.values(' num2str(ind(i)) ',:),'];                
-        end  
-    end
-    d_str = strcat(temp{:});
-
-    tempstr = ['INSERT INTO data VALUES (' repmat([fmt '),('],[1,length(ind)-1]) fmt ')'];
-    eval(['s = sprintf(' ''''  tempstr ''','  d_str ');']);
-    mksqlite(strrep(s, 'NaN','null'));
-    
-    clear temp tempstr
+    end 
+    value_format = strcat('(%i', repmat(', %f', 1, size(datanew.values(ind,:), 2)), '),\n');
+    sql_data = horzcat(round(datenum2RSKtime(datanew.tstamp(ind,1))), datanew.values(ind,:));
+    values = sprintf(value_format, reshape(rot90(sql_data, 3), numel(sql_data), 1));
+    values = values(1:length(values) - 2);
+    values = strrep(values, 'NaN', 'null');
+    mksqlite(['INSERT INTO data VALUES' values])
 end
-mksqlite('commit');
 
 % Populate table region/regionCast/regionProfile/regionGeoData/regionComment
 if isfield(RSK,'region')
