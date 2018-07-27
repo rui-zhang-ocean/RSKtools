@@ -75,7 +75,7 @@ mksqlite('DROP table if exists thumbnailData');
 nchannel = size(RSK.data(1).values,2);
 tempstr = cell(nchannel,1);
 for i = 1:nchannel
-    tempstr{i} = strcat(', channel', sprintf('%02d',i), ' DOUBLE');
+    tempstr{i} = [', channel', sprintf('%02d',i), ' DOUBLE'];
 end
 mksqlite(['CREATE table data (tstamp BIGINT PRIMARY KEY ASC' tempstr{:} ')']);
 
@@ -99,8 +99,7 @@ for k = seg
     value_format = strcat('(%i', repmat(', %f', 1, size(datanew.values(ind,:), 2)), '),\n');
     sql_data = horzcat(round(datenum2RSKtime(datanew.tstamp(ind,1))), datanew.values(ind,:));
     values = sprintf(value_format, reshape(rot90(sql_data, 3), numel(sql_data), 1));
-    values = values(1:length(values) - 2);
-    values = strrep(values, 'NaN', 'null');
+    values = strrep(values(1:length(values) - 2), 'NaN', 'null');
     mksqlite(['INSERT INTO data VALUES' values])
 end
 
@@ -144,7 +143,7 @@ if isfield(RSK,'region')
     profileidx = find(strcmp({RSK.region.type},'PROFILE'));
     mksqlite('begin');
     for i = 1:length(profileidx)
-        mksqlite(sprintf('INSERT INTO regionProfile VALUES (%i)',profileidx(i))); 
+        mksqlite(sprintf('INSERT INTO regionProfile VALUES (%i)', profileidx(i))); 
     end
     mksqlite('commit');
     
