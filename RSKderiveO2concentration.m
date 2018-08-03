@@ -6,10 +6,10 @@ function [RSK] = RSKderiveO2concentration(RSK)
 % Syntax: [RSK] = RSKderiveO2concentration(RSK)
 %
 % Inputs: 
-%    RSK - Structure containing measured O2 saturation.
+%    RSK - Structure containing measured O2 saturation in unit of %.
 %
 % Outputs:
-%    RSK - Structure containing derived O2 concentration.
+%    RSK - Structure containing derived O2 concentration in unit of µmol/l.
 %
 % See also: RSKderiveO2saturation.
 %
