@@ -16,6 +16,9 @@ function [RSK] = RSKderiveO2concentration(RSK, varargin)
 % Outputs:
 %    RSK - Structure containing derived O2 concentration in unit of µmol/l.
 %
+% Example:
+%    RSK = RSKderiveO2concentration(RSK, 'unit', 1)
+%
 % See also: RSKderiveO2saturation.
 %
 % Author: RBR Ltd. Ottawa ON, Canada
