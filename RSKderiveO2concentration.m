@@ -9,15 +9,14 @@ function [RSK] = RSKderiveO2concentration(RSK, varargin)
 %    [Required] - RSK - Structure containing measured O2 saturation in unit
 %                       of %.
 %    
-%    [Optional] - unit - Unit of derived O2 concentration. 1, 2 and 3
-%                       refers to µmol/l, ml/l and mg/l, respectively. 
-%                       Default is 1.
+%    [Optional] - unit - Unit of derived O2 concentration. Valid inputs 
+%                       include µmol/l, ml/l and mg/l. Default is µmol/l.
 %
 % Outputs:
-%    RSK - Structure containing derived O2 concentration in unit of µmol/l.
+%    RSK - Structure containing derived O2 concentration in specified unit.
 %
 % Example:
-%    RSK = RSKderiveO2concentration(RSK, 'unit', 1)
+%    RSK = RSKderiveO2concentration(RSK, 'unit', 'ml/l')
 %
 % See also: RSKderiveO2saturation.
 %
@@ -27,26 +26,20 @@ function [RSK] = RSKderiveO2concentration(RSK, varargin)
 % Last revision: 2018-08-13
 
 
+validUnits = {'µmol/l', 'ml/l','mg/l'};
+checkUnit = @(x) any(validatestring(x,validUnits));
+
 p = inputParser;
 addRequired(p, 'RSK', @isstruct);
-addParameter(p, 'unit', 1, @isnumeric);
+addParameter(p, 'unit', 'µmol/l', checkUnit);
 parse(p, RSK, varargin{:})
 
 RSK = p.Results.RSK;
 unit = p.Results.unit;
 
 
-if ~any(strcmp({RSK.channels.longName},'Salinity'))
+if ~any(strcmp({RSK.channels.longName}, 'Salinity'))
     error('RSKderiveO2concentration needs salinity channel. Use RSKderivesalinity...')
-end
- 
-switch unit
-    case 1
-        unitstring = 'µmol/l';
-    case 2
-        unitstring = 'ml/l';
-    case 3
-        unitstring = 'mg/l';
 end
 
 % Channel shortnames for saturation 
@@ -59,7 +52,7 @@ SCol = getchannelindex(RSK,'Salinity');
 O2SCol = find(ismember({RSK.channels.shortName},SATname));
 
 if ~any(O2SCol)
-    error('RSK file does not contain O2 saturation channel.')
+    error('RSK file does not contain any O2 saturation channel.')
 end
 
 % Get coefficients
@@ -70,27 +63,27 @@ castidx = getdataindex(RSK);
 k = 1;
 for c = O2SCol    
     suffix = sum(strncmpi('Dissolved O2',{RSK.channels.longName},12)) + 1;
-    RSK = addchannelmetadata(RSK, ['Dissolved O2' num2str(suffix)], unitstring);
+    RSK = addchannelmetadata(RSK, ['Dissolved O2' num2str(suffix)], unit);
     O2CCol = getchannelindex(RSK, ['Dissolved O2' num2str(suffix)]);
     
     for ndx = castidx
         temp = (RSK.data(ndx).values(:,TCol) * 1.00024 + 273.15) /100.0;
         sal = RSK.data(ndx).values(:,SCol);
         oxpercent = RSK.data(ndx).values(:,O2SCol(k));   
-        oxsatmll = oxpercent.* exp(a1 + a2 ./ temp + a3 * log(temp) + a4 * temp + sal.* (b1 + b2 * temp + b3 * temp .* temp)) /100.0; % ml/l      
+        oxsatmll = oxpercent.* exp(a1 + a2 ./ temp + a3 * log(temp) + a4 * temp + sal.* (b1 + b2 * temp + b3 * temp .* temp)) /100.0;     
         switch unit
-            case 1
+            case 'µmol/l'
                 RSK.data(ndx).values(:,O2CCol) = 44.659 * oxsatmll; % default, convert to µmol/l
-            case 2
+            case 'ml/l'
                 RSK.data(ndx).values(:,O2CCol) = oxsatmll; % ml/l
-            case 3
+            case 'mg/l'
                 RSK.data(ndx).values(:,O2CCol) = 1.4276 * oxsatmll; % convert to mg/l
         end
     end    
     k = k + 1;
 end
 
-logentry = (['O2 concentration is derived from measured O2 saturation, in unit of ' unitstring '.']);
+logentry = (['O2 concentration is derived from measured O2 saturation, in unit of ' unit '.']);
 RSK = RSKappendtolog(RSK, logentry);
 
 end
