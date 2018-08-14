@@ -75,7 +75,7 @@ end
 logentry = (['O2 concentration is derived from measured O2 saturation, in unit of ' unit '.']);
 RSK = RSKappendtolog(RSK, logentry);
 
-%% Nest function Weiss equation
+%% Nested function - derive concentration using Weiss equation
     function oxcon = sat2con_Weiss(oxsat, temp, sal, unit)
         
         a1 = -173.42920; a2 = 249.63390; a3 = 143.34830; a4 = -21.84920;
