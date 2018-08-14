@@ -44,7 +44,6 @@ end
 
 % Channel shortnames for saturation 
 SATname = {'doxy03','doxy25','doxy07','doxy08','doxy09','doxy13','doxy26','doxy22'};
-% CONname = {'doxy10','doxy20','doxy21','doxy23','doxy24','doxy27','doxy28'};
 
 % Find temperature and salinity data column
 TCol = getchannelindex(RSK,'Temperature');
@@ -56,7 +55,6 @@ if ~any(O2SCol)
 end
 
 castidx = getdataindex(RSK);
-k = 1;
 for c = O2SCol    
     suffix = sum(strncmpi('Dissolved O2',{RSK.channels.longName},12)) + 1;
     RSK = addchannelmetadata(RSK, ['Dissolved O2' num2str(suffix)], unit);
@@ -65,14 +63,13 @@ for c = O2SCol
     for ndx = castidx
         temp = RSK.data(ndx).values(:,TCol);
         sal = RSK.data(ndx).values(:,SCol);
-        oxsat = RSK.data(ndx).values(:,O2SCol(k));   
+        oxsat = RSK.data(ndx).values(:,c);   
         oxcon = sat2con_Weiss(oxsat, temp, sal, unit);
         RSK.data(ndx).values(:,O2CCol) = oxcon;
     end     
-    k = k + 1;
 end
 
-logentry = (['O2 concentration is derived from measured O2 saturation, in unit of ' unit '.']);
+logentry = (['O2 concentration in unit of ' unit ' is derived from measured O2 saturation.']);
 RSK = RSKappendtolog(RSK, logentry);
 
 %% Nested function - derive concentration using Weiss equation
