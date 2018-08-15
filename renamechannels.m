@@ -42,7 +42,7 @@ if any(idx)
     [RSK.channels(idx).longName] = deal('External Cabled Temperature');
 end
 
-idx = strcmpi(shortName, 'temp16');
+idx = (strcmpi(shortName, 'temp16') | strcmpi(shortName, 'temp24'));
 if any(idx)
     [RSK.channels(idx).longName] = deal('Optode Temperature');
 end
