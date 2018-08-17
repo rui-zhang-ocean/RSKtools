@@ -110,22 +110,19 @@ if isfield(RSK,'region')
     mksqlite('DROP table if exists regionProfile');
     mksqlite('DROP table if exists regionGeoData');
     mksqlite('DROP table if exists regionComment');
-end
-
-if isfield(RSK,'region')
     
     if isfield(RSK.region,'description');
         mksqlite('CREATE table region (datasetID INTEGER NOT NULL,regionID INTEGER PRIMARY KEY,type VARCHAR(50),tstamp1 LONG,tstamp2 LONG,label VARCHAR(512),`description` TEXT)');
         mksqlite('begin');
         for i = 1:length(RSK.region) 
-            mksqlite(sprintf('INSERT INTO region VALUES (%i,%i,"%s",%i,%i,"%s","%s")',RSK.region(i).datasetID, RSK.region(i).regionID, RSK.region(i).type, RSK.region(i).tstamp1, RSK.region(i).tstamp2, RSK.region(i).label, RSK.region(i).description));
+            mksqlite(sprintf('INSERT INTO region VALUES (%i,%i,"%s",%i,%i,"%s","%s")',RSK.region(i).datasetID, RSK.region(i).regionID, RSK.region(i).type, round(datenum2RSKtime(RSK.region(i).tstamp1)), round(datenum2RSKtime(RSK.region(i).tstamp2)), RSK.region(i).label, RSK.region(i).description));
         end
         mksqlite('commit');
     else
         mksqlite('CREATE table region (datasetID INTEGER NOT NULL,regionID INTEGER PRIMARY KEY,type VARCHAR(50),tstamp1 LONG,tstamp2 LONG,label VARCHAR(512))'); 
         mksqlite('begin');
         for i = 1:length(RSK.region)
-            mksqlite(sprintf('INSERT INTO region VALUES (%i,%i,"%s",%i,%i,"%s")',RSK.region(i).datasetID, RSK.region(i).regionID, RSK.region(i).type, RSK.region(i).tstamp1, RSK.region(i).tstamp2, RSK.region(i).label));
+            mksqlite(sprintf('INSERT INTO region VALUES (%i,%i,"%s",%i,%i,"%s")',RSK.region(i).datasetID, RSK.region(i).regionID, RSK.region(i).type, round(datenum2RSKtime(RSK.region(i).tstamp1)), round(datenum2RSKtime(RSK.region(i).tstamp2)), RSK.region(i).label));
         end
         mksqlite('commit');
     end
