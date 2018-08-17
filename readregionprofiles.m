@@ -18,7 +18,8 @@ function RSK = readregionprofiles(RSK)
 % Author: RBR Ltd. Ottawa ON, Canada
 % email: support@rbr-global.com
 % Website: www.rbr-global.com
-% Last revision: 2018-05-28
+% Last revision: 2018-08-17
+
 
 tables = doSelect(RSK, 'SELECT name FROM sqlite_master WHERE type="table"');
 
@@ -29,17 +30,7 @@ else
     return
 end
 
-
-
-if ~isempty(RSK.regionCast)
-    if strcmpi(RSK.regionCast(1).type, 'down')
-        firstdir = 'downcast';
-        lastdir = 'upcast';
-    else
-        firstdir = 'upcast';
-        lastdir = 'downcast';
-    end
-else
+if isempty(RSK.regionCast)
     RSK = rmfield(RSK, 'regionCast');
     RSK = rmfield(RSK, 'region');
     return
