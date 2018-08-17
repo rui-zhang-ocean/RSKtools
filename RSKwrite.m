@@ -80,24 +80,24 @@ end
 mksqlite(['CREATE table data (tstamp BIGINT PRIMARY KEY ASC' tempstr{:} ')']);
 
 % Convert profiles into time series, if rsk is profile structured
-datanew.tstamp = cat(1,RSK.data(1:end).tstamp);
-datanew.values = cat(1,RSK.data(1:end).values);
+data.tstamp = cat(1,RSK.data(1:end).tstamp);
+data.values = cat(1,RSK.data(1:end).values);
 
 % Remove repeated values time stamp
-[datanew.tstamp,idx,~] = unique(datanew.tstamp,'stable');
-datanew.values = datanew.values(idx,:);
+[data.tstamp,idx,~] = unique(data.tstamp,'stable');
+data.values = data.values(idx,:);
 
 % Populate table data in batches to avoid exceeding max limit of sql INSERT
 N = 5000;
-seg = 1:ceil(length(datanew.tstamp)/N);
+seg = 1:ceil(length(data.tstamp)/N);
 for k = seg
     if k == seg(end);
-        ind = 1+N*(k-1) : length(datanew.tstamp);       
+        ind = 1+N*(k-1) : length(data.tstamp);       
     else
         ind = 1+N*(k-1) : N*k;   
     end 
-    value_format = strcat('(%i', repmat(', %f', 1, size(datanew.values(ind,:), 2)), '),\n');
-    sql_data = horzcat(round(datenum2RSKtime(datanew.tstamp(ind,1))), datanew.values(ind,:));
+    value_format = strcat('(%i', repmat(', %f', 1, size(data.values(ind,:), 2)), '),\n');
+    sql_data = horzcat(round(datenum2RSKtime(data.tstamp(ind,1))), data.values(ind,:));
     values = sprintf(value_format, reshape(rot90(sql_data, 3), numel(sql_data), 1));
     values = strrep(values(1:length(values) - 2), 'NaN', 'null');
     mksqlite(['INSERT INTO data VALUES' values])
