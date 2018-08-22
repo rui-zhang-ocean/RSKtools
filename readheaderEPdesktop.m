@@ -19,22 +19,18 @@ function RSK = readheaderEPdesktop(RSK)
 % Author: RBR Ltd. Ottawa ON, Canada
 % email: support@rbr-global.com
 % Website: www.rbr-global.com
-% Last revision: 2017-06-21
+% Last revision: 2018-08-22
 
-%% Tables that are definitely in 'EPdesktop'
 
-RSK = readsamplingdetails(RSK);
+tables = doSelect(RSK, 'SELECT name FROM sqlite_master WHERE type="table"');
 
-if ~strcmpi(RSK.dbInfo(1).type, 'EasyParse')
-    if ~strcmpi(RSK.dbInfo(1).type, 'skinny')
-        RSK = readparameters(RSK);
-    end
+if any(strcmpi({tables.name}, 'schedules'))
+    RSK = readsamplingdetails(RSK);
 end
 
-
-
-%% Tables that may or may not be in file
-tables = doSelect(RSK, 'SELECT name FROM sqlite_master WHERE type="table"');
+if any(strcmpi({tables.name}, 'parameters'))
+    RSK = readparameters(RSK);
+end
 
 if any(strcmpi({tables.name}, 'geodata'))
     RSK = RSKreadgeodata(RSK);
