@@ -179,7 +179,7 @@ for n = 1:length(upstart)
     RSK.region(nprofile).regionID = nprofile;
     RSK.region(nprofile).type = 'PROFILE';
     RSK.region(nprofile).tstamp1 = round(datenum2RSKtime(firstdir.tstart(n)));
-    RSK.region(nprofile).tstamp2 = round(datanum2RSKtime(lastdir.tend(n)));
+    RSK.region(nprofile).tstamp2 = round(datenum2RSKtime(lastdir.tend(n)));
     RSK.region(nprofile).label = ['Profile ' num2str(n)];
     RSK.region(nprofile).description = 'RSKtools-generated profile.';
     
