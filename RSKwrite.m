@@ -33,7 +33,7 @@ function newfile = RSKwrite(RSK, varargin)
 % Author: RBR Ltd. Ottawa ON, Canada
 % email: support@rbr-global.com
 % Website: www.rbr-global.com
-% Last revision: 2018-07-27
+% Last revision: 2018-08-22
 
 
 p = inputParser;
@@ -47,37 +47,12 @@ outputdir = p.Results.outputdir;
 suffix = p.Results.suffix;
 
 
-% Copy original rsk file and rename it
-[inputdir,name,ext] = fileparts(RSK.toolSettings.filename);
-if isempty(inputdir); inputdir = pwd; end
-newfile = RSKclone(inputdir, outputdir, [name ext], suffix);
-
-% Open the file
-mksqlite('OPEN',[outputdir '/' newfile]);
-
-% Change dbinfo type into EPdesktop
-mksqlite('UPDATE dbinfo SET type = "EPdesktop"')
-
-% Drop table data/downsampleXX/downsample_caches/breaksdata/downloads
-if ~isempty(mksqlite('SELECT name FROM sqlite_master WHERE type="table" AND name="downsample_caches"'))
-    tablename = mksqlite('SELECT tablename from downsample_caches');
-    for i = 1:length(tablename)
-        mksqlite(['DROP table if exists ' tablename(i).tablename]); 
-    end
+% Set up output directory and output file name
+[~,name,ext] = fileparts(RSK.toolSettings.filename);
+if isempty(suffix); 
+    suffix = datestr(now,'yyyymmddTHHMM'); 
 end
-mksqlite('DROP table if exists data');
-mksqlite('DROP table if exists downsample_caches');
-mksqlite('DROP table if exists breaksdata');
-mksqlite('DROP table if exists downloads');
-mksqlite('DROP table if exists thumbnailData');
-
-% Create table data
-nchannel = size(RSK.data(1).values,2);
-tempstr = cell(nchannel,1);
-for i = 1:nchannel
-    tempstr{i} = [', channel', sprintf('%02d',i), ' DOUBLE'];
-end
-mksqlite(['CREATE table data (tstamp BIGINT PRIMARY KEY ASC' tempstr{:} ')']);
+newfile = [strtok([name ext],'.rsk') '_' suffix '.rsk'];
 
 % Convert profiles into time series, if rsk is profile structured
 data.tstamp = cat(1,RSK.data(1:end).tstamp);
@@ -86,6 +61,51 @@ data.values = cat(1,RSK.data(1:end).values);
 % Remove repeated values time stamp
 [data.tstamp,idx,~] = unique(data.tstamp,'stable');
 data.values = data.values(idx,:);
+sampleSize = length(data.values);
+
+% Open the file
+mksqlite('OPEN',[outputdir '/' newfile]);
+
+% dbInfo 
+mksqlite('CREATE TABLE dbInfo (version VARCHAR(50) PRIMARY KEY, type VARCHAR(50))')
+mksqlite(sprintf('INSERT INTO dbInfo VALUES ("%s","EPdesktop")', RSK.dbInfo.version));
+
+% instruments
+mksqlite('CREATE TABLE instruments (serialID INTEGER PRIMARY KEY, model TEXT NOT NULL)');
+mksqlite(sprintf('INSERT INTO instruments VALUES (%i,"%s")', RSK.instruments.serialID, RSK.instruments.model));
+
+% channels
+mksqlite('CREATE TABLE channels (channelID INTEGER PRIMARY KEY,shortName TEXT NOT NULL,longName TEXT NOT NULL,units TEXT,isMeasured BOOLEAN,isDerived BOOLEAN)');
+mksqlite('begin');
+for i = 1:length(RSK.channels)
+    mksqlite(sprintf('INSERT INTO channels VALUES (%i,"%s","%s","%s",1,0)',i, RSK.channels(i).shortName, RSK.channels(i).longName, RSK.channels(i).units)); 
+end
+mksqlite('commit');
+
+% deployments
+mksqlite('CREATE TABLE deployments (deploymentID INTEGER PRIMARY KEY, serialID INTEGER, comment TEXT, loggerStatus TEXT, firmwareVersion TEXT, loggerTimeDrift long, timeOfDownload long, name TEXT, sampleSize INTEGER, hashtag INTEGER)');
+mksqlite(sprintf('INSERT INTO deployments (deploymentID,serialID,firmwareVersion,timeOfDownload,name,sampleSize) VALUES (%i,%i,"%s",%f,"%s",%i)', RSK.deployments.deploymentID, RSK.deployments.serialID, RSK.deployments.firmwareVersion, RSK.deployments.timeOfDownload, newfile, sampleSize));
+
+% schedules
+mksqlite('CREATE TABLE schedules (scheduleID INTEGER PRIMARY KEY, deploymentID INTEGER NOT NULL, samplingPeriod long, repetitionPeriod long, samplingCount INTEGER, mode TEXT, altitude DOUBLE, gate VARCHAR(512))');
+mksqlite(sprintf('INSERT INTO schedules (scheduleID,deploymentID,samplingPeriod,mode,gate) VALUES (%i,%i,%i,"%s","%s")', RSK.schedules.scheduleID, RSK.schedules.deploymentID, RSK.schedules.samplingPeriod, RSK.schedules.mode, RSK.schedules.gate));
+
+% epochs
+mksqlite('CREATE TABLE epochs (deploymentID INTEGER PRIMARY KEY, startTime LONG, endTime LONG)');
+mksqlite(sprintf('INSERT INTO epochs VALUES (%i,%f,%f)', RSK.epochs.deploymentID, round(datenum2RSKtime(data.tstamp(1))), round(datenum2RSKtime(data.tstamp(end)))));
+
+% download/events/errors - to avoid errors in Ruskin
+mksqlite('CREATE TABLE downloads (deploymentID INTEGER NOT NULL, part INTEGER NOT NULL, offset INTEGER NOT NULL, data BLOB, PRIMARY KEY (deploymentID, part))');
+mksqlite('CREATE TABLE events (deploymentID INTEGER NOT NULL, tstamp long NOT NULL, type INTEGER NOT NULL, sampleIndex INTEGER NOT NULL, channelIndex INTEGER)');
+mksqlite('CREATE TABLE errors (deploymentID INTEGER NOT NULL,tstamp long NOT NULL,type INTEGER NOT NULL,sampleIndex INTEGER NOT NULL,channelOrder INTEGER NOT NULL)');
+
+% data
+nchannel = size(RSK.data(1).values,2);
+tempstr = cell(nchannel,1);
+for i = 1:nchannel
+    tempstr{i} = [', channel', sprintf('%02d',i), ' DOUBLE'];
+end
+mksqlite(['CREATE table data (tstamp BIGINT PRIMARY KEY ASC' tempstr{:} ')']);
 
 % Populate table data in batches to avoid exceeding max limit of sql INSERT
 N = 5000;
@@ -100,17 +120,11 @@ for k = seg
     sql_data = horzcat(round(datenum2RSKtime(data.tstamp(ind,1))), data.values(ind,:));
     values = sprintf(value_format, reshape(rot90(sql_data, 3), numel(sql_data), 1));
     values = strrep(values(1:length(values) - 2), 'NaN', 'null');
-    mksqlite(['INSERT INTO data VALUES' values])
+    mksqlite(['INSERT INTO data VALUES' values]);
 end
 
-% Populate table region/regionCast/regionProfile/regionGeoData/regionComment
-if isfield(RSK,'region')
-    mksqlite('DROP table if exists region');
-    mksqlite('DROP table if exists regionCast');
-    mksqlite('DROP table if exists regionProfile');
-    mksqlite('DROP table if exists regionGeoData');
-    mksqlite('DROP table if exists regionComment');
-    
+% region/regionCast/regionProfile/regionGeoData/regionComment
+if isfield(RSK,'region')   
     if isfield(RSK.region,'description');
         mksqlite('CREATE table region (datasetID INTEGER NOT NULL,regionID INTEGER PRIMARY KEY,type VARCHAR(50),tstamp1 LONG,tstamp2 LONG,label VARCHAR(512),`description` TEXT)');
         mksqlite('begin');
@@ -160,47 +174,11 @@ if isfield(RSK,'region')
            mksqlite(sprintf('INSERT INTO regionComment VALUES (%i,"NULL")',RSK.regionComment(i).regionID));
        end
        mksqlite('commit');
-    end    
-    
-end
-
-% Remove rows in events and errors table where data is removed
-if ~isempty(mksqlite('SELECT name FROM sqlite_master WHERE type="table" AND name="events"'))
-    mksqlite('DELETE from events WHERE tstamp NOT IN (SELECT tstamp FROM data)');
-end
-if ~isempty(mksqlite('SELECT name FROM sqlite_master WHERE type="table" AND name="errors"'))
-    mksqlite('DELETE from errors WHERE tstamp NOT IN (SELECT tstamp FROM data)');
-end
-
-% Populate table channel and instrumentChannel
-mksqlite('DROP table if exists channels');
-mksqlite('CREATE TABLE channels (channelID INTEGER PRIMARY KEY,shortName TEXT NOT NULL,longName TEXT NOT NULL,units TEXT,isMeasured BOOLEAN,isDerived BOOLEAN)');
-
-mksqlite('DROP table if exists instrumentChannels');
-if isfield(RSK.deployments,'serialID')
-    mksqlite('CREATE TABLE instrumentChannels (serialID INTEGER,channelID INTEGER,channelOrder INTEGER,channelStatus INTEGER,PRIMARY KEY (serialID, channelID, channelOrder))');
-else
-    mksqlite('CREATE TABLE instrumentChannels (instrumentID INTEGER,channelID INTEGER,channelOrder INTEGER,channelStatus INTEGER,PRIMARY KEY (instrumentID, channelID, channelOrder))')
-end
-
-mksqlite('begin');
-for i = 1:length(RSK.channels)
-    mksqlite(sprintf('INSERT INTO channels VALUES (%i,"%s","%s","%s",1,0)',i, RSK.channels(i).shortName, RSK.channels(i).longName, RSK.channels(i).units)); 
-    if isfield(RSK.deployments,'serialID')
-        mksqlite(sprintf('INSERT INTO instrumentChannels VALUES (%i,%i,%i,0)', RSK.deployments.serialID, i, i)); 
-    else
-        mksqlite(sprintf('INSERT INTO instrumentChannels VALUES (1,%i,%i,0)', i, i)); 
-    end
-end
-mksqlite('commit');
-
-% Delete table calibrations
-if ~isempty(mksqlite('SELECT name FROM sqlite_master WHERE type="table" AND name="calibrations"'))
-    mksqlite('DELETE from calibrations');
+    end       
 end
 
 mksqlite('vacuum')
-mksqlite('close')
+mksqlite('CLOSE')
 
 fprintf('Wrote: %s/%s\n', outputdir, newfile);
 
