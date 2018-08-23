@@ -48,15 +48,15 @@ suffix = p.Results.suffix;
 
 
 % Set up output directory and output file name
-[~,name,ext] = fileparts(RSK.toolSettings.filename);
+[~,name,~] = fileparts(RSK.toolSettings.filename);
 if isempty(suffix); 
     suffix = datestr(now,'yyyymmddTHHMM'); 
 end
-newfile = [strtok([name ext],'.rsk') '_' suffix '.rsk'];
+newfile = [name '_' suffix '.rsk'];
 
 % Convert profiles into time series, if rsk is profile structured
-data.tstamp = cat(1,RSK.data(1:end).tstamp);
-data.values = cat(1,RSK.data(1:end).values);
+data.tstamp = cat(1,RSK.data(:).tstamp);
+data.values = cat(1,RSK.data(:).values);
 
 % Remove repeated values time stamp
 [data.tstamp,idx,~] = unique(data.tstamp,'stable');
@@ -100,7 +100,7 @@ mksqlite('CREATE TABLE events (deploymentID INTEGER NOT NULL, tstamp long NOT NU
 mksqlite('CREATE TABLE errors (deploymentID INTEGER NOT NULL,tstamp long NOT NULL,type INTEGER NOT NULL,sampleIndex INTEGER NOT NULL,channelOrder INTEGER NOT NULL)');
 
 % data
-nchannel = size(RSK.data(1).values,2);
+nchannel = size(data.values,2);
 tempstr = cell(nchannel,1);
 for i = 1:nchannel
     tempstr{i} = [', channel', sprintf('%02d',i), ' DOUBLE'];
