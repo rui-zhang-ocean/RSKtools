@@ -63,6 +63,10 @@ data.values = cat(1,RSK.data(:).values);
 data.values = data.values(idx,:);
 sampleSize = length(data.values);
 
+% Obtain firmwareVersion and samplingPeriod
+firmwareVersion = RSKfirmwarever(RSK);
+samplingPeriod = RSKsamplingperiod(RSK);
+
 % Open the file
 mksqlite('OPEN',[outputdir '/' newfile]);
 
@@ -84,11 +88,11 @@ mksqlite('commit');
 
 % deployments
 mksqlite('CREATE TABLE deployments (deploymentID INTEGER PRIMARY KEY, serialID INTEGER, comment TEXT, loggerStatus TEXT, firmwareVersion TEXT, loggerTimeDrift long, timeOfDownload long, name TEXT, sampleSize INTEGER, hashtag INTEGER)');
-mksqlite(sprintf('INSERT INTO deployments (deploymentID,serialID,firmwareVersion,timeOfDownload,name,sampleSize) VALUES (%i,%i,"%s",%f,"%s",%i)', RSK.deployments.deploymentID, RSK.deployments.serialID, RSK.deployments.firmwareVersion, RSK.deployments.timeOfDownload, newfile, sampleSize));
+mksqlite(sprintf('INSERT INTO deployments (deploymentID,serialID,firmwareVersion,timeOfDownload,name,sampleSize) VALUES (%i,%i,"%s",%f,"%s",%i)', RSK.deployments.deploymentID, RSK.instruments.serialID, firmwareVersion, RSK.deployments.timeOfDownload, newfile, sampleSize));
 
 % schedules
 mksqlite('CREATE TABLE schedules (scheduleID INTEGER PRIMARY KEY, deploymentID INTEGER NOT NULL, samplingPeriod long, repetitionPeriod long, samplingCount INTEGER, mode TEXT, altitude DOUBLE, gate VARCHAR(512))');
-mksqlite(sprintf('INSERT INTO schedules (scheduleID,deploymentID,samplingPeriod,mode,gate) VALUES (%i,%i,%i,"%s","%s")', RSK.schedules.scheduleID, RSK.schedules.deploymentID, RSK.schedules.samplingPeriod, RSK.schedules.mode, RSK.schedules.gate));
+mksqlite(sprintf('INSERT INTO schedules (scheduleID,deploymentID,samplingPeriod,mode,gate) VALUES (%i,%i,%i,"%s","%s")', RSK.schedules.scheduleID, RSK.deployments.deploymentID, samplingPeriod, RSK.schedules.mode, RSK.schedules.gate));
 
 % epochs
 mksqlite('CREATE TABLE epochs (deploymentID INTEGER PRIMARY KEY, startTime LONG, endTime LONG)');
