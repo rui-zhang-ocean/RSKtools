@@ -167,8 +167,10 @@ for ndx = castidx
         
         if isempty(ind_start) || isempty(ind_end)
             tmp = RSKreaddata(RSK, 't1', alltstart(ndx), 't2', alltend(ndx));
-            data(k).tstamp = tmp.data.tstamp;
-            data(k).values = tmp.data.values;
+            if length(tmp.data.tstamp) < length(RSK.data.tstamp)
+                data(k).tstamp = tmp.data.tstamp;
+                data(k).values = tmp.data.values;
+            end
         else
             data(k).tstamp = RSK.data.tstamp(ind_start:ind_end);
             data(k).values = RSK.data.values(ind_start:ind_end,:);
@@ -193,6 +195,7 @@ for ndx = castidx
 end
 
 if ~isfield(RSK, 'data'), RSK = readchannels(RSK); end
+data(cellfun(@isempty,{data.tstamp})) = [];
 RSK.data = data;
 
 end
