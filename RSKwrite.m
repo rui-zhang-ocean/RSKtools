@@ -1,13 +1,13 @@
 function newfile = RSKwrite(RSK, varargin)
 
-% RSKwrite - Write modified rsk structure into a new rsk file.
+% RSKwrite - Write current rsk structure into a new rsk file.
 %
 % Syntax: newfile = RSKwrite(RSKfile, [OPTIONS])
 %
 % RSKwrite outputs a new rsk file with updated data, profiles, channels and
 % metadata information in current rsk structure. It is designed to store
-% data after post-processing in RSKtools in rsk format which is also
-% readable in Ruskin. The new rsk file will be in EPdesktop format.
+% data in rsk format after post-processing in RSKtools. The new rsk file is
+% in EPdesktop format and readable in Ruskin. 
 %
 % Notes: This function is not thread safe.
 %
@@ -17,8 +17,8 @@ function newfile = RSKwrite(RSK, varargin)
 %    [Optional] - outputdir - directory for output rsk file, default is
 %                 current directory.
 %
-%               - suffix - suffix for output rsk file name, default is
-%                 current time in format of YYYYMMDDTHHMM.
+%               - suffix - string to append to output rsk file name, 
+%                 default is current time in format of YYYYMMDDTHHMM.
 %
 % Outputs:
 %    newfile - file name of output rsk file
@@ -33,7 +33,7 @@ function newfile = RSKwrite(RSK, varargin)
 % Author: RBR Ltd. Ottawa ON, Canada
 % email: support@rbr-global.com
 % Website: www.rbr-global.com
-% Last revision: 2018-08-22
+% Last revision: 2018-08-24
 
 
 p = inputParser;
