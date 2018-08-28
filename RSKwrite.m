@@ -33,7 +33,7 @@ function newfile = RSKwrite(RSK, varargin)
 % Author: RBR Ltd. Ottawa ON, Canada
 % email: support@rbr-global.com
 % Website: www.rbr-global.com
-% Last revision: 2018-08-24
+% Last revision: 2018-08-28
 
 
 p = inputParser;
@@ -47,23 +47,9 @@ outputdir = p.Results.outputdir;
 suffix = p.Results.suffix;
 
 
-% Set up output directory and output file name
-[~,name,~] = fileparts(RSK.toolSettings.filename);
-if isempty(suffix); 
-    suffix = datestr(now,'yyyymmddTHHMM'); 
-end
-newfile = [name '_' suffix '.rsk'];
-
-% Convert profiles into time series, if rsk is profile structured
-data.tstamp = cat(1,RSK.data(:).tstamp);
-data.values = cat(1,RSK.data(:).values);
-
-% Remove repeated values time stamp
-[data.tstamp,idx,~] = unique(data.tstamp,'stable');
-data.values = data.values(idx,:);
-sampleSize = length(data.values);
-
-% Obtain firmwareVersion and samplingPeriod
+newfile = setupOutputFilename(RSK,suffix);
+data = convertProfilesIntoTimeseries(RSK);
+[data, sampleSize] = removeRepeatedTimestamp(data);
 firmwareVersion = RSKfirmwarever(RSK);
 samplingPeriod = RSKsamplingperiod(RSK);
 
@@ -186,4 +172,21 @@ mksqlite('CLOSE')
 
 fprintf('Wrote: %s/%s\n', outputdir, newfile);
 
+%% Nested function
+    function newfile = setupOutputFilename(RSK,suffix)
+        [~,name,~] = fileparts(RSK.toolSettings.filename);
+        if isempty(suffix); suffix = datestr(now,'yyyymmddTHHMM'); end
+        newfile = [name '_' suffix '.rsk'];
+    end
+%% Nested function
+    function data = convertProfilesIntoTimeseries(RSK)   
+        data.tstamp = cat(1,RSK.data(:).tstamp);
+        data.values = cat(1,RSK.data(:).values);
+    end
+%% Nested function
+    function [data, sampleSize] = removeRepeatedTimestamp(data)
+        [data.tstamp,idx,~] = unique(data.tstamp,'stable');
+        data.values = data.values(idx,:);
+        sampleSize = length(data.values);
+    end
 end
