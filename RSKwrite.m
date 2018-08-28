@@ -46,7 +46,6 @@ RSK = p.Results.RSK;
 outputdir = p.Results.outputdir;
 suffix = p.Results.suffix;
 
-
 newfile = setupOutputFilename(RSK,suffix);
 data = convertProfilesIntoTimeseries(RSK);
 [data, nchannel] = removeRepeatedTimestamp(data);
@@ -79,26 +78,26 @@ fprintf('Wrote: %s/%s\n', outputdir, newfile);
     end
 
     function createSchema(nchannel)
-        mksqlite('CREATE TABLE dbInfo (version VARCHAR(50) PRIMARY KEY, type VARCHAR(50))')
-        mksqlite('CREATE TABLE instruments (serialID INTEGER PRIMARY KEY, model TEXT NOT NULL)');
-        mksqlite('CREATE TABLE channels (channelID INTEGER PRIMARY KEY,shortName TEXT NOT NULL,longName TEXT NOT NULL,units TEXT,isMeasured BOOLEAN,isDerived BOOLEAN)');
-        mksqlite('CREATE TABLE deployments (deploymentID INTEGER PRIMARY KEY, serialID INTEGER, comment TEXT, loggerStatus TEXT, firmwareVersion TEXT, loggerTimeDrift long, timeOfDownload long, name TEXT, sampleSize INTEGER, hashtag INTEGER)');
-        mksqlite('CREATE TABLE schedules (scheduleID INTEGER PRIMARY KEY, deploymentID INTEGER NOT NULL, samplingPeriod long, repetitionPeriod long, samplingCount INTEGER, mode TEXT, altitude DOUBLE, gate VARCHAR(512))');
-        mksqlite('CREATE TABLE epochs (deploymentID INTEGER PRIMARY KEY, startTime LONG, endTime LONG)');
-        mksqlite('CREATE TABLE events (deploymentID INTEGER NOT NULL, tstamp long NOT NULL, type INTEGER NOT NULL, sampleIndex INTEGER NOT NULL, channelIndex INTEGER)');
-        mksqlite('CREATE TABLE errors (deploymentID INTEGER NOT NULL,tstamp long NOT NULL,type INTEGER NOT NULL,sampleIndex INTEGER NOT NULL,channelOrder INTEGER NOT NULL)');
-        mksqlite('CREATE TABLE region (datasetID INTEGER NOT NULL,regionID INTEGER PRIMARY KEY,type VARCHAR(50),tstamp1 LONG,tstamp2 LONG,label VARCHAR(512),`description` TEXT)');
-        mksqlite('CREATE TABLE regionCast (regionID INTEGER,regionProfileID INTEGER,type STRING,FOREIGN KEY(regionID) REFERENCES REGION(regionID) ON DELETE CASCADE )');
-        mksqlite('CREATE TABLE regionProfile (regionID INTEGER,FOREIGN KEY(regionID) REFERENCES REGION(regionID) ON DELETE CASCADE )');
-        mksqlite('CREATE TABLE regionGeoData (regionID INTEGER,latitude DOUBLE,longitude DOUBLE,FOREIGN KEY(regionID) REFERENCES REGION(regionID) ON DELETE CASCADE )');
-        mksqlite('CREATE TABLE regionComment (regionID INTEGER,content VARCHAR(1024),FOREIGN KEY(regionID) REFERENCES REGION(regionID) ON DELETE CASCADE )');
-        mksqlite('CREATE TABLE downloads (deploymentID INTEGER NOT NULL, part INTEGER NOT NULL, offset INTEGER NOT NULL, data BLOB, PRIMARY KEY (deploymentID, part))');
+        mksqlite('CREATE TABLE IF NOT EXISTS dbInfo (version VARCHAR(50) PRIMARY KEY, type VARCHAR(50))')
+        mksqlite('CREATE TABLE IF NOT EXISTS instruments (serialID INTEGER PRIMARY KEY, model TEXT NOT NULL)');
+        mksqlite('CREATE TABLE IF NOT EXISTS channels (channelID INTEGER PRIMARY KEY,shortName TEXT NOT NULL,longName TEXT NOT NULL,units TEXT,isMeasured BOOLEAN,isDerived BOOLEAN)');
+        mksqlite('CREATE TABLE IF NOT EXISTS deployments (deploymentID INTEGER PRIMARY KEY, serialID INTEGER, comment TEXT, loggerStatus TEXT, firmwareVersion TEXT, loggerTimeDrift long, timeOfDownload long, name TEXT, sampleSize INTEGER, hashtag INTEGER)');
+        mksqlite('CREATE TABLE IF NOT EXISTS schedules (scheduleID INTEGER PRIMARY KEY, deploymentID INTEGER NOT NULL, samplingPeriod long, repetitionPeriod long, samplingCount INTEGER, mode TEXT, altitude DOUBLE, gate VARCHAR(512))');
+        mksqlite('CREATE TABLE IF NOT EXISTS epochs (deploymentID INTEGER PRIMARY KEY, startTime LONG, endTime LONG)');
+        mksqlite('CREATE TABLE IF NOT EXISTS events (deploymentID INTEGER NOT NULL, tstamp long NOT NULL, type INTEGER NOT NULL, sampleIndex INTEGER NOT NULL, channelIndex INTEGER)');
+        mksqlite('CREATE TABLE IF NOT EXISTS errors (deploymentID INTEGER NOT NULL,tstamp long NOT NULL,type INTEGER NOT NULL,sampleIndex INTEGER NOT NULL,channelOrder INTEGER NOT NULL)');
+        mksqlite('CREATE TABLE IF NOT EXISTS region (datasetID INTEGER NOT NULL,regionID INTEGER PRIMARY KEY,type VARCHAR(50),tstamp1 LONG,tstamp2 LONG,label VARCHAR(512),`description` TEXT)');
+        mksqlite('CREATE TABLE IF NOT EXISTS regionCast (regionID INTEGER,regionProfileID INTEGER,type STRING,FOREIGN KEY(regionID) REFERENCES REGION(regionID) ON DELETE CASCADE )');
+        mksqlite('CREATE TABLE IF NOT EXISTS regionProfile (regionID INTEGER,FOREIGN KEY(regionID) REFERENCES REGION(regionID) ON DELETE CASCADE )');
+        mksqlite('CREATE TABLE IF NOT EXISTS regionGeoData (regionID INTEGER,latitude DOUBLE,longitude DOUBLE,FOREIGN KEY(regionID) REFERENCES REGION(regionID) ON DELETE CASCADE )');
+        mksqlite('CREATE TABLE IF NOT EXISTS regionComment (regionID INTEGER,content VARCHAR(1024),FOREIGN KEY(regionID) REFERENCES REGION(regionID) ON DELETE CASCADE )');
+        mksqlite('CREATE TABLE IF NOT EXISTS downloads (deploymentID INTEGER NOT NULL, part INTEGER NOT NULL, offset INTEGER NOT NULL, data BLOB, PRIMARY KEY (deploymentID, part))');
         createTabledata(nchannel);
         
         function createTabledata(nchannel)
             tempstr = cell(nchannel,1);
             for n = 1:nchannel; tempstr{n} = [', channel', sprintf('%02d',n), ' DOUBLE']; end
-            mksqlite(['CREATE TABLE data (tstamp BIGINT PRIMARY KEY ASC' tempstr{:} ')']);
+            mksqlite(['CREATE TABLE IF NOT EXISTS data (tstamp BIGINT PRIMARY KEY ASC' tempstr{:} ')']);
         end
     end
 
@@ -119,15 +118,9 @@ fprintf('Wrote: %s/%s\n', outputdir, newfile);
         if isfield(RSK,'region')   
             insertTableregion(RSK)
             insertTableregionProfile(RSK)
-            if isfield(RSK,'regionCast');
-                insertTableregionCast(RSK)
-            end
-            if isfield(RSK,'regionGeoData');
-                insertTableregionGeoData(RSK)
-            end
-            if isfield(RSK,'regionComment');
-                insertTableregionComment(RSK)
-            end       
+            if isfield(RSK,'regionCast'); insertTableregionCast(RSK); end
+            if isfield(RSK,'regionGeoData'); insertTableregionGeoData(RSK); end
+            if isfield(RSK,'regionComment'); insertTableregionComment(RSK); end       
         end 
         mksqlite('commit')
         
