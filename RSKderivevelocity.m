@@ -42,7 +42,7 @@ end
 
 
 
-RSK = addchannelmetadata(RSK, 'sos_00', 'Velocity', 'm/s');
+RSK = addchannelmetadata(RSK, 'pvel00', 'Velocity', 'm/s');
 Vcol = getchannelindex(RSK, 'Velocity');
 
 
