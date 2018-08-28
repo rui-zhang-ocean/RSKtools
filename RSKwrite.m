@@ -59,6 +59,7 @@ mksqlite('CLOSE')
 
 fprintf('Wrote: %s/%s\n', outputdir, newfile);
 
+
 %% Nested function
     function newfile = setupOutputFilename(RSK,suffix)
         [~,name,~] = fileparts(RSK.toolSettings.filename);
@@ -92,49 +93,69 @@ fprintf('Wrote: %s/%s\n', outputdir, newfile);
         mksqlite('CREATE TABLE regionGeoData (regionID INTEGER,latitude DOUBLE,longitude DOUBLE,FOREIGN KEY(regionID) REFERENCES REGION(regionID) ON DELETE CASCADE )');
         mksqlite('CREATE TABLE regionComment (regionID INTEGER,content VARCHAR(1024),FOREIGN KEY(regionID) REFERENCES REGION(regionID) ON DELETE CASCADE )');
         mksqlite('CREATE TABLE downloads (deploymentID INTEGER NOT NULL, part INTEGER NOT NULL, offset INTEGER NOT NULL, data BLOB, PRIMARY KEY (deploymentID, part))');
-        createTableData(nchannel);
+        createTabledata(nchannel);
         
-        function createTableData(nchannel)
+        function createTabledata(nchannel)
             tempstr = cell(nchannel,1);
             for n = 1:nchannel; tempstr{n} = [', channel', sprintf('%02d',n), ' DOUBLE']; end
             mksqlite(['CREATE TABLE data (tstamp BIGINT PRIMARY KEY ASC' tempstr{:} ')']);
         end
     end
 
-    function insertSchema(RSK,data,newfile)
+    function insertSchema(RSK,data,newfile) 
         
         firmwareVersion = RSKfirmwarever(RSK);
         samplingPeriod = RSKsamplingperiod(RSK);
         sampleSize = length(data.values);
-
+       
         mksqlite(sprintf('INSERT INTO dbInfo VALUES ("%s","EPdesktop")', RSK.dbInfo.version));
         mksqlite(sprintf('INSERT INTO instruments VALUES (%i,"%s")', RSK.instruments.serialID, RSK.instruments.model));
         mksqlite(sprintf('INSERT INTO deployments (deploymentID,serialID,firmwareVersion,timeOfDownload,name,sampleSize) VALUES (%i,%i,"%s",%f,"%s",%i)', RSK.deployments.deploymentID, RSK.instruments.serialID, firmwareVersion, RSK.deployments.timeOfDownload, newfile, sampleSize));
         mksqlite(sprintf('INSERT INTO schedules (scheduleID,deploymentID,samplingPeriod,mode,gate) VALUES (%i,%i,%i,"%s","%s")', RSK.schedules.scheduleID, RSK.deployments.deploymentID, samplingPeriod, RSK.schedules.mode, RSK.schedules.gate));
         mksqlite(sprintf('INSERT INTO epochs VALUES (%i,%f,%f)', RSK.epochs.deploymentID, round(datenum2RSKtime(data.tstamp(1))), round(datenum2RSKtime(data.tstamp(end)))));
-
-        mksqlite('begin');
-        for i = 1:length(RSK.channels)
-            mksqlite(sprintf('INSERT INTO channels VALUES (%i,"%s","%s","%s",1,0)',i, RSK.channels(i).shortName, RSK.channels(i).longName, RSK.channels(i).units)); 
-        end
-        mksqlite('commit');
-
-        N = 5000;
-        seg = 1:ceil(length(data.tstamp)/N);
-        for k = seg
-            if k == seg(end);
-                ind = 1+N*(k-1) : length(data.tstamp);       
-            else
-                ind = 1+N*(k-1) : N*k;   
-            end 
-            value_format = strcat('(%i', repmat(', %f', 1, size(data.values(ind,:), 2)), '),\n');
-            sql_data = horzcat(round(datenum2RSKtime(data.tstamp(ind,1))), data.values(ind,:));
-            values = sprintf(value_format, reshape(rot90(sql_data, 3), numel(sql_data), 1));
-            values = strrep(values(1:length(values) - 2), 'NaN', 'null');
-            mksqlite(['INSERT INTO data VALUES' values]);
-        end
-
+        insertTablechannels(RSK)
+        insertTabledata(data)
+        
         if isfield(RSK,'region')   
+            insertTableregion(RSK)
+            insertTableregionProfile(RSK)
+            if isfield(RSK,'regionCast');
+                insertTableregionCast(RSK)
+            end
+            if isfield(RSK,'regionGeoData');
+                insertTableregionGeoData(RSK)
+            end
+            if isfield(RSK,'regionComment');
+                insertTableregionComment(RSK)
+            end       
+        end 
+        
+        function insertTablechannels(RSK)
+            mksqlite('begin');
+            for i = 1:length(RSK.channels)
+                mksqlite(sprintf('INSERT INTO channels VALUES (%i,"%s","%s","%s",1,0)',i, RSK.channels(i).shortName, RSK.channels(i).longName, RSK.channels(i).units)); 
+            end
+            mksqlite('commit');           
+        end
+        
+        function insertTabledata(data)
+            N = 5000;
+            seg = 1:ceil(length(data.tstamp)/N);
+            for k = seg
+                if k == seg(end);
+                    ind = 1+N*(k-1) : length(data.tstamp);       
+                else
+                    ind = 1+N*(k-1) : N*k;   
+                end 
+                value_format = strcat('(%i', repmat(', %f', 1, size(data.values(ind,:), 2)), '),\n');
+                sql_data = horzcat(round(datenum2RSKtime(data.tstamp(ind,1))), data.values(ind,:));
+                values = sprintf(value_format, reshape(rot90(sql_data, 3), numel(sql_data), 1));
+                values = strrep(values(1:length(values) - 2), 'NaN', 'null');
+                mksqlite(['INSERT INTO data VALUES' values]);
+            end           
+        end
+        
+        function insertTableregion(RSK)
             if isfield(RSK.region,'description');
                 mksqlite('begin');
                 for i = 1:length(RSK.region) 
@@ -148,37 +169,39 @@ fprintf('Wrote: %s/%s\n', outputdir, newfile);
                 end
                 mksqlite('commit');
             end
-
-            if isfield(RSK,'regionCast');
-                mksqlite('begin');
-                for i = 1:length(RSK.regionCast)
-                    mksqlite(sprintf('INSERT INTO regionCast VALUES (%i,%i,"%s")',RSK.regionCast(i).regionID, RSK.regionCast(i).regionProfileID, RSK.regionCast(i).type));
-                end  
-                mksqlite('commit');
-            end
-
+        end
+        
+        function insertTableregionCast(RSK)
+            mksqlite('begin');
+            for i = 1:length(RSK.regionCast)
+                mksqlite(sprintf('INSERT INTO regionCast VALUES (%i,%i,"%s")',RSK.regionCast(i).regionID, RSK.regionCast(i).regionProfileID, RSK.regionCast(i).type));
+            end  
+            mksqlite('commit'); 
+        end
+        
+        function insertTableregionProfile(RSK)
             profileidx = find(strcmp({RSK.region.type},'PROFILE'));
             mksqlite('begin');
             for i = 1:length(profileidx)
                 mksqlite(sprintf('INSERT INTO regionProfile VALUES (%i)', profileidx(i))); 
             end
-            mksqlite('commit');
-
-            if isfield(RSK,'regionGeoData');
-                mksqlite('begin');
-                for i = 1:length(RSK.regionGeoData)
-                    mksqlite(sprintf('INSERT INTO regionGeoData VALUES (%i,%f,%f)',RSK.regionGeoData(i).regionID, RSK.regionGeoData(i).latitude, RSK.regionGeoData(i).longitude));
-                end
-                mksqlite('commit');
+            mksqlite('commit'); 
+        end
+        
+        function insertTableregionGeoData(RSK)
+            mksqlite('begin');
+            for i = 1:length(RSK.regionGeoData)
+                mksqlite(sprintf('INSERT INTO regionGeoData VALUES (%i,%f,%f)',RSK.regionGeoData(i).regionID, RSK.regionGeoData(i).latitude, RSK.regionGeoData(i).longitude));
             end
-
-            if isfield(RSK,'regionComment');
-               mksqlite('begin');
-               for i = 1:length(RSK.regionComment)
-                   mksqlite(sprintf('INSERT INTO regionComment VALUES (%i,"NULL")',RSK.regionComment(i).regionID));
-               end
-               mksqlite('commit');
-            end       
-        end 
+            mksqlite('commit'); 
+        end  
+        
+        function insertTableregionComment(RSK)
+            mksqlite('begin');
+            for i = 1:length(RSK.regionComment)
+               mksqlite(sprintf('INSERT INTO regionComment VALUES (%i,"NULL")',RSK.regionComment(i).regionID));
+            end
+            mksqlite('commit'); 
+        end       
     end
 end
