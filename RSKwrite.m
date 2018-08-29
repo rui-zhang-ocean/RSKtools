@@ -204,11 +204,7 @@ function insertSchema(RSK,data,newfile)
     
     function doCommit(SQL)
         mksqlite('begin')
-        try
-            mksqlite(SQL)
-        catch
-            error('RSK file being written already exists.')
-        end
+        mksqlite(SQL)
         mksqlite('commit')
     end
 end
