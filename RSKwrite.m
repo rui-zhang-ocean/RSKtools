@@ -59,7 +59,7 @@ mksqlite('CLOSE')
 fprintf('Wrote: %s/%s\n', outputdir, newfile);
 
 
-%% Nested functions
+%% NESTED FUNCTIONS
 function newfile = setupOutputFilename(RSK,suffix)
     [~,name,~] = fileparts(RSK.toolSettings.filename);
     if isempty(suffix); suffix = datestr(now,'yyyymmddTHHMM'); end
@@ -93,7 +93,7 @@ function createSchema(nchannel)
     mksqlite('CREATE TABLE IF NOT EXISTS regionComment (regionID INTEGER,content VARCHAR(1024),FOREIGN KEY(regionID) REFERENCES REGION(regionID) ON DELETE CASCADE )');
     mksqlite('CREATE TABLE IF NOT EXISTS downloads (deploymentID INTEGER NOT NULL, part INTEGER NOT NULL, offset INTEGER NOT NULL, data BLOB, PRIMARY KEY (deploymentID, part))');
     createTabledata(nchannel);
-    %% double nested functions
+    %% nested functions
     function createTabledata(nchannel)
         tempstr = cell(nchannel,1);
         for n = 1:nchannel; tempstr{n} = [', channel', sprintf('%02d',n), ' DOUBLE']; end
@@ -121,7 +121,7 @@ function insertSchema(RSK,data,newfile)
         if isfield(RSK,'regionGeoData'); insertTableregionGeoData(RSK); end
         if isfield(RSK,'regionComment'); insertTableregionComment(RSK); end       
     end
-    %% double nested functions
+    %% nested functions
     function insertTabledbInfo(RSK)
         doCommit(sprintf('INSERT INTO dbInfo VALUES ("%s","EPdesktop")', RSK.dbInfo.version));
     end
@@ -139,7 +139,9 @@ function insertSchema(RSK,data,newfile)
     end
     
     function insertTableepochs(RSK,data)
-        doCommit(sprintf('INSERT INTO epochs VALUES (%i,%f,%f)', RSK.epochs.deploymentID, round(datenum2RSKtime(data.tstamp(1))), round(datenum2RSKtime(data.tstamp(end)))));
+        minTimestamp = min([round(datenum2RSKtime(data.tstamp(1))),[RSK.region.tstamp1]]);
+        maxTimestamp = max([round(datenum2RSKtime(data.tstamp(end))),[RSK.region.tstamp2]]);        
+        doCommit(sprintf('INSERT INTO epochs VALUES (%i,%f,%f)', RSK.epochs.deploymentID, minTimestamp, maxTimestamp));
     end
            
     function insertTablechannels(RSK)
@@ -200,10 +202,10 @@ function insertSchema(RSK,data,newfile)
         sql = temp2(1:length(temp2)-2);
     end
     
-    function doCommit(sql_string)
+    function doCommit(SQL)
         mksqlite('begin')
         try
-            mksqlite(sql_string)
+            mksqlite(SQL)
         catch
             error('RSK file being written already exists.')
         end
