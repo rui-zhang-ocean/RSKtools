@@ -33,7 +33,7 @@ function newfile = RSKwrite(RSK, varargin)
 % Author: RBR Ltd. Ottawa ON, Canada
 % email: support@rbr-global.com
 % Website: www.rbr-global.com
-% Last revision: 2018-08-29
+% Last revision: 2018-08-30
 
 
 p = inputParser;
@@ -101,12 +101,13 @@ function createSchema(nchannel)
     end
 end
 
-function insertSchema(RSK,data,newfile) 
-    
+function insertSchema(RSK,data,newfile)   
     firmwareVersion = RSKfirmwarever(RSK);
     samplingPeriod = RSKsamplingperiod(RSK);
     sampleSize = length(data.values);
     
+    originalCharacterEncoding = slCharacterEncoding;
+    slCharacterEncoding('UTF-8');    
     insertTabledbInfo(RSK)
     insertTableinstruments(RSK)
     insertTabledeployments(RSK,firmwareVersion,newfile,sampleSize)
@@ -120,7 +121,8 @@ function insertSchema(RSK,data,newfile)
         if isfield(RSK,'regionCast'); insertTableregionCast(RSK); end
         if isfield(RSK,'regionGeoData'); insertTableregionGeoData(RSK); end
         if isfield(RSK,'regionComment'); insertTableregionComment(RSK); end       
-    end
+    end    
+    slCharacterEncoding(originalCharacterEncoding)
     %% nested functions
     function insertTabledbInfo(RSK)
         doCommit(sprintf('INSERT INTO dbInfo VALUES ("%s","EPdesktop")', RSK.dbInfo.version));
