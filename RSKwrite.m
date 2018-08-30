@@ -125,30 +125,29 @@ function insertSchema(RSK,data,newfile)
     slCharacterEncoding(originalCharacterEncoding)
     %% nested functions
     function insertTabledbInfo(RSK)
-        doCommit(sprintf('INSERT INTO dbInfo VALUES ("%s","EPdesktop")', RSK.dbInfo.version));
+        formatAndTransact('INSERT INTO dbInfo VALUES','("%s","EPdesktop")',{RSK.dbInfo.version});
     end
     
     function insertTableinstruments(RSK)
-        doCommit(sprintf('INSERT INTO instruments VALUES (%i,"%s")', RSK.instruments.serialID, RSK.instruments.model));
+        formatAndTransact('INSERT INTO instruments VALUES','(%i,"%s")',{RSK.instruments.serialID, RSK.instruments.model});
     end
     
     function insertTabledeployments(RSK,firmwareVersion,newfile,sampleSize)
-        doCommit(sprintf('INSERT INTO deployments (deploymentID,serialID,firmwareVersion,timeOfDownload,name,sampleSize) VALUES (%i,%i,"%s",%f,"%s",%i)', RSK.deployments.deploymentID, RSK.instruments.serialID, firmwareVersion, RSK.deployments.timeOfDownload, newfile, sampleSize));
+        formatAndTransact('INSERT INTO deployments (deploymentID,serialID,firmwareVersion,timeOfDownload,name,sampleSize) VALUES','(%i,%i,"%s",%f,"%s",%i)',{RSK.deployments.deploymentID, RSK.instruments.serialID, firmwareVersion, RSK.deployments.timeOfDownload, newfile, sampleSize});
     end
     
     function insertTableschedules(RSK,samplingPeriod)
-        doCommit(sprintf('INSERT INTO schedules (scheduleID,deploymentID,samplingPeriod,mode,gate) VALUES (%i,%i,%i,"%s","%s")', RSK.schedules.scheduleID, RSK.deployments.deploymentID, samplingPeriod, RSK.schedules.mode, RSK.schedules.gate));
+        formatAndTransact('INSERT INTO schedules (scheduleID,deploymentID,samplingPeriod,mode,gate) VALUES','(%i,%i,%i,"%s","%s")',{RSK.schedules.scheduleID, RSK.deployments.deploymentID, samplingPeriod, RSK.schedules.mode, RSK.schedules.gate});
     end
     
     function insertTableepochs(RSK,data)
         minTimestamp = min([round(datenum2RSKtime(data.tstamp(1))),[RSK.region.tstamp1]]);
-        maxTimestamp = max([round(datenum2RSKtime(data.tstamp(end))),[RSK.region.tstamp2]]);        
-        doCommit(sprintf('INSERT INTO epochs VALUES (%i,%f,%f)', RSK.epochs.deploymentID, minTimestamp, maxTimestamp));
+        maxTimestamp = max([round(datenum2RSKtime(data.tstamp(end))),[RSK.region.tstamp2]]);       
+        formatAndTransact('INSERT INTO epochs VALUES','(%i,%f,%f)',num2cell([RSK.epochs.deploymentID, minTimestamp, maxTimestamp]));
     end
            
     function insertTablechannels(RSK)
-        sql = buildSQLstring([num2cell((1:length(RSK.channels))); struct2cell(RSK.channels)], '(%i,"%s","%s","%s",1,0),\n');
-        doCommit(['INSERT INTO channels VALUES' sql]);         
+        formatAndTransact('INSERT INTO channels VALUES','(%i,"%s","%s","%s",1,0)',[num2cell((1:length(RSK.channels))); struct2cell(RSK.channels)])       
     end
 
     function insertTabledata(data)
@@ -160,54 +159,56 @@ function insertSchema(RSK,data,newfile)
             else
                 ind = 1+N*(k-1) : N*k;   
             end 
-            sql_fmt = strcat('(%i', repmat(', %f', 1, size(data.values(ind,:), 2)), '),\n');
-            values = num2cell([round(datenum2RSKtime(data.tstamp(ind,1))), data.values(ind,:)])';
-            sql = buildSQLstring(values, sql_fmt);
-            sql = strrep(sql, 'NaN', 'null');
-            doCommit(['INSERT INTO data VALUES' sql]);
+            sql_fmt = strcat('(%i', repmat(', %f', 1, size(data.values(ind,:), 2)), ')');
+            values = num2cell([round(datenum2RSKtime(data.tstamp(ind,1))), data.values(ind,:)])';           
+            formatAndTransact('INSERT INTO data VALUES',sql_fmt,values);
         end           
     end
 
     function insertTableregion(RSK)
         if isfield(RSK.region,'description');
-            sql = buildSQLstring(struct2cell(RSK.region), '(%i,%i,"%s",%i,%i,"%s","%s"),\n');
-            doCommit(['INSERT INTO region (datasetID,regionID,type,tstamp1,tstamp2,label,description) VALUES' sql]);         
+            formatAndTransact('INSERT INTO region (datasetID,regionID,type,tstamp1,tstamp2,label,description) VALUES','(%i,%i,"%s",%i,%i,"%s","%s")',struct2cell(RSK.region));       
         else
-            sql = buildSQLstring(struct2cell(RSK.region), '(%i,%i,"%s",%i,%i,"%s"),\n');
-            doCommit(['INSERT INTO region (datasetID,regionID,type,tstamp1,tstamp2,label) VALUES' sql]); 
+            formatAndTransact('INSERT INTO region (datasetID,regionID,type,tstamp1,tstamp2,label) VALUES','(%i,%i,"%s",%i,%i,"%s")',struct2cell(RSK.region));       
         end
     end
 
     function insertTableregionCast(RSK)
-        sql = buildSQLstring(struct2cell(RSK.regionCast), '(%i,%i,"%s"),\n');
-        doCommit(['INSERT INTO regionCast VALUES' sql]); 
+        formatAndTransact('INSERT INTO regionCast VALUES','(%i,%i,"%s")',struct2cell(RSK.regionCast));
     end
 
     function insertTableregionProfile(RSK)
-        sql = buildSQLstring(num2cell(find(strcmp({RSK.region.type},'PROFILE'))), '(%i),\n');
-        doCommit(['INSERT INTO regionProfile VALUES' sql]);      
+        formatAndTransact('INSERT INTO regionProfile VALUES','(%i)',num2cell(find(strcmp({RSK.region.type},'PROFILE'))));     
     end
 
     function insertTableregionGeoData(RSK)
-        sql = buildSQLstring(struct2cell(RSK.regionGeoData), '(%i,%f,%f),\n');
-        doCommit(['INSERT INTO regionGeoData VALUES' sql]); 
+        formatAndTransact('INSERT INTO regionGeoData VALUES','(%i,%f,%f)',struct2cell(RSK.regionGeoData));
     end  
 
     function insertTableregionComment(RSK)
-        sql = buildSQLstring(num2cell([RSK.regionComment.regionID]), '(%i,"NULL"),\n');
-        doCommit(['INSERT INTO regionComment VALUES' sql]);     
+        formatAndTransact('INSERT INTO regionComment VALUES','(%i,"NULL")',num2cell([RSK.regionComment.regionID]));   
     end 
     
     function sql = buildSQLstring(values, sql_fmt)
         temp1 = reshape(values, numel(values), 1);
-        temp2 = sprintf(sql_fmt,temp1{:});
+        temp2 = sprintf([sql_fmt ',\n'],temp1{:});
         sql = temp2(1:length(temp2)-2);
     end
     
-    function doCommit(SQL)
+    function doTransaction(SQL)
         mksqlite('begin')
         mksqlite(SQL)
         mksqlite('commit')
+    end
+    
+    function formatAndTransact(insertString, sql_fmt, values)
+        sql = buildSQLstring(values, sql_fmt);
+        
+        if strncmp(insertString,'INSERT INTO data',16)
+            sql = strrep(sql, 'NaN', 'null');    
+        end
+        
+        doTransaction([insertString sql]);
     end
 end
 end
