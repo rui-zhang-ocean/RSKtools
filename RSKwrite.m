@@ -52,7 +52,7 @@ data = convertProfilesIntoTimeseries(RSK);
 
 mksqlite('OPEN',[outputdir '/' newfile]);
 createSchema(nchannel);
-insertData(RSK, data, newfile);
+writeData(RSK, data, newfile);
 mksqlite('CLOSE')
 
 fprintf('Wrote: %s/%s\n', outputdir, newfile);
@@ -100,59 +100,59 @@ function createTabledata(nchannel)
     mksqlite(['CREATE TABLE IF NOT EXISTS data (tstamp BIGINT PRIMARY KEY ASC' tempstr{:} ')']);
 end
 
-function insertData(RSK,data,newfile)   
+function writeData(RSK,data,newfile)   
     firmwareVersion = RSKfirmwarever(RSK);
     samplingPeriod = RSKsamplingperiod(RSK);
     sampleSize = length(data.values);
     
     originalCharacterEncoding = slCharacterEncoding;
     slCharacterEncoding('UTF-8');    
-    insertTabledbInfo(RSK)
-    insertTableinstruments(RSK)
-    insertTabledeployments(RSK,firmwareVersion,newfile,sampleSize)
-    insertTableschedules(RSK,samplingPeriod)
-    insertTableepochs(RSK,data)
-    insertTablechannels(RSK)
-    insertTabledata(data)
+    insertDbInfo(RSK)
+    insertInstruments(RSK)
+    insertDeployments(RSK,firmwareVersion,newfile,sampleSize)
+    insertSchedules(RSK,samplingPeriod)
+    insertEpochs(RSK,data)
+    insertChannels(RSK)
+    insertData(data)
     
     if isfield(RSK,'region')   
-        insertTableregion(RSK)
-        insertTableregionProfile(RSK)
-        if isfield(RSK,'regionCast'); insertTableregionCast(RSK); end
-        if isfield(RSK,'regionGeoData'); insertTableregionGeoData(RSK); end
-        if isfield(RSK,'regionComment'); insertTableregionComment(RSK); end       
+        insertRegion(RSK)
+        insertRegionProfile(RSK)
+        if isfield(RSK,'regionCast'); insertRegionCast(RSK); end
+        if isfield(RSK,'regionGeoData'); insertRegionGeoData(RSK); end
+        if isfield(RSK,'regionComment'); insertRegionComment(RSK); end       
     end    
     
     slCharacterEncoding(originalCharacterEncoding)
 end
 
-function insertTabledbInfo(RSK)
+function insertDbInfo(RSK)
     formatAndTransact('INSERT INTO dbInfo VALUES','("%s","EPdesktop")',{RSK.dbInfo.version});
 end
 
-function insertTableinstruments(RSK)
+function insertInstruments(RSK)
     formatAndTransact('INSERT INTO instruments VALUES','(%i,"%s")',{RSK.instruments.serialID, RSK.instruments.model});
 end
 
-function insertTabledeployments(RSK,firmwareVersion,newfile,sampleSize)
+function insertDeployments(RSK,firmwareVersion,newfile,sampleSize)
     formatAndTransact('INSERT INTO deployments (deploymentID,serialID,firmwareVersion,timeOfDownload,name,sampleSize) VALUES','(%i,%i,"%s",%f,"%s",%i)',{RSK.deployments.deploymentID, RSK.instruments.serialID, firmwareVersion, RSK.deployments.timeOfDownload, newfile, sampleSize});
 end
 
-function insertTableschedules(RSK,samplingPeriod)
+function insertSchedules(RSK,samplingPeriod)
     formatAndTransact('INSERT INTO schedules (scheduleID,deploymentID,samplingPeriod,mode,gate) VALUES','(%i,%i,%i,"%s","%s")',{RSK.schedules.scheduleID, RSK.deployments.deploymentID, samplingPeriod, RSK.schedules.mode, RSK.schedules.gate});
 end
 
-function insertTableepochs(RSK,data)
+function insertEpochs(RSK,data)
     minTimestamp = min([round(datenum2RSKtime(data.tstamp(1))),[RSK.region.tstamp1]]);
     maxTimestamp = max([round(datenum2RSKtime(data.tstamp(end))),[RSK.region.tstamp2]]);       
     formatAndTransact('INSERT INTO epochs VALUES','(%i,%f,%f)',num2cell([RSK.epochs.deploymentID, minTimestamp, maxTimestamp]));
 end
 
-function insertTablechannels(RSK)
+function insertChannels(RSK)
     formatAndTransact('INSERT INTO channels VALUES','(%i,"%s","%s","%s",1,0)',[num2cell((1:length(RSK.channels))); struct2cell(RSK.channels)])       
 end
 
-function insertTabledata(data)
+function insertData(data)
     N = 5000;
     seg = 1:ceil(length(data.tstamp)/N);
     for k = seg
@@ -167,7 +167,7 @@ function insertTabledata(data)
     end           
 end
 
-function insertTableregion(RSK)
+function insertRegion(RSK)
     if isfield(RSK.region,'description');
         formatAndTransact('INSERT INTO region (datasetID,regionID,type,tstamp1,tstamp2,label,description) VALUES','(%i,%i,"%s",%i,%i,"%s","%s")',struct2cell(RSK.region));       
     else
@@ -175,19 +175,19 @@ function insertTableregion(RSK)
     end
 end
 
-function insertTableregionCast(RSK)
+function insertRegionCast(RSK)
     formatAndTransact('INSERT INTO regionCast VALUES','(%i,%i,"%s")',struct2cell(RSK.regionCast));
 end
 
-function insertTableregionProfile(RSK)
+function insertRegionProfile(RSK)
     formatAndTransact('INSERT INTO regionProfile VALUES','(%i)',num2cell(find(strcmp({RSK.region.type},'PROFILE'))));     
 end
 
-function insertTableregionGeoData(RSK)
+function insertRegionGeoData(RSK)
     formatAndTransact('INSERT INTO regionGeoData VALUES','(%i,%f,%f)',struct2cell(RSK.regionGeoData));
 end  
 
-function insertTableregionComment(RSK)
+function insertRegionComment(RSK)
     formatAndTransact('INSERT INTO regionComment VALUES','(%i,"NULL")',num2cell([RSK.regionComment.regionID]));   
 end 
 
