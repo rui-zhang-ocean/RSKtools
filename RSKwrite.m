@@ -100,17 +100,14 @@ function createTabledata(nchannel)
     mksqlite(['CREATE TABLE IF NOT EXISTS data (tstamp BIGINT PRIMARY KEY ASC' tempstr{:} ')']);
 end
 
-function writeData(RSK,data,newfile)   
-    firmwareVersion = RSKfirmwarever(RSK);
-    samplingPeriod = RSKsamplingperiod(RSK);
-    sampleSize = length(data.values);
-    
+function writeData(RSK,data,newfile)       
     originalCharacterEncoding = slCharacterEncoding;
-    slCharacterEncoding('UTF-8');    
+    slCharacterEncoding('UTF-8');  
+    
     insertDbInfo(RSK)
     insertInstruments(RSK)
-    insertDeployments(RSK,firmwareVersion,newfile,sampleSize)
-    insertSchedules(RSK,samplingPeriod)
+    insertDeployments(RSK,data,newfile)
+    insertSchedules(RSK)
     insertEpochs(RSK,data)
     insertChannels(RSK)
     insertData(data)
@@ -134,11 +131,14 @@ function insertInstruments(RSK)
     formatAndTransact('INSERT INTO instruments VALUES','(%i,"%s")',{RSK.instruments.serialID, RSK.instruments.model});
 end
 
-function insertDeployments(RSK,firmwareVersion,newfile,sampleSize)
+function insertDeployments(RSK,data,newfile)
+    firmwareVersion = RSKfirmwarever(RSK);
+    sampleSize = length(data.values);
     formatAndTransact('INSERT INTO deployments (deploymentID,serialID,firmwareVersion,timeOfDownload,name,sampleSize) VALUES','(%i,%i,"%s",%f,"%s",%i)',{RSK.deployments.deploymentID, RSK.instruments.serialID, firmwareVersion, RSK.deployments.timeOfDownload, newfile, sampleSize});
 end
 
-function insertSchedules(RSK,samplingPeriod)
+function insertSchedules(RSK)
+    samplingPeriod = RSKsamplingperiod(RSK);
     formatAndTransact('INSERT INTO schedules (scheduleID,deploymentID,samplingPeriod,mode,gate) VALUES','(%i,%i,%i,"%s","%s")',{RSK.schedules.scheduleID, RSK.deployments.deploymentID, samplingPeriod, RSK.schedules.mode, RSK.schedules.gate});
 end
 
