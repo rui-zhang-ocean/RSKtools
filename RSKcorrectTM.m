@@ -85,12 +85,14 @@ visualize = p.Results.visualize;
 fs = round(1/RSKsamplingperiod(RSK));
 a = 4*fs/2*alpha/beta * 1/(1 + 4*fs/2/beta);
 b = 1 - 2*a/alpha;
+
 Tcol = getchannelindex(RSK,'Temperature');
 Ccol = getchannelindex(RSK,'Conductivity');
-
 castidx = getdataindex(RSK, profile, direction);
 
-if visualize ~= 0; [raw, diagndx] = checkDiagPlot(RSK, visualize, direction, castidx); end
+if visualize ~= 0; 
+    [raw, diagndx] = checkDiagPlot(RSK, visualize, direction, castidx); 
+end
 
 for ndx = castidx
     T = RSK.data(ndx).values(:,Tcol);
