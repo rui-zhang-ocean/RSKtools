@@ -66,29 +66,29 @@ logentry = ('O2 saturation in unit of % is derived from measured O2 concentratio
 RSK = RSKappendtolog(RSK, logentry);
 
 %% Nested function - derive saturation using Gorcia and Gordon equation
-    function oxsat = con2sat_GG(oxcon, temp, sal, unit)
-        
-        ga0 = 2.00856; ga1 = 3.22400; ga2 = 3.99063; ga3 = 4.80299; ga4 = 9.78188e-1; ga5 = 1.71069;
-        gb0 = -6.24097e-3; gb1 = -6.93498e-3; gb2 = -6.90358e-3; gb3 = -4.29155e-3;
-        gc0 = -3.11680e-7;
-        
-        temp = log((298.15 - temp) ./ (273.15 + temp));
-        coef = ga0 + temp .* (ga1 + temp .* (ga2 + temp .* (ga3 + temp .* (ga4 + ga5 * temp)))) ...
-               + sal .* (gb0 + temp .* (gb1 + temp .* (gb2 + temp * gb3))) ...
-               + sal .* sal * gc0;
-        coef = exp(coef);
-        
-        switch unit
-            case 'µmol/l'
-                oxsat = (2.2414) * oxcon ./ coef; 
-            case 'ml/l'
-                oxsat = (2.2414/44.659) * oxcon ./ coef; 
-            case 'mg/l'
-                oxsat = (1.4276 * 2.2414/44.659) * oxcon ./ coef;
-            otherwise
-                error('O2 concentration channel must be in unit of µmol/l, ml/l or mg/l.')
-        end        
-    end
+function oxsat = con2sat_GG(oxcon, temp, sal, unit)
+
+    ga0 = 2.00856; ga1 = 3.22400; ga2 = 3.99063; ga3 = 4.80299; ga4 = 9.78188e-1; ga5 = 1.71069;
+    gb0 = -6.24097e-3; gb1 = -6.93498e-3; gb2 = -6.90358e-3; gb3 = -4.29155e-3;
+    gc0 = -3.11680e-7;
+
+    temp = log((298.15 - temp) ./ (273.15 + temp));
+    coef = ga0 + temp .* (ga1 + temp .* (ga2 + temp .* (ga3 + temp .* (ga4 + ga5 * temp)))) ...
+           + sal .* (gb0 + temp .* (gb1 + temp .* (gb2 + temp * gb3))) ...
+           + sal .* sal * gc0;
+    coef = exp(coef);
+
+    switch unit
+        case 'µmol/l'
+            oxsat = (2.2414) * oxcon ./ coef; 
+        case 'ml/l'
+            oxsat = (2.2414/44.659) * oxcon ./ coef; 
+        case 'mg/l'
+            oxsat = (1.4276 * 2.2414/44.659) * oxcon ./ coef;
+        otherwise
+            error('O2 concentration channel must be in unit of µmol/l, ml/l or mg/l.')
+    end        
+end
 
 end
 
