@@ -23,7 +23,7 @@ function [RSK] = RSKderiveO2(RSK, toDerive, varargin)
 %    RSK - Structure containing derived O2 concentration or saturation.
 %
 % Example:
-%    RSK = RSKderiveO2(RSK, 'saturation', 'unit', 'ml/l')
+%    RSK = RSKderiveO2(RSK, 'concentration', 'unit', 'ml/l')
 %
 % See also: deriveO2concentration, deriveO2saturation.
 %
