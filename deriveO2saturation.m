@@ -1,9 +1,9 @@
-function [RSK] = RSKderiveO2saturation(RSK)
+function [RSK] = deriveO2saturation(RSK)
 
-% RSKderiveO2saturation - Derive O2 saturation from measured O2 
-% concentration using equation from Garcia and Gordon, 1992.
+% deriveO2saturation - Derive O2 saturation from measured O2 concentration 
+% using equation from Garcia and Gordon, 1992.
 %
-% Syntax: [RSK] = RSKderiveO2saturation(RSK)
+% Syntax: [RSK] = deriveO2saturation(RSK)
 %
 % Inputs: 
 %    RSK - Structure containing measured O2 concentration in unit of
@@ -13,14 +13,14 @@ function [RSK] = RSKderiveO2saturation(RSK)
 %    RSK - Structure containing derived O2 saturation in unit of %.
 %
 % Example:
-%    RSK = RSKderiveO2saturation(RSK)
+%    RSK = deriveO2saturation(RSK)
 %
-% See also: RSKderiveO2concentration.
+% See also: RSKderiveO2, deriveO2concentration.
 %
 % Author: RBR Ltd. Ottawa ON, Canada
 % email: support@rbr-global.com
 % Website: www.rbr-global.com
-% Last revision: 2018-08-15
+% Last revision: 2018-08-31
 
 
 p = inputParser;

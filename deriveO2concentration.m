@@ -1,9 +1,9 @@
-function [RSK] = RSKderiveO2concentration(RSK, varargin)
+function [RSK] = deriveO2concentration(RSK, varargin)
 
-% RSKderiveO2concentration - Derive O2 concentration from measured O2 
+% deriveO2concentration - Derive O2 concentration from measured O2 
 % saturation using equation from R.F.Weiss 1970.
 %
-% Syntax: [RSK] = RSKderiveO2concentration(RSK,[OPTIONS])
+% Syntax: [RSK] = deriveO2concentration(RSK,[OPTIONS])
 %
 % Inputs: 
 %    [Required] - RSK - Structure containing measured O2 saturation in unit
@@ -16,14 +16,14 @@ function [RSK] = RSKderiveO2concentration(RSK, varargin)
 %    RSK - Structure containing derived O2 concentration in specified unit.
 %
 % Example:
-%    RSK = RSKderiveO2concentration(RSK, 'unit', 'ml/l')
+%    RSK = deriveO2concentration(RSK, 'unit', 'ml/l')
 %
-% See also: RSKderiveO2saturation.
+% See also: RSKderiveO2, deriveO2saturation.
 %
 % Author: RBR Ltd. Ottawa ON, Canada
 % email: support@rbr-global.com
 % Website: www.rbr-global.com
-% Last revision: 2018-08-13
+% Last revision: 2018-08-31
 
 
 validUnits = {'µmol/l', 'ml/l','mg/l'};
