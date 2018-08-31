@@ -26,7 +26,7 @@ function [RSK] = RSKderivebuoyancy(RSK,varargin)
 % Author: RBR Ltd. Ottawa ON, Canada
 % email: support@rbr-global.com
 % Website: www.rbr-global.com
-% Last revision: 2018-07-27
+% Last revision: 2018-08-31
 
 
 p = inputParser;
@@ -42,44 +42,55 @@ hasTEOS = ~isempty(which('gsw_Nsquared'));
 if ~hasTEOS
     error('Must install TEOS-10 toolbox. Download it from here: http://www.teos-10.org/software.htm');
 end
-    
-Tcol = getchannelindex(RSK, 'Temperature');
-try
-    Scol = getchannelindex(RSK, 'Salinity');
-catch
-    error('RSKderivebuoyancy requires practical salinity. Use RSKderivesalinity...');
-end
-try
-    SPcol = getchannelindex(RSK, 'Sea Pressure');
-catch
-    error('RSKderivebuoyancy requires sea pressure. Use RSKderiveseapressure...');
-end
+
+[Tcol,Scol,SPcol] = getchannel_T_S_SP_index(RSK);
 
 RSK = addchannelmetadata(RSK, 'Buoyancy Frequency Squared', 's-2');
-RSK = addchannelmetadata(RSK, 'Stability', 'm-1');
 N2col = getchannelindex(RSK, 'Buoyancy Frequency Squared');
+RSK = addchannelmetadata(RSK, 'Stability', 'm-1');
 STcol = getchannelindex(RSK, 'Stability');
-
 
 castidx = getdataindex(RSK);
 for ndx = castidx
-    SA = gsw_SR_from_SP(RSK.data(ndx).values(:,Scol)); % Assume SA ~= SR
-    CT = gsw_CT_from_t(SA, RSK.data(ndx).values(:,Tcol), RSK.data(ndx).values(:,SPcol));
-    if isempty(latitude)
-        [N2_mid, p_mid] = gsw_Nsquared(SA, CT, RSK.data(ndx).values(:,SPcol));
-        grav = gsw_grav(RSK.data(ndx).values(:,SPcol));
-    else
-        [N2_mid, p_mid] = gsw_Nsquared(SA, CT, RSK.data(ndx).values(:,SPcol), latitude);
-        grav = gsw_grav(latitude, RSK.data(ndx).values(:,SPcol));
-    end
-    N2 = interp1(p_mid, N2_mid, RSK.data(ndx).values(:,SPcol), 'linear', 'extrap');
+    SP = RSK.data(ndx).values(:,SPcol);
+    S = RSK.data(ndx).values(:,Scol);
+    T = RSK.data(ndx).values(:,Tcol);
+    SA = gsw_SR_from_SP(S); % Assume SA ~= SR
+    CT = gsw_CT_from_t(SA, T,SP);
+    [N2,ST] = derive_N2_ST(SA,CT,SP,latitude);    
     RSK.data(ndx).values(:,N2col) = N2;
-    ST = N2./grav;
     RSK.data(ndx).values(:,STcol) = ST;
 end
 
 logentry = ('Buoyancy frequency squared and stability derived using TEOS-10 GSW toolbox.');
 RSK = RSKappendtolog(RSK, logentry);
 
+
+%% Nested functions
+function [Tcol,Scol,SPcol] = getchannel_T_S_SP_index(RSK)
+    Tcol = getchannelindex(RSK, 'Temperature');
+    try
+        Scol = getchannelindex(RSK, 'Salinity');
+    catch
+        error('RSKderivebuoyancy requires practical salinity. Use RSKderivesalinity...');
+    end
+    try
+        SPcol = getchannelindex(RSK, 'Sea Pressure');
+    catch
+        error('RSKderivebuoyancy requires sea pressure. Use RSKderiveseapressure...');
+    end
 end
 
+function [N2,ST] = derive_N2_ST(SA,CT,SP,latitude)
+    if isempty(latitude)
+        [N2_mid,p_mid] = gsw_Nsquared(SA,CT,SP);
+        grav = gsw_grav(SP);
+    else
+        [N2_mid,p_mid] = gsw_Nsquared(SA,CT,SP,latitude);
+        grav = gsw_grav(latitude,SP);
+    end
+    N2 = interp1(p_mid,N2_mid,SP,'linear','extrap');
+    ST = N2./grav;
+end
+
+end
