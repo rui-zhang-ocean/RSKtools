@@ -145,7 +145,7 @@ end
 
 ylabel(['Potential Temperature (' RSK.channels(Tcol).units ')']);
 xlabel('Practical Salinity');
-title('$$\theta_0$$-S Diagram', 'interpreter', 'latex')
+title('\theta_0-S diagram')
 hold off
 shg
 
