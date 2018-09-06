@@ -67,7 +67,7 @@ n = 1;
 for chan = channelidx
     subplot(1,length(channelidx),n)
     
-    if strcmp(fn,'RSKcorrecthold') 
+    if strcmp(fn,'RSKcorrecthold') || strcmp(fn,'RSKalignchannel')
         t = raw.data(ndx).tstamp;
         plot(t,raw.data(ndx).values(:,chan),'-c','linewidth',2);
         hold on
