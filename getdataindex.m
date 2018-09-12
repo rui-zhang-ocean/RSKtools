@@ -42,7 +42,7 @@ direction = p.Results.direction;
 
 profile = profile(:)';
 
-if size(RSK.data,2) == 1
+if size(RSK.data,2) == 1 && ~isfield(RSK.data,'direction') && ~isfield(RSK.data,'profilenumber')
     castidx = 1;
     if ~isempty(profile) && profile ~= 1  
         error('The profile requested is greater than the total amount of profiles in this RSK structure.');

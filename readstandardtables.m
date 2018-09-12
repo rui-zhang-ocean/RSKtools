@@ -20,17 +20,13 @@ function RSK = readstandardtables(RSK)
 % Website: www.rbr-global.com
 % Last revision: 2018-01-16
 
-p = inputParser;
-addRequired(p, 'RSK', @isstruct);
-parse(p, RSK)
-
-RSK = p.Results.RSK;
 
 p = inputParser;
 addRequired(p, 'RSK', @isstruct);
 parse(p, RSK)
 
 RSK = p.Results.RSK;
+
 
 RSK = readchannels(RSK);
 

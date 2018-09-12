@@ -27,7 +27,7 @@ if isfield(tmp, 'events')
     nup = length(find(events.values(:,2) == eventBeginUpcast));
     ndown = length(find(events.values(:,2) == eventBeginDowncast));
     
-    if ~(nup == 0 && ndown == 0)
+    if nup ~= 0 && ndown ~= 0
         
         iup = find(events.values(:,2) == eventBeginUpcast);
         idown = find(events.values(:,2) == eventBeginDowncast);

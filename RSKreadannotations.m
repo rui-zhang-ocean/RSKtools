@@ -46,45 +46,48 @@ if isfield(RSK,'region')
     ProfileRegionID = find(strcmpi({RSK.region.type},'PROFILE') == 1);
     GPSRegionID = find(strcmpi({RSK.region.type},'GPS') == 1);
     CommentRegionID = find(strcmpi({RSK.region.type},'COMMENT') == 1);
-
-    GPSAssignID = zeros(length(GPSRegionID),1);
-    CommentAssignID = zeros(length(CommentRegionID),1);
-
-    for g = 1:length(GPSRegionID)
-        for p = 1:length(ProfileRegionID)
-            if RSK.region(GPSRegionID(g)).tstamp1 >= RSK.region(ProfileRegionID(p)).tstamp1 && ...
-               RSK.region(GPSRegionID(g)).tstamp1 <= RSK.region(ProfileRegionID(p)).tstamp2;
-               GPSAssignID(g) = ProfileRegionID(p);
+    
+    if ~isempty(GPSRegionID)
+        GPSAssignID = zeros(length(GPSRegionID),1);
+        for g = 1:length(GPSRegionID)
+            for p = 1:length(ProfileRegionID)
+                if RSK.region(GPSRegionID(g)).tstamp1 >= RSK.region(ProfileRegionID(p)).tstamp1 && ...
+                   RSK.region(GPSRegionID(g)).tstamp1 <= RSK.region(ProfileRegionID(p)).tstamp2;
+                   GPSAssignID(g) = ProfileRegionID(p);
+                end
+            end
+        end
+        k = 1;
+        for ndx = 1:length(ProfileRegionID)
+            if ismember(ProfileRegionID(ndx), GPSAssignID)
+                RSK.profiles.GPS.latitude(ndx,1) = RSK.regionGeoData(k).latitude;
+                RSK.profiles.GPS.longitude(ndx,1) = RSK.regionGeoData(k).longitude;
+                k = k + 1;
+            else
+                RSK.profiles.GPS.latitude(ndx,1) = nan;
+                RSK.profiles.GPS.longitude(ndx,1) = nan;
             end
         end
     end
-    k = 1;
-    for ndx = 1:length(ProfileRegionID)
-        if ismember(ProfileRegionID(ndx), GPSAssignID)
-            RSK.profiles.GPS.latitude(ndx,1) = RSK.regionGeoData(k).latitude;
-            RSK.profiles.GPS.longitude(ndx,1) = RSK.regionGeoData(k).longitude;
-            k = k + 1;
-        else
-            RSK.profiles.GPS.latitude(ndx,1) = nan;
-            RSK.profiles.GPS.longitude(ndx,1) = nan;
-        end
-    end
-
-    for g = 1:length(CommentRegionID)
-        for p = 1:length(ProfileRegionID)
-            if RSK.region(CommentRegionID(g)).tstamp1 >= RSK.region(ProfileRegionID(p)).tstamp1 && ...
-               RSK.region(CommentRegionID(g)).tstamp1 <= RSK.region(ProfileRegionID(p)).tstamp2;
-               CommentAssignID(g) = ProfileRegionID(p);
+    
+    if ~isempty(CommentRegionID)
+        CommentAssignID = zeros(length(CommentRegionID),1);
+        for g = 1:length(CommentRegionID)
+            for p = 1:length(ProfileRegionID)
+                if RSK.region(CommentRegionID(g)).tstamp1 >= RSK.region(ProfileRegionID(p)).tstamp1 && ...
+                   RSK.region(CommentRegionID(g)).tstamp1 <= RSK.region(ProfileRegionID(p)).tstamp2;
+                   CommentAssignID(g) = ProfileRegionID(p);
+                end
             end
         end
-    end
-    k = 1;
-    for ndx = 1:length(ProfileRegionID)
-        if ismember(ProfileRegionID(ndx), CommentAssignID)        
-            RSK.profiles.comment{ndx,1} = RSK.region(CommentRegionID(k)).description;
-            k = k + 1;
-        else
-            RSK.profiles.comment{ndx,1} = nan;
+        k = 1;
+        for ndx = 1:length(ProfileRegionID)
+            if ismember(ProfileRegionID(ndx), CommentAssignID)        
+                RSK.profiles.comment{ndx,1} = RSK.region(CommentRegionID(k)).description;
+                k = k + 1;
+            else
+                RSK.profiles.comment{ndx,1} = nan;
+            end
         end
     end
 end

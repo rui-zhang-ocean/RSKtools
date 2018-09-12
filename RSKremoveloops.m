@@ -75,8 +75,10 @@ catch
 end
 
 castidx = getdataindex(RSK, profile, direction);
-if visualize ~= 0; [raw, diagndx] = checkDiagPlot(RSK, visualize, direction, castidx); end
-diagChanCol = [getchannelindex(RSK, 'Conductivity'), getchannelindex(RSK, 'Temperature')];
+if visualize ~= 0; 
+    [raw, diagndx] = checkDiagPlot(RSK, visualize, direction, castidx); 
+    diagChanCol = [getchannelindex(RSK, 'Conductivity'), getchannelindex(RSK, 'Temperature')];
+end
 
 k = 1;
 for ndx = castidx
