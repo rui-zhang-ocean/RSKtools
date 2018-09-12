@@ -1,4 +1,4 @@
-function [RSK] = deriveO2concentration(RSK, varargin)
+function RSK = deriveO2concentration(RSK, varargin)
 
 % deriveO2concentration - Derive O2 concentration from measured O2 
 % saturation using equation from R.F.Weiss 1970.

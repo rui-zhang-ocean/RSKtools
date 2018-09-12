@@ -1,4 +1,4 @@
-function [RSK] = deriveO2saturation(RSK)
+function RSK = deriveO2saturation(RSK)
 
 % deriveO2saturation - Derive O2 saturation from measured O2 concentration 
 % using equation from Garcia and Gordon, 1992.
