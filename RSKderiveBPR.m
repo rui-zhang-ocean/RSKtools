@@ -45,7 +45,7 @@ parse(p, RSK)
 
 RSK = p.Results.RSK;
 
-if ~isstruct(RSK.calibrations)
+if ~isfield(RSK,'calibrations') || ~isstruct(RSK.calibrations)
     RSK = RSKreadcalibrations(RSK);
 end
     
