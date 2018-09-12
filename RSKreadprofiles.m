@@ -67,7 +67,13 @@ if ~isfield(RSK, 'profiles')
     error('No profiles in this RSK, try RSKreaddata or RSKfindprofiles');
 end
 if strcmpi(direction{1}, 'both')
-    direction = {'down', 'up'};
+    if any(strcmpi({RSK.regionCast.type},'down')) && any(strcmpi({RSK.regionCast.type},'up'))
+        direction = {'down', 'up'};
+    elseif any(strcmpi({RSK.regionCast.type},'down'))==1 && any(strcmpi({RSK.regionCast.type},'up'))~=1
+        direction = {'down'};    
+    elseif any(strcmpi({RSK.regionCast.type},'down'))~=1 && any(strcmpi({RSK.regionCast.type},'up'))==1
+        direction = {'up'};
+    end
 end
 
 hasGPS = isfield(RSK.profiles,'GPS');
@@ -161,8 +167,10 @@ for ndx = castidx
         
         if isempty(ind_start) || isempty(ind_end)
             tmp = RSKreaddata(RSK, 't1', alltstart(ndx), 't2', alltend(ndx));
-            data(k).tstamp = tmp.data.tstamp;
-            data(k).values = tmp.data.values;
+            if length(tmp.data.tstamp) < length(RSK.data.tstamp)
+                data(k).tstamp = tmp.data.tstamp;
+                data(k).values = tmp.data.values;
+            end
         else
             data(k).tstamp = RSK.data.tstamp(ind_start:ind_end);
             data(k).values = RSK.data.values(ind_start:ind_end,:);
@@ -187,6 +195,7 @@ for ndx = castidx
 end
 
 if ~isfield(RSK, 'data'), RSK = readchannels(RSK); end
+data(cellfun(@isempty,{data.tstamp})) = [];
 RSK.data = data;
 
 end

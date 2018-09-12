@@ -56,7 +56,7 @@ if isempty(patm)
     patm = getatmosphericpressure(RSK);
 end
 
-RSK = addchannelmetadata(RSK, 'Sea Pressure', 'dbar');
+RSK = addchannelmetadata(RSK, 'pres08', 'Sea Pressure', 'dbar');
 SPcol = getchannelindex(RSK, 'Sea Pressure');
 
 castidx = getdataindex(RSK);
@@ -73,5 +73,4 @@ end
 RSK = RSKappendtolog(RSK, logentry);
 
 end
-
 

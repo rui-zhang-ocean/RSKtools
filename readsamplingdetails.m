@@ -1,6 +1,6 @@
 function RSK = readsamplingdetails(RSK)
 
-%READSAMPLINGDETAILS - Read the sampling details of a file.
+% READSAMPLINGDETAILS - Read the sampling details of a file.
 %
 % Syntax:  [RSK] = READSAMPLINGDETAILS(RSK)
 %
@@ -20,9 +20,10 @@ function RSK = readsamplingdetails(RSK)
 % Author: RBR Ltd. Ottawa ON, Canada
 % email: support@rbr-global.com
 % Website: www.rbr-global.com
-% Last revision: 2017-06-21
+% Last revision: 2018-08-23
 
 mode = RSK.schedules.mode;
+tables = doSelect(RSK, 'SELECT name FROM sqlite_master WHERE type="table"');
 
 if iscompatibleversion(RSK, 1, 13, 8)
     if strcmpi(mode, 'ddsampling')
@@ -32,8 +33,9 @@ if iscompatibleversion(RSK, 1, 13, 8)
     else 
         modetable = mode;
     end
-
-    RSK.(modetable) = doSelect(RSK, ['select * from ' modetable]);
+    if any(strcmpi({tables.name}, modetable))
+        RSK.(modetable) = doSelect(RSK, ['select * from ' modetable]);
+    end
 end
 
 end

@@ -1,6 +1,6 @@
 function [RSK, downidx] = RSKselectdowncast(RSK)
 
-%RSKselectdowncast - Keep the data elements with an increasing pressure.
+% RSKselectdowncast - Keep the data elements with an increasing pressure.
 %
 % Syntax:  [RSK, isDown] = RSKselectdowncast(RSK)
 %
@@ -19,12 +19,11 @@ function [RSK, downidx] = RSKselectdowncast(RSK)
 % Author: RBR Ltd. Ottawa ON, Canada
 % email: support@rbr-global.com
 % Website: www.rbr-global.com
-% Last revision: 2017-06-23
+% Last revision: 2018-05-29
+
 
 Pcol = getchannelindex(RSK, 'Pressure');
 ndata = length(RSK.data);
-
-
 
 downidx = NaN(1, ndata);
 for ndx = 1:ndata
@@ -32,17 +31,17 @@ for ndx = 1:ndata
     downidx(1, ndx) = getcastdirection(pressure, 'down');
 end
 
-
-
 if ~any(downidx ==1)
     disp('No downcasts in this RSK structure.');
     return;
 end
 
-
-
 RSK.profiles.originalindex = RSK.profiles.originalindex(logical(downidx));
 RSK.profiles.order = {'down'};
 RSK.data = RSK.data(logical(downidx));
+
+RSK.region(strncmp({RSK.region.label},'Up',2)) = [];
+RSK.regionCast(strncmp({RSK.regionCast.type},'Up',2)) = [];
+
 
 end
