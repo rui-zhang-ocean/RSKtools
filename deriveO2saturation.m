@@ -49,7 +49,7 @@ end
 castidx = getdataindex(RSK);
 for c = O2CCol    
     suffix = sum(strncmpi('Dissolved O2',{RSK.channels.longName},12)) + 1;
-    RSK = addchannelmetadata(RSK, ['Dissolved O2' num2str(suffix)], '%');
+    RSK = addchannelmetadata(RSK, 'ddox01', ['Dissolved O2' num2str(suffix)], '%');
     O2SCol = getchannelindex(RSK, ['Dissolved O2' num2str(suffix)]);
     
     for ndx = castidx
