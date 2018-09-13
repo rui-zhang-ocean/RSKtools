@@ -63,6 +63,7 @@ for chan = chanCol
     ylabel(RSK.channels(chan).units);
     axes(n)=gca;
     datetick('x');
+    axis tight
     n = n+1;
 end
 

@@ -144,7 +144,6 @@ end
 setcolormap(channel);
 cb = colorbar;
 ylabel(cb, RSK.channels(chanCol).units)
-axis tight
 
 ylabel(cb, RSK.channels(chanCol).units, 'FontSize', 12)
 ylabel(sprintf('%s (%s)', RSK.channels(YCol).longName, RSK.channels(YCol).units));
@@ -156,6 +155,7 @@ p = get(h,'Position');
 set(gcf, 'Renderer', 'painters')
 set(h, 'EdgeColor', 'none');
 datetick('x')
+axis tight
 
 end
 
