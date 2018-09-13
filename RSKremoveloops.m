@@ -55,7 +55,6 @@ addRequired(p, 'RSK', @isstruct);
 addParameter(p, 'profile', [], @isnumeric);
 addParameter(p, 'direction', [], checkDirection);
 addParameter(p, 'threshold', 0.25, @isnumeric);
-
 addParameter(p, 'accelerationThreshold', -Inf, @isnumeric);
 addParameter(p, 'visualize', 0, @isnumeric);
 parse(p, RSK, varargin{:})
@@ -99,7 +98,7 @@ for ndx = castidx
         flag((depth - cm) < 0) = true;
     end
     
-    flagChannels = ~strcmpi('Depth', {RSK.channels.longName});    
+    flagChannels = ~ismember({RSK.channels.longName},{'Depth','Pressure','Sea Pressure'});
     RSK.data(ndx).values(flag,flagChannels) = NaN;
     flagidx(k).index = find(flag);  
     if visualize ~= 0      
