@@ -1,5 +1,9 @@
 function [raw, diagndx] = checkDiagPlot(RSK, diagnostic, direction, castidx)
 
+if length(RSK.data) == 1 && ~isfield(RSK.data,'direction')
+    error('Visualization mode only supports profiles, use RSKreadprofiles...')
+end
+
 raw = RSK; 
 diagndx = getdataindex(RSK, diagnostic, direction);
 
