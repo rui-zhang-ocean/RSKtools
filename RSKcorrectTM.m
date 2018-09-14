@@ -82,7 +82,7 @@ direction = p.Results.direction;
 visualize = p.Results.visualize;
 
 
-fs = round(1/RSKsamplingperiod(RSK));
+fs = round(1/readsamplingperiod(RSK));
 a = 4*fs/2*alpha/beta * 1/(1 + 4*fs/2/beta);
 b = 1 - 2*a/alpha;
 

@@ -136,7 +136,7 @@ catch
 end
 
 % Sample period
-sampleperiod = RSKsamplingperiod(RSK);
+sampleperiod = readsamplingperiod(RSK);
 
 % Fix up variable names by replacing spaces with underscores
 RBR.channelnames = strrep(RBR.channelnames,' ','_');

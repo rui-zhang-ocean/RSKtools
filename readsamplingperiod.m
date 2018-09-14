@@ -1,8 +1,8 @@
-function samplingperiod = RSKsamplingperiod(RSK)
+function samplingperiod = readsamplingperiod(RSK)
 
-%RSKsamplingperiod - Returns the sampling period information.
+% samplingperiod - Returns the sampling period information.
 %
-% Syntax:  [samplingperiod] = RSKsamplingperiod(RSK)
+% Syntax:  [samplingperiod] = samplingperiod(RSK)
 %
 % Returns the sampling period of the file.
 %
@@ -17,7 +17,7 @@ function samplingperiod = RSKsamplingperiod(RSK)
 % Author: RBR Ltd. Ottawa ON, Canada
 % email: support@rbr-global.com
 % Website: www.rbr-global.com
-% Last revision: 2017-06-22
+% Last revision: 2018-09-14
 
 mode = RSK.schedules.mode;
 if iscompatibleversion(RSK, 1, 13, 8)

@@ -47,7 +47,7 @@ end
 RBR.name = ['RBR ' RSK.instruments.model ' ' firmwareV ' ' num2str(RSK.instruments.serialID)];
 
 % Sample period
-RBR.sampleperiod = RSKsamplingperiod(RSK); 
+RBR.sampleperiod = readsamplingperiod(RSK); 
 
 % Channels
 RBR.channelnames = {RSK.channels.longName}';

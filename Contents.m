@@ -54,7 +54,6 @@
 %   RSKselectupcast      - keep only the up casts in the RSK structure
 %   RSKreadburstdata     - read burst data from database
 %   RSKplotburstdata     - plot burst data
-%   RSKsamplingperiod    - read logger sampling period information from RSK file
 %   RSKreadcalibrations  - read the calibrations table of an RSK file
 %   RSKderivesalinity    - derive salinity from conductivity, temperature, and sea pressure
 %   RSKderiveseapressure - derive sea pressure from pressure
