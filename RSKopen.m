@@ -85,7 +85,7 @@ switch RSK.dbInfo(end).type
         return
 end
 
-RSK = RSKgetprofiles(RSK);
+RSK = getprofiles(RSK);
 
 RSK = RSKreadannotations(RSK);
 

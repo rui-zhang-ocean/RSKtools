@@ -13,7 +13,7 @@ function RSK = readregionprofiles(RSK)
 % Outputs:
 %    RSK - Structure containing populated profiles, if available.
 %
-% See also: RSKgetprofiles.
+% See also: getprofiles.
 %
 % Author: RBR Ltd. Ottawa ON, Canada
 % email: support@rbr-global.com

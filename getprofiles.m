@@ -1,8 +1,8 @@
-function RSK = RSKgetprofiles(RSK)
+function RSK = getprofiles(RSK)
 
-%RSKgetprofiles - Find the profiles start and end times.
+% getprofiles - Find the profiles start and end times.
 %
-% Syntax:  [RSK] = RSKgetprofiles(RSK)
+% Syntax:  [RSK] = getprofiles(RSK)
 % 
 % Finds the profiles start and end times by first looking at the region
 % table (Ruskin generated profiles) then at the events table (logger
@@ -20,7 +20,7 @@ function RSK = RSKgetprofiles(RSK)
 % Author: RBR Ltd. Ottawa ON, Canada
 % email: support@rbr-global.com
 % Website: www.rbr-global.com
-% Last revision: 2017-06-22
+% Last revision: 2018-09-14
 
 if isfield(RSK, 'profiles')
     error('Profiles are already found, get data using RSKreadprofiles.m');

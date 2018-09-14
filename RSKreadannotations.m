@@ -14,7 +14,7 @@ function RSK = RSKreadannotations(RSK)
 % Outputs:
 %    RSK - Structure containing populated annotations, if available.
 %
-% See also: RSKgetprofiles.
+% See also: getprofiles.
 %
 % Author: RBR Ltd. Ottawa ON, Canada
 % email: support@rbr-global.com

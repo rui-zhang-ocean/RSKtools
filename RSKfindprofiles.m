@@ -36,7 +36,7 @@ function RSK = RSKfindprofiles(RSK, varargin)
 %    RSK = RSKreaddata(RSK);
 %    RSK = RSKfindprofiles(RSK, 'pressureThreshold', 1);
 %
-% See also: RSKreadprofiles, RSKgetprofiles.
+% See also: RSKreadprofiles, getprofiles.
 %
 % Author: RBR Ltd. Ottawa ON, Canada
 % email: support@rbr-global.com
