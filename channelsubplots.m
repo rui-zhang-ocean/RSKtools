@@ -33,6 +33,7 @@ function [handles,axes] = channelsubplots(RSK, field, varargin)
 % Website: www.rbr-global.com
 % Last revision: 2018-06-26
 
+
 validFields = {'burstData', 'thumbnailData', 'data','downsample'};
 checkField = @(x) any(validatestring(x,validFields));
 
@@ -49,7 +50,6 @@ chanCol = p.Results.chanCol;
 castidx = p.Results.castidx;
 
 
-
 if isempty(chanCol)
     chanCol = 1:size(RSK.(field)(castidx).values,2);
 end
@@ -62,12 +62,14 @@ for chan = chanCol
     title(RSK.channels(chan).longName);
     ylabel(RSK.channels(chan).units);
     axes(n)=gca;
-    datetick('x');
-    axis tight
+    datetick('x');    
     n = n+1;
 end
 
 linkaxes(axes,'x');
+yl = ylim; 
+axis tight  
+ylim(yl); 
 shg
 
 end
