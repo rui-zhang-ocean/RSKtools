@@ -6,7 +6,7 @@ function RSK = RSKreadburstdata(RSK, varargin)
 % 
 % Reads the burst data tables from the RSK file previously opened with
 % RSKopen(). Will either read the entire burst data structure, or a subset
-% specified by 't1' and 't2'. Use in conjunction with RSKreadevents to
+% specified by 't1' and 't2'. Use in conjunction with readevents to
 % separate bursts. 
 % 
 % Inputs: 
@@ -27,7 +27,7 @@ function RSK = RSKreadburstdata(RSK, varargin)
 %    RSK = RSKopen('sample.rsk');  
 %    RSK = RSKreadburstdata(RSK);
 %
-% See also: RSKopen, RSKplotburstdata, RSKreadevents.
+% See also: RSKopen, RSKplotburstdata, readevents.
 %
 % Author: RBR Ltd. Ottawa ON, Canada
 % email: support@rbr-global.com

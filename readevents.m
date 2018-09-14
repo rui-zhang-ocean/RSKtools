@@ -1,8 +1,8 @@
-function RSK = RSKreadevents(RSK, varargin)
+function RSK = readevents(RSK, varargin)
 
-%RSKreadevents - Read the events from an RBR RSK SQLite file.
+% readevents - Read the events from an RBR RSK SQLite file.
 %
-% Syntax:  [RSK] = RSKreadevents(RSK, [OPTIONS])
+% Syntax:  [RSK] = readevents(RSK, [OPTIONS])
 % 
 % Reads the events from the RSK file previously opened with
 % RSKopen(). Either reads all the events or a subset specified by the
@@ -20,14 +20,14 @@ function RSK = RSKreadevents(RSK, varargin)
 %
 % Example: 
 %    RSK = RSKopen('sample.rsk');  
-%    RSK = RSKreadevents(RSK);
+%    RSK = readevents(RSK);
 %
 % See also: RSKopen, RSKreaddata, RSKreadburstdata.
 %
 % Author: RBR Ltd. Ottawa ON, Canada
 % email: support@rbr-global.com
 % Website: www.rbr-global.com
-% Last revision: 2017-06-22
+% Last revision: 2018-09-14
 
 p = inputParser;
 addRequired(p, 'RSK', @isstruct);

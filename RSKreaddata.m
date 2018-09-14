@@ -38,7 +38,7 @@ function RSK = RSKreaddata(RSK, varargin)
 %    % Read 1/2 day of data since logger started.
 %    RSK = RSKreaddata(RSK, 't2', RSK.epochs.startTime+0.5);
 %
-% See also: RSKopen, RSKreadevents, RSKreadburstdata.
+% See also: RSKopen, RSKreadburstdata.
 %
 % Author: RBR Ltd. Ottawa ON, Canada
 % email: support@rbr-global.com

@@ -20,7 +20,7 @@ function RSK = readeventsprofiles(RSK)
 
 RSKconstants
 
-tmp = RSKreadevents(RSK);
+tmp = readevents(RSK);
 
 if isfield(tmp, 'events')
     events = tmp.events;
