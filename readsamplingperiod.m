@@ -1,8 +1,8 @@
 function samplingperiod = readsamplingperiod(RSK)
 
-% samplingperiod - Returns the sampling period information.
+% readsamplingperiod - Returns the sampling period information.
 %
-% Syntax:  [samplingperiod] = samplingperiod(RSK)
+% Syntax:  [samplingperiod] = readsamplingperiod(RSK)
 %
 % Returns the sampling period of the file.
 %
