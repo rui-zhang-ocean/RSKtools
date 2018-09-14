@@ -1,8 +1,8 @@
-function [v, vsnMajor, vsnMinor]  = RSKfirmwarever(RSK)
+function [v, vsnMajor, vsnMinor]  = readfirmwarever(RSK)
 
-%RSKfirmwarever - Return the firmware version of the RSK file.
+% readfirmwarever - Return the firmware version of the RSK file.
 %
-% Syntax:  [v, vsnMajor, vsnMinor] = RSKfirmwarever(RSK)
+% Syntax:  [v, vsnMajor, vsnMinor] = readfirmwarever(RSK)
 %
 % Returns the most recent version of the firmware; the information is
 % retrieved from 'instruments' fields for files older than v1.12.2 or
@@ -16,14 +16,14 @@ function [v, vsnMajor, vsnMinor]  = RSKfirmwarever(RSK)
 %    v - Lastest version of the firmware
 %    vsnMajor - Latest version number of category major
 %    vsnMinor - Latest version number of category minor
-%    vsnPatch - Latest version number of category patch.
+%    vsnPatch - Latest version number of category patch
 %
 % See also: RSKver.
 %
 % Author: RBR Ltd. Ottawa ON, Canada
 % email: support@rbr-global.com
 % Website: www.rbr-global.com
-% Last revision: 2017-06-22
+% Last revision: 2018-09-14
 
 if iscompatibleversion(RSK, 1, 12, 2)
     v = RSK.instruments.firmwareVersion;

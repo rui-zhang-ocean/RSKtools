@@ -133,7 +133,7 @@ function insertInstruments(RSK)
 end
 
 function insertDeployments(RSK,data,newfile)
-    formatAndTransact('INSERT INTO deployments (deploymentID,serialID,firmwareVersion,timeOfDownload,name,sampleSize) VALUES','(%i,%i,"%s",%f,"%s",%i)',{RSK.deployments.deploymentID, RSK.instruments.serialID, RSKfirmwarever(RSK), RSK.deployments.timeOfDownload, newfile, length(data.values)});
+    formatAndTransact('INSERT INTO deployments (deploymentID,serialID,firmwareVersion,timeOfDownload,name,sampleSize) VALUES','(%i,%i,"%s",%f,"%s",%i)',{RSK.deployments.deploymentID, RSK.instruments.serialID, readfirmwarever(RSK), RSK.deployments.timeOfDownload, newfile, length(data.values)});
 end
 
 function insertSchedules(RSK)

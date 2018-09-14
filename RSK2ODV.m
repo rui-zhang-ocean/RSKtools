@@ -116,7 +116,7 @@ end
 
 % Set up metadata
 RBR = struct;
-[firmwareV, ~, ~]  = RSKfirmwarever(RSK);
+[firmwareV, ~, ~]  = readfirmwarever(RSK);
 RBR.model = RSK.instruments.model;
 RBR.firmware = firmwareV;
 RBR.serial = num2str(RSK.instruments.serialID);
