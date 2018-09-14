@@ -33,7 +33,7 @@ if any(strcmpi({tables.name}, 'parameters'))
 end
 
 if any(strcmpi({tables.name}, 'geodata'))
-    RSK = RSKreadgeodata(RSK);
+    RSK = readgeodata(RSK);
 end
 
 if any(strcmpi({tables.name}, 'appSettings'))

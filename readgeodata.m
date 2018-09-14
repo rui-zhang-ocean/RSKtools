@@ -1,8 +1,8 @@
-function [RSK, geodata] = RSKreadgeodata(RSK, varargin)
+function [RSK, geodata] = readgeodata(RSK, varargin)
 
-%RSKreadgeodata - Read the geodata of a .rsk file.
+% readgeodata - Read the geodata of a .rsk file.
 %
-% Syntax:  [RSK, geodata] = RSKreadgeodata(RSK)
+% Syntax:  [RSK, geodata] = readgeodata(RSK)
 %
 % Returns the geodata of a file, includes timestamp, latitude, longitude
 % accuracy and the accuracy type. If a UTCdelta time is available in the
@@ -25,7 +25,7 @@ function [RSK, geodata] = RSKreadgeodata(RSK, varargin)
 % Author: RBR Ltd. Ottawa ON, Canada
 % email: support@rbr-global.com
 % Website: www.rbr-global.com
-% Last revision: 2017-06-22
+% Last revision: 2018-09-14
 
 p = inputParser;
 addRequired(p, 'RSK', @isstruct);

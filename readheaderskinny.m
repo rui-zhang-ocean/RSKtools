@@ -24,7 +24,7 @@ function RSK = readheaderskinny(RSK)
 tables = doSelect(RSK, 'SELECT name FROM sqlite_master WHERE type="table"');
 
 if any(strcmpi({tables.name}, 'geodata'))
-    RSK = RSKreadgeodata(RSK);
+    RSK = readgeodata(RSK);
 end
 
 end

@@ -42,7 +42,7 @@ RSK = readsamplingdetails(RSK);
 tables = doSelect(RSK, 'SELECT name FROM sqlite_master WHERE type="table"');
 
 if any(strcmpi({tables.name}, 'geodata'))
-    RSK = RSKreadgeodata(RSK);
+    RSK = readgeodata(RSK);
 end
 
 if any(strcmpi({tables.name}, 'downsample_caches'))
