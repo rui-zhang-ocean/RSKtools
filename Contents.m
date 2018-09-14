@@ -49,7 +49,6 @@
 %   RSKfindprofiles      - detect profile start and end times using pressure and conductivity
 %   RSKreadprofiles      - reads and organized data into a series of profiles
 %   RSKplotprofiles      - plot depth profiles for each channel
-%   RSKreaddownsample    - read downsample data from database
 %   RSKplotdownsample    - plot downsample data
 %   RSKselectdowncast    - keep only the down casts in the RSK structure
 %   RSKselectupcast      - keep only the up casts in the RSK structure

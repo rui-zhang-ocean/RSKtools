@@ -41,7 +41,7 @@ if any(strcmpi({tables.name}, 'appSettings'))
 end
 
 if any(strcmpi({tables.name}, 'downsample_caches'))
-    RSK = RSKreaddownsample(RSK);
+    RSK = readdownsample(RSK);
 end
 
 end

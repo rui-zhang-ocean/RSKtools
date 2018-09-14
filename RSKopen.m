@@ -31,7 +31,7 @@ function [RSK, dbid] = RSKopen(fname, varargin)
 % Example: 
 %    RSK = RSKopen('sample.rsk');  
 %
-% See also: RSKreaddata, RSKreadprofiles, RSKreaddownsample.
+% See also: RSKreaddata, RSKreadprofiles.
 %
 % Author: RBR Ltd. Ottawa ON, Canada
 % email: support@rbr-global.com

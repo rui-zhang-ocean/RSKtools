@@ -46,7 +46,7 @@ if any(strcmpi({tables.name}, 'geodata'))
 end
 
 if any(strcmpi({tables.name}, 'downsample_caches'))
-    RSK = RSKreaddownsample(RSK);
+    RSK = readdownsample(RSK);
 end
 
 end

@@ -1,8 +1,8 @@
-function RSK = RSKreaddownsample(RSK)
+function RSK = readdownsample(RSK)
 
-% RSKreaddownsample - Read downsample data from an opened RSK file. 
+% readdownsample - Read downsample data from an opened RSK file. 
 %
-% Syntax:  [RSK] = RSKreaddownsample(RSK)
+% Syntax:  [RSK] = readdownsample(RSK)
 % 
 % Reads downsample data from an opened RSK SQLite file, called from
 % within RSKopen.
