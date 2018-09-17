@@ -20,7 +20,7 @@ function dnum = unixtime2datenum(utime)
 %
 %         01-Jan-2015
 %
-% See also: datenum2unixtime, RSKtime2datenum, datenum2RSKtime
+% See also: datenum2unixtime, rsktime2datenum, datenum2rsktime
 %
 % Author: RBR Ltd. Ottawa ON, Canada
 % email: support@rbr-global.com

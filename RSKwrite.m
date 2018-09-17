@@ -141,7 +141,7 @@ function insertSchedules(RSK)
 end
 
 function insertEpochs(RSK,data) 
-    formatAndTransact('INSERT INTO epochs VALUES','(%i,%f,%f)',num2cell([RSK.epochs.deploymentID, min([round(datenum2RSKtime(data.tstamp(1))),[RSK.region.tstamp1]]), max([round(datenum2RSKtime(data.tstamp(end))),[RSK.region.tstamp2]])]));
+    formatAndTransact('INSERT INTO epochs VALUES','(%i,%f,%f)',num2cell([RSK.epochs.deploymentID, min([round(datenum2rsktime(data.tstamp(1))),[RSK.region.tstamp1]]), max([round(datenum2rsktime(data.tstamp(end))),[RSK.region.tstamp2]])]));
 end
 
 function insertChannels(RSK)
@@ -153,7 +153,7 @@ function insertData(data)
     batch = 1:ceil(length(data.tstamp)/N);
     for k = batch
         ind = 1+N*(k-1) : min(N*k, length(data.tstamp));      
-        formatAndTransact('INSERT INTO data VALUES',strcat('(%i',repmat(', %f',1,size(data.values(ind,:),2)), ')'), num2cell([round(datenum2RSKtime(data.tstamp(ind,1))), data.values(ind,:)])');
+        formatAndTransact('INSERT INTO data VALUES',strcat('(%i',repmat(', %f',1,size(data.values(ind,:),2)), ')'), num2cell([round(datenum2rsktime(data.tstamp(ind,1))), data.values(ind,:)])');
     end           
 end
 

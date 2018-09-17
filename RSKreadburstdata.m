@@ -52,8 +52,8 @@ end
 if isempty(t2)
     t2 = RSK.epochs.endTime;
 end
-t1 = datenum2RSKtime(t1);
-t2 = datenum2RSKtime(t2);
+t1 = datenum2rsktime(t1);
+t2 = datenum2rsktime(t2);
 
 
 
