@@ -30,7 +30,7 @@ function   check = iscompatibleversion(RSK, minimumvsnMajor, minimumvsnMinor, mi
 
 check = 0;
 
-[~, vsnMajor, vsnMinor, vsnPatch] = RSKver(RSK);
+[~, vsnMajor, vsnMinor, vsnPatch] = returnversion(RSK);
 
 if (vsnMajor > minimumvsnMajor) 
     check = 1;

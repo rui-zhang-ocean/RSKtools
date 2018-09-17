@@ -1,8 +1,8 @@
-function [v, vsnMajor, vsnMinor, vsnPatch] = RSKver(RSK)
+function [v, vsnMajor, vsnMinor, vsnPatch] = returnversion(RSK)
 
-%RSKver - Return the version of the RSK file.
+% returnversion - Return the version of the RSK file.
 %
-% Syntax:  [v, vsnMajor, vsnMinor, vsnPatch] = RSKver(RSK)
+% Syntax:  [v, vsnMajor, vsnMinor, vsnPatch] = returnversion(RSK)
 %
 % Retrieves the most recent version of the RSK file. This information is
 % kept in a list in the dbInfo field.
@@ -23,7 +23,7 @@ function [v, vsnMajor, vsnMinor, vsnPatch] = RSKver(RSK)
 % Author: RBR Ltd. Ottawa ON, Canada
 % email: support@rbr-global.com
 % Website: www.rbr-global.com
-% Last revision: 2017-06-23
+% Last revision: 2017-09-17
 
 v = RSK.dbInfo(end).version;
 vsn = textscan(v,'%s','delimiter','.');
@@ -83,13 +83,4 @@ end
     
     v = [num2str(vsnMajorlast) '.' num2str(vsnMinorlast) '.' num2str(vsnPatchlast)];
 
-    % write fix to file
-    %     try
-    %         doSelect(RSK, 'begin');
-    %         doSelect(RSK, ['INSERT INTO `dbInfo` VALUES ("' v '","' type '")']);
-    %         doSelect(RSK, 'commit');
-    %     catch
-    %         doSelect(RSK, 'rollback');
-    %     end
-    %     RSK.dbInfo = doSelect(RSK, 'select version,type from dbInfo');
     end

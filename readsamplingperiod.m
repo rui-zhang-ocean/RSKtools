@@ -12,7 +12,7 @@ function samplingperiod = readsamplingperiod(RSK)
 % Output:
 %    samplingperiod - In seconds.
 %
-% See also: readfirmwarever, RSKver.
+% See also: readfirmwarever, returnversion.
 %
 % Author: RBR Ltd. Ottawa ON, Canada
 % email: support@rbr-global.com

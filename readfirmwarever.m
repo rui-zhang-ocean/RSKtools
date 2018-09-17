@@ -18,7 +18,7 @@ function [v, vsnMajor, vsnMinor]  = readfirmwarever(RSK)
 %    vsnMinor - Latest version number of category minor
 %    vsnPatch - Latest version number of category patch
 %
-% See also: RSKver.
+% See also: returnversion.
 %
 % Author: RBR Ltd. Ottawa ON, Canada
 % email: support@rbr-global.com
