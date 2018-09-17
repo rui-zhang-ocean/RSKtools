@@ -1,10 +1,10 @@
-function newfile = RSKwrite(RSK, varargin)
+function newfile = RSK2RSK(RSK, varargin)
 
-% RSKwrite - Write current rsk structure into a new rsk file.
+% RSK2RSK - Write current rsk structure into a new rsk file.
 %
-% Syntax: newfile = RSKwrite(RSKfile, [OPTIONS])
+% Syntax: newfile = RSK2RSK(RSKfile, [OPTIONS])
 %
-% RSKwrite outputs a new rsk file with updated data, profiles, channels and
+% RSK2RSK outputs a new rsk file with updated data, profiles, channels and
 % metadata information in current rsk structure. It is designed to store
 % data in rsk format after post-processing in RSKtools. The new rsk file is
 % in EPdesktop format and readable in Ruskin. 
@@ -28,12 +28,12 @@ function newfile = RSKwrite(RSK, varargin)
 %    RSK = RSKreadprofiles(RSK);
 %    RSK = RSKaddmetadata(RSK,'profile',1:3,'latitude',[45,44,46],'longitude',[-25,-24,-23]});
 %    outputdir = '/Users/Tom/Jerry';
-%    newfile = RSKwrite(RSK,'outputdir',outputdir,'suffix','processed');
+%    newfile = RSK2RSK(RSK,'outputdir',outputdir,'suffix','processed');
 %
 % Author: RBR Ltd. Ottawa ON, Canada
 % email: support@rbr-global.com
 % Website: www.rbr-global.com
-% Last revision: 2018-08-30
+% Last revision: 2018-09-17
 
 
 p = inputParser;
