@@ -1,8 +1,8 @@
-function RSK = RSKreadannotations(RSK)
+function RSK = readannotations(RSK)
 
-% RSKreadannotations - Read annotations from Ruskin.
+% readannotations - Read annotations from Ruskin.
 %
-% Syntax:  [RSK] = RSKreadannotations(RSK)
+% Syntax:  [RSK] = readannotations(RSK)
 %
 % Reads in GPS and comment start and end time by combining information 
 % from region, regionGeoData and regionComment tables and adds it to the 
@@ -19,7 +19,7 @@ function RSK = RSKreadannotations(RSK)
 % Author: RBR Ltd. Ottawa ON, Canada
 % email: support@rbr-global.com
 % Website: www.rbr-global.com
-% Last revision: 2018-07-04
+% Last revision: 2018-09-17
 
 tables = doSelect(RSK, 'SELECT name FROM sqlite_master WHERE type="table"');
 

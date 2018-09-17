@@ -1,6 +1,6 @@
 function [RSK, dbid] = RSKopen(fname, varargin)
 
-%RSKopen - Open an RBR RSK file and read metadata and thumbnails.
+% RSKopen - Open an RBR RSK file and read metadata and thumbnails.
 %
 % Syntax:  [RSK, dbid] = RSKopen(fname, [OPTIONS])
 % 
@@ -87,7 +87,7 @@ end
 
 RSK = getprofiles(RSK);
 
-RSK = RSKreadannotations(RSK);
+RSK = readannotations(RSK);
 
 logentry = [fname ' opened using RSKtools v' RSKtoolsversion '.'];
 RSK = RSKappendtolog(RSK, logentry);
