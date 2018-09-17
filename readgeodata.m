@@ -52,7 +52,7 @@ elseif strcmpi(p.UsingDefaults, 'UTCdelta')
     end
 end  
 for ndx = 1:length(RSK.geodata)
-    RSK.geodata(ndx).tstamp = RSKtime2datenum(RSK.geodata(ndx).tstamp + UTCdelta);
+    RSK.geodata(ndx).tstamp = rsktime2datenum(RSK.geodata(ndx).tstamp + UTCdelta);
 end
 
 geodata = [[RSK.geodata.tstamp]', [RSK.geodata.latitude]', [RSK.geodata.longitude]', [RSK.geodata.accuracy]'];

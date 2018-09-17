@@ -74,7 +74,7 @@ RSK.calibrations = doSelect(RSK, ['SELECT `cal`.`calibrationID`,'...
 	'GROUP BY `cal`.`calibrationID`']);
 
 for ndx = 1:length(RSK.calibrations)
-    RSK.calibrations(ndx).tstamp = RSKtime2datenum(RSK.calibrations(ndx).tstamp);
+    RSK.calibrations(ndx).tstamp = rsktime2datenum(RSK.calibrations(ndx).tstamp);
 end
 
 end

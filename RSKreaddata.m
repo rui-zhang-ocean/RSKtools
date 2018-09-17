@@ -92,7 +92,7 @@ results = removeunuseddatacolumns(results);
 results = arrangedata(results);
 
 t=results.tstamp';
-results.tstamp = RSKtime2datenum(t);
+results.tstamp = rsktime2datenum(t);
 RSK = readchannels(RSK);
 
 if ~strcmpi(RSK.dbInfo(end).type, 'EPdesktop')

@@ -62,7 +62,7 @@ end
 
 results = arrangedata(results);
 t=results.tstamp';
-results.tstamp = RSKtime2datenum(t);
+results.tstamp = rsktime2datenum(t);
 RSK.events=results;
 
 end

@@ -20,7 +20,7 @@ function utime = datenum2unixtime(dnum)
 %
 %    1.4201e+09
 %
-% See also: unixtime2datenum, RSKtime2datenum, datenum2rsktime.
+% See also: unixtime2datenum, rsktime2datenum, datenum2rsktime.
 %
 % Author: RBR Ltd. Ottawa ON, Canada
 % email: support@rbr-global.com

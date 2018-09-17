@@ -31,8 +31,8 @@ RSK = p.Results.RSK;
 RSK = readchannels(RSK);
 
 RSK.epochs = doSelect(RSK, 'select deploymentID,startTime/1.0 as startTime, endTime/1.0 as endTime from epochs');
-RSK.epochs.startTime = RSKtime2datenum(RSK.epochs.startTime);
-RSK.epochs.endTime = RSKtime2datenum(RSK.epochs.endTime);
+RSK.epochs.startTime = rsktime2datenum(RSK.epochs.startTime);
+RSK.epochs.endTime = rsktime2datenum(RSK.epochs.endTime);
 
 RSK.schedules = doSelect(RSK, 'select * from schedules');
 
