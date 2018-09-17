@@ -46,7 +46,7 @@ parse(p, fname, varargin{:})
 fname = p.Results.fname;
 rhc = p.Results.rhc;
 
-RSKconstants
+loadconstants
 
 if nargin==0
     [file, path] = uigetfile({'*.rsk','*.RSK'},'Choose an RSK file');

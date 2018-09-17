@@ -1,6 +1,6 @@
 function pAtm = getatmosphericpressure(RSK)
 
-%GETATMOSPHERICPRESSURE - Return the atmospheric pressure stored in RSK file.
+% GETATMOSPHERICPRESSURE - Return the atmospheric pressure stored in RSK file.
 %
 % Syntax:  [pAtm] = GETATMOSPHERICPRESSURE(RSK)
 %
@@ -21,7 +21,7 @@ function pAtm = getatmosphericpressure(RSK)
 % Website: www.rbr-global.com
 % Last revision: 2017-06-28
 
-RSKconstants
+loadconstants
 
 if isfield(RSK, 'parameterKeys')
     atmrow = strcmpi({RSK.parameterKeys.key}, 'ATMOSPHERE');

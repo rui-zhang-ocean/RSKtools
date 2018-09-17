@@ -18,7 +18,7 @@ function RSK = readeventsprofiles(RSK)
 % Website: www.rbr-global.com
 % Last revision: 2017-06-21
 
-RSKconstants
+loadconstants
 
 tmp = readevents(RSK);
 
