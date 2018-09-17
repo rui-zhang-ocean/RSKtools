@@ -1,15 +1,15 @@
-function [im, data2D, X, Y] = RSKplot2D(RSK, channel, varargin)
+function [im, data2D, X, Y] = RSKimages(RSK, channel, varargin)
 
-% RSKplot2D - Plot profiles in a 2D plot.
+% RSKimages - Plot profiles in a 2D plot.
 %
-% Syntax:  [im, data2D, X, Y] = RSKplot2D(RSK, channel, [OPTIONS])
+% Syntax:  [im, data2D, X, Y] = RSKimages(RSK, channel, [OPTIONS])
 % 
 % Generates a plot of the profiles over time. The x-axis is time; the
 % y-axis is a reference channel. All data elements must have identical
 % reference channel samples. Use RSKbinaverage.m to achieve this. 
 %
-% Note: If installed, RSKplot2D will use the perceptually uniform oceanographic
-%       colourmaps in the cmocean toolbox:
+% Note: If installed, RSKimages will use the perceptually uniform 
+%       oceanographic colourmaps in the cmocean toolbox:
 %       https://www.mathworks.com/matlabcentral/fileexchange/57773-cmocean-perceptually-uniform-colormaps
 %        
 %       http://dx.doi.org/10.5670/oceanog.2016.66        
@@ -47,16 +47,16 @@ function [im, data2D, X, Y] = RSKplot2D(RSK, channel, varargin)
 %     Y - Y axis vector in sea pressure.
 %
 % Example: 
-%     im = RSKplot2D(RSK,'Temperature','direction','down'); 
+%     im = RSKimages(RSK,'Temperature','direction','down'); 
 %     OR
-%     [im, data2D, X, Y] = RSKplot2D(RSK,'Temperature','direction','down','interp',1,'threshold',1);
+%     [im, data2D, X, Y] = RSKimages(RSK,'Temperature','direction','down','interp',1,'threshold',1);
 %
 % See also: RSKbinaverage, RSKplotprofiles.
 %
 % Author: RBR Ltd. Ottawa ON, Canada
 % email: support@rbr-global.com
 % Website: www.rbr-global.com
-% Last revision: 2018-05-09
+% Last revision: 2018-09-17
 
 validDirections = {'down', 'up'};
 checkDirection = @(x) any(validatestring(x,validDirections));
