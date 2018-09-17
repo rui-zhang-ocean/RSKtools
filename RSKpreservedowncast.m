@@ -1,8 +1,8 @@
-function [RSK, downidx] = RSKselectdowncast(RSK)
+function [RSK, downidx] = RSKpreservedowncast(RSK)
 
-% RSKselectdowncast - Keep the data elements with an increasing pressure.
+% RSKpreservedowncast - Keep the data elements with an increasing pressure.
 %
-% Syntax:  [RSK, isDown] = RSKselectdowncast(RSK)
+% Syntax:  [RSK, downidx] = RSKpreservedowncast(RSK)
 %
 % Keeps only the downcasts in the RSK and returns the index of the downcasts
 % from the input RSK structure. 
@@ -19,7 +19,7 @@ function [RSK, downidx] = RSKselectdowncast(RSK)
 % Author: RBR Ltd. Ottawa ON, Canada
 % email: support@rbr-global.com
 % Website: www.rbr-global.com
-% Last revision: 2018-05-29
+% Last revision: 2018-09-17
 
 
 Pcol = getchannelindex(RSK, 'Pressure');

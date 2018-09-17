@@ -1,8 +1,8 @@
 function castdir = getcastdirection(pressure, direction)
 
-%GETCASTDIRECTION - Check if pressure array that is in the given direction.
+% getcastdirection - Check if pressure array that is in the given direction.
 %
-% Syntax:  [castdir] = GETCASTDIRECTION(pressure, direction)
+% Syntax:  [castdir] = getcastdirection(pressure, direction)
 %
 % Inputs:
 %    pressure - Time series of pressure
@@ -12,12 +12,12 @@ function castdir = getcastdirection(pressure, direction)
 % Outputs:
 %    castdir - Logical index.
 %
-% See also: RSKselectupcast, RSKselectdowncast.
+% See also: RSKpreserveupcast, RSKpreservedowncast.
 %
 % Author: RBR Ltd. Ottawa ON, Canada
 % email: support@rbr-global.com
 % Website: www.rbr-global.com
-% Last revision: 2017-06-20
+% Last revision: 2018-09-17
 
 if strcmpi(direction, 'up') && isUpcast(pressure)
     castdir = 1;

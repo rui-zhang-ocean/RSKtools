@@ -50,8 +50,8 @@
 %   RSKreadprofiles      - reads and organized data into a series of profiles
 %   RSKplotprofiles      - plot depth profiles for each channel
 %   RSKplotdownsample    - plot downsample data
-%   RSKselectdowncast    - keep only the down casts in the RSK structure
-%   RSKselectupcast      - keep only the up casts in the RSK structure
+%   RSKpreservedowncast  - keep only the down casts in the RSK structure
+%   RSKpreserveupcast    - keep only the up casts in the RSK structure
 %   RSKreadburstdata     - read burst data from database
 %   RSKplotburstdata     - plot burst data
 %   RSKreadcalibrations  - read the calibrations table of an RSK file

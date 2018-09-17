@@ -1,8 +1,8 @@
-function [RSK, upidx] = RSKselectupcast(RSK)
+function [RSK, upidx] = RSKpreserveupcast(RSK)
 
-% RSKselectupcast - Select the data elements with decreasing pressure.
+% RSKpreserveupcast - Select the data elements with decreasing pressure.
 %
-% Syntax:  [RSKup, upidx] = RSKselectupcast(RSK)
+% Syntax:  [RSK, upidx] = RSKpreserveupcast(RSK)
 %
 % Keeps only the upcasts in the RSK and returns the index of the upcasts from
 % the input RSK structure. 
@@ -19,7 +19,7 @@ function [RSK, upidx] = RSKselectupcast(RSK)
 % Author: RBR Ltd. Ottawa ON, Canada
 % email: support@rbr-global.com
 % Website: www.rbr-global.com
-% Last revision: 2018-05-29
+% Last revision: 2018-09-17
 
 
 Pcol = getchannelindex(RSK, 'Pressure');
