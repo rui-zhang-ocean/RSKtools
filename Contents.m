@@ -45,7 +45,6 @@
 %   RSKreaddata          - read full dataset from database
 %   RSKplotdata          - plot data as a time series
 %   RSKimages            - display bin averaged data in a time-depth heat map
-%   RSKreadwavetxt       - reads wave data from a Ruskin .txt export
 %   RSKfindprofiles      - detect profile start and end times using pressure and conductivity
 %   RSKreadprofiles      - reads and organized data into a series of profiles
 %   RSKplotprofiles      - plot depth profiles for each channel
