@@ -166,7 +166,7 @@ rsk = RSKaddchannel(rsk,sa,'Absolute Salinity','g/kg');
 
 %% Bin average all channels by pressure
 % Average the data into 0.25 dbar bins using |RSKbinaverage|.
-rsk = RSKbinaverage(rsk, 'binBy', 'Sea Pressure', 'binSize', 0.25, 'direction', 'up', 'visualize', 10);
+rsk = RSKbinaverage(rsk, 'binBy', 'Sea Pressure', 'binSize', 0.25, 'boundary', [0.5 5],'direction', 'up', 'visualize', 10);
 h = findobj(gcf,'type','line');
 set(h(1:2:end),'marker','o','markerfacecolor','c')
 
@@ -181,7 +181,7 @@ set(h2,{'linewidth'},{3})
 
 
 %% 2D plot
-% |RSKplot2D| generates a time/depth heat-map of a channel. The x-axis
+% |RSKimages| generates a time/depth heat-map of a channel. The x-axis
 % is time; the y-axis is a reference channel (default is sea
 % pressure).  All of the profiles must be evaluated on the same
 % reference channel levels, which is accomplished with
@@ -190,7 +190,7 @@ set(h2,{'linewidth'},{3})
 % <https://docs.rbr-global.com/rsktools RSKtools on-line user manual>
 
 clf
-RSKplot2D(rsk, 'Salinity','direction','up'); 
+RSKimages(rsk, 'Salinity','direction','up'); 
 
 
 %% Add station metadata
