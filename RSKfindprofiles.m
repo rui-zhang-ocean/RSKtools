@@ -36,7 +36,7 @@ function RSK = RSKfindprofiles(RSK, varargin)
 %    RSK = RSKreaddata(RSK);
 %    RSK = RSKfindprofiles(RSK, 'pressureThreshold', 1);
 %
-% See also: RSKreadprofiles, RSKgetprofiles.
+% See also: RSKreadprofiles, getprofiles.
 %
 % Author: RBR Ltd. Ottawa ON, Canada
 % email: support@rbr-global.com
@@ -178,24 +178,24 @@ for n = 1:length(upstart)
     RSK.region(nprofile).datasetID = 1;
     RSK.region(nprofile).regionID = nprofile;
     RSK.region(nprofile).type = 'PROFILE';
-    RSK.region(nprofile).tstamp1 = round(datenum2RSKtime(firstdir.tstart(n)));
-    RSK.region(nprofile).tstamp2 = round(datenum2RSKtime(lastdir.tend(n)));
+    RSK.region(nprofile).tstamp1 = round(datenum2rsktime(firstdir.tstart(n)));
+    RSK.region(nprofile).tstamp2 = round(datenum2rsktime(lastdir.tend(n)));
     RSK.region(nprofile).label = ['Profile ' num2str(n)];
     RSK.region(nprofile).description = 'RSKtools-generated profile.';
     
     RSK.region(nprofile+1).datasetID = 1;
     RSK.region(nprofile+1).regionID = nprofile+1;
     RSK.region(nprofile+1).type = 'CAST'; 
-    RSK.region(nprofile+1).tstamp1 = round(datenum2RSKtime(firstdir.tstart(n)));
-    RSK.region(nprofile+1).tstamp2 = round(datenum2RSKtime(firstdir.tend(n)));
+    RSK.region(nprofile+1).tstamp1 = round(datenum2rsktime(firstdir.tstart(n)));
+    RSK.region(nprofile+1).tstamp2 = round(datenum2rsktime(firstdir.tend(n)));
     RSK.region(nprofile+1).label = [firstType 'cast ' num2str(n)];
     RSK.region(nprofile+1).description = 'RSKtools-generated cast.';
 
     RSK.region(nprofile+2).datasetID = 1;
     RSK.region(nprofile+2).regionID = nprofile+2;    
     RSK.region(nprofile+2).type = 'CAST';
-    RSK.region(nprofile+2).tstamp1 = round(datenum2RSKtime(lastdir.tstart(n)));
-    RSK.region(nprofile+2).tstamp2 = round(datenum2RSKtime(lastdir.tend(n)));
+    RSK.region(nprofile+2).tstamp1 = round(datenum2rsktime(lastdir.tstart(n)));
+    RSK.region(nprofile+2).tstamp2 = round(datenum2rsktime(lastdir.tend(n)));
     RSK.region(nprofile+2).label = [lastType 'cast ' num2str(n)];
     RSK.region(nprofile+2).description = 'RSKtools-generated cast.';
 

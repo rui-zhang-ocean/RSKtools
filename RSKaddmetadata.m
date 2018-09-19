@@ -136,7 +136,7 @@ if isfield(RSK.data,'latitude') || isfield(RSK.data,'longitude')
     for i = 1:length(RSK.data)     
         if (~isempty(RSK.data(i).latitude) && ~isnan(RSK.data(i).latitude)) || (~isempty(RSK.data(i).longitude) && ~isnan(RSK.data(i).longitude))          
             str = [RSK.data(i).direction 'cast ' num2str(RSK.data(i).profilenumber)];
-            midtstamp = round(datenum2RSKtime((RSK.data(i).tstamp(1) + RSK.data(i).tstamp(end))/2));
+            midtstamp = round(datenum2rsktime((RSK.data(i).tstamp(1) + RSK.data(i).tstamp(end))/2));
             k = k + 1;
             RSK.region(initialregionL + k).datasetID = 1;
             RSK.region(initialregionL + k).regionID = initialregionL + k;
@@ -158,7 +158,7 @@ if isfield(RSK.data,'comment')
     k = 0;
     for i = 1:length(RSK.data)     
         if ~isempty(RSK.data(i).comment) && any(~isnan(RSK.data(i).comment{:}))    
-            midtstamp = round(datenum2RSKtime((RSK.data(i).tstamp(1) + RSK.data(i).tstamp(end))/2));
+            midtstamp = round(datenum2rsktime((RSK.data(i).tstamp(1) + RSK.data(i).tstamp(end))/2));
             k = k + 1;
             RSK.region(initialregionL2 + k).datasetID = 1;
             RSK.region(initialregionL2 + k).regionID = initialregionL2 + k;

@@ -38,7 +38,7 @@ function RSK = RSKreaddata(RSK, varargin)
 %    % Read 1/2 day of data since logger started.
 %    RSK = RSKreaddata(RSK, 't2', RSK.epochs.startTime+0.5);
 %
-% See also: RSKopen, RSKreadevents, RSKreadburstdata.
+% See also: RSKopen, RSKreadburstdata.
 %
 % Author: RBR Ltd. Ottawa ON, Canada
 % email: support@rbr-global.com
@@ -63,8 +63,8 @@ end
 if isempty(t2)
     t2 = RSK.epochs.endTime;
 end
-t1 = datenum2RSKtime(t1);
-t2 = datenum2RSKtime(t2);
+t1 = datenum2rsktime(t1);
+t2 = datenum2rsktime(t2);
 
 if t2 <= t1
     error('The end time (t2) must be greater (later) than the start time (t1).')
@@ -92,7 +92,7 @@ results = removeunuseddatacolumns(results);
 results = arrangedata(results);
 
 t=results.tstamp';
-results.tstamp = RSKtime2datenum(t);
+results.tstamp = rsktime2datenum(t);
 RSK = readchannels(RSK);
 
 if ~strcmpi(RSK.dbInfo(end).type, 'EPdesktop')

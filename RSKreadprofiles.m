@@ -12,7 +12,7 @@ function RSK = RSKreadprofiles(RSK, varargin)
 % and profile description/detail field available into the data structure.
 %
 % The profile events are parsed from the events table using the
-% following types (see RSKconstants.m):
+% following types (see utilities/loadconstants.m):
 %   33 - Begin upcast
 %   34 - Begin downcast
 %   35 - End of profile cast

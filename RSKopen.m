@@ -1,6 +1,6 @@
 function [RSK, dbid] = RSKopen(fname, varargin)
 
-%RSKopen - Open an RBR RSK file and read metadata and thumbnails.
+% RSKopen - Open an RBR RSK file and read metadata and thumbnails.
 %
 % Syntax:  [RSK, dbid] = RSKopen(fname, [OPTIONS])
 % 
@@ -31,7 +31,7 @@ function [RSK, dbid] = RSKopen(fname, varargin)
 % Example: 
 %    RSK = RSKopen('sample.rsk');  
 %
-% See also: RSKreaddata, RSKreadprofiles, RSKreaddownsample.
+% See also: RSKreaddata, RSKreadprofiles.
 %
 % Author: RBR Ltd. Ottawa ON, Canada
 % email: support@rbr-global.com
@@ -46,7 +46,7 @@ parse(p, fname, varargin{:})
 fname = p.Results.fname;
 rhc = p.Results.rhc;
 
-RSKconstants
+loadconstants
 
 if nargin==0
     [file, path] = uigetfile({'*.rsk','*.RSK'},'Choose an RSK file');
@@ -85,9 +85,9 @@ switch RSK.dbInfo(end).type
         return
 end
 
-RSK = RSKgetprofiles(RSK);
+RSK = getprofiles(RSK);
 
-RSK = RSKreadannotations(RSK);
+RSK = readannotations(RSK);
 
 logentry = [fname ' opened using RSKtools v' RSKtoolsversion '.'];
 RSK = RSKappendtolog(RSK, logentry);
