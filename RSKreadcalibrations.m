@@ -22,13 +22,14 @@ function RSK = RSKreadcalibrations(RSK)
 % Author: RBR Ltd. Ottawa ON, Canada
 % email: support@rbr-global.com
 % Website: www.rbr-global.com
-% Last revision: 2017-06-22
+% Last revision: 2018-09-26
 
-if ~strcmp(RSK.dbInfo(end).type, 'full')
-    error('Only files of type "full" have a calibrations table');
+
+tables = doSelect(RSK, 'SELECT name FROM sqlite_master WHERE type="table"');
+
+if ~any(strcmpi({tables.name}, 'calibrations'))
+    error('The rsk file does not have calibration table.')
 end
-
-
 
 % As of RSK v1.13.4 coefficients is it's own table. We add it back into calibration to be consistent with previous versions.
 RSK = coef2cal(RSK);
