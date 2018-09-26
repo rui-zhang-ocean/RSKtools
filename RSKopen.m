@@ -16,13 +16,11 @@ function [RSK, dbid] = RSKopen(fname, varargin)
 % directory contains everything you need and some instructions from the
 % original author.  You can also find the source through Google.
 %
-% Note: If the file was recorded from an |rt instrument there is no thumbnail data.
-%
 % Inputs:
 %    [Required] - fname - Filename of the RSK database.
 %
 %    [Optional] - readHiddenChannels - Read hidden channel when set as
-%                                      true, defalt is false.
+%                                      true, default is false.
 %
 % Outputs:
 %    RSK - Structure containing the logger metadata and thumbnail
@@ -37,7 +35,7 @@ function [RSK, dbid] = RSKopen(fname, varargin)
 % Author: RBR Ltd. Ottawa ON, Canada
 % email: support@rbr-global.com
 % Website: www.rbr-global.com
-% Last revision: 2018-06-18
+% Last revision: 2018-09-26
 
 p = inputParser;
 addRequired(p,'fname',@ischar);
