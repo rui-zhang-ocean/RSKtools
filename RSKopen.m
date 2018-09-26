@@ -21,7 +21,8 @@ function [RSK, dbid] = RSKopen(fname, varargin)
 % Inputs:
 %    [Required] - fname - Filename of the RSK database.
 %
-%    [Optional] - rhc - Read hidden channel or not, 1 or 0.
+%    [Optional] - readHiddenChannels - Read hidden channel when set as
+%                                      true, defalt is false.
 %
 % Outputs:
 %    RSK - Structure containing the logger metadata and thumbnail
@@ -40,11 +41,11 @@ function [RSK, dbid] = RSKopen(fname, varargin)
 
 p = inputParser;
 addRequired(p,'fname',@ischar);
-addOptional(p,'rhc', 0, @isnumeric)
+addOptional(p,'readHiddenChannels', false, @islogical)
 parse(p, fname, varargin{:})
 
 fname = p.Results.fname;
-rhc = p.Results.rhc;
+readHiddenChannels = p.Results.readHiddenChannels;
 
 loadconstants
 
@@ -58,7 +59,7 @@ elseif isempty(dir(fname))
 end
 
 RSK.toolSettings.filename = fname;
-RSK.toolSettings.rhc = rhc;
+RSK.toolSettings.readHiddenChannels = readHiddenChannels;
 
 RSK.dbInfo = doSelect(RSK, 'select version,type from dbInfo');
 
