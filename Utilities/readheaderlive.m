@@ -6,7 +6,7 @@ function RSK = readheaderlive(RSK)
 %
 % Opens the non-standard populated tables of RSK 'live' files. These tables
 % are appSettings, instrumentsChannels, and parameters. If data is
-% available, it will open the parameterKeys and thumbnailData tables.  
+% available, it will open the parameterKeys and downsample tables.  
 %
 % Note: Only marine channels will be displayed.
 %
@@ -14,7 +14,7 @@ function RSK = readheaderlive(RSK)
 %    RSK - Structure of 'live' file opened using RSKopen.m.
 %
 % Outputs:
-%    RSK - Structure containing logger metadata and thumbnail.
+%    RSK - Structure containing logger metadata and downsample, if exists.
 %
 % See also: RSKopen.
 %

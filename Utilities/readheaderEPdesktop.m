@@ -4,15 +4,15 @@ function RSK = readheaderEPdesktop(RSK)
 %
 % Syntax:  [RSK] = READHEADEREPDESKTOP(RSK)
 %
-% Opens the non-standard populated tables of 'EPdesktop' files, this table 
-% is thumbnailData. If metadata is present, it will also read the
-% appSettings, parameters, parameterKeys and geodata tables.  
+% Opens the non-standard populated tables of 'EPdesktop' files, including
+% the appSettings, parameters, parameterKeys, geodata and downsample tables
+% if exists.
 %
 % Inputs:
 %    RSK - Structure of 'EPdesktop' file opened using RSKopen.m.
 %
 % Outputs:
-%    RSK - Structure containing logger metadata and thumbnail.
+%    RSK - Structure containing logger metadata and downsample, if exists.
 %
 % See also: RSKopen.
 %

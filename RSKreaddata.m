@@ -13,13 +13,13 @@ function RSK = RSKreaddata(RSK, varargin)
 % raw bin file.
 % 
 % Inputs: 
-%    [Required] - RSK - Structure containing the logger metadata and
-%                       thumbnails returned by RSKopen. If provided as the
-%                       only argument the data for the entire file is read.
-%                       Depending on the amount of data in your dataset,
-%                       and the amount of memory on your computer, you can
-%                       read bigger or smaller chunks before Matlab
-%                       complains and runs out of memory. 
+%    [Required] - RSK - Structure containing the logger metadata returned 
+%                       by RSKopen. If provided as the only argument the 
+%                       data for the entire file is read. Depending on the 
+%                       amount of data in your dataset, and the amount of 
+%                       memory on your computer, you can read bigger or 
+%                       smaller chunks before Matlab complains and runs out
+%                       of memory. 
 %
 %    [Optional] - t1 - Start time for range of data to be read, specified
 %                       using the MATLAB datenum format. 

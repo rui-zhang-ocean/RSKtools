@@ -14,7 +14,7 @@ function RSK = readheaderskinny(RSK)
 %    RSK - Structure of 'skinny' file opened using RSKopen.m.
 %
 % Outputs:
-%    RSK - Structure containing logger metadata and thumbnail.
+%    RSK - Structure containing logger metadata.
 %
 % Author: RBR Ltd. Ottawa ON, Canada
 % email: support@rbr-global.com

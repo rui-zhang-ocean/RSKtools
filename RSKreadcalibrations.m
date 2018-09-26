@@ -10,8 +10,7 @@ function RSK = RSKreadcalibrations(RSK)
 % simply open the calibrations table and adjust the timestamps.
 %
 % Inputs:
-%    RSK - Structure containing the logger metadata and thumbnails
-%          returned by RSKopen.
+%    RSK - Structure containing the logger metadata returned by RSKopen.
 %
 % Output:
 %    RSK - Structure containing previously present logger metadata as well

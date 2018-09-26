@@ -8,14 +8,13 @@ function   check = iscompatibleversion(RSK, minimumvsnMajor, minimumvsnMinor, mi
 % greater than the specified minimum version required.
 %
 % Inputs:
-%    RSK - Structure containing the logger metadata and thumbnails
-%          returned by RSKopen
+%    RSK - Structure containing the logger metadata, returned by RSKopen
 %
 %    minimumvsnMajor - Minimum requirement version number of category major
 %
 %    minimumvsnMinor - Minimum requirement version number of category minor
 %
-%    minimumvsnPatch - Minimum requirement version number of category patch.
+%    minimumvsnPatch - Minimum requirement version number of category patch
 %
 % Output:
 %    check - A logical index 1, version is compatible; 0, version is

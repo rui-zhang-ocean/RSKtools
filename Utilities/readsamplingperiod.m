@@ -7,7 +7,7 @@ function samplingperiod = readsamplingperiod(RSK)
 % Returns the sampling period of the file.
 %
 % Inputs:
-%    RSK - Structure containing the logger metadata and thumbnail.
+%    RSK - Structure containing the logger metadata.
 %
 % Output:
 %    samplingperiod - In seconds.

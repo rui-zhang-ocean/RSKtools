@@ -9,9 +9,9 @@ function RSK = readevents(RSK, varargin)
 % 't1' and 't2' input arguments.
 % 
 % Inputs: 
-%    [Required] - RSK - Structure containing the logger metadata and
-%                       thumbnails returned by RSKopen. If provided as the
-%                       only argument events for the entire file are read. 
+%    [Required] - RSK - Structure containing the logger metadata returned 
+%                       by RSKopen. If provided as the only argument events
+%                       for the entire file are read. 
 %
 %    [Optional] - t1 - Start time for range of data to be read, specified
 %                       using the MATLAB datenum format. 

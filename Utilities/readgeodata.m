@@ -9,7 +9,7 @@ function [RSK, geodata] = readgeodata(RSK, varargin)
 % file, it is applied, unless a value is input.
 %
 % Inputs:
-%    RSK - Structure containing the logger metadata and thumbnail.
+%    RSK - Structure containing the logger metadata.
 %
 %    UTCdelta - The offset of the timestamp. Uses the input value, if none
 %               the value in the epochs field, if none, 0.

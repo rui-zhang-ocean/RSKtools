@@ -12,7 +12,7 @@ function [handles,axes] = channelsubplots(RSK, field, varargin)
 %   [Required] - RSK - Structure created by a .rsk file
 %
 %                field - Source of the data to plot. Can be
-%                      'burstData', 'thumbnailData', or 'data'.
+%                      'burstData', 'data' or 'downsample'.
 %
 %   [Optional] - chanCol - Column number of the channels to plot.
 %                      Default is to plot all channels.
@@ -31,10 +31,10 @@ function [handles,axes] = channelsubplots(RSK, field, varargin)
 % Author: RBR Ltd. Ottawa ON, Canada
 % email: support@rbr-global.com
 % Website: www.rbr-global.com
-% Last revision: 2018-06-26
+% Last revision: 2018-09-26
 
 
-validFields = {'burstData', 'thumbnailData', 'data','downsample'};
+validFields = {'burstData','data','downsample'};
 checkField = @(x) any(validatestring(x,validFields));
 
 p = inputParser;

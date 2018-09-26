@@ -10,8 +10,8 @@ function RSK = RSKreadburstdata(RSK, varargin)
 % separate bursts. 
 % 
 % Inputs: 
-%    [Required] - RSK - Structure containing the logger metadata and
-%                       thumbnails returned by RSKopen. 
+%    [Required] - RSK - Structure containing the logger metadata returned 
+%                       by RSKopen. 
 %
 %    [Optional] - t1 - Start time for range of data to be read, specified
 %                       using the MATLAB datenum format. 
