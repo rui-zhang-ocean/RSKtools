@@ -1,8 +1,8 @@
-function [im, data2D, X, Y] = RSKimages(RSK, channel, varargin)
+function [handles, data2D, X, Y] = RSKimages(RSK, channel, varargin)
 
 % RSKimages - Plot profiles in a 2D plot.
 %
-% Syntax:  [im, data2D, X, Y] = RSKimages(RSK, channel, [OPTIONS])
+% Syntax:  [handles, data2D, X, Y] = RSKimages(RSK, channel, [OPTIONS])
 % 
 % Generates a plot of the profiles over time. The x-axis is time; the
 % y-axis is a reference channel. All data elements must have identical
@@ -29,16 +29,17 @@ function [im, data2D, X, Y] = RSKimages(RSK, channel, varargin)
 %                reference - Channel that will be plotted as y. Default
 %                      'Sea Pressure', can be any other channel.
 %
-%                interp - Plotting with interpolated profiles onto a 
-%                       regular time grid, so that gaps between each
-%                       profile can be shown when set as 1. Default is 0. 
+%                showgap - Plotting with interpolated profiles onto a 
+%                      regular time grid, so that gaps between each
+%                      profile can be shown when set as true. Default is 
+%                      false. 
 %          
 %                threshold - Time threshold in hours to determine the
-%                            maximum  gap length shown on the plot. If the 
-%                            gap is smaller than threshold, it will not show. 
+%                      maximum  gap length shown on the plot. Any gap 
+%                      smaller than the threshold will not show. 
 %
 % Output:
-%     im - Image object created, use to set properties.
+%     handles - Image object created, use to set properties.
 %
 %     data2D - Plotted data matrix.
 %
@@ -47,16 +48,16 @@ function [im, data2D, X, Y] = RSKimages(RSK, channel, varargin)
 %     Y - Y axis vector in sea pressure.
 %
 % Example: 
-%     im = RSKimages(RSK,'Temperature','direction','down'); 
+%     handles = RSKimages(RSK,'Temperature','direction','down'); 
 %     OR
-%     [im, data2D, X, Y] = RSKimages(RSK,'Temperature','direction','down','interp',1,'threshold',1);
+%     [handles, data2D, X, Y] = RSKimages(RSK,'Temperature','direction','down','interp',true,'threshold',1);
 %
 % See also: RSKbinaverage, RSKplotprofiles.
 %
 % Author: RBR Ltd. Ottawa ON, Canada
 % email: support@rbr-global.com
 % Website: www.rbr-global.com
-% Last revision: 2018-09-17
+% Last revision: 2018-09-25
 
 validDirections = {'down', 'up'};
 checkDirection = @(x) any(validatestring(x,validDirections));
@@ -67,7 +68,7 @@ addRequired(p, 'channel');
 addParameter(p, 'profile', [], @isnumeric);
 addParameter(p, 'direction', 'down', checkDirection);
 addParameter(p, 'reference', 'Sea Pressure', @ischar);
-addParameter(p,'interp', 0, @isnumeric)
+addParameter(p,'showgap', false, @islogical)
 addParameter(p,'threshold', [], @isnumeric)
 parse(p, RSK, channel, varargin{:})
 
@@ -76,7 +77,7 @@ channel = p.Results.channel;
 profile = p.Results.profile;
 direction = p.Results.direction;
 reference = p.Results.reference;
-interp = p.Results.interp;
+showgap = p.Results.showgap;
 threshold = p.Results.threshold;
 
 
@@ -98,12 +99,12 @@ for ndx = 1:length(castidx)
 end
 t = cellfun( @(x)  min(x), {RSK.data(castidx).tstamp});
 
-if interp == 0;
+if ~showgap
     data2D = binValues;
     X = t;
-    im = pcolor(t, binCenter, binValues);
+    handles = pcolor(t, binCenter, binValues);
     shading interp
-    set(im, 'AlphaData', isfinite(binValues)); % plot NaN values in white.
+    set(handles, 'AlphaData', isfinite(binValues)); % plot NaN values in white.
 else
     unit_time = (t(2)-t(1)); 
     N = round((t(end)-t(1))/unit_time);
@@ -133,25 +134,20 @@ else
         binValues_itp(:,remove_gap_idx) = [];
         t_itp(remove_gap_idx) = [];
         
-        im = pcolor(t_itp, binCenter, binValues_itp);
+        handles = pcolor(t_itp, binCenter, binValues_itp);
         shading interp
     else
-        im = imagesc(t_itp, binCenter, binValues_itp);       
+        handles = imagesc(t_itp, binCenter, binValues_itp);       
     end 
-    set(im, 'AlphaData', isfinite(binValues_itp)); 
+    set(handles, 'AlphaData', isfinite(binValues_itp)); 
 end
 
 setcolormap(channel);
 cb = colorbar;
-ylabel(cb, RSK.channels(chanCol).units)
-
 ylabel(cb, RSK.channels(chanCol).units, 'FontSize', 12)
 ylabel(sprintf('%s (%s)', RSK.channels(YCol).longName, RSK.channels(YCol).units));
 set(gca, 'YDir', 'reverse')
-
 h = title(RSK.channels(chanCol).longName);
-p = get(h,'Position');
-
 set(gcf, 'Renderer', 'painters')
 set(h, 'EdgeColor', 'none');
 datetick('x')
