@@ -8,8 +8,7 @@ function [v, vsnMajor, vsnMinor, vsnPatch] = returnversion(RSK)
 % kept in a list in the dbInfo field.
 %
 % Inputs:
-%    RSK - Structure containing the logger metadata and thumbnail
-%          returned by RSKopen.
+%    RSK - Structure containing the logger metadata returned by RSKopen.
 %
 % Output:
 %    v - The lastest version of the RSK file.

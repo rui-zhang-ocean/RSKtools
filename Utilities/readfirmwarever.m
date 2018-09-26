@@ -9,8 +9,7 @@ function [v, vsnMajor, vsnMinor]  = readfirmwarever(RSK)
 % 'deployments' for more recent files.
 %
 % Inputs:
-%    RSK - Structure containing the logger metadata and thumbnail
-%          returned by RSKopen.
+%    RSK - Structure containing the logger metadata returned by RSKopen.
 %
 % Output:
 %    v - Lastest version of the firmware

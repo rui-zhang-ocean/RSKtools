@@ -12,8 +12,7 @@ function RSK = getprofiles(RSK)
 %    RSK - Structure, with profile events.
 %
 % Outputs:
-%    RSK - Structure containing the logger metadata and thumbnails
-%          including profile metadata.
+%    RSK - Structure containing the logger and profile metadata.
 %
 % See also: RSKopen, RSKfindprofiles, RSKreadprofiles.
 %

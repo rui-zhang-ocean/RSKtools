@@ -11,7 +11,7 @@ function RSK = coef2cal(RSK)
 %          RSK v1.13.4 or newer.
 %
 % Outputs:
-%    RSK - Structure containing the logger metadata and thumbnails
+%    RSK - Structure containing the logger metadata
 %
 % See also: RSKreadcalibrations.
 %
