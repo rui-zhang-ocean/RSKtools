@@ -36,7 +36,8 @@ function [RSK, dbid] = RSKopen(fname, varargin)
 % Author: RBR Ltd. Ottawa ON, Canada
 % email: support@rbr-global.com
 % Website: www.rbr-global.com
-% Last revision: 2018-09-26
+% Last revision: 2018-10-03
+
 
 p = inputParser;
 addRequired(p,'fname',@ischar);
@@ -66,8 +67,6 @@ if iscompatibleversion(RSK, latestRSKversionMajor, latestRSKversionMinor, latest
     warning(['RSK version ' latestRSKversion ' is newer than your RSKtools version. It is recommended to update RSKtools at https://rbr-global.com/support/matlab-tools']);
 end
 
-
-
 RSK = readstandardtables(RSK);
 switch RSK.dbInfo(end).type
     case 'EasyParse'
@@ -81,8 +80,7 @@ switch RSK.dbInfo(end).type
     case 'live'
         RSK = readheaderlive(RSK);
     otherwise
-        disp('Not recognised')
-        return
+        % do nothing
 end
 
 RSK = getprofiles(RSK);

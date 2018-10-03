@@ -21,11 +21,10 @@ function RSK = getprofiles(RSK)
 % Website: www.rbr-global.com
 % Last revision: 2018-09-14
 
+
 if isfield(RSK, 'profiles')
     error('Profiles are already found, get data using RSKreadprofiles.m');
 end
-
-
 
 RSK = readregionprofiles(RSK);
 
