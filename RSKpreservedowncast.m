@@ -19,7 +19,7 @@ function [RSK, downidx] = RSKpreservedowncast(RSK)
 % Author: RBR Ltd. Ottawa ON, Canada
 % email: support@rbr-global.com
 % Website: www.rbr-global.com
-% Last revision: 2018-09-17
+% Last revision: 2018-10-09
 
 
 Pcol = getchannelindex(RSK, 'Pressure');
@@ -40,8 +40,8 @@ RSK.profiles.originalindex = RSK.profiles.originalindex(logical(downidx));
 RSK.profiles.order = {'down'};
 RSK.data = RSK.data(logical(downidx));
 
-RSK.region(strncmp({RSK.region.label},'Up',2)) = [];
-RSK.regionCast(strncmp({RSK.regionCast.type},'Up',2)) = [];
+RSK.regionCast(strncmpi({RSK.regionCast.type},'Up',2)) = [];
+RSK.region([RSK.regionCast(strncmpi({RSK.regionCast.type},'Up',2)).regionID]) = [];
 
 
 end
