@@ -139,7 +139,7 @@ RSK.profiles.downcast.tstart = downstart;
 RSK.profiles.downcast.tend = downend';
 
 %% Remove region.description, regionGeoData and regionComment field if exist
-if isfield(RSK.region,'description') || isfield(RSK,'regionGeoData') || isfield(RSK,'regionComment');
+if (isfield(RSK,'region') && isfield(RSK.region,'description')) || isfield(RSK,'regionGeoData') || isfield(RSK,'regionComment');
     warning('Annotations from Ruskin is deleted due to potential mismatch between previous and current detected profiles.');
 end
 
