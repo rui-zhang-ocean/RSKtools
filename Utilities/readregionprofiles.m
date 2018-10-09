@@ -31,9 +31,15 @@ if any(strcmpi({tables.name}, 'regionCast'))
     RSK.regionCast = doSelect(RSK, 'select * from regionCast');
 end
 
-if isempty(RSK.regionCast)
-    RSK = rmfield(RSK, 'regionCast');
+if isempty(RSK.region)
+    RSK = rmfield(RSK,'region');
+    RSK = rmfield(RSK,'regionCast');
     return
+else
+    if isempty(RSK.regionCast)
+        RSK = rmfield(RSK, 'regionCast');
+        return
+    end
 end
 
 d = 0; u = 0;
