@@ -34,7 +34,7 @@ function [handles, data2D, X, Y] = RSKimages(RSK, channel, varargin)
 %                      profile can be shown when set as true. Default is 
 %                      false. 
 %          
-%                threshold - Time threshold in hours to determine the
+%                threshold - Time threshold in seconds to determine the
 %                      maximum  gap length shown on the plot. Any gap 
 %                      smaller than the threshold will not show. 
 %
@@ -126,7 +126,7 @@ else
         remove_gap_idx = [];
         for g = 1:length(gap_idx)
             temp_idx = ind_itp(gap_idx(g))+1 : ind_itp(gap_idx(g))+1+diff_idx(gap_idx(g))-2;
-            if length(temp_idx)*unit_time*86400 < threshold * 3600; % seconds
+            if length(temp_idx)*unit_time*86400 < threshold; % seconds
                 remove_gap_idx = [remove_gap_idx, temp_idx];
             end
         end

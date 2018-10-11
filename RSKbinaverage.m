@@ -29,7 +29,7 @@ function [RSK, samplesinbin] = RSKbinaverage(RSK, varargin)
 %                      sea pressure.
 %
 %                binSize - Size of bins in each regime. Default is 1 unit 
-%                      of binBy channel (1 hour when binBy is time).
+%                      of binBy channel (1 second when binBy is time).
 %
 %                boundary - First boundary crossed in the direction
 %                      selected of each regime, in same units as binBy.
@@ -81,7 +81,7 @@ maxlength = max(cellfun('size', alltstamp, 1));
 Y = NaN(maxlength, length(castidx));
 
 if binbytime
-    binSize = binSize/24;
+    binSize = binSize/86400;
 end
 
 if visualize ~= 0; 
