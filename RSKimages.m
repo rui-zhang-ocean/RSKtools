@@ -1,8 +1,8 @@
-function [handles, data2D, X, Y] = RSKimages(RSK, channel, varargin)
+function [handles, data, x, y] = RSKimages(RSK, varargin)
 
 % RSKimages - Plot profiles in a 2D plot.
 %
-% Syntax:  [handles, data2D, X, Y] = RSKimages(RSK, channel, [OPTIONS])
+% Syntax:  [handles, data, x, y] = RSKimages(RSK, [OPTIONS])
 % 
 % Generates a plot of the profiles over time. The x-axis is time; the
 % y-axis is a reference channel. All data elements must have identical
@@ -17,10 +17,11 @@ function [handles, data2D, X, Y] = RSKimages(RSK, channel, varargin)
 % Inputs:
 %   [Required] - RSK - Structure, with profiles as read using RSKreadprofiles.
 %
-%                channel - Longname of channel to plot (e.g. temperature,
-%                      salinity, etc).
+%   [Optional] - channel - Longname of channel to plot, can be multiple in
+%                      a cell, if no value is given it will plot all
+%                      channels.
 %
-%   [Optional] - profile - Profile numbers to plot. Default is to use all
+%                profile - Profile numbers to plot. Default is to use all
 %                      available profiles.  
 %
 %                direction - 'up' for upcast, 'down' for downcast. Default
@@ -39,38 +40,38 @@ function [handles, data2D, X, Y] = RSKimages(RSK, channel, varargin)
 %                      smaller than the threshold will not show. 
 %
 % Output:
-%     handles - Image object created, use to set properties.
+%     handles - Image handles object created, use to set properties
 %
-%     data2D - Plotted data matrix.
+%     data - data matrix
 %
-%     X - X axis vector in time.
+%     x - x axis vector in time
 %
-%     Y - Y axis vector in sea pressure.
+%     y - y axis vector in reference channel
 %
 % Example: 
-%     handles = RSKimages(RSK,'Temperature','direction','down'); 
+%     handles = RSKimages(RSK,'direction','down'); 
 %     OR
-%     [handles, data2D, X, Y] = RSKimages(RSK,'Temperature','direction','down','interp',true,'threshold',1);
+%     [handles, data, x, y] = RSKimages(RSK,'channel',{'Temperature','Conductivity'},'direction','down','interp',true,'threshold',600);
 %
 % See also: RSKbinaverage, RSKplotprofiles.
 %
 % Author: RBR Ltd. Ottawa ON, Canada
 % email: support@rbr-global.com
 % Website: www.rbr-global.com
-% Last revision: 2018-09-25
+% Last revision: 2018-10-12
 
 validDirections = {'down', 'up'};
 checkDirection = @(x) any(validatestring(x,validDirections));
 
 p = inputParser;
 addRequired(p, 'RSK', @isstruct);
-addRequired(p, 'channel');
+addParameter(p, 'channel', 'all');
 addParameter(p, 'profile', [], @isnumeric);
 addParameter(p, 'direction', 'down', checkDirection);
 addParameter(p, 'reference', 'Sea Pressure', @ischar);
 addParameter(p,'showgap', false, @islogical)
 addParameter(p,'threshold', [], @isnumeric)
-parse(p, RSK, channel, varargin{:})
+parse(p, RSK, varargin{:})
 
 RSK = p.Results.RSK;
 channel = p.Results.channel;
@@ -82,8 +83,14 @@ threshold = p.Results.threshold;
 
 
 castidx = getdataindex(RSK, profile, direction);
-chanCol = getchannelindex(RSK, channel);
+
+chanCol = [];
+channels = cellchannelnames(RSK, channel);
+for chan = channels
+    chanCol = [chanCol getchannelindex(RSK, chan{1})];
+end
 YCol = getchannelindex(RSK, reference);
+
 for ndx = 1:length(castidx)-1
     if length(RSK.data(castidx(ndx)).values(:,YCol)) == length(RSK.data(castidx(ndx+1)).values(:,YCol));
         binCenter = RSK.data(castidx(ndx)).values(:,YCol);
@@ -91,67 +98,72 @@ for ndx = 1:length(castidx)-1
         error('The reference channel data of all the selected profiles must be identical. Use RSKbinaverage.m for selected cast direction.')
     end
 end
-Y = binCenter;
+y = binCenter;
+x = cellfun( @(x)  min(x), {RSK.data(castidx).tstamp});
 
-binValues = NaN(length(binCenter), length(castidx));
-for ndx = 1:length(castidx)
-    binValues(:,ndx) = RSK.data(castidx(ndx)).values(:,chanCol);
-end
-t = cellfun( @(x)  min(x), {RSK.data(castidx).tstamp});
+data = NaN(length(binCenter),length(castidx),length(chanCol));
 
-if ~showgap
-    data2D = binValues;
-    X = t;
-    handles = pcolor(t, binCenter, binValues);
-    shading interp
-    set(handles, 'AlphaData', isfinite(binValues)); % plot NaN values in white.
-else
-    unit_time = (t(2)-t(1)); 
-    N = round((t(end)-t(1))/unit_time);
-    t_itp = linspace(t(1), t(end), N);
-    X = t_itp;
+k = 1;
+for c = chanCol
+
+    binValues = NaN(length(binCenter), length(castidx));
+    for ndx = 1:length(castidx)
+        binValues(:,ndx) = RSK.data(castidx(ndx)).values(:,c);
+    end
+    data(:,:,k) = binValues;
     
-    ind_mt = bsxfun(@(x,y) abs(x-y), t(:), reshape(t_itp,1,[]));
-    [~, ind_itp] = min(ind_mt,[],2); 
-    ind_nan = setxor(ind_itp, 1:length(t_itp));
-
-    binValues_itp = interp1(t,binValues',t_itp)';
-    binValues_itp(:,ind_nan) = NaN;
-    data2D = binValues_itp;
-    
-    if ~isempty(threshold);
-        diff_idx = diff(ind_itp);
-        gap_idx = find(diff_idx > 1);
-
-        remove_gap_idx = [];
-        for g = 1:length(gap_idx)
-            temp_idx = ind_itp(gap_idx(g))+1 : ind_itp(gap_idx(g))+1+diff_idx(gap_idx(g))-2;
-            if length(temp_idx)*unit_time*86400 < threshold; % seconds
-                remove_gap_idx = [remove_gap_idx, temp_idx];
-            end
-        end
-
-        binValues_itp(:,remove_gap_idx) = [];
-        t_itp(remove_gap_idx) = [];
-        
-        handles = pcolor(t_itp, binCenter, binValues_itp);
+    subplot(length(chanCol),1,k)
+    if ~showgap
+        handles(k) = pcolor(x, binCenter, binValues);
         shading interp
+        set(handles(k), 'AlphaData', isfinite(binValues)); % plot NaN values in white.
     else
-        handles = imagesc(t_itp, binCenter, binValues_itp);       
-    end 
-    set(handles, 'AlphaData', isfinite(binValues_itp)); 
+        unit_time = (x(2)-x(1)); 
+        N = round((x(end)-x(1))/unit_time);
+        x_itp = linspace(x(1), x(end), N);
+
+        ind_mt = bsxfun(@(x,y) abs(x-y), x(:), reshape(x_itp,1,[]));
+        [~, ind_itp] = min(ind_mt,[],2); 
+        ind_nan = setxor(ind_itp, 1:length(x_itp));
+
+        binValues_itp = interp1(x,binValues',x_itp)';
+        binValues_itp(:,ind_nan) = NaN;
+
+        if ~isempty(threshold);
+            diff_idx = diff(ind_itp);
+            gap_idx = find(diff_idx > 1);
+
+            remove_gap_idx = [];
+            for g = 1:length(gap_idx)
+                temp_idx = ind_itp(gap_idx(g))+1 : ind_itp(gap_idx(g))+1+diff_idx(gap_idx(g))-2;
+                if length(temp_idx)*unit_time*86400 < threshold; % seconds
+                    remove_gap_idx = [remove_gap_idx, temp_idx];
+                end
+            end
+
+            binValues_itp(:,remove_gap_idx) = [];
+            x_itp(remove_gap_idx) = [];
+
+            handles(k) = pcolor(x_itp, binCenter, binValues_itp);
+            shading interp
+        else
+            handles(k) = imagesc(x_itp, binCenter, binValues_itp);       
+        end 
+        set(handles(k), 'AlphaData', isfinite(binValues_itp)); 
+    end
+
+    setcolormap(channels{k});
+    cb = colorbar;
+    ylabel(cb, RSK.channels(c).units, 'FontSize', 12)
+    ylabel(sprintf('%s (%s)', RSK.channels(YCol).longName, RSK.channels(YCol).units));
+    set(gca, 'YDir', 'reverse')
+    h = title(RSK.channels(c).longName);
+    set(gcf, 'Renderer', 'painters')
+    set(h, 'EdgeColor', 'none');
+    datetick('x')
+    axis tight
+    
+    k = k + 1;
 end
-
-setcolormap(channel);
-cb = colorbar;
-ylabel(cb, RSK.channels(chanCol).units, 'FontSize', 12)
-ylabel(sprintf('%s (%s)', RSK.channels(YCol).longName, RSK.channels(YCol).units));
-set(gca, 'YDir', 'reverse')
-h = title(RSK.channels(chanCol).longName);
-set(gcf, 'Renderer', 'painters')
-set(h, 'EdgeColor', 'none');
-datetick('x')
-axis tight
-
 end
 
