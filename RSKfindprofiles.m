@@ -164,6 +164,8 @@ else
     lastType = 'Down';
 end
 
+RSK.profiles.order = {firstType lastType};
+
 % Remove RSK.region and RSK.regionCast
 if isfield(RSK, 'region')
     RSK = rmfield(RSK, 'region');
