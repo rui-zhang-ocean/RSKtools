@@ -1,12 +1,15 @@
-function [handles, data, x, y] = RSKimages(RSK, varargin)
+function [handles, RSK] = RSKimages(RSK, varargin)
 
 % RSKimages - Plot profiles in a 2D plot.
 %
-% Syntax:  [handles, data, x, y] = RSKimages(RSK, [OPTIONS])
+% Syntax:  handles = RSKimages(RSK, [OPTIONS])
 % 
 % Generates a plot of the profiles over time. The x-axis is time; the
 % y-axis is a reference channel. All data elements must have identical
-% reference channel samples. Use RSKbinaverage.m to achieve this. 
+% reference channel samples. Use RSKbinaverage.m to achieve this. The
+% function calls RSKgenerate2D to generate data for visualization and store
+% it in RSK.im field. User could make RSK an output if one prefers to alter
+% the data in their own way.
 %
 % Note: If installed, RSKimages will use the perceptually uniform 
 %       oceanographic colourmaps in the cmocean toolbox:
@@ -42,23 +45,21 @@ function [handles, data, x, y] = RSKimages(RSK, varargin)
 % Output:
 %     handles - Image handles object created, use to set properties
 %
-%     data - data matrix
-%
-%     x - x axis vector in time
-%
-%     y - y axis vector in reference channel
+%     RSK - Structure, with RSK.im field containing data for 2D
+%     visualization.
 %
 % Example: 
 %     handles = RSKimages(RSK,'direction','down'); 
 %     OR
-%     [handles, data, x, y] = RSKimages(RSK,'channel',{'Temperature','Conductivity'},'direction','down','interp',true,'threshold',600);
+%     [handles, RSK] = RSKimages(RSK,'channel',{'Temperature','Conductivity'},'direction','down','interp',true,'threshold',600);
 %
-% See also: RSKbinaverage, RSKplotprofiles.
+% See also: RSKbinaverage, RSKgenerate2D.
 %
 % Author: RBR Ltd. Ottawa ON, Canada
 % email: support@rbr-global.com
 % Website: www.rbr-global.com
-% Last revision: 2018-10-12
+% Last revision: 2018-10-17
+
 
 validDirections = {'down', 'up'};
 checkDirection = @(x) any(validatestring(x,validDirections));
@@ -82,39 +83,19 @@ showgap = p.Results.showgap;
 threshold = p.Results.threshold;
 
 
-castidx = getdataindex(RSK, profile, direction);
-
-chanCol = [];
-channels = cellchannelnames(RSK, channel);
-for chan = channels
-    chanCol = [chanCol getchannelindex(RSK, chan{1})];
-end
-YCol = getchannelindex(RSK, reference);
-
-for ndx = 1:length(castidx)-1
-    if length(RSK.data(castidx(ndx)).values(:,YCol)) == length(RSK.data(castidx(ndx+1)).values(:,YCol));
-        binCenter = RSK.data(castidx(ndx)).values(:,YCol);
-    else 
-        error('The reference channel data of all the selected profiles must be identical. Use RSKbinaverage.m for selected cast direction.')
-    end
-end
-y = binCenter;
-x = cellfun( @(x)  min(x), {RSK.data(castidx).tstamp});
-
-data = NaN(length(binCenter),length(castidx),length(chanCol));
+RSK = RSKgenerate2D(RSK,'channel',channel,'profile',profile,'direction',direction,'reference',reference);
+x = RSK.im.x;
+y = RSK.im.y;
+data = RSK.im.data;
 
 k = 1;
-for c = chanCol
+for c = RSK.im.channel
 
-    binValues = NaN(length(binCenter), length(castidx));
-    for ndx = 1:length(castidx)
-        binValues(:,ndx) = RSK.data(castidx(ndx)).values(:,c);
-    end
-    data(:,:,k) = binValues;
+    binValues = data(:,:,k);
     
-    subplot(length(chanCol),1,k)
+    subplot(length(RSK.im.channel),1,k)
     if ~showgap
-        handles(k) = pcolor(x, binCenter, binValues);
+        handles(k) = pcolor(x, y, binValues);
         shading interp
         set(handles(k), 'AlphaData', isfinite(binValues)); % plot NaN values in white.
     else
@@ -144,18 +125,18 @@ for c = chanCol
             binValues_itp(:,remove_gap_idx) = [];
             x_itp(remove_gap_idx) = [];
 
-            handles(k) = pcolor(x_itp, binCenter, binValues_itp);
+            handles(k) = pcolor(x_itp, y, binValues_itp);
             shading interp
         else
-            handles(k) = imagesc(x_itp, binCenter, binValues_itp);       
+            handles(k) = imagesc(x_itp, y, binValues_itp);       
         end 
         set(handles(k), 'AlphaData', isfinite(binValues_itp)); 
     end
 
-    setcolormap(channels{k});
+    setcolormap(RSK.channels(c).longName);
     cb = colorbar;
     ylabel(cb, RSK.channels(c).units, 'FontSize', 12)
-    ylabel(sprintf('%s (%s)', RSK.channels(YCol).longName, RSK.channels(YCol).units));
+    ylabel(sprintf('%s (%s)', RSK.channels(c).longName, RSK.channels(c).units));
     set(gca, 'YDir', 'reverse')
     h = title(RSK.channels(c).longName);
     set(gcf, 'Renderer', 'painters')
