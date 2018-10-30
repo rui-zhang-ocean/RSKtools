@@ -60,7 +60,7 @@ if ~isfield(RSK,'data')
 end
 
 if length(RSK.data) ~= 1 || isfield(RSK.data,'direction') || isfield(RSK.data,'profilenumber')
-    error('RSK already has profiles.')
+    error('RSK structure already has profiles.')
 end
 
 RSK = RSKfindprofiles(RSK,'pressureThreshold',pressureThreshold,'conductivityThreshold',conductivityThreshold);

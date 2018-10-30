@@ -1,7 +1,6 @@
 function RSK = RSKreadprofiles(RSK, varargin)
 
-% RSKreadprofiles - Read individual casts from RSK SQLite database or
-% existing RSK.data field.
+% RSKreadprofiles - Read individual casts from RSK SQLite database.
 %
 % Syntax:  [RSK] = RSKreadprofiles(RSK, [OPTIONS])
 % 
@@ -17,9 +16,14 @@ function RSK = RSKreadprofiles(RSK, varargin)
 %   34 - Begin downcast
 %   35 - End of profile cast
 %
+% Note: RSKreadprofiles reads profiles directly from the RSK file (i.e. 
+% from disk). If one wishes to organize existing time series data in RSK
+% structure into profiles (i.e. from memory). Use RSKreaddata followed by
+% RSKtimeseries2profiles.
+%
 % Inputs: 
-%    [Required] - RSK - Structure containing the logger data read
-%                       from the RSK file.
+%    [Required] - RSK - Structure containing metadata read from the RSK 
+%                       file.
 %
 %    [Optional] - profile - Vector identifying the profile numbers to
 %                       read. Can be used to read only a subset of all
@@ -41,12 +45,13 @@ function RSK = RSKreadprofiles(RSK, varargin)
 %    % read selective upcasts
 %    rsk = RSKreadprofiles(rsk, 'profile', [1 3 10], 'direction', 'up');
 %
-% See also: RSKfindprofiles, RSKplotprofiles.
+% See also: RSKfindprofiles, RSKtimeseries2profiles, RSKplotprofiles.
 %
 % Author: RBR Ltd. Ottawa ON, Canada
 % email: support@rbr-global.com
 % Website: www.rbr-global.com
-% Last revision: 2018-02-23
+% Last revision: 2018-10-30
+
 
 validDirections = {'down', 'up', 'both'};
 checkDirection = @(x) any(validatestring(x,validDirections));
@@ -60,7 +65,6 @@ parse(p, RSK, varargin{:})
 RSK = p.Results.RSK;
 profile = p.Results.profile;
 direction = {p.Results.direction};
-
 
 
 if ~isfield(RSK, 'profiles') 
@@ -160,28 +164,9 @@ if hasComment, data(length(castidx)).comment = []; end
 if hasDescription, data(length(castidx)).description = []; end
 
 for ndx = castidx
-    
-    if isfield(RSK, 'data')
-        ind_start = (find(RSK.data.tstamp == alltstart(ndx)));
-        ind_end = (find(RSK.data.tstamp == alltend(ndx)));
-        
-        if isempty(ind_start) || isempty(ind_end)
-            tmp = RSKreaddata(RSK, 't1', alltstart(ndx), 't2', alltend(ndx));
-            if length(tmp.data.tstamp) < length(RSK.data.tstamp)
-                data(k).tstamp = tmp.data.tstamp;
-                data(k).values = tmp.data.values;
-            end
-        else
-            data(k).tstamp = RSK.data.tstamp(ind_start:ind_end);
-            data(k).values = RSK.data.values(ind_start:ind_end,:);
-        end
-        
-    else
-        tmp = RSKreaddata(RSK, 't1', alltstart(ndx), 't2', alltend(ndx));
-        data(k).tstamp = tmp.data.tstamp;
-        data(k).values = tmp.data.values;
-    end
-
+    tmp = RSKreaddata(RSK, 't1', alltstart(ndx), 't2', alltend(ndx));
+    data(k).tstamp = tmp.data.tstamp;
+    data(k).values = tmp.data.values;
     data(k).direction = dir2fill{k};
     data(k).profilenumber = pronum2fill(k);
     if hasGPS
@@ -191,10 +176,11 @@ for ndx = castidx
     if hasComment, data(k).comment = comment2fill(k); end
     if hasDescription, data(k).description = description2fill(k); end
     k = k + 1;
-    
 end
 
-if ~isfield(RSK, 'data'), RSK = readchannels(RSK); end
+if ~isfield(RSK, 'data'), 
+    RSK = readchannels(RSK); 
+end
 data(cellfun(@isempty,{data.tstamp})) = [];
 RSK.data = data;
 
