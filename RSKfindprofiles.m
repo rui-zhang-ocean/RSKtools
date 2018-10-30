@@ -155,13 +155,13 @@ end
 if upstart(1) > downstart(1)
     firstdir = RSK.profiles.downcast;
     lastdir = RSK.profiles.upcast;
-    firstType = 'Down';
-    lastType = 'Up';
+    firstType = 'down';
+    lastType = 'up';
 else
     firstdir = RSK.profiles.upcast;
     lastdir = RSK.profiles.downcast;
-    firstType = 'Up';
-    lastType = 'Down';
+    firstType = 'up';
+    lastType = 'down';
 end
 
 RSK.profiles.order = {firstType lastType};

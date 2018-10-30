@@ -41,7 +41,7 @@ function RSK = RSKtimeseries2profiles(RSK, varargin)
 % Author: RBR Ltd. Ottawa ON, Canada
 % email: support@rbr-global.com
 % Website: www.rbr-global.com
-% Last revision: 2018-10-18
+% Last revision: 2018-10-30
 
 
 p = inputParser;
@@ -55,14 +55,17 @@ pressureThreshold = p.Results.pressureThreshold;
 conductivityThreshold = p.Results.conductivityThreshold;
 
 
+if ~isfield(RSK,'data')
+    error('No data field found, use RSKreaddata...');
+end
+
 if length(RSK.data) ~= 1 || isfield(RSK.data,'direction') || isfield(RSK.data,'profilenumber')
-    error('RSK already has profiles in it, use RSKreaddata...')
+    error('RSK already has profiles.')
 end
 
 RSK = RSKfindprofiles(RSK,'pressureThreshold',pressureThreshold,'conductivityThreshold',conductivityThreshold);
 
 direction = RSK.profiles.order;
-
 hasDescription = isfield(RSK.region,'description');
 ProfileRegionID = strcmpi({RSK.region.type},'PROFILE') == 1;
 
@@ -103,8 +106,7 @@ if hasDescription,
 end
 
 k = 1;
-for ndx = castidx
-    
+for ndx = castidx    
     ind_start = (find(RSK.data.tstamp == alltstart(ndx)));
     ind_end = (find(RSK.data.tstamp == alltend(ndx)));
     
@@ -114,8 +116,7 @@ for ndx = castidx
     data(k).profilenumber = pronum2fill(k);
     if hasDescription, 
         data(k).description = description2fill(k); 
-    end
-    
+    end    
     k = k + 1;  
 end
 
