@@ -80,6 +80,7 @@ alltstart = sort(alltstart);
 alltend = sort(alltend);
 
 castidx = 1:length(alltstart);
+RSK.profiles.originalindex = castidx;
 
 dir2fill = cell(length(castidx),1); % append data.direction to each cast
 if size(RSK.profiles.order, 2) == 1
