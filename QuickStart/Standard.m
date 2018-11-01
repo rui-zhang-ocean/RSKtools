@@ -1,8 +1,8 @@
 %% RSKtools for Matlab access to RBR data
-% RSKtools v2.3.0;
+% RSKtools v3.0.0;
 % RBR Ltd. Ottawa ON, Canada;
 % support@rbr-global.com;
-% 2018-05-09
+% 2018-11-07
 
 %% Introduction 
 % |RSKtools| is RBR's open source Matlab tool box for visualizing and
@@ -12,7 +12,7 @@
 % maps can be plotted easily for repeated profiles. A full suite of
 % data post-processing functions, such as functions to match sensor
 % time constants and bin average, are available to enhance data
-% quality.  RBR is continually expanding RSKtools, and we value
+% quality. RBR is continually expanding RSKtools, and we value
 % feedback from users so that we can make it better.
 
         
@@ -29,9 +29,9 @@
 % <html><h3>Loading files</h3></html>
 % 
 % The first step is to make a connection to the RSK file with
-% |RSKopen|. Note that |RSKopen| does not actually read the data;
-% instead it reads a "thumbnail" of the data, which is up to 4000
-% samples long. 
+% |RSKopen|. |RSKopen| reads metadata such as instrument, 
+% channels and profiles information. It also reads a "downsample"
+% of the data if dataset is too large.
 
 file = '../sample.rsk';
 rsk = RSKopen(file);
@@ -71,10 +71,10 @@ rsk.data
 % Profiling loggers with recent versions of firmware can detect and
 % record profile upcast and downcast "events" automatically. The
 % function |RSKreadprofiles| uses the profile event time stamps to
-% organize the data into profiles. Then, a plot of the profiles can be
-% made very easily using the |RSKplotprofiles| function.  For
+% read profiles from the rsk file. Then, a plot of the profiles can 
+% be made very easily using the |RSKplotprofiles| function. For
 % example, to read the upcast and downcast of profiles 6 to 8 from
-% the sample data set, run:
+% the rsk file, run:
 rsk = RSKreadprofiles(rsk, 'profile', 6:8, 'direction', 'both');
 
 %%
@@ -164,7 +164,7 @@ o2          = rsk.data(profind).values(:,o2col);
 % manual> for detailed RSKtools function documentation.
 %
 % * The
-% <http://rbr-global.com/wp-content/uploads/2018/05/PostProcessing.pdf
+% <http://rbr-global.com/wp-content/uploads/2018/11/PostProcessing.pdf
 % RSKtools post-processing guide> for an introduction on how to
 % process RBR profiles with RSKtools.  The post-processing suite
 % contains, among other things, functions to low-pass filter, align,
