@@ -1,8 +1,8 @@
 %% RSKtools for Matlab processing RBR data
-% RSKtools v2.3.0;
+% RSKtools v3.0.0;
 % RBR Ltd. Ottawa ON, Canada;
 % support@rbr-global.com;
-% 2018-05-09
+% 2018-11-07
 
 %% Introduction
 % Version 2.0.0 of RSKtools included new functions to post-process RBR
@@ -18,7 +18,7 @@
 
 %% Getting set up
 % Review
-% <http://rbr-global.com/wp-content/uploads/2018/05/Standard.pdf
+% <http://rbr-global.com/wp-content/uploads/2018/11/Standard.pdf
 % RSKtools Getting Started> for an introduction on how to load RBR
 % data into Matlab from RSK files, make plots, and access the data.
 
@@ -190,7 +190,7 @@ set(h2,{'linewidth'},{3})
 % <https://docs.rbr-global.com/rsktools RSKtools on-line user manual>
 
 clf
-RSKimages(rsk, 'Salinity','direction','up'); 
+RSKimages(rsk,'channel','Salinity','direction','up'); 
 
 
 %% Add station metadata
@@ -246,7 +246,7 @@ disp(rsk.data(4))
 % manual> for detailed RSKtools function documentation.
 %
 % * the
-% <http://rbr-global.com/wp-content/uploads/2018/05/Standard.pdf
+% <http://rbr-global.com/wp-content/uploads/2018/11/Standard.pdf
 % RSKtools Getting Started> for an introduction on how to load RBR
 % data into Matlab from RSK files, make plots, and access the data.
 
