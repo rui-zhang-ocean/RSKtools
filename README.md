@@ -44,10 +44,12 @@ rsk = RSKsmooth(rsk,{'Conductivity','Temperature'},'windowLength',5);
 ## How do I get set up?
 
 * Unzip the archive (to `~/matlab/RSKtools`, for instance).
-* Add the folder to your Matlab path by typing `addpath ~/matlab/RSKtools` or `pathtool` at the command prompt.
+* Add the RSKtools folder to your Matlab path by running either of the following at the command prompt:
+  * `addpath ~/matlab/RSKtools` and `addpath(genpath(~/matlab/RSKtools))`
+  * `pathtool` and manually add RSKtools and its subdirectories
 * Type `help RSKtools` to get an overview and take a look at the examples.
 * Read the [RSKtools User Manual](https://docs.rbr-global.com/rsktools).
-* Check out the [Getting started](http://rbr-global.com/wp-content/uploads/2018/11/Standard.pdf)
+* Check out [Getting started](http://rbr-global.com/wp-content/uploads/2018/11/Standard.pdf)
   and [Post-processing](http://rbr-global.com/wp-content/uploads/2018/11/PostProcessing.pdf) for a quick start.
 
 ## A note on calculation of salinity
@@ -77,29 +79,30 @@ channel in the RSK structure.
 
 * Version 3.0.0 (2018-11-07)
 
-    - New function `RSK2RSK` for writing rsk structure in MATLAB into a new rsk file. 
-    - New function `RSKcorrectTM` for correcting thermal mass inertia effect.
+    - New function `RSK2RSK` for writing the RSKtools rsk MATLAB structure into a new rsk file. 
+    - New function `RSKcorrectTM` to correct conductivity for the thermal inertia effect.
     - New function `RSKderivebuoyancy` for deriving buoyancy frequency and stability. 
     - New function `RSKderiveO2` for converting between oxygen concentration and saturation.
-    - New function `RSKplotTS` for plotting T-S diagram.
-    - New function `RSKgenerate2D` for generating 2D data with time as x axis and reference channel (e.g. depth) as y axis, stored in `RSK.im` field.
-    - New function `RSKtimeseries2profiles` for converting time series data in MATLAB rsk structure (i.e. from memory) into profiles.
-    - `RSKreadprofiles` now reads profiles only from the rsk file (i.e. from disk). 
+    - New function `RSKplotTS` for plotting T-S diagrams.
+    - New function `RSKgenerate2D` for generating 2D data with time as x-axis and reference channel (e.g., depth) as y axis.
+    - New function `RSKtimeseries2profiles` for organizing a time series into discrete profiles without reading from the rsk file on disk.
+    - `RSKreadprofiles` now only reads data from the rsk file on disk.
     - `RSKselectdowncast` is renamed to `RSKpreserveupcast`.
     - `RSKselectupcast` is renamed to `RSKpreservedowncast`.
     - `RSKreadwavetxt` is removed.
     - Axis in subplots are consistent in visualization mode of all post-processing functions.
     - Plot downcast only when both downcast and upcast are processed in visualization mode.
     - Revise `RSKalignchannel` visualize mode by plotting against time instead of sea pressure.
-    - Make x axis tight in `RSKplotdata` and `RSKimages`.
+    - Make x-axis tight in `RSKplotdata` and `RSKimages`.
     - `RSKderiveseapressure` allows variable atmosphere pressure input.
     - Exclude pressure and sea pressure channel from being NaN in `RSKremoveloops`.
     - Input argument `rhc` in `RSKopen` is renamed to `readHiddenChannels`, whose type is changed from numeric (1 or 0) to boolean (true or false).
     - Input argument `showcast` type in `RSKplotdata` is changed from numeric 1 or 0 to boolean (true or false).
-    - `RSKplot2D` is renamed to `RSKimages`, whose optional input argument `interp` is renamed to `showgap`. The function outputs `handles` and `RSK` structure which has the new field `RSK.im` containing `RSK.im.data`, `RSK.im.x` and `RSK.im.y` for user?s convenience to render the image as they like.
-    - `RSKimages` by default applies to all channels.
+    - `RSKplot2D` renamed to `RSKimages`.
+	- `RSKimages` (formerly `RSKplot2D`) optional input `interp` renamed as `showgap`
+    - `RSKimages` defaults to operate on all channels.
     - Unit of input argument `threshold` in `RSKimages` is changed from hours to seconds.
-    - Unit of input argument `binSize` in `RSKbinaverage` is changed from days to seconds.
+    - When bin averaging by time, the `binSize` argument in `RSKbinaverage` is now specified in seconds instead of days.
     - Rename functions that are rarely used by users, including:
       · RSKfirmwarever to readfirmwarever
       · RSKgetprofiles to getprofiles
