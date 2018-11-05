@@ -45,8 +45,8 @@ rsk = RSKsmooth(rsk,{'Conductivity','Temperature'},'windowLength',5);
 
 * Unzip the archive (to `~/matlab/RSKtools`, for instance).
 * Add the RSKtools folder to your Matlab path by running either of the following at the command prompt:
-  * `addpath ~/matlab/RSKtools` and `addpath(genpath(~/matlab/RSKtools))`
-  * `pathtool` and manually add RSKtools and its subdirectories
+    * `addpath ~/matlab/RSKtools` and `addpath(genpath(~/matlab/RSKtools))`
+    * `pathtool` and manually add RSKtools and its subdirectories
 * Type `help RSKtools` to get an overview and take a look at the examples.
 * Read the [RSKtools User Manual](https://docs.rbr-global.com/rsktools).
 * Check out [Getting started](http://rbr-global.com/wp-content/uploads/2018/11/Standard.pdf)
@@ -90,6 +90,19 @@ channel in the RSK structure.
     - `RSKselectdowncast` is renamed to `RSKpreserveupcast`.
     - `RSKselectupcast` is renamed to `RSKpreservedowncast`.
     - `RSKreadwavetxt` is removed.
+    - Renamed following functions that are typically called internally:
+      · RSKfirmwarever to readfirmwarever
+      · RSKgetprofiles to getprofiles
+      · RSKreaddownsample to readdownsample
+      · RSKreadevents to readevents
+      · RSKreadgeodata to readgeodata
+      · RSKsamplingperiod to readsamplingperiod
+      · RSKver to returnversion
+      · RSKreadannotations to readannotations
+      · RSKconstants to loadconstants
+      · datenum2RSKtime to datenum2rsktime
+      · RSKtime2datenum to rsktime2datenum
+    - Move subfunctions that are mostly for internal use into folder ../rsktools/Utilities/ 
     - Axis in subplots are consistent in visualization mode of all post-processing functions.
     - Plot downcast only when both downcast and upcast are processed in visualization mode.
     - Revise `RSKalignchannel` visualize mode by plotting against time instead of sea pressure.
@@ -103,19 +116,6 @@ channel in the RSK structure.
     - `RSKimages` defaults to operate on all channels.
     - Unit of input argument `threshold` in `RSKimages` is changed from hours to seconds.
     - When bin averaging by time, the `binSize` argument in `RSKbinaverage` is now specified in seconds instead of days.
-    - Rename functions that are rarely used by users, including:
-      · RSKfirmwarever to readfirmwarever
-      · RSKgetprofiles to getprofiles
-      · RSKreaddownsample to readdownsample
-      · RSKreadevents to readevents
-      · RSKreadgeodata to readgeodata
-      · RSKsamplingperiod to readsamplingperiod
-      · RSKver to returnversion
-      · RSKreadannotations to readannotations
-      · RSKconstants to loadconstants
-      · datenum2RSKtime to datenum2rsktime
-      · RSKtime2datenum to rsktime2datenum
-    - Move sub-functions that are mostly for internal use into folder ../rsktools/Utilities/ 
 
 * Version 2.3.1 (2018-06-20)
 
