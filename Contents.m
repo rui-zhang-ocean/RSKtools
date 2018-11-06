@@ -70,22 +70,23 @@
 %   RSKimages              - display bin averaged data in a time-depth heat map
 %   RSKplotTS              - plot TS diagram
 %   RSKplotburstdata       - plot burst data for wave file
-%   RSKplotdownsample      - plot down sample data
+%   RSKplotdownsample      - plot time series of downsampled data
+%   RSKgenerate2D          - grid and organize data into a 2D array (e.g., time x depth)
 %   RSK2CSV                - write channel data and metadata to one or more CSV files
 %   RSK2ODV                - write channel data and metadata to one or more ODV files
 %   RSK2RSK                - write rsk file using current rsk structure
 %   RSK2MAT                - write RSK structure to legacy Ruskin .mat format
 %   RSKaddchannel          - add a new channel to existing RSK structure
-%   RSKaddmetadata         - add station meta data to RSK data structure
-%   RSKpreservedowncast    - keep only the down casts in the RSK structure
-%   RSKpreserveupcast      - keep only the up casts in the RSK structure
+%   RSKaddmetadata         - add station metadata to RSK data structure
+%   RSKpreservedowncast    - keep only the downcasts in the RSK structure
+%   RSKpreserveupcast      - keep only the upcasts in the RSK structure
 %   RSKappendtolog         - append the entry and current time to the log field
-%   RSKgenerate2D          - generate 2D data field for RSKimages plot use
 %
 %
 % Additional useful files
 %   getchannelindex        - returns column index to the data table given a channel name
 %   getdataindex           - returns index into the RSK data array given profile numbers and cast directions
+%   readamplingperiod      - returns logger sample interval in seconds
 %
 %
 % For more information, check out documents in QuickStart folder and our
