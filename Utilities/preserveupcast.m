@@ -1,8 +1,8 @@
-function [RSK, upidx] = RSKpreserveupcast(RSK)
+function [RSK, upidx] = preserveupcast(RSK)
 
-% RSKpreserveupcast - Select the data elements with decreasing pressure.
+% preserveupcast - Select the data elements with decreasing pressure.
 %
-% Syntax:  [RSK, upidx] = RSKpreserveupcast(RSK)
+% Syntax:  [RSK, upidx] = preserveupcast(RSK)
 %
 % Keeps only the upcasts in the RSK and returns the index of the upcasts from
 % the input RSK structure. 
@@ -32,16 +32,22 @@ for ndx = 1:ndata
 end
 
 if ~any(upidx ==1)
-    disp('No upcasts in this RSK structure.');
+    disp('There are only downcasts in this RSK structure.');
     return;
+end
+
+if isfield(RSK.profiles,'downcast')
+    RSK.profiles = rmfield(RSK.profiles,'downcast');
 end
 
 RSK.profiles.originalindex = RSK.profiles.originalindex(logical(upidx));
 RSK.profiles.order = {'up'};
 RSK.data = RSK.data(logical(upidx));
 
-RSK.regionCast(strncmpi({RSK.regionCast.type},'Down',4)) = [];
 RSK.region([RSK.regionCast(strncmpi({RSK.regionCast.type},'Down',4)).regionID]) = [];
-
+if isfield(RSK.region,'label')
+    RSK.region(strncmpi({RSK.region.label},'Down',4)) = [];
+end
+RSK.regionCast(strncmpi({RSK.regionCast.type},'Down',4)) = [];
 
 end
