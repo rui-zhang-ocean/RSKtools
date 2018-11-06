@@ -22,9 +22,9 @@
 
 %% Example processing sequence
 
-% First, open a connection to the RSK logger database file:
-file = '../sample.rsk';
-rsk = RSKopen(file);
+% First, while in the RSKtools/QuickStart directory, open a connection
+% to the RSK logger database file:
+rsk = RSKopen('../sample.rsk');
 
 % read the upcast from profiles 1 - 20
 rsk = RSKreadprofiles(rsk, 'profile', 1:20, 'direction', 'up');
@@ -68,17 +68,19 @@ rsk = RSKcorrecthold(rsk,'action','interp');
 % Low-pass filtering is commonly used to reduce noise and to match
 % sensor time constants.  Applying a low pass filter to temperature
 % and conductivity smooths high frequency variability and compensates
-% for differences in sensor time constants.  The thermistor has a
-% slower response time than the conductivity cell.  Users may also
-% wish to smooth other channels to reduce noise (e.g., optical
-% channels such as chlorophyll).
+% for differences in sensor time constants.  Users may also wish to
+% smooth other channels to reduce noise (e.g., optical channels such
+% as chlorophyll).
 %
-% Most RBR instruments designed for profiling ("|fast") are equipped
-% with thermistors that have a time constant of 100 msec, so the
-% conductivity should be smoothed to match that value.  In this
-% example, the logger sampled at 6 Hz (found using
-% |readsamplingperiod(rsk)|), so a 5 sample running average will
-% provide sufficient smoothing and reduce noise.
+% Most RBR instruments designed for profiling (branded as _|fast_) are
+% equipped with thermistors that have a time constant of 100 msec,
+% which is slower than the conductivity cell.  When the time constants
+% are different, salinity will contain spikes at strong gradients.
+% The solution is to "slow down" the conductivity sensor to match the
+% thermistor.  In this example data set, the logger sampled at 6 Hz
+% (found using |readsamplingperiod(rsk)|), so a 5 sample running
+% average provides more than sufficient smoothing, and also reduces
+% noise.
 %
 % Note: All functions that alter the data have an optional input
 % called |'visualize'| that, when activated, plots data before and
@@ -92,9 +94,9 @@ rsk = RSKsmooth(rsk,'chlorophyll', 'windowLength', 9, 'visualize', 10);
 %% Alignment of conductivity and temperature 
 % Conductivity, temperature, and pressure need to be aligned in time
 % to account for the fact these sensors are not always co-located on
-% the logger.  In other words, at any instant, the sensors are
-% measuring a slightly different parcel of water.  This is particularly
-% important when profiling with the instrument.
+% the logger.  The implication is that, under dynamic conditions
+% (e.g., profiling), the sensors are measuring a slightly different
+% parcel of water at any instant.  
 %
 % Sensors with long time constants introduce a time lag to the data.
 % Dissolved oxygen sensors often have a long time constant, and this
@@ -121,7 +123,8 @@ rsk = RSKsmooth(rsk,'chlorophyll', 'windowLength', 9, 'visualize', 10);
 % conductivity and temperature by minimizing salinity spiking. We
 % currently suggest using both approaches to check for consistency.
 % See the |RSKcalculateCTlag| help page for more information.  Typical
-% values are 0 to +2 samples for a 6 Hz instrument (about +0.2 sec).
+% lag values are 0, +1, or +2 samples for a 6 Hz instrument (about
+% +0.2 sec).
 
 lag = RSKcalculateCTlag(rsk);
 rsk = RSKalignchannel(rsk, 'Conductivity', lag);
@@ -143,7 +146,7 @@ rsk = RSKalignchannel(rsk, 'Conductivity', lag);
 %
 % In the example data set, good data is collected on the _upcast_.
 % |RSKremoveloops|, when applied to this data, removes data when the
-% instrument is near the surface.
+% instrument profiled slowly near the surface.
 
 rsk = RSKderivedepth(rsk);
 rsk = RSKderivevelocity(rsk);
@@ -180,11 +183,11 @@ rsk = RSKaddchannel(rsk,sa,'Absolute Salinity','g/kg');
 
 %% Bin average all channels by sea pressure
 % Bin averaging reduces sensor noise and ensures that each profile is
-% referenced to common grid. The latter is often an advantage for
+% referenced to a common grid. The latter is often an advantage for
 % plotting data as "heatmaps."  |RSKbinaverage| allows users to bin
 % channels according to any reference, but the most common choices are
 % time, depth, and sea pressure.  It also can handle grids with a
-% variable bin size.  In the following, the upcasts are averaged into
+% variable bin size.  In the following, the data are averaged into
 % 0.25 dbar bins.
 rsk = RSKbinaverage(rsk, 'binBy', 'Sea Pressure', 'binSize', 0.25, ...
                          'boundary', [0.5 5.5],'direction', 'up',...
@@ -207,6 +210,7 @@ set(ax(1),'xlim',[-2 80])
 set(ax(3),'xlim',[30 34])
 set(ax,'ylim',[0 6.5])
 
+
 %% Visualize data with a 2D plot
 % |RSKimages| generates a time/depth heat-map of a channel. The x-axis
 % is time; the y-axis is a reference channel (default is sea
@@ -217,7 +221,7 @@ set(ax,'ylim',[0 6.5])
 % <https://docs.rbr-global.com/rsktools RSKtools on-line user manual>
 
 figure
-RSKimages(rsk,'channel','Salinity','direction','up'); 
+RSKimages(rsk,'channel','chlorophyll','direction','up'); 
 
 
 %% Add station metadata
@@ -248,21 +252,23 @@ rsk = RSKaddmetadata(rsk,'profile',4:6,'station',{'S1','S2','S3'},...
 disp(rsk.data(4))
 
 
-%% Write the data to CSV files
-% |RSK2CSV| outputs the RSK structure format into one or more CSV
-% files.  The CSV file contains important logger metadata and a row of
-% variable names and units above each column of channel data. If the
-% data has been parsed into profiles, then one file will be written
-% for each profile and an extra column called 'cast_direction' will
-% be included.  The column will contain 'd' or 'u' to indicate whether
-% the sample is part of the downcast or upcast, respectively. Users
-% can customize which channels and profiles are written, the output
-% directory, and also specify comments to be placed after the
-% metadata.
+%% Export logger data to CSV files
+% |RSK2CSV| writes logger data and metadata to one or more CSV files.
+% The CSV files contain a header with important logger metadata,
+% station metadata (if it exists), and a row of variable names and
+% units above each column of channel data. If the data has been parsed
+% into profiles, then one file will be written for each profile and an
+% extra column called 'cast_direction' will be included.  The column
+% will contain 'd' or 'u' to indicate whether the sample is part of
+% the downcast or upcast, respectively. Users can select which
+% channels and profiles are written, the output directory, and also
+% specify comments to be placed after the metadata in the file header.
 %
 % |RSK2CSV(rsk,'channel',{'Conductivity','Pressure','Dissolved O2'},...
 %              'profile', 1:3 ,'comment','Hey Jude');|
-
+%
+% RSKtools also has export functions to write Ocean Data View files,
+% MAT files, and Ruskin RSK files.
 
 %% Display a summary of all the processing steps
 % Type |rsk.log{:,2}| at the command prompt.
