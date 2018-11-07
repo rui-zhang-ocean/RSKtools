@@ -1,5 +1,5 @@
 % RSKTOOLS
-% Version 3.0.0 2018-11-07
+% Version 3.0.0 2018-11-08
 %
 % 1.  This toolbox depends on the presence of a functional mksqlite
 % library.  We have included a couple of versions here for Windows (32 bit/
@@ -78,8 +78,7 @@
 %   RSK2MAT                - write RSK structure to legacy Ruskin .mat format
 %   RSKaddchannel          - add a new channel to existing RSK structure
 %   RSKaddmetadata         - add station metadata to RSK data structure
-%   RSKpreservedowncast    - keep only the downcasts in the RSK structure
-%   RSKpreserveupcast      - keep only the upcasts in the RSK structure
+%   RSKremovecasts         - remove either downcasts or upcasts in the RSK structure
 %   RSKappendtolog         - append the entry and current time to the log field
 %
 %

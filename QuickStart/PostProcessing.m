@@ -2,7 +2,7 @@
 % RSKtools v3.0.0;
 % RBR Ltd. Ottawa ON, Canada;
 % support@rbr-global.com;
-% 2018-11-07
+% 2018-11-08
 
 %% Introduction
 % RSKtools includes a series of functions to post-process RBR logger
