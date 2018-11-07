@@ -87,6 +87,7 @@ RSK = RSKgenerate2D(RSK,'channel',channel,'profile',profile,'direction',directio
 x = RSK.im.x;
 y = RSK.im.y;
 data = RSK.im.data;
+cref = getchannelindex(RSK,reference);
 
 k = 1;
 for c = RSK.im.channel
@@ -136,7 +137,7 @@ for c = RSK.im.channel
     setcolormap(RSK.channels(c).longName);
     cb = colorbar;
     ylabel(cb, RSK.channels(c).units, 'FontSize', 12)
-    ylabel(sprintf('%s (%s)', RSK.channels(c).longName, RSK.channels(c).units));
+    ylabel(sprintf('%s (%s)', RSK.channels(cref).longName, RSK.channels(cref).units));
     set(gca, 'YDir', 'reverse')
     h = title(RSK.channels(c).longName);
     set(gcf, 'Renderer', 'painters')
