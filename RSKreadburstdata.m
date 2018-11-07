@@ -71,7 +71,7 @@ results = arrangedata(results);
 
 t=results.tstamp';
 results.tstamp = rsktime2datenum(t);
-
+results.values(:,2:end) = [];
 RSK.burstData=results;
 
 end
