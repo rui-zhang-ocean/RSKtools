@@ -1,5 +1,5 @@
 % RSKTOOLS
-% Version 2.3.1 2018-06-20
+% Version 3.0.0 2018-11-08
 %
 % 1.  This toolbox depends on the presence of a functional mksqlite
 % library.  We have included a couple of versions here for Windows (32 bit/
@@ -41,44 +41,51 @@
 %
 %
 % User files
-%   RSKopen              - Open an RBR RSK file and read metadata and downsampled data
-%   RSKreaddata          - read full dataset from database
-%   RSKreadprofiles      - reads and organized data into a series of profiles
-%   RSKfindprofiles      - detect profile start and end times using pressure and conductivity
-%   RSKreadcalibrations  - read the calibrations table of an RSK file
-%   RSKcalculateCTlag    - estimate optimal conductivity shift relative to temperature
-%   RSKalignchannel      - align a channel in time using a specified lag
-%   RSKbinaverage        - bin average the profile data by reference channel intervals
-%   RSKcorrecthold       - identify, and then remove or replace zero-order hold points in data
-%   RSKcorrectTM         - Correct thermal mass inertia effect
-%   RSKdespike           - statistically identify and treat spikes in data
-%   RSKremoveloops       - remove values exceeding a threshold profiling rate and pressure reversals
-%   RSKsmooth            - apply low-pass filter to data
-%   RSKtrim              - remove or NaN channel data fitting specified criteria
-%   RSKderivesalinity    - derive salinity from conductivity, temperature, and sea pressure
-%   RSKderiveseapressure - derive sea pressure from pressure
-%   RSKderivedepth       - derive depth from pressure
-%   RSKderivevelocity    - derive profiling rate from depth and time
-%   RSKderiveC25         - derive specific conductivity at 25 degree Celsius
-%   RSKderiveBPR         - derive temperature and pressure from bottom pressure recorder (BPR) period data
-%   RSKderiveO2          - derive O2 saturation or concentration
-%   RSKderivebuoyancy    - derive buoyance frequency and stability
-%   RSKplotdata          - plot data as a time series
-%   RSKplotprofiles      - plot depth profiles for each channel
-%   RSKimages            - display bin averaged data in a time-depth heat map
-%   RSK2MAT              - convert RSK structure to legacy RUSKIN .mat format
-%   RSK2CSV              - write channel data and metadata to one or more CSV files
-%   RSK2ODV              - write channel data and metadata to one or more ODV files
-%   RSK2RSK              - write rsk file using current rsk structure
-%   RSKaddchannel        - add a new channel to existing RSK structure
-%   RSKaddmetadata       - add station meta data to RSK data structure
-%   RSKpreservedowncast  - keep only the down casts in the RSK structure
-%   RSKpreserveupcast    - keep only the up casts in the RSK structure
+%   RSKopen                - open an RBR RSK file and read metadata and downsample data
+%   RSKreaddata            - read full dataset from database
+%   RSKreadprofiles        - reads and organized data into a series of profiles
+%   RSKreadburstdata       - reads burst data for wave file
+%   RSKreadcalibrations    - read the calibrations table of an RSK file
+%   RSKfindprofiles        - detect profile start and end times using pressure and conductivity
+%   RSKtimeseries2profiles - convert time series data in current rsk structure into profiles
+%   RSKderivedepth         - derive depth from pressure
+%   RSKderivesalinity      - derive salinity from conductivity, temperature, and sea pressure
+%   RSKderiveseapressure   - derive sea pressure from pressure
+%   RSKderivevelocity      - derive profiling rate from depth and time
+%   RSKderiveBPR           - derive temperature and pressure from bottom pressure recorder (BPR) period data
+%   RSKderiveC25           - derive specific conductivity at 25 degree Celsius
+%   RSKderiveO2            - derive O2 saturation or concentration
+%   RSKderivebuoyancy      - derive buoyance frequency and stability
+%   RSKcalculateCTlag      - estimate optimal conductivity shift relative to temperature
+%   RSKalignchannel        - align a channel in time using a specified lag
+%   RSKbinaverage          - bin average the profile data by reference channel intervals
+%   RSKcorrecthold         - identify, and then remove or replace zero-order hold points in data
+%   RSKcorrectTM           - correct thermal mass inertia effect
+%   RSKdespike             - statistically identify and treat spikes in data
+%   RSKremoveloops         - remove values exceeding a threshold profiling rate and pressure reversals
+%   RSKsmooth              - apply low-pass filter to data
+%   RSKtrim                - remove or NaN channel data fitting specified criteria
+%   RSKplotdata            - plot data as a time series
+%   RSKplotprofiles        - plot depth profiles for each channel
+%   RSKimages              - display bin averaged data in a time-depth heat map
+%   RSKplotTS              - plot TS diagram
+%   RSKplotburstdata       - plot burst data for wave file
+%   RSKplotdownsample      - plot time series of downsampled data
+%   RSKgenerate2D          - grid and organize data into a 2D array (e.g., time x depth)
+%   RSK2CSV                - write channel data and metadata to one or more CSV files
+%   RSK2ODV                - write channel data and metadata to one or more ODV files
+%   RSK2RSK                - write rsk file using current rsk structure
+%   RSK2MAT                - write RSK structure to legacy Ruskin .mat format
+%   RSKaddchannel          - add a new channel to existing RSK structure
+%   RSKaddmetadata         - add station metadata to RSK data structure
+%   RSKremovecasts         - remove either downcasts or upcasts in the RSK structure
+%   RSKappendtolog         - append the entry and current time to the log field
 %
 %
 % Additional useful files
-%   getchannelindex      - returns column index to the data table given a channel name
-%   getdataindex         - returns index into the RSK data array given profile numbers and cast directions
+%   getchannelindex        - returns column index to the data table given a channel name
+%   getdataindex           - returns index into the RSK data array given profile numbers and cast directions
+%   readamplingperiod      - returns logger sample interval in seconds
 %
 %
 % For more information, check out documents in QuickStart folder and our
