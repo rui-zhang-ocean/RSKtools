@@ -94,8 +94,15 @@ results = arrangedata(results);
 t=results.tstamp';
 results.tstamp = rsktime2datenum(t);
 
-if ~strcmpi(RSK.dbInfo(end).type, 'EPdesktop')     
-    [~, isDerived] = removenonmarinechannels(RSK);
+if ~strcmpi(RSK.dbInfo(end).type, 'EPdesktop') && isfield(RSK,'instrumentChannels')     
+    instrumentChannels = RSK.instrumentChannels;
+    ind = [instrumentChannels.channelStatus] == 4;
+    instrumentChannels(ind) = [];
+    if RSK.toolSettings.readHiddenChannels
+        isDerived = logical([instrumentChannels.channelStatus] == 4);
+    else
+        isDerived = logical([instrumentChannels.channelStatus]);
+    end
     results.values = results.values(:,~isDerived);
 end
 
