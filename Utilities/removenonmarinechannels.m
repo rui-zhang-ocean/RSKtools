@@ -23,11 +23,18 @@ function [RSK, isDerived] = removenonmarinechannels(RSK)
 % Website: www.rbr-global.com
 % Last revision: 2018-09-26
 
+
 p = inputParser;
 addRequired(p, 'RSK', @isstruct);
 parse(p, RSK)
 
 RSK = p.Results.RSK;
+
+
+tables = doSelect(RSK, 'SELECT name FROM sqlite_master WHERE type="table"');
+if any(strcmpi({tables.name}, 'instrumentChannels'))
+    RSK.instrumentChannels = doSelect(RSK, 'select * from instrumentChannels');
+end   
 
 if ~(strcmp(RSK.dbInfo(end).type, 'EPdesktop') || strcmp(RSK.dbInfo(end).type, 'skinny'))
     if iscompatibleversion(RSK, 1, 8, 9) && ~strcmp(RSK.dbInfo(end).type, 'EP')

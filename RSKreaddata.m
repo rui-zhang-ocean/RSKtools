@@ -93,14 +93,11 @@ results = arrangedata(results);
 
 t=results.tstamp';
 results.tstamp = rsktime2datenum(t);
-RSK = readchannels(RSK);
 
-if ~strcmpi(RSK.dbInfo(end).type, 'EPdesktop')
+if ~strcmpi(RSK.dbInfo(end).type, 'EPdesktop')     
     [~, isDerived] = removenonmarinechannels(RSK);
     results.values = results.values(:,~isDerived);
 end
-
-
 
 %% Put data into data field of RSK structure.
 RSK.data=results;
