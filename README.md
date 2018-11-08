@@ -77,7 +77,7 @@ channel in the RSK structure.
 
 ## Changes
 
-* Version 3.0.0 (2018-11-08)
+* Version 3.0.0 (2018-11-14)
 
     - New function `RSK2RSK` for writing the RSKtools rsk MATLAB structure into a new rsk file. 
     - New function `RSKcorrectTM` to correct conductivity for the thermal inertia effect.
