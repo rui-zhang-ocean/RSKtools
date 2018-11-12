@@ -39,7 +39,7 @@ function [handles, RSK] = RSKimages(RSK, varargin)
 %                      false. 
 %          
 %                threshold - Time threshold in seconds to determine the
-%                      maximum  gap length shown on the plot. Any gap 
+%                      maximum gap length shown on the plot. Any gap 
 %                      smaller than the threshold will not show. 
 %
 % Output:
@@ -136,7 +136,7 @@ for c = RSK.im.channel
 
     setcolormap(RSK.channels(c).longName);
     cb = colorbar;
-    ylabel(cb, RSK.channels(c).units, 'FontSize', 12)
+    ylabel(cb, RSK.channels(c).units)
     ylabel(sprintf('%s (%s)', RSK.channels(cref).longName, RSK.channels(cref).units));
     set(gca, 'YDir', 'reverse')
     h = title(RSK.channels(c).longName);
