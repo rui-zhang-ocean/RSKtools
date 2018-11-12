@@ -43,8 +43,10 @@ burstdatastruct = table2struct(readtable(burstfile), 'ToScalar', true);
 channelnames = {'Pressure'; 'Sea pressure'; 'Depth'; 'Tidal slope'; 'Significant wave height'; 'Maximum wave height'; 'Average wave height'; '1/10 wave height'; 'Wave energy'};
 
 % create data matrix
-data = horzcat(datastruct.Pressure, datastruct.SeaPressure, datastruct.Depth, ...
-               datastruct.TidalSlope, wavedatastruct.SignificantWaveHeight, ... 
+ind = find(ismember(datastruct.Time,wavedatastruct.Time));
+
+data = horzcat(datastruct.Pressure(ind), datastruct.SeaPressure(ind), datastruct.Depth(ind), ...
+               datastruct.TidalSlope(ind), wavedatastruct.SignificantWaveHeight, ... 
                wavedatastruct.MaximumWaveHeight, wavedatastruct.AverageWaveHeight, ...
                wavedatastruct.x1_10WaveHeight, wavedatastruct.WaveEnergy);
 sampletimes = datenum(datastruct.Time);
@@ -60,6 +62,10 @@ wavedata = struct('burstheight', wavedatastruct.SignificantWaveHeight, ...
                   'burstdata', reshape(burstdatastruct.Pressure, burstsamplinglength, length(sampletimes)), ...
                   'burstwave', reshape(burstdatastruct.Wave, burstsamplinglength, length(sampletimes)));
 
+sampletimes = sampletimes(ind);   
+wavedata.burstdata = wavedata.burstdata(:,ind);
+wavedata.burstwave = wavedata.burstwave(:,ind);
+              
 % create structures
 RBR.channelnames = channelnames;
 RBR.sampletimes = sampletimes;
