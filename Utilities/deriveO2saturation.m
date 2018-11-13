@@ -13,7 +13,7 @@ function RSK = deriveO2saturation(RSK)
 %    RSK - Structure containing derived O2 saturation in unit of %.
 %
 % Example:
-%    RSK = deriveO2saturation(RSK)
+%    rsk = deriveO2saturation(rsk)
 %
 % See also: RSKderiveO2, deriveO2concentration.
 %

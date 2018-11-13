@@ -34,9 +34,9 @@ function RSK = RSKreaddata(RSK, varargin)
 %          and elements in the data field. 
 %
 % Example: 
-%    RSK = RSKopen('sample.rsk');  
+%    rsk = RSKopen('sample.rsk');  
 %    % Read 1/2 day of data since logger started.
-%    RSK = RSKreaddata(RSK, 't2', RSK.epochs.startTime+0.5);
+%    rsk = RSKreaddata(rsk, 't2', RSK.epochs.startTime+0.5);
 %
 % See also: RSKopen, RSKreadburstdata.
 %

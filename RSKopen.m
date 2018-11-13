@@ -29,7 +29,7 @@ function [RSK, dbid] = RSKopen(fname, varargin)
 %    dbid - Database id returned from mksqlite.
 %
 % Example: 
-%    RSK = RSKopen('sample.rsk');  
+%    rsk = RSKopen('sample.rsk');  
 %
 % See also: RSKreaddata, RSKreadprofiles.
 %

@@ -17,10 +17,6 @@ function handles = RSKplotdownsample(RSK, varargin)
 % Output:
 %    handles - Line object of the plot.
 %
-% Example: 
-%    RSK = RSKopen('sample.rsk');  
-%    RSKplotdownsample(RSK);  
-%
 % See also: RSKopen, RSKplotdata, RSKplotburstdata.
 %
 % Author: RBR Ltd. Ottawa ON, Canada

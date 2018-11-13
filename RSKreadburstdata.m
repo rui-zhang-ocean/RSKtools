@@ -24,8 +24,7 @@ function RSK = RSKreadburstdata(RSK, varargin)
 %          burstData field is replaced.
 %
 % Example: 
-%    RSK = RSKopen('sample.rsk');  
-%    RSK = RSKreadburstdata(RSK);
+%    rsk = RSKreadburstdata(rsk);
 %
 % See also: RSKopen, RSKplotburstdata, readevents.
 %

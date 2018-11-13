@@ -71,9 +71,9 @@ function RSK2CSV(RSK, varargin)
 %    channels.
 %
 % Example:
-%   RSK = RSKopen(fname);
-%   RSK = RSKreadprofiles(RSK);
-%   RSK2CSV(RSK,'channel',{'Temperature','Pressure'},'outputdir','/Users/decide/where','comment','Hey Jude');
+%   rsk = RSKopen(fname);
+%   rsk = RSKreadprofiles(rsk);
+%   RSK2CSV(rsk,'channel',{'Temperature','Pressure'},'outputdir','/Users/decide/where','comment','Hey Jude');
 %
 % Author: RBR Ltd. Ottawa ON, Canada
 % email: support@rbr-global.com

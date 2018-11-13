@@ -37,13 +37,13 @@ function [handles,axes] = RSKplotdata(RSK, varargin)
 %     axes - Axes object of the plot.
 %
 % Example: 
-%    RSK = RSKopen('sample.rsk');   
-%    RSK = RSKreaddata(RSK);  
-%    RSKplotdata(RSK);
+%    rsk = RSKopen('sample.rsk');   
+%    rsk = RSKreaddata(rsk);  
+%    handles = RSKplotdata(rsk);
 %    -OR-
-%    handles = RSKplotdata(RSK, 'channel', {'Temperature', 'Conductivity'})
+%    handles = RSKplotdata(rsk, 'channel', {'Temperature', 'Conductivity'})
 %    -OR-
-%    handles = RSKplotdata(RSK, 'channel', 'Pressure', 'showcast', true);
+%    handles = RSKplotdata(rsk, 'channel', 'Pressure', 'showcast', true);
 %
 % See also: RSKreadprofiles, RSKplotprofiles, RSKplotdownsample.
 %

@@ -18,9 +18,8 @@ function handles = RSKplotburstdata(RSK, varargin)
 %     handles - Line object of the plot.
 %
 % Example: 
-%    RSK = RSKopen('sample.rsk');  
-%    RSK = RSKreadburstdata(RSK, 'channel', {'Conductivity', 'Temperature', 'Pressure'});  
-%    RSKplotburstdata(RSK);  
+%    rsk = RSKreadburstdata(rsk, 'channel', {'Conductivity', 'Temperature', 'Pressure'});  
+%    RSKplotburstdata(rsk);  
 %
 % See also: RSKreadburstdata, RSKplotdata, RSKplotdownsample.
 %

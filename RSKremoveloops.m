@@ -36,11 +36,11 @@ function [RSK, flagidx] = RSKremoveloops(RSK, varargin)
 %    flagidx - Index of the samples that are filtered.
 %
 % Example: 
-%    RSK = RSKopen('file.rsk');
-%    RSK = RSKreadprofiles(RSK);
-%    RSK = RSKremoveloops(RSK);
+%    rsk = RSKopen('file.rsk');
+%    rsk = RSKreadprofiles(rsk);
+%    rsk = RSKremoveloops(rsk);
 %    OR
-%    RSK = RSKremoveloops(RSK,'profile',7:9,'direction','down','threshold',0.3,'visualize',8);
+%    rsk = RSKremoveloops(rsk,'profile',7:9,'direction','down','threshold',0.3,'visualize',8);
 %
 % Author: RBR Ltd. Ottawa ON, Canada
 % email: support@rbr-global.com

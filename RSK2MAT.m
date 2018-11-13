@@ -24,9 +24,9 @@ function [RBR] = RSK2MAT(RSK)
 %          same format as the .mat files exported by Ruskin.
 %
 % Example:
-%   RSK = RSKopen(fname);
-%   RSK = RSKreaddata(RSK);
-%   RBR = RSK2MAT(RSK);
+%   rsk = RSKopen(fname);
+%   rsk = RSKreaddata(rsk);
+%   RBR = RSK2MAT(rsk);
 %
 % Author: RBR Ltd. Ottawa ON, Canada
 % email: support@rbr-global.com

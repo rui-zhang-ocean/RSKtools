@@ -69,9 +69,9 @@ function RSK2ODV(RSK, varargin)
 %    channels.
 %
 % Example:
-%   RSK = RSKopen(fname);
-%   RSK = RSKreadprofiles(RSK);
-%   RSK2ODV(RSK,'channel',{'Temperature','Pressure'},'outputdir','/Users/decide/where','comment','Hey Jude');
+%   rsk = RSKopen(fname);
+%   rsk = RSKreadprofiles(rsk);
+%   RSK2ODV(rsk,'channel',{'Temperature','Pressure'},'outputdir','/Users/decide/where','comment','Hey Jude');
 %
 % Author: RBR Ltd. Ottawa ON, Canada
 % email: support@rbr-global.com

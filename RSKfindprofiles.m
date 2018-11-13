@@ -32,9 +32,9 @@ function RSK = RSKfindprofiles(RSK, varargin)
 %         profiles by applying the start and end times.
 %
 % Example:
-%    RSK = RSKopen(fname);
-%    RSK = RSKreaddata(RSK);
-%    RSK = RSKfindprofiles(RSK, 'pressureThreshold', 1);
+%    rsk = RSKopen(fname);
+%    rsk = RSKreaddata(rsk);
+%    rsk = RSKfindprofiles(rsk, 'pressureThreshold', 1);
 %
 % See also: RSKreadprofiles, getprofiles.
 %

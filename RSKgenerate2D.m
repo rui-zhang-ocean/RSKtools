@@ -33,7 +33,7 @@ function RSK = RSKgenerate2D(RSK, varargin)
 %     direction and reference channel information.
 %
 % Example: 
-%     RSK = RSKgenerate2D(RSK,'channel',{'Temperature','Conductivity'},'direction','down');
+%     rsk = RSKgenerate2D(rsk,'channel',{'Temperature','Conductivity'},'direction','down');
 %
 % See also: RSKbinaverage, RSKimages.
 %

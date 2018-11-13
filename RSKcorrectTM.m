@@ -52,7 +52,7 @@ function RSK = RSKcorrectTM(RSK, varargin)
 %    RSK - Structure with processed values.
 %
 % Example: 
-%    RSK = RSKcorrectTM(RSK, 0.04, 0.1)
+%    rsk = RSKcorrectTM(rsk, 0.04, 0.1)
 %
 % Author: RBR Ltd. Ottawa ON, Canada
 % email: support@rbr-global.com

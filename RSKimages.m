@@ -49,9 +49,9 @@ function [handles, RSK] = RSKimages(RSK, varargin)
 %     visualization.
 %
 % Example: 
-%     handles = RSKimages(RSK,'direction','down'); 
+%     handles = RSKimages(rsk,'direction','down'); 
 %     OR
-%     [handles, RSK] = RSKimages(RSK,'channel',{'Temperature','Conductivity'},'direction','down','interp',true,'threshold',600);
+%     [handles, rsk] = RSKimages(rsk,'channel',{'Temperature','Conductivity'},'direction','down','interp',true,'threshold',600);
 %
 % See also: RSKbinaverage, RSKgenerate2D.
 %
