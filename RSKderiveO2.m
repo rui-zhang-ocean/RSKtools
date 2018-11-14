@@ -1,10 +1,10 @@
 function RSK = RSKderiveO2(RSK, toDerive, varargin)
 
-% RSKderiveO2 - Derive O2 concentration from measured O2 saturation using 
-% equation from R.F.Weiss 1970.
-% OR
-% Derive O2 saturation from measured O2 concentration using equation from 
-% Garcia and Gordon, 1992.
+% RSKderiveO2 - Derives dissolved O2 concentration from measured dissolved 
+% O2 saturation using R.F. Weiss (1970), or conversely, derives dissolved 
+% O2 saturation from measured dissolved O2 concentration using Garcia and 
+% Gordon (1992).  The new oxygen variable is stored in a new column in the 
+% data table. 
 %
 % Syntax: [RSK] = RSKderiveO2(RSK,toDerive,[OPTIONS])
 %

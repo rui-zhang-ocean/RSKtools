@@ -4,10 +4,14 @@ function RSK = RSKgenerate2D(RSK, varargin)
 %
 % Syntax:  RSK = RSKgenerate2D(RSK, [OPTIONS])      
 %
-% Generate data with dimensions in time, reference channel and number of 
-% channels stored in RSK.im.data for visualization use of RSKimages. All 
-% data elements must have identical reference channel samples. 
-% Use RSKbinaverage.m to achieve this. 
+% Arranges a series of profiles from selected channels into in a 3D matrix.  
+% The matrix has dimensions MxNxP, where M is the number depth or pressure 
+% levels, N is the number of profiles, and P is the number of channels.  
+% Arranged in this way, the matrices are useful for analysis and for 2D 
+% visualization (RSKimages uses RSKgenerate2D). It may be particularly 
+% useful for users wishing to visualize multidimensional data without using
+% RSKimages. Each profile must be placed on a common reference grid before 
+% using RSKgenerate2D (see RSKbinaverage). 
 %
 % Note: Calling RSKimages may overwrite RSK.im field if RSKimages allows
 % RSK as outputs.
@@ -65,7 +69,9 @@ castidx = getdataindex(RSK, profile, direction);
 chanCol = [];
 channels = cellchannelnames(RSK, channel);
 for chan = channels
-    chanCol = [chanCol getchannelindex(RSK, chan{1})];
+    if ~any(strcmpi(chan{1},{'Sea Pressure','Depth','Pressure'}))
+        chanCol = [chanCol getchannelindex(RSK, chan{1})];
+    end
 end
 YCol = getchannelindex(RSK, reference);
 
@@ -88,6 +94,7 @@ end
 RSK.im.direction = direction;
 RSK.im.data = NaN(length(binCenter),length(castidx),length(chanCol));
 RSK.im.reference = reference;
+RSK.im.reference_unit = RSK.channels(getchannelindex(RSK,reference)).units;
 
 k = 1;
 for c = chanCol
