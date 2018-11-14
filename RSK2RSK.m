@@ -24,9 +24,9 @@ function newfile = RSK2RSK(RSK, varargin)
 %    newfile - file name of output rsk file
 %
 % Example:
-%    rsk = RSKopen('fname');
+%    rsk = RSKopen('rsk_file.rsk');
 %    rsk = RSKreadprofiles(rsk);
-%    rsk = RSKaddmetadata(rsk,'profile',1:3,'latitude',[45,44,46],'longitude',[-25,-24,-23]});
+%    rsk = RSKaddmetadata(rsk,'profile',1:3,'latitude',[45,44,46],'longitude',[-25,-24,-23]);
 %    outputdir = '/Users/Tom/Jerry';
 %    newfile = RSK2RSK(rsk,'outputdir',outputdir,'suffix','processed');
 %
