@@ -1,12 +1,9 @@
-function RSK = RSKremovecasts(RSK,varargin)
+function RSK = RSKremovecasts(RSK,direction)
 
 % RSKremovecasts - Remove the data elements with either an increasing or
 % decreasing pressure.
 %
-% Syntax:  RSK = RSKremovecasts(RSK,[OPTIONS])
-%
-% Remove either downcasts or upcasts in the RSK structure. Default is
-% to remove upcasts.
+% Syntax:  RSK = RSKremovecasts(RSK,direction)
 %
 % Note: When there are only downcasts in current RSK structure, request to
 % remove downcasts will not take effect. The same for upcasts.
@@ -15,19 +12,18 @@ function RSK = RSKremovecasts(RSK,varargin)
 %    [Required] - RSK - Structure containing logger data in profile
 %                 structure.
 %
-%    [Optional] - direction - 'up' for upcast, 'down' for downcast. Default
-%                 is 'up'.
+%                 direction - 'up' for upcast, 'down' for downcast.
 %
 % Outputs:
 %    RSK - Structure only containing downcast or upcast data.
 %
 % Examples:
-%    rsk = RSKremovecasts(rsk,'direction','up');
+%    rsk = RSKremovecasts(rsk,'up');
 %
 % Author: RBR Ltd. Ottawa ON, Canada
 % email: support@rbr-global.com
 % Website: www.rbr-global.com
-% Last revision: 2018-11-06
+% Last revision: 2018-11-14
 
 
 validDirections = {'down', 'up'};
@@ -35,8 +31,8 @@ checkDirection = @(x) any(validatestring(x,validDirections));
 
 p = inputParser;
 addRequired(p, 'RSK', @isstruct);
-addOptional(p, 'direction', 'up', checkDirection);
-parse(p, RSK, varargin{:})
+addRequired(p, 'direction', checkDirection);
+parse(p, RSK, direction)
 
 RSK = p.Results.RSK;
 direction = p.Results.direction;
