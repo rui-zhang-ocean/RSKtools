@@ -89,17 +89,17 @@ channel in the RSK structure.
     - `RSKreadprofiles` now only reads data from the rsk file on disk.
     - `RSKselectdowncast` and `RSKselectupcast` are replaced by `RSKremovecasts`.
     - Renamed the following functions that are typically called internally:
-        * RSKfirmwarever to readfirmwarever
-        * RSKgetprofiles to getprofiles
-        * RSKreaddownsample to readdownsample
-        * RSKreadevents to readevents
-        * RSKreadgeodata to readgeodata
-        * RSKsamplingperiod to readsamplingperiod
-        * RSKver to returnversion
-        * RSKreadannotations to readannotations
-        * RSKconstants to loadconstants
-        * datenum2RSKtime to datenum2rsktime
-        * RSKtime2datenum to rsktime2datenum
+        * `RSKfirmwarever` to `readfirmwarever`
+        * `RSKgetprofiles` to `getprofiles`
+        * `RSKreaddownsample` to `readdownsample`
+        * `RSKreadevents` to `readevents`
+        * `RSKreadgeodata` to `readgeodata`
+        * `RSKsamplingperiod` to `readsamplingperiod`
+        * `RSKver` to `returnversion`
+        * `RSKreadannotations` to `readannotations`
+        * `RSKconstants` to `loadconstants`
+        * `datenum2RSKtime` to `datenum2rsktime`
+        * `RSKtime2datenum` to `rsktime2datenum`
     - Move subfunctions that are mostly for internal use into folder ../rsktools/Utilities/ 
     - Synchronises plot limits using linkaxes in visualization mode of all post-processing functions.
     - Plot downcast only when both downcast and upcast are processed in visualization mode.
@@ -118,8 +118,8 @@ channel in the RSK structure.
 
 * Version 2.3.1 (2018-06-20)
 
-    - Fixed bug in RSKcorrecthold when one channel contains zero value only
-    - Changed input variable name pressure to seapressure in calculatedepth.m
+    - Fixed bug in `RSKcorrecthold` when one channel contains zero value only
+    - Changed input variable name pressure to seapressure in `calculatedepth.m`
     - Removed thumbnail data from the rsk structure; use downsample for a quick overview of the dataset
 
 * Version 2.3.0 (2018-05-09)
