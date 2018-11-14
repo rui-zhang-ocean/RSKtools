@@ -6,6 +6,13 @@ function RSK = RSKderiveO2(RSK, toDerive, varargin)
 % Gordon (1992).  The new oxygen variable is stored in a new column in the 
 % data table. 
 %
+% References:
+% R.F. Weiss, The solubility of nitrogen, oxygen and argon in water and 
+% seawater, Deep-Sea Res., 17 (1970), pp. 721-735
+%
+% H.E. García, L.I. Gordon, Oxygen solubility in seawater: Better fitting 
+% equations, Limnol. Oceanogr., 37 (6) (1992), pp. 1307-1312
+%
 % Syntax: [RSK] = RSKderiveO2(RSK,toDerive,[OPTIONS])
 %
 % Inputs: 

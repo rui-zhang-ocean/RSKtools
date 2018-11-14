@@ -4,10 +4,13 @@ function newfile = RSK2RSK(RSK, varargin)
 %
 % Syntax: newfile = RSK2RSK(RSKfile, [OPTIONS])
 %
-% RSK2RSK outputs a new rsk file with updated data, profiles, channels and
-% metadata information in current rsk structure. It is designed to store
-% data in rsk format after post-processing in RSKtools. The new rsk file is
-% in EPdesktop format and readable in Ruskin. 
+% RSK2RSK writes a new RSK file containing the data and various metadata 
+% from the Matlab rsk structure. It is designed to store post-processed 
+% data in a sqlite file that is readable by Ruskin. The new rsk file is in 
+% "EPdesktop" format, which is the simplest Ruskin table schema. RSK2RSK 
+% effectively provides a convenient method for Matlab users to easily share
+% post-processed RBR logger data with others without recourse to CSV, MAT, 
+% or ODV files. 
 %
 % Notes: This function is not thread safe.
 %
