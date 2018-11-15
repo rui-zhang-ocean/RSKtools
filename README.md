@@ -114,7 +114,7 @@ channel in the RSK structure.
     - `RSKimages` defaults to operate on all channels.
     - Unit of input argument `threshold` in `RSKimages` is changed from hours to seconds.
     - When bin averaging by time, the `binSize` argument in `RSKbinaverage` is now specified in seconds instead of days.
-    - Fixed bug that RSKreaddata mislabels channels when reading wave file.
+    - Fixed bug that `RSKreaddata` mislabels channels when reading wave file.
 
 * Version 2.3.1 (2018-06-20)
 
