@@ -28,6 +28,8 @@ parse(p, RSK)
 RSK = p.Results.RSK;
 
 
+RSK.instruments = doSelect(RSK, 'select * from instruments');
+
 RSK = readchannels(RSK);
 
 RSK.epochs = doSelect(RSK, 'select deploymentID,startTime/1.0 as startTime, endTime/1.0 as endTime from epochs');
@@ -37,8 +39,6 @@ RSK.epochs.endTime = rsktime2datenum(RSK.epochs.endTime);
 RSK.schedules = doSelect(RSK, 'select * from schedules');
 
 RSK.deployments = doSelect(RSK, 'select * from deployments');
-
-RSK.instruments = doSelect(RSK, 'select * from instruments');
 
 RSK = readpowertable(RSK);
 
