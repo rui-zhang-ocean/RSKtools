@@ -31,7 +31,7 @@ parse(p, RSK)
 RSK = p.Results.RSK;
 
 
-if ~(strcmp(RSK.dbInfo(end).type, 'EPdesktop') || strcmp(RSK.dbInfo(end).type, 'skinny'))
+if ~(strcmp(RSK.dbInfo(end).type, 'EPdesktop') || strcmp(RSK.dbInfo(end).type, 'skinny') || strcmp(RSK.dbInfo(end).type, 'live'))
     if iscompatibleversion(RSK, 1, 8, 9) && ~strcmp(RSK.dbInfo(end).type, 'EP')
         if RSK.toolSettings.readHiddenChannels
             isDerived = logical([RSK.instrumentChannels.channelStatus] == 4);% derived channels have a '4' channelStatus

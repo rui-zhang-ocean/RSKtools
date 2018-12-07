@@ -44,7 +44,7 @@ else
     results.tstamp = rsktime2datenum(results.tstamp');
     results.ratio = max([temp.ratio]);
 
-    if ~strcmpi(RSK.dbInfo(end).type, 'EPdesktop') && isfield(RSK,'instrumentChannels')     
+    if ~(strcmpi(RSK.dbInfo(end).type, 'EPdesktop') || strcmpi(RSK.dbInfo(end).type, 'live')) && isfield(RSK,'instrumentChannels')      
         instrumentChannels = RSK.instrumentChannels;
         ind = [instrumentChannels.channelStatus] == 4;
         instrumentChannels(ind) = [];
