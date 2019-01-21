@@ -106,7 +106,7 @@ end
 isProfile = isfield(RSK.data,'direction');
 
 if ~isProfile && (~isempty(profile) || ~isempty(direction))
-    error('RSK structure is not organized into profiles. Use RSKreadprofiles');
+    error('RSK structure is not organized into profiles. Use RSKreadprofiles or RSKtimeseries2profiles.');
 end
 
 if isempty(direction); direction = 'both'; end;
