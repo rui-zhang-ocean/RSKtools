@@ -3,7 +3,7 @@ function RSK2ODV(RSK, varargin)
 % RSK2ODV - Creates one or multiple Ocean Data View (ODV) output from a RSK
 % structure.
 %
-% Syntax: RSK2ODV(RSKfile, [OPTIONS])
+% Syntax: RSK2ODV(RSK, [OPTIONS])
 %
 % RSK2ODV outputs the RSK structure format into ODV (txt) file(s). The ODV
 % file contains some logger metadata and a row of variable names and units 

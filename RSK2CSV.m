@@ -2,7 +2,7 @@ function RSK2CSV(RSK, varargin)
 
 % RSK2CSV - Write one or more CSV files of logger data and metadata.
 %
-% Syntax: RSK2CSV(RSKfile, [OPTIONS])
+% Syntax: RSK2CSV(RSK, [OPTIONS])
 %
 % RSK2CSV outputs the RSK structure format into one or more CSV
 % file. The CSV file contains important logger metadata and a row of
