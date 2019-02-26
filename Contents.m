@@ -85,7 +85,7 @@
 % Additional useful files
 %   getchannelindex        - returns column index to the data table given a channel name
 %   getdataindex           - returns index into the RSK data array given profile numbers and cast directions
-%   readamplingperiod      - returns logger sample interval in seconds
+%   readsamplingperiod      - returns logger sample interval in seconds
 %
 %
 % For more information, check out documents in QuickStart folder and our
