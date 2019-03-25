@@ -5,7 +5,12 @@ function RSK = RSKcorrecttau(RSK, channel, varargin)
 %
 % Syntax:  RSK = RSKcorrecttau(RSK, channel, tauResponse, [OPTIONS])
 % 
-% Blablabla..
+% All sensors require a finite time to reach equilibrium with ambient
+% environment when they experience sharp gradient, thus introduces delayed
+% errors between real and measured values. The time to each 63.2% of the 
+% real value is defined as time constant (tau). This function applies 
+% Fozdar et al. 1985 recursive filter in the time domain for tau correction
+% and smoothing. 
 %    
 % Inputs:
 %   [Required] - RSK - Structure containing logger data.
@@ -42,7 +47,7 @@ function RSK = RSKcorrecttau(RSK, channel, varargin)
 % Author: RBR Ltd. Ottawa ON, Canada
 % email: support@rbr-global.com
 % Website: www.rbr-global.com
-% Last revision: 2019-03-22
+% Last revision: 2019-03-25
 
 
 validDirections = {'down', 'up', 'both'};
@@ -102,7 +107,7 @@ RSK = RSKappendtolog(RSK, logentry);
 
 %% Nested Functions
 function out = correcttau(in, intime, ar, as)
-% blablabla...  
+% see Fozdar et al. (1985) for details  
 
     ind = isfinite(in);
     in_itp = interp1(intime(ind),in(ind),intime,'linear','extrap');    
