@@ -5,21 +5,27 @@ function RSK = RSKcorrecttau(RSK, channel, varargin)
 %
 % Syntax:  RSK = RSKcorrecttau(RSK, channel, tauResponse, [OPTIONS])
 % 
-% All sensors require a finite time to reach equilibrium with ambient
-% environment when they experience sharp gradient, thus introduces delayed
-% errors between real and measured values. The time to each 63.2% of the 
-% real value is defined as time constant (tau). This function applies 
-% Fozdar et al. 1985 recursive filter in the time domain for tau correction
-% and smoothing. 
+% Sensors require a finite time to reach equilibrium with the ambient
+% environment under variable conditions.  The adjustment process
+% alters both the magnitude and phase of the true signal. The time to
+% reach 63.2% of the true value is defined as time constant
+% (tau). This function applies Fozdar et al. (1985) recursive filter
+% in the time domain to correct the phase and response of the measured
+% signal to more accurately represent the true signal.
+%
+% Fozdar, F.M., G.J. Parkar, and J. Imberger, 1985: Matching
+% Temperature and Conductivity Sensor Response
+% Characteristics. J. Phys. Oceanogr., 15, 1557–1569,
+% https://doi.org/10.1175/1520-0485(1985)015<1557:MTACSR>2.0.CO;2
 %    
 % Inputs:
 %   [Required] - RSK - Structure containing logger data.
 %
 %                channel - Longname of channel to apply tau correction
-%                      (e.g., temperature, salinity, etc).
+%                      (e.g., temperature, dissolved o2).
 %
-%                tauResponse - time constant of specified channel in
-%                      seconds.
+%                tauResponse - sensor time constant of the channel in
+%                seconds.
 %
 %   [Optional] - tauSmooth - smoothing time scale in seconds. Default is 0.
 %
@@ -35,7 +41,7 @@ function RSK = RSKcorrecttau(RSK, channel, varargin)
 %                      Default is 0.
 %
 % Outputs:
-%    RSK - Structure with tau correction on specified channel.
+%    RSK - Structure with corrected channel in place of measured channel.
 %
 % Example: 
 %    rsk = RSKcorrecttau(rsk,'Dissolved O2',1)
@@ -47,7 +53,7 @@ function RSK = RSKcorrecttau(RSK, channel, varargin)
 % Author: RBR Ltd. Ottawa ON, Canada
 % email: support@rbr-global.com
 % Website: www.rbr-global.com
-% Last revision: 2019-03-25
+% Last revision: 2019-04-01
 
 
 validDirections = {'down', 'up', 'both'};
