@@ -22,15 +22,15 @@ function RSK = RSKcorrecttau(RSK, channel, varargin)
 %   [Required] - RSK - Structure containing logger data.
 %
 %                channel - Longname of channel to apply tau correction
-%                      (e.g., temperature, dissolved o2).
+%                       (e.g., Temperature, Dissolved O2).
 %
 %                tauResponse - sensor time constant of the channel in
-%                seconds.
+%                       seconds.
 %
 %   [Optional] - tauSmooth - smoothing time scale in seconds. Default is 0.
 %
 %                profile - Profile number. Default is all available 
-%                      profiles.
+%                       profiles.
 %
 %                direction - 'up' for upcast, 'down' for downcast, or
 %                      'both' for all. Default is all directions available.
