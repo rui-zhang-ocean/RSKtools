@@ -46,7 +46,7 @@ function [RSK] = RSKaddmetadata(RSK, varargin)
 % Author: RBR Ltd. Ottawa ON, Canada
 % email: support@rbr-global.com
 % Website: www.rbr-global.com
-% Last revision: 2018-05-30
+% Last revision: 2019-04-04
 
 
 p = inputParser;
@@ -94,7 +94,9 @@ if isempty([latitude longitude station comment description])
     return
 end
     
-if length(RSK.data) == 1; RSK = RSKreadprofiles(RSK); end 
+if length(RSK.data) == 1 && ~isfield(RSK.data,'profilenumber') && ~isfield(RSK.data,'direction')
+    error('RSK has time series data only, use RSKreadprofiles or RSKtimeseries2profiles...')
+end 
 
 castidx = getdataindex(RSK, profile);
 
