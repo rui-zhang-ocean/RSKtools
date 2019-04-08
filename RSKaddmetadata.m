@@ -90,11 +90,14 @@ description = checkcell(description);
 
 
 if isempty([latitude longitude station comment description])
-    warning('No metadata input is found. Please specify at least one metadata field.')
-    return
+    error('No metadata input is found. Please specify at least one metadata field.')
 end
     
 isProfiles = length(RSK.data) ~= 1 && isfield(RSK.data,'profilenumber') && isfield(RSK.data,'direction');
+
+if ~isProfiles && ~isempty(profile)
+    error('Can not specify profiles when rsk has time series only, use RSKreadprofiles or RSKtimeseries2profiles...');
+end
 
 castidx = getdataindex(RSK, profile);
 directions = 1;
