@@ -75,7 +75,7 @@ end
 
 %% Run profile detection
 [wwevt] = detectprofiles(pressure, timestamp, conductivity, pressureThreshold, conductivityThreshold);
-if size(wwevt,1) < 2
+if length(find((wwevt(:,2) == 1 | wwevt(:,2) == 2))) < 2
     hasProfile = false;
     disp('No profiles were detected in this dataset with the given parameters.')
     return
