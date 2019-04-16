@@ -26,9 +26,7 @@ function castidx = getdataindex(RSK, varargin)
 % Website: www.rbr-global.com
 % Last revision: 2019-04-16
 
-
-validDirections = {'down', 'up', 'both'};
-checkDirection = @(x) any(validatestring(x,validDirections));
+checkDirection = @(x) ischar(x) || isempty(x);
 
 p = inputParser;
 addRequired(p, 'RSK', @isstruct);
@@ -41,14 +39,12 @@ profile = p.Results.profile;
 direction = p.Results.direction;
 
 
-ndata = length(RSK.data);
 isProfile = isfield(RSK.data,'direction') && isfield(RSK.data,'profilenumber');
 
-if isProfile
-    
+if isProfile    
     if isempty(direction) || strcmpi(direction,'both')        
         if isempty(profile)            
-            castidx = 1:ndata;            
+            castidx = 1:length(RSK.data);            
         else           
             castidx = find(ismember([RSK.data.profilenumber],profile));           
         end        
@@ -58,16 +54,9 @@ if isProfile
         else           
             castidx = find(ismember([RSK.data.profilenumber],profile) & ismember({RSK.data.direction},direction));           
         end      
-    end
-    
-else
-    
-    if isempty(direction) && isempty(profile)
-        castidx = 1:ndata;
-    else
-        error('RSK has time series only, please use RSKreadprofiles or RSKtimeseries2profiles before specifying profile number and direction...')
-    end          
-    
+    end    
+else    
+    castidx = 1;          
 end
 
 if isempty(castidx)     
