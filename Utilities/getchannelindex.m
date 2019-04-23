@@ -14,7 +14,8 @@ function varargout = getchannelindex(RSK, channel)
 %
 % Outputs:
 %
-%   channelIdx(n) - Index of channels.
+%   channelIdx(n) - Index of channels, note that the index must be in the
+%   same sequence as the input, when there are multiple inputs.
 %
 % See also: getdataindex, getcastdirection.
 %
@@ -27,8 +28,8 @@ if ~iscell(channel)
     channel = {channel};    
 end
 
-if all(ismember(lower(channel),lower({RSK.channels.longName})))
-    channelIdx = find(ismember(lower({RSK.channels.longName}),lower(channel)));
+if all(ismember(lower(channel),lower({RSK.channels.longName})))    
+    [~,~,channelIdx] = intersect(lower(channel),lower({RSK.channels.longName}),'stable');
     varargout = cell(size(channelIdx));
     for i = 1:length(channelIdx)
         varargout{i} = channelIdx(i); 
