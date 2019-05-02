@@ -168,8 +168,8 @@ RSK = RSKappendtolog(RSK, logentry);
         end
 
         if binByTime
-            boundaryFloor = min(nanmin(Y))-samplingPeriod/86400;
-            boundaryCeil = max(nanmax(Y))+samplingPeriod/86400;
+            boundaryFloor = min(nanmin(Y))-samplingPeriod/86400/2;
+            boundaryCeil = max(nanmax(Y))+samplingPeriod/86400/2;
         else
             boundaryFloor = floor(min(nanmin(Y)));
             boundaryCeil = ceil(max(nanmax(Y)));
