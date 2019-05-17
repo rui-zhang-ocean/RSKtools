@@ -68,19 +68,19 @@ model = p.Results.model;
 serialID = p.Results.serialID;
 
 
-% Check consistency between input arguments
+% Check consistency among input arguments
 [nsamples,nchannels] = size(values);
 if nsamples ~= length(tstamp)
     error('The length of time stamp is not equal to number of rows in values.')
 end
 
 if nchannels ~= length(channel) || nchannels ~= length(unit)
-    error('The length of channels or units is nor equal to number of columns in values.')
+    error('The length of channel or unit is not equal to number of columns in values.')
 end
 
 % Create data, channel and other logger metadata fields
 data = struct('tstamp',tstamp,'values',values);
-shortName = getchannelshortname(channel); % Need update
+shortName = getchannelshortname(channel);
 channels = struct('shortName',shortName','longName',channel','units',unit');
 RSK = struct('data',data,'channels',channels);
 
