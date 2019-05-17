@@ -38,8 +38,8 @@ if ischar(longName)
 end
 
 shortName = cell(size(longName));
-[~,~,ind] = intersect(longName,channelList,'stable');
-shortName(ind) = shortNameList(ind);
+[~,ind1,ind2] = intersect(longName,channelList,'stable');
+shortName(ind1) = shortNameList(ind2);
 [shortName{cellfun(@isempty,shortName)}] = deal('cnt_00');
              
 end

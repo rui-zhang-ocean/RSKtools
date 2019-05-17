@@ -39,7 +39,7 @@ function RSK = RSKcreate(tstamp, values, channel, unit, varargin)
 %               39.9887,   16.2553,   10.1247];
 %    channels = {'Conductivity','Temperature','Pressure'};
 %    units = {'mS/cm','°C','dbar'};
-%    RSK = RSKcreate(tstamp, values, channels, units);
+%    rsk = RSKcreate(tstamp, values, channels, units);
 %
 % Author: RBR Ltd. Ottawa ON, Canada
 % email: support@rbr-global.com
