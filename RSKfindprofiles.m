@@ -58,7 +58,11 @@ conductivityThreshold = p.Results.conductivityThreshold;
 
 
 %% Set up values
-Pcol = getchannelindex(RSK, 'Pressure');
+try
+    Pcol = getchannelindex(RSK, 'Pressure');
+catch
+    Pcol = getchannelindex(RSK, 'Sea Pressure');
+end
 pressure = RSK.data.values(:, Pcol);
 timestamp = RSK.data.tstamp;
 
