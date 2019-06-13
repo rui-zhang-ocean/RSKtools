@@ -11,7 +11,9 @@ function RSK = RSKcorrecttau(RSK, channel, varargin)
 % reach 63.2% of the true value is defined as time constant
 % (tau). This function applies Fozdar et al. (1985) recursive filter
 % in the time domain to correct the phase and response of the measured
-% signal to more accurately represent the true signal.
+% signal to more accurately represent the true signal. The Fozdar algorithm
+% reduces to the standard expression when tauSmooth = 0, which is the
+% default.
 %
 % Fozdar, F.M., G.J. Parkar, and J. Imberger, 1985: Matching
 % Temperature and Conductivity Sensor Response
@@ -53,7 +55,7 @@ function RSK = RSKcorrecttau(RSK, channel, varargin)
 % Author: RBR Ltd. Ottawa ON, Canada
 % email: support@rbr-global.com
 % Website: www.rbr-global.com
-% Last revision: 2019-04-01
+% Last revision: 2019-06-13
 
 
 validDirections = {'down', 'up', 'both'};
