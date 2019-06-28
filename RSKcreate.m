@@ -79,6 +79,7 @@ if nchannels ~= length(channel) || nchannels ~= length(unit)
 end
 
 % Create data, channel and other logger metadata fields
+tstamp = tstamp(:);
 data = struct('tstamp',tstamp,'values',values);
 shortName = getchannelshortname(channel);
 channels = struct('shortName',shortName','longName',channel','units',unit');
