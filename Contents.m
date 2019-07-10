@@ -77,7 +77,7 @@
 %   RSK2RSK                 - write rsk file using current rsk structure
 %   RSK2MAT                 - write RSK structure to legacy Ruskin .mat format
 %   RSKaddchannel           - add a new channel to existing RSK structure
-%   RSKaddmetadata          - add station metadata to RSK data structure
+%   RSKaddstationdata       - add station data to RSK data structure
 %   RSKremovecasts          - remove either downcasts or upcasts in the RSK structure
 %   RSKappendtolog          - append the entry and current time to the log field
 %   RSKcentrebursttimestamp - set the burst timestamps to the centre of each burst period instead of the beginning
