@@ -1,14 +1,14 @@
-function [RSK] = RSKaddmetadata(RSK, varargin)
+function [RSK] = RSKaddstationdata(RSK, varargin)
 
-% RSKaddmetadata - Add metadata information for specified profile(s).
+% RSKaddstationdata - Add station data information for specified profile(s).
 %
-% Syntax:  [RSK] = RSKaddmetadata(RSK, [OPTIONS])
+% Syntax:  [RSK] = RSKaddstationdata(RSK, [OPTIONS])
 % 
-% Append station metadata to data structure with profiles, including
-% latitude, longitude, station, cruise, vessel, depth, date, weather, crew,
-% comment and description. The function is vectorized, which allows 
-% multiple metadata inputs for multiple profiles. But when there is only 
-% one metadata input for multiple profiles, all profiles will be assigned 
+% Append station data to data structure with profiles, including latitude, 
+% longitude, station, cruise, vessel, depth, date, weather, crew, comment 
+% and description. The function is vectorized, which allows multiple 
+% station data inputs for multiple profiles. But when there is only one 
+% station data input for multiple profiles, all profiles will be assigned 
 % with the same value.
 %
 % Inputs: 
@@ -16,7 +16,7 @@ function [RSK] = RSKaddmetadata(RSK, varargin)
 % 
 %   [Optional] - One or more of the following:
 %
-%                profile - Profile number(s) to which metadata should
+%                profile - Profile number(s) to which station data should
 %                          be assigned. Defaults to all profiles             
 %                latitude - must be of data type numerical
 %                longitude - must be of data type numerical
@@ -33,20 +33,20 @@ function [RSK] = RSKaddmetadata(RSK, varargin)
 %        
 %
 % Outputs:
-%    RSK - Updated structure containing metadata for specified profile(s).
+%    RSK - Updated structure containing station data for specified profile(s).
 %
 % Example:
-%    rsk = RSKaddmetadata(rsk,'latitude',45,'longitude',-25,...
+%    rsk = RSKaddstationdata(rsk,'latitude',45,'longitude',-25,...
 %                             'station',{'SK1'},'vessel',{'R/V RBR'},...
 %                             'cruise',{'Skootamatta Lake 1'})
 %    -OR-
-%    rsk = RSKaddmetadata(rsk,'profile',4:6,'latitude',[45,44,46],'longitude',...
-%    [-25,-24,-23],'comment',{'Comment1','Comment2','Comment3'});
+%    rsk = RSKaddstationdata(rsk,'profile',4:6,'latitude',[45,44,46],...
+%          'longitude',[-25,-24,-23],'comment',{'Comment1','Comment2','Comment3'});
 % 
 % Author: RBR Ltd. Ottawa ON, Canada
 % email: support@rbr-global.com
 % Website: www.rbr-global.com
-% Last revision: 2019-04-04
+% Last revision: 2019-07-10
 
 
 p = inputParser;
@@ -90,7 +90,7 @@ description = checkcell(description);
 
 
 if isempty([latitude longitude station comment description])
-    error('No metadata input is found. Please specify at least one metadata field.')
+    error('No station data input is found. Please specify at least one station data field.')
 end
     
 isProfile = length(RSK.data) ~= 1 && isfield(RSK.data,'profilenumber') && isfield(RSK.data,'direction');
@@ -107,17 +107,17 @@ end
 
 k = 1;
 for i = 1:directions:length(castidx);    
-    RSK = assign_metadata(RSK, latitude, castidx, i, directions, k, 'latitude');
-    RSK = assign_metadata(RSK, longitude, castidx, i, directions, k, 'longitude');
-    RSK = assign_metadata(RSK, station, castidx, i, directions, k, 'station');
-    RSK = assign_metadata(RSK, cruise,  castidx, i, directions, k,'cruise');
-    RSK = assign_metadata(RSK, vessel,  castidx, i, directions, k,'vessel');
-    RSK = assign_metadata(RSK, depth,   castidx, i, directions, k,'depth');
-    RSK = assign_metadata(RSK, date,    castidx, i, directions, k,'date');
-    RSK = assign_metadata(RSK, weather, castidx, i, directions, k,'weather');
-    RSK = assign_metadata(RSK, crew,    castidx, i, directions, k,'crew');
-    RSK = assign_metadata(RSK, comment, castidx, i, directions, k, 'comment');
-    RSK = assign_metadata(RSK, description, castidx, i, directions, k, 'description');
+    RSK = assign_stationdata(RSK, latitude, castidx, i, directions, k, 'latitude');
+    RSK = assign_stationdata(RSK, longitude, castidx, i, directions, k, 'longitude');
+    RSK = assign_stationdata(RSK, station, castidx, i, directions, k, 'station');
+    RSK = assign_stationdata(RSK, cruise,  castidx, i, directions, k,'cruise');
+    RSK = assign_stationdata(RSK, vessel,  castidx, i, directions, k,'vessel');
+    RSK = assign_stationdata(RSK, depth,   castidx, i, directions, k,'depth');
+    RSK = assign_stationdata(RSK, date,    castidx, i, directions, k,'date');
+    RSK = assign_stationdata(RSK, weather, castidx, i, directions, k,'weather');
+    RSK = assign_stationdata(RSK, crew,    castidx, i, directions, k,'crew');
+    RSK = assign_stationdata(RSK, comment, castidx, i, directions, k, 'comment');
+    RSK = assign_stationdata(RSK, description, castidx, i, directions, k, 'description');
     k = k + 1;    
 end
 
@@ -188,8 +188,8 @@ end
     end
 
     %% Nested Functions
-    function RSK = assign_metadata(RSK, meta, castidx, i, directions, k, name)
-    % Assign metadata to data structure
+    function RSK = assign_stationdata(RSK, meta, castidx, i, directions, k, name)
+    % Assign station data to data structure
     if ~isempty(meta) && length(meta) == 1; 
         RSK.data(castidx(i)).(name) = meta;
         if directions == 2

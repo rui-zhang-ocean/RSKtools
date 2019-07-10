@@ -15,7 +15,7 @@ function RSK2ODV(RSK, varargin)
 % Notes: Cruise, station, longitude, latitude and bottom depth are set to 
 % `C1`, `S1`, `0.0`, `0.0` and `0.0` respectively as default. They will be 
 % filled automatically with Ruskin annotations if they were added by the 
-% user. Alternatively, they can be populated with RSKaddmetadata.m.
+% user. Alternatively, they can be populated with RSKaddstationdata.m.
 % 
 % Output samples as below:
 %
