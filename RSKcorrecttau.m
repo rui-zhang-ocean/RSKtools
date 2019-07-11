@@ -17,7 +17,7 @@ function RSK = RSKcorrecttau(RSK, channel, varargin)
 %
 % Fozdar, F.M., G.J. Parkar, and J. Imberger, 1985: Matching
 % Temperature and Conductivity Sensor Response
-% Characteristics. J. Phys. Oceanogr., 15, 1557–1569,
+% Characteristics. J. Phys. Oceanogr., 15, 1557-1569,
 % https://doi.org/10.1175/1520-0485(1985)015<1557:MTACSR>2.0.CO;2
 %    
 % Inputs:
