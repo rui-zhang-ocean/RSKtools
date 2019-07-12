@@ -77,6 +77,22 @@ channel in the RSK structure.
 
 ## Changes
 
+* Version 3.2.0 (2019-07-15)
+
+    - New function `RSKcorrecttau` to apply Fozdar et al. (1985) recursive filter to correct for the time response delay.
+    - New function `RSKcreate` to convert any data (e.g. other CTD, glider, float) into rsk structure.
+    - `RSKreadprofiles`, `RSKtimeseries2profiles`, `RSKplotprofiles` and `Utilities/getdataindex` now handles situation with unequal number of downcasts and upcasts.
+    - `RSKaddmetadata` is renamed to `RSKaddstationdata`.
+    - `RSKaddstationdata` now allows adding station data to time series data.
+    - `RSKtrim` now requires `reference` and `range` as mandatory inputs.
+    - Simplify `RSK2RSK` schema by removing events/errors/downloads tables.
+    - `RSKfindprofiles` now uses sea pressure to detect profiles when pressure channel is missing.
+    - `RSKplotdata` returns an error when `showcast` is set to true while pressure channel is missing.
+    - `RSKopen` now reads instrumentSensors table if exists.
+    - `RSKderivesalinity` now uses 0 for sea pressure when pressure channel is absent.
+    - Fixed bug that caused `RSKbinaverage` not to work when bin average upcast by time.
+    - `Utilities/getchannelindex` now allows multiple channel inputs and outputs.
+
 * Version 3.1.0 (2019-03-04)
 
     - New function `RSKcentrebursttimestamp` to set the burst timestamps to the centre of each burst period instead of the beginning.
