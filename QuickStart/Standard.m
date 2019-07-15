@@ -2,7 +2,7 @@
 % RSKtools v3.2.0;
 % RBR Ltd. Ottawa ON, Canada;
 % support@rbr-global.com;
-% 2019-07-17
+% 2019-07-16
 
 %% Introduction 
 % |RSKtools| is RBR's open source Matlab toolbox for reading,
