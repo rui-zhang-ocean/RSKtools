@@ -45,9 +45,9 @@ end
 
 [Tcol,Scol,SPcol] = getchannel_T_S_SP_index(RSK);
 
-RSK = addchannelmetadata(RSK, 'buoy00', 'Buoyancy Frequency Squared', 's?²');
+RSK = addchannelmetadata(RSK, 'buoy00', 'Buoyancy Frequency Squared', '1/s²');
 N2col = getchannelindex(RSK, 'Buoyancy Frequency Squared');
-RSK = addchannelmetadata(RSK, 'stbl00', 'Stability', 'm?¹');
+RSK = addchannelmetadata(RSK, 'stbl00', 'Stability', '1/m');
 STcol = getchannelindex(RSK, 'Stability');
 
 castidx = getdataindex(RSK);
