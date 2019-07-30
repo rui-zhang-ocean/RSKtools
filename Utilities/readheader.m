@@ -5,7 +5,8 @@ function RSK = readheader(RSK)
 % Syntax:  [RSK] = readheader(RSK)
 %
 % Opens the non-standard populated tables of rsk files, including the
-% appSettings, parameters, parameterKeys, geodata, downsample ...
+% appSettings, parameters, parameterKeys, geodata, downsample, ranging and
+% instrumentSensors, if exists.
 %
 % Inputs:
 %    RSK - Structure of rskopened using RSKopen.m.
