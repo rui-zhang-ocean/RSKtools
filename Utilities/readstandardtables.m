@@ -28,6 +28,8 @@ parse(p, RSK)
 RSK = p.Results.RSK;
 
 
+RSK.dbInfo = doSelect(RSK, 'select version,type from dbInfo');
+
 RSK.instruments = doSelect(RSK, 'select * from instruments');
 
 RSK = readchannels(RSK);
