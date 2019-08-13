@@ -1,10 +1,10 @@
 function RSK = readstandardtables(RSK)
 
-% READSTANDARDTABLES- Read tables that are populated in all .rsk files.
+% readstandardtables - Read standard tables that are populated in rsk files.
 %
-% Syntax:  [RSK] = READSTANDARDTABLES(RSK)
+% Syntax:  [RSK] = readstandardtables(RSK)
 %
-% Opens the tables that are populated in any file. These tables are
+% Opens standard tables that are populated in rsk file. These tables are
 % channels, epochs, schedules, deployments and instruments.
 %
 % Inputs:
@@ -18,7 +18,7 @@ function RSK = readstandardtables(RSK)
 % Author: RBR Ltd. Ottawa ON, Canada
 % email: support@rbr-global.com
 % Website: www.rbr-global.com
-% Last revision: 2018-01-16
+% Last revision: 2019-07-30
 
 
 p = inputParser;
@@ -28,8 +28,8 @@ parse(p, RSK)
 RSK = p.Results.RSK;
 
 
+RSK.dbInfo = doSelect(RSK, 'select version,type from dbInfo');
 RSK.instruments = doSelect(RSK, 'select * from instruments');
-
 RSK = readchannels(RSK);
 
 RSK.epochs = doSelect(RSK, 'select deploymentID,startTime/1.0 as startTime, endTime/1.0 as endTime from epochs');
@@ -41,13 +41,11 @@ else
 end
 
 RSK.schedules = doSelect(RSK, 'select * from schedules');
-
 RSK.deployments = doSelect(RSK, 'select * from deployments');
-
 RSK = readpowertable(RSK);
 
 %% Nested function reading power table
-    function RSK = readpowertable(RSK)
+function RSK = readpowertable(RSK)
     if ~isempty(doSelect(RSK, 'SELECT name FROM sqlite_master WHERE type="table" AND name="power"')) && ...
        ~isempty(RSK.instruments) && isfield(RSK.instruments, 'firmwareType') && RSK.instruments.firmwareType > 103;
         RSK.power = doSelect(RSK, 'select * from power'); 
@@ -58,6 +56,5 @@ RSK = readpowertable(RSK);
             RSK.power = rmfield(RSK.power, {'externalBatteryType','externalBatteryCapacity','externalEnergyUsed'}); 
         end
     end
-    end
-
+end
 end
