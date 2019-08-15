@@ -20,7 +20,12 @@ function RSK = readeventsprofiles(RSK)
 
 loadconstants
 
-tmp = readevents(RSK);
+tables = doSelect(RSK, 'SELECT name FROM sqlite_master WHERE type="table"');
+if any(strcmpi({tables.name}, 'events'))
+    tmp = readevents(RSK);
+else
+    return
+end
 
 if isfield(tmp, 'events')
     events = tmp.events;
