@@ -49,17 +49,21 @@ RSK = p.Results.RSK;
 outputdir = p.Results.outputdir;
 suffix = p.Results.suffix;
 
+
 newfile = setupOutputFilename(RSK,suffix);
 data = convertProfilesIntoTimeseries(RSK);
 [data, nchannel] = removeRepeatedTimestamp(data);
 
-mksqlite('OPEN',[outputdir '/' newfile]);
-createSchema(nchannel);
-writeData(RSK, data, newfile);
-mksqlite('CLOSE')
+if exist([outputdir '/' newfile],'file') == 2
+    error([outputdir '/' newfile ' already exists, please revise suffix for a different name.'])
+else
+    mksqlite('OPEN',[outputdir '/' newfile]);
+    createSchema(nchannel);
+    writeData(RSK, data, newfile);
+    mksqlite('CLOSE')
+end
 
 fprintf('Wrote: %s/%s\n', outputdir, newfile);
-
 
 %% Nested functions
 function newfile = setupOutputFilename(RSK,suffix)
