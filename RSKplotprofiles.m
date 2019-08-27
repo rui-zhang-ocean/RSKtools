@@ -1,8 +1,8 @@
-function handles = RSKplotprofiles(RSK, varargin)
+function [handles,axes] = RSKplotprofiles(RSK, varargin)
 
 % RSKplotprofiles - Plot summaries of logger data as profiles.
 %
-% Syntax:  [handles] = RSKplotprofiles(RSK, [OPTIONS])
+% Syntax:  [handles,axes] = RSKplotprofiles(RSK, [OPTIONS])
 % 
 % Plots profiles from automatically detected casts. The default is to
 % plot all the casts of all channels available (excluding pressure,
@@ -31,6 +31,8 @@ function handles = RSKplotprofiles(RSK, varargin)
 %
 % Output:
 %     handles - Line object of the plot.
+%
+%     axes - Axes object of the plot.
 %
 % Examples:
 %    rsk = RSKopen('profiles.rsk');
@@ -137,7 +139,7 @@ for chan = chanCol
             ii = ii+1; 
         end
     end
-
+    axes(n) = gca;
     ylim([0 pmax])
     title(RSK.channels(chan).longName);
     xlabel(RSK.channels(chan).units);
