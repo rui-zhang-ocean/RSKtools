@@ -91,17 +91,7 @@ else
     [RSKy, ycol] = getseapressure(RSK);
 end
 
-% In 2014a and earlier, lines plotted after calling 'hold on' are
-% drawn with the first colour in defaultaxescolororder, whereas we
-% prefer to use a different colour for each cast.  Although the
-% default behaviour in 2014b is to step through defaultaxescolororder,
-% we proceed with the following fix anyway because it is compatible
-% with 2014b and later.
-clrs = get(0,'defaultaxescolororder');
-ncast = length(castidx); % up and down are both casts
-clrs = repmat(clrs,ceil(ncast/7),1);
-clrs = clrs(1:ncast,:);
-
+clrs = lines(length(castidx));
 pmax = 0;
 n = 1;
 for chan = chanCol
