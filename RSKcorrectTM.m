@@ -86,8 +86,7 @@ fs = round(1/readsamplingperiod(RSK));
 a = 4*fs/2*alpha/beta * 1/(1 + 4*fs/2/beta);
 b = 1 - 2*a/alpha;
 
-Tcol = getchannelindex(RSK,'Temperature');
-Ccol = getchannelindex(RSK,'Conductivity');
+[Tcol,Ccol] = getchannelindex(RSK,{'Temperature','Conductivity'});
 castidx = getdataindex(RSK, profile, direction);
 
 if visualize ~= 0; 
@@ -97,10 +96,8 @@ end
 for ndx = castidx
     T = RSK.data(ndx).values(:,Tcol);
     C = RSK.data(ndx).values(:,Ccol);
-    Ccor = zeros(size(T));
-    for k = 2:length(T);
-        Ccor(k) = -b*Ccor(k-1) + gamma*a*(T(k) - T(k-1));
-    end   
+    intime = RSK.data(ndx).tstamp;
+    Ccor = correctTM(T, intime, a, b, gamma);     
     RSK.data(ndx).values(:,Ccol) = C + Ccor;
 end
 
@@ -114,4 +111,15 @@ end
 logentry = ['Thermal mass correction applied to conductivity with alpha = ' num2str(alpha) ', beta = ' num2str(beta) ' s^-1, and gamma = ' num2str(gamma) '.'];
 RSK = RSKappendtolog(RSK, logentry);
     
+%% Nested Functions
+function Ccor = correctTM(T, intime, a, b, gamma)  
+    ind = isfinite(T);   
+    T_itp = interp1(intime(ind),T(ind),intime,'linear','extrap');        
+    Ccor = zeros(size(T));
+    for k = 2:length(T);
+        Ccor(k) = -b*Ccor(k-1) + gamma*a*(T_itp(k) - T_itp(k-1));
+    end
+    Ccor(~ind) = 0; 
+end
+
 end
