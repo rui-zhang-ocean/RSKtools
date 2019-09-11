@@ -27,7 +27,7 @@ function RSK = renamechannels(RSK)
 
 shortName = {RSK.channels.shortName};
 
-idx = (strcmpi(shortName, 'temp05') | strcmpi(shortName, 'temp10'));
+idx = (strcmpi(shortName, 'temp05') | strcmpi(shortName, 'temp10') | strcmpi(shortName, 'temp29'));
 if any(idx)
     [RSK.channels(idx).longName] = deal('Pressure Gauge Temperature');
 end
