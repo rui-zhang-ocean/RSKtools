@@ -119,7 +119,7 @@ function Ccor = correctTM(T, intime, a, b, gamma)
     for k = 2:length(T);
         Ccor(k) = -b*Ccor(k-1) + gamma*a*(T_itp(k) - T_itp(k-1));
     end
-    Ccor(~ind) = 0; 
+    Ccor(~ind) = NaN; 
 end
 
 end
