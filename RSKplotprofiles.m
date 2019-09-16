@@ -139,9 +139,9 @@ for chan = chanCol
 end
 
 if stepsize > 1 && strcmp(RSKy.data(1).direction,'up')
-    legend('upcast','downcast')
+    legend('upcast','downcast','location','best')
 elseif stepsize > 1 && strcmp(RSKy.data(1).direction,'down')
-    legend('downcast','upcast')
+    legend('downcast','upcast','location','best')
 end
 
 ax = findall(gcf,'type','axes');
