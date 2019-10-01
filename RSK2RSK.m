@@ -141,7 +141,12 @@ function insertDeployments(RSK,data,newfile)
 end
 
 function insertSchedules(RSK)
-    formatAndTransact('INSERT INTO schedules (scheduleID,deploymentID,samplingPeriod,mode,gate) VALUES','(%i,%i,%i,"%s","%s")',{RSK.schedules.scheduleID, RSK.deployments.deploymentID, readsamplingperiod(RSK), RSK.schedules.mode, RSK.schedules.gate});
+    if isstruct(readsamplingperiod(RSK))
+        sp = 1;
+    else
+        sp = readsamplingperiod(RSK);
+    end
+    formatAndTransact('INSERT INTO schedules (scheduleID,deploymentID,samplingPeriod,mode,gate) VALUES','(%i,%i,%i,"%s","%s")',{RSK.schedules.scheduleID, RSK.deployments.deploymentID, sp, RSK.schedules.mode, RSK.schedules.gate});
 end
 
 function insertEpochs(RSK,data) 
