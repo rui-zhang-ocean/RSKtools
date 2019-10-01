@@ -60,17 +60,16 @@ function [handles, axes, RSK] = RSKimages(RSK, varargin)
 % Author: RBR Ltd. Ottawa ON, Canada
 % email: support@rbr-global.com
 % Website: www.rbr-global.com
-% Last revision: 2019-09-26
+% Last revision: 2019-10-01
 
 
-validDirections = {'down', 'up'};
-checkDirection = @(x) any(validatestring(x,validDirections));
+checkDirection = @(x) ischar(x) || isempty(x);
 
 p = inputParser;
 addRequired(p, 'RSK', @isstruct);
 addParameter(p, 'channel', 'all');
 addParameter(p, 'profile', [], @isnumeric);
-addParameter(p, 'direction', 'down', checkDirection);
+addParameter(p, 'direction', '', checkDirection);
 addParameter(p, 'reference', 'Sea Pressure', @ischar);
 addParameter(p,'showgap', false, @islogical)
 addParameter(p,'threshold', [], @isnumeric)
@@ -84,6 +83,14 @@ reference = p.Results.reference;
 showgap = p.Results.showgap;
 threshold = p.Results.threshold;
 
+
+if isempty(direction);
+    if isfield(RSK.data,'direction') && all(ismember({RSK.data.direction},'up'))
+        direction = 'up';
+    elseif isfield(RSK.data,'direction')
+        direction = 'down';
+    end
+end
 
 RSK = RSKgenerate2D(RSK,'channel',channel,'profile',profile,'direction',direction,'reference',reference);
 x = RSK.im.x;
