@@ -46,6 +46,10 @@ function [RSK, samplesinbin] = RSKbinaverage(RSK, varargin)
 %
 %    samplesinbin - Amount of samples in each bin.
 %
+% Example:
+%    rsk = RSKbinaverage(rsk,'profile',1:3,'direction','down',...
+%          'binBy','sea pressure','binSize',0.5);
+%
 % Author: RBR Ltd. Ottawa ON, Canada
 % email: support@rbr-global.com
 % Website: www.rbr-global.com
