@@ -43,7 +43,7 @@ inpadded = padseries(in, padsize, edgepad);
 n = length(in);
 out = NaN*in;
 for ndx = 1:n
-    out(ndx) = nanmean(inpadded(ndx:ndx+(windowLength-1)));
+    out(ndx) = mean(inpadded(ndx:ndx+(windowLength-1)),'omitnan');
 end
 
 end
