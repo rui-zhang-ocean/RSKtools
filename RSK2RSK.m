@@ -112,20 +112,32 @@ function createTabledata(nchannel)
     mksqlite(['CREATE TABLE IF NOT EXISTS data (tstamp BIGINT PRIMARY KEY ASC' tempstr{:} ')']);
 end
 
-function writeData(RSK,data,newfile)       
-    originalCharacterEncoding = slCharacterEncoding;
-    slCharacterEncoding('UTF-8'); 
+function writeData(RSK,data,newfile)    
     
-    insertDbInfo(RSK)
-    insertInstruments(RSK)
-    insertDeployments(RSK,data,newfile)
-    insertSchedules(RSK)
-    insertEpochs(RSK,data)
-    insertChannels(RSK)
-    insertData(data)
-    insertRegionTables(RSK)  
-    
-    slCharacterEncoding(originalCharacterEncoding)
+    if exist('slCharacterEncoding','file')
+        originalCharacterEncoding = slCharacterEncoding;
+        slCharacterEncoding('UTF-8'); 
+
+        insertDbInfo(RSK)
+        insertInstruments(RSK)
+        insertDeployments(RSK,data,newfile)
+        insertSchedules(RSK)
+        insertEpochs(RSK,data)
+        insertChannels(RSK)
+        insertData(data)
+        insertRegionTables(RSK)  
+
+        slCharacterEncoding(originalCharacterEncoding)
+    else
+        insertDbInfo(RSK)
+        insertInstruments(RSK)
+        insertDeployments(RSK,data,newfile)
+        insertSchedules(RSK)
+        insertEpochs(RSK,data)
+        insertChannels(RSK)
+        insertData(data)
+        insertRegionTables(RSK)          
+    end
 end
 
 function insertDbInfo(RSK)

@@ -34,12 +34,18 @@ serialID = p.Results.serialID;
 
 data = csvread(filename,1,0);
 
-originalCharacterEncoding = slCharacterEncoding;
-slCharacterEncoding('UTF-8');       
-fid = fopen(filename);
-varNameAndUnit = strsplit(fgetl(fid),',');
-fclose(fid);
-slCharacterEncoding(originalCharacterEncoding)
+if exist('slCharacterEncoding','file')
+    originalCharacterEncoding = slCharacterEncoding;
+    slCharacterEncoding('UTF-8');      
+    fid = fopen(filename);
+    varNameAndUnit = strsplit(fgetl(fid),',');
+    fclose(fid);
+    slCharacterEncoding(originalCharacterEncoding)
+else  
+    fid = fopen(filename);
+    varNameAndUnit = strsplit(fgetl(fid),',');
+    fclose(fid);
+end
 
 varNameAndUnit = regexprep(varNameAndUnit(2:end),'[",(,)]','');
 [channels,units] = strtok(varNameAndUnit,' ');
