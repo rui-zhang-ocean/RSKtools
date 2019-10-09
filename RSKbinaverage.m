@@ -172,11 +172,11 @@ RSK = RSKappendtolog(RSK, logentry);
         end
 
         if binByTime
-            boundaryFloor = min(min(Y,1,'omitnan'))-samplingPeriod/86400/2;
-            boundaryCeil = max(max(Y,1,'omitnan'))+samplingPeriod/86400/2;
+            boundaryFloor = min(min(Y))-samplingPeriod/86400/2;
+            boundaryCeil = max(max(Y))+samplingPeriod/86400/2;
         else
-            boundaryFloor = floor(min(min(Y,1,'omitnan')));
-            boundaryCeil = ceil(max(max(Y,1,'omitnan')));
+            boundaryFloor = floor(min(min(Y)));
+            boundaryCeil = ceil(max(max(Y)));
         end
         
         if isempty(boundary)
