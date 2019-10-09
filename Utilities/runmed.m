@@ -41,7 +41,7 @@ inpadded = padseries(in, padsize, edgepad);
 n = length(in);
 out = NaN*in;
 for ndx = 1:n
-    out(ndx) = nanmedian(inpadded(ndx:ndx+(windowLength-1)));
+    out(ndx) = median(inpadded(ndx:ndx+(windowLength-1)),'omitnan');
 end
 
 end

@@ -52,7 +52,7 @@ inpadded = padseries(in, padsize, edgepad);
 n = length(in);
 out = NaN*in;
 for ndx = 1:n
-    out(ndx) = nansum(inpadded(ndx:ndx+(windowLength-1)).*normcoeff');
+    out(ndx) = sum(inpadded(ndx:ndx+(windowLength-1)).*normcoeff','omitnan');
 end
 
 end
