@@ -117,27 +117,21 @@ function writeData(RSK,data,newfile)
     if exist('slCharacterEncoding','file')
         originalCharacterEncoding = slCharacterEncoding;
         slCharacterEncoding('UTF-8'); 
-
-        insertDbInfo(RSK)
-        insertInstruments(RSK)
-        insertDeployments(RSK,data,newfile)
-        insertSchedules(RSK)
-        insertEpochs(RSK,data)
-        insertChannels(RSK)
-        insertData(data)
-        insertRegionTables(RSK)  
-
-        slCharacterEncoding(originalCharacterEncoding)
-    else
-        insertDbInfo(RSK)
-        insertInstruments(RSK)
-        insertDeployments(RSK,data,newfile)
-        insertSchedules(RSK)
-        insertEpochs(RSK,data)
-        insertChannels(RSK)
-        insertData(data)
-        insertRegionTables(RSK)          
     end
+
+    insertDbInfo(RSK)
+    insertInstruments(RSK)
+    insertDeployments(RSK,data,newfile)
+    insertSchedules(RSK)
+    insertEpochs(RSK,data)
+    insertChannels(RSK)
+    insertData(data)
+    insertRegionTables(RSK)  
+        
+    if exist('slCharacterEncoding','file')
+        slCharacterEncoding(originalCharacterEncoding)
+    end
+
 end
 
 function insertDbInfo(RSK)

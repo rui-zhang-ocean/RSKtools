@@ -36,15 +36,15 @@ data = csvread(filename,1,0);
 
 if exist('slCharacterEncoding','file')
     originalCharacterEncoding = slCharacterEncoding;
-    slCharacterEncoding('UTF-8');      
-    fid = fopen(filename);
-    varNameAndUnit = strsplit(fgetl(fid),',');
-    fclose(fid);
+    slCharacterEncoding('UTF-8');  
+end
+
+fid = fopen(filename);
+varNameAndUnit = strsplit(fgetl(fid),',');
+fclose(fid);
+    
+if exist('slCharacterEncoding','file')
     slCharacterEncoding(originalCharacterEncoding)
-else  
-    fid = fopen(filename);
-    varNameAndUnit = strsplit(fgetl(fid),',');
-    fclose(fid);
 end
 
 varNameAndUnit = regexprep(varNameAndUnit(2:end),'[",(,)]','');
