@@ -1,6 +1,6 @@
-function RSK = CSV2RSK(filename,varargin)
+function newfile = CSV2RSK(filename,varargin)
 
-% CSV2RSK - convert a csv wirewalker data file into a RSK structure
+% CSV2RSK - convert a csv wirewalker data file into a rsk file.
 %
 % Inputs: 
 %    [Required] - filename - the filename of wirewalker csv file
@@ -8,7 +8,7 @@ function RSK = CSV2RSK(filename,varargin)
 %    [Optional] - serialID - serial ID of the wirewalker
 %
 % Output:
-%    RSK - RSK structure with wirewalker data
+%    newfile - file name of output rsk file
 %
 % Example format of the csv file:
 %
@@ -20,7 +20,7 @@ function RSK = CSV2RSK(filename,varargin)
 % Author: RBR Ltd. Ottawa ON, Canada
 % email: support@rbr-global.com
 % Website: www.rbr-global.com
-% Last revision: 2019-09-27
+% Last revision: 2019-10-10
 
 
 p = inputParser;
@@ -55,6 +55,8 @@ tstamp = rsktime2datenum(data(:,1))';
 values = data(:,2:end);
 
 RSK = RSKcreate(tstamp, values, channels, units,...
-    'filename','wirewalker.rsk','model','wirewalker','serialID',serialID);
+    'filename',[strtok(filename,'.') '.rsk'],'model','wirewalker','serialID',serialID);
+
+newfile = RSK2RSK(RSK);
 
 end
