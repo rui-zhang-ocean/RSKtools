@@ -1,8 +1,8 @@
-function [handles,axes] = RSKplotburstdata(RSK, varargin)
+function varargout = RSKplotburstdata(RSK, varargin)
 
 % RSKplotburstdata - Plot summaries of logger burst data.
 %
-% Syntax:  [handles,axes] = RSKplotburstdata(RSK, [OPTIONS])
+% Syntax:  [OPTIONS] = RSKplotburstdata(RSK, [OPTIONS])
 % 
 % Generates a plot for the burstdata.
 % 
@@ -15,9 +15,9 @@ function [handles,axes] = RSKplotburstdata(RSK, varargin)
 %                       channels. 
 %
 % Output:
-%     handles - Line object of the plot.
+%    [Optional] - handles - Line object of the plot.
 %
-%     axes - Axes object of the plot.
+%                 axes - Axes object of the plot.
 %
 % Example: 
 %    rsk = RSKreadburstdata(rsk, 'channel', {'Conductivity', 'Temperature', 'Pressure'});  
@@ -55,6 +55,14 @@ if ~strcmp(channel, 'all')
     end
 end
 
+clf
 [handles,axes] = channelsubplots(RSK, field, 'chanCol', chanCol);
+
+if nargout == 0
+    varargout = {};
+else
+    varargout{1} = handles;
+    varargout{2} = axes;
+end
 
 end

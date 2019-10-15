@@ -1,8 +1,8 @@
-function [handles, axes, RSK] = RSKimages(RSK, varargin)
+function varargout = RSKimages(RSK, varargin)
 
 % RSKimages - Plot profiles in a 2D plot.
 %
-% Syntax:  [handles, axes, RSK] = RSKimages(RSK, [OPTIONS])
+% Syntax:  [OPTIONS] = RSKimages(RSK, [OPTIONS])
 % 
 % Generates a plot of the profiles over time. The x-axis is time; the
 % y-axis is a reference channel. All data elements must have identical
@@ -43,12 +43,13 @@ function [handles, axes, RSK] = RSKimages(RSK, varargin)
 %                      smaller than the threshold will not show. 
 %
 % Output:
-%     handles - Image handles object created, use to set properties
+%   [Optional] - handles - Image handles object created, use to set 
+%                properties
 %
-%     axes - Axes object of the plot.
+%                axes - Axes object of the plot.
 %
-%     RSK - Structure, with RSK.im field containing data for 2D
-%     visualization.
+%                RSK - Structure, with RSK.im field containing data for 2D
+%                visualization.
 %
 % Example: 
 %     handles = RSKimages(rsk,'direction','down'); 
@@ -99,6 +100,7 @@ data = RSK.im.data;
 cref = getchannelindex(RSK,reference);
 
 k = 1;
+clf
 for c = RSK.im.channel
 
     binValues = data(:,:,k);
@@ -156,5 +158,14 @@ for c = RSK.im.channel
     
     k = k + 1;
 end
+
+if nargout == 0
+    varargout = {};
+else
+    varargout{1} = handles;
+    varargout{2} = axes;
+    varargout{3} = RSK;
+end
+
 end
 

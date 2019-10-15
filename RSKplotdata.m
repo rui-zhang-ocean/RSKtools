@@ -1,8 +1,8 @@
-function [handles,axes] = RSKplotdata(RSK, varargin)
+function varargout = RSKplotdata(RSK, varargin)
 
 % RSKplotdata - Plot a time series of logger data.
 %
-% Syntax:  [handles,axes] = RSKplotdata(RSK, [OPTIONS])
+% Syntax:  [OPTIONS] = RSKplotdata(RSK, [OPTIONS])
 % 
 % Generates a plot displaying the logger data as a time series. If data 
 % field has been arranged as profiles (using RSKreadprofiles), then 
@@ -34,9 +34,9 @@ function [handles,axes] = RSKplotdata(RSK, varargin)
 %                       available.
 %
 % Output:
-%     handles - Line object of the plot.
+%     [Optional] - handles - Line object of the plot.
 %
-%     axes - Axes object of the plot.
+%                  axes - Axes object of the plot.
 %
 % Example: 
 %    rsk = RSKopen('sample.rsk');   
@@ -117,6 +117,7 @@ if size(castidx,2) ~= 1
     error('RSKplotdata can only plot one cast and direction. To plot multiple casts or directions, use RSKplotprofiles.')
 end
 
+clf
 [handles,axes] = channelsubplots(RSK, 'data', 'chanCol', chanCol, 'castidx', castidx);
 
 if isfield(RSK.data,'profilenumber') && isfield(RSK.data,'direction');
@@ -146,6 +147,13 @@ if showcast
     PatchInLegend = findobj(L, 'type', 'patch');
     set(PatchInLegend, 'facea', 0.2);
     zoom on
+end
+
+if nargout == 0
+    varargout = {};
+else
+    varargout{1} = handles;
+    varargout{2} = axes;
 end
 
 end
