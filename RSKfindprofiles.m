@@ -189,7 +189,7 @@ for n = 1:min(length(upstart),length(downstart))
     RSK.region(nprofile).tstamp1 = round(datenum2rsktime(firstdir.tstart(n)));
     RSK.region(nprofile).tstamp2 = round(datenum2rsktime(lastdir.tend(n)));
     RSK.region(nprofile).label = ['Profile ' num2str(n)];
-    RSK.region(nprofile).description = 'RSKtools-generated profile.';
+    RSK.region(nprofile).description = 'RSKtools-generated profile';
     
     RSK.region(nprofile+1).datasetID = 1;
     RSK.region(nprofile+1).regionID = nprofile+1;
@@ -197,7 +197,7 @@ for n = 1:min(length(upstart),length(downstart))
     RSK.region(nprofile+1).tstamp1 = round(datenum2rsktime(firstdir.tstart(n)));
     RSK.region(nprofile+1).tstamp2 = round(datenum2rsktime(firstdir.tend(n)));
     RSK.region(nprofile+1).label = [firstType 'cast ' num2str(n)];
-    RSK.region(nprofile+1).description = 'RSKtools-generated cast.';
+    RSK.region(nprofile+1).description = 'RSKtools-generated cast';
 
     RSK.region(nprofile+2).datasetID = 1;
     RSK.region(nprofile+2).regionID = nprofile+2;    
@@ -205,7 +205,7 @@ for n = 1:min(length(upstart),length(downstart))
     RSK.region(nprofile+2).tstamp1 = round(datenum2rsktime(lastdir.tstart(n)));
     RSK.region(nprofile+2).tstamp2 = round(datenum2rsktime(lastdir.tend(n)));
     RSK.region(nprofile+2).label = [lastType 'cast ' num2str(n)];
-    RSK.region(nprofile+2).description = 'RSKtools-generated cast.';
+    RSK.region(nprofile+2).description = 'RSKtools-generated cast';
 
     nregionCast = n*2-1;
     RSK.regionCast(nregionCast).regionID = nprofile+1;
@@ -229,7 +229,7 @@ if length(upstart) ~= length(downstart)
     RSK.region(nprofile).tstamp1 = round(datenum2rsktime(firstdir.tstart(n)));
     RSK.region(nprofile).tstamp2 = round(datenum2rsktime(firstdir.tend(n)));
     RSK.region(nprofile).label = ['Profile ' num2str(n)];
-    RSK.region(nprofile).description = 'RSKtools-generated profile.';
+    RSK.region(nprofile).description = 'RSKtools-generated profile';
 
     RSK.region(nprofile+1).datasetID = 1;
     RSK.region(nprofile+1).regionID = nprofile+1;
@@ -237,7 +237,7 @@ if length(upstart) ~= length(downstart)
     RSK.region(nprofile+1).tstamp1 = round(datenum2rsktime(firstdir.tstart(n)));
     RSK.region(nprofile+1).tstamp2 = round(datenum2rsktime(firstdir.tend(n)));
     RSK.region(nprofile+1).label = [firstType 'cast ' num2str(n)];
-    RSK.region(nprofile+1).description = 'RSKtools-generated cast.';
+    RSK.region(nprofile+1).description = 'RSKtools-generated cast';
 
     nregionCast = n*2-1;
     RSK.regionCast(nregionCast).regionID = nprofile+1;
