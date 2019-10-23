@@ -47,7 +47,7 @@ for ndx = 1:length(RSK.data)
         gapindex = [1; gapindex];
         for k = 1:length(gapindex)-1
             
-            if k ~= length(gapinde)-1;
+            if k ~= length(gapindex)-1;
                 data(pnum).tstamp = RSK.data(ndx).tstamp(gapindex(k):gapindex(k+1));
                 data(pnum).values = RSK.data(ndx).values(gapindex(k):gapindex(k+1),:);
             else
