@@ -71,6 +71,10 @@ reference = p.Results.reference;
 
 if ~isfield(RSK,'data')
     error('The .data structure is missing from your variable. Perhaps you forgot to call RSKreaddata or RSKreadprofiles first?')
+else
+    if ~isfield(RSK.data,'direction')
+        error('RSK contains no profiles, use RSKreadprofiles first.')
+    end
 end
 
 chanCol = [];
