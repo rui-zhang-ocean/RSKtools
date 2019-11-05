@@ -47,6 +47,7 @@ function varargout = RSKplotprofiles(RSK, varargin)
 % Website: www.rbr-global.com
 % Last revision: 2019-04-15
 
+
 validDirections = {'down', 'up', 'both'};
 checkDirection = @(x) any(validatestring(x,validDirections));
 
@@ -66,6 +67,11 @@ profile = p.Results.profile;
 channel = p.Results.channel;
 direction = p.Results.direction;
 reference = p.Results.reference;
+
+
+if ~isfield(RSK,'data')
+    error('The .data structure is missing from your variable. Perhaps you forgot to call RSKreaddata or RSKreadprofiles first?')
+end
 
 chanCol = [];
 channels = cellchannelnames(RSK, channel);
