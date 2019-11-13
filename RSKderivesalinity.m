@@ -21,6 +21,11 @@ function [RSK] = RSKderivesalinity(RSK,varargin)
 % Outputs:
 %    RSK - Updated structure containing practical salinity.
 %
+% Examples:
+%    rsk = RSKderivesalinity(rsk);
+%    OR
+%    rsk = RSKderivesalinity(rsk,'toolbox','seawater');
+%
 % See also: RSKcalculateCTlag.
 %
 % Author: RBR Ltd. Ottawa ON, Canada
