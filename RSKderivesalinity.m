@@ -50,7 +50,13 @@ hasTEOS = ~isempty(which('gsw_SP_from_C'));
 hasSW = ~isempty(which('sw_salt'));
 
 if ~hasTEOS && ~hasSW
-    error('Must install TEOS-10 or seawater toolbox. Download it from here: http://www.teos-10.org/software.htm');
+    error('Must install TEOS-10 (recommended, download it from http://www.teos-10.org/software.htm) or seawater toolbox.');
+elseif ~hasTEOS && strcmpi(toolbox,'TEOS-10')
+    error('No TEOS-10 toolbox found on your MATLAB pathway.')
+elseif ~hasSW && strcmpi(toolbox,'seawater')
+    error('No seawater toolbox found on your MATLAB pathway.')
+else
+    % do nothing
 end
     
 RSK = addchannelmetadata(RSK, 'sal_00', 'Salinity', 'PSU');
