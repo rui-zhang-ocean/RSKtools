@@ -1,18 +1,22 @@
-function [RSK] = RSKderivesalinity(RSK)
+function [RSK] = RSKderivesalinity(RSK,varargin)
 
 % RSKderivesalinity - Calculate practical salinity.
 %
-% Syntax:  [RSK] = RSKderivesalinty(RSK)
+% Syntax:  [RSK] = RSKderivesalinty(RSK,[OPTIONS])
 % 
-% Derives salinity using the TEOS-10 GSW toolbox
+% Derives salinity using either TEOS-10 GSW toolbox
 % (http://www.teos-10.org/software.htm) or sea water toolbox 
 % (http://www.cmar.csiro.au/datacentre/ext_docs/seawater.htm). 
-% The result is added to the RSK data structure, and the channel 
-% list is updated. If salinity is already in the RSK data 
-% structure (i.e., from Ruskin), it will be overwritten.
+% Default is TEOS-10 GSW toolbox. The result is added to the 
+% RSK data structure, and the channel list is updated. If 
+% salinity is already in the RSK data structure (i.e., from Ruskin),
+% it will be overwritten.
 %
 % Inputs: 
-%    RSK - Structure containing the logger metadata and data.         
+%    [Required] - RSK - Structure containing the logger metadata and data.
+%
+%    [Optional] - toolbox - Specify which toolbox to use, should be either
+%                 'TEOS-10' or 'seawater', default is TEOS-10
 %
 % Outputs:
 %    RSK - Updated structure containing practical salinity.
@@ -23,6 +27,18 @@ function [RSK] = RSKderivesalinity(RSK)
 % email: support@rbr-global.com
 % Website: www.rbr-global.com
 % Last revision: 2019-11-12
+
+
+validToolbox = {'TEOS-10','seawater'};
+checkToolbox = @(x) any(validatestring(x,validToolbox));
+
+p = inputParser;
+addRequired(p, 'RSK', @isstruct);
+addParameter(p, 'toolbox', 'TEOS-10', checkToolbox);
+parse(p, RSK, varargin{:})
+
+RSK = p.Results.RSK;
+toolbox = p.Results.toolbox;
 
 
 hasTEOS = ~isempty(which('gsw_SP_from_C'));
@@ -38,7 +54,7 @@ RSK = addchannelmetadata(RSK, 'sal_00', 'Salinity', 'PSU');
 
 castidx = getdataindex(RSK);
 for ndx = castidx
-    if hasTEOS
+    if strcmpi(toolbox,'TEOS-10')
         salinity = gsw_SP_from_C(RSK.data(ndx).values(:, Ccol), RSK.data(ndx).values(:, Tcol), RSKsp.data(ndx).values(:,SPcol));
         logentry = ('Practical Salinity derived using TEOS-10 GSW toolbox.');
     else
