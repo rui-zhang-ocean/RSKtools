@@ -12,8 +12,6 @@ function newfile = RSK2RSK(RSK, varargin)
 % post-processed RBR logger data with others without recourse to CSV, MAT, 
 % or ODV files. 
 %
-% Notes: This function is not thread safe.
-%
 % Inputs:
 %    [Required] - RSK - rsk structure
 %
