@@ -1,15 +1,15 @@
-function RSK = readheaderEPdesktop(RSK)
+function RSK = readheader(RSK)
 
-%READHEADEREPDESKTOP - Read tables that are populated in a 'EPdesktop' file.
+% readheader - Read non-standard tables that are populated in rsk files.
 %
-% Syntax:  [RSK] = READHEADEREPDESKTOP(RSK)
+% Syntax:  [RSK] = readheader(RSK)
 %
-% Opens the non-standard populated tables of 'EPdesktop' files, including
-% the appSettings, parameters, parameterKeys, geodata and downsample tables
-% if exists.
+% Opens the non-standard populated tables of rsk files, including the
+% appSettings, parameters, parameterKeys, geodata, downsample, ranging and
+% instrumentSensors, if exists.
 %
 % Inputs:
-%    RSK - Structure of 'EPdesktop' file opened using RSKopen.m.
+%    RSK - Structure of rskopened using RSKopen.m.
 %
 % Outputs:
 %    RSK - Structure containing logger metadata and downsample, if exists.
@@ -19,7 +19,7 @@ function RSK = readheaderEPdesktop(RSK)
 % Author: RBR Ltd. Ottawa ON, Canada
 % email: support@rbr-global.com
 % Website: www.rbr-global.com
-% Last revision: 2018-08-22
+% Last revision: 2019-07-30
 
 
 tables = doSelect(RSK, 'SELECT name FROM sqlite_master WHERE type="table"');
@@ -42,6 +42,14 @@ end
 
 if any(strcmpi({tables.name}, 'downsample_caches'))
     RSK = readdownsample(RSK);
+end
+
+if any(strcmpi({tables.name}, 'ranging'))
+    RSK.ranging = doSelect(RSK, 'select * from ranging');
+end
+
+if any(strcmpi({tables.name}, 'instrumentSensors'))
+    RSK.instrumentSensors = doSelect(RSK, 'select * from instrumentSensors'); 
 end
 
 end

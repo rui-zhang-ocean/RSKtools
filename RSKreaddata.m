@@ -95,7 +95,8 @@ t=results.tstamp';
 results.tstamp = rsktime2datenum(t);
 
 isCoda = isfield(RSK,'instruments') && isfield(RSK.instruments,'model') && strcmpi(RSK.instruments.model,'RBRcoda');
-if ~strcmpi(RSK.dbInfo(end).type, 'EPdesktop') && ~isCoda && isfield(RSK,'instrumentChannels')     
+isBPR = isfield(RSK,'instruments') && isfield(RSK.instruments,'model') && strncmpi(RSK.instruments.model,'RBRquartz',9);
+if ~strcmpi(RSK.dbInfo(end).type, 'EPdesktop') && ~isCoda  && ~isBPR && isfield(RSK,'instrumentChannels')     
     instrumentChannels = RSK.instrumentChannels;
     if isfield(instrumentChannels,'channelStatus')
         ind = [instrumentChannels.channelStatus] == 4  | [instrumentChannels.channelStatus] == 14;

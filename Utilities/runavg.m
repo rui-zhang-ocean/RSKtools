@@ -1,16 +1,16 @@
 function out = runavg(in, windowLength, edgepad)
 
-%RUNAVG - Smooth a time series using a boxcar filter.
+%RUNAVG - Smooth data using a running average low-pass filter.
 %
 % Syntax:  [out] = RUNAVG(in, windowLength, edgepad)
 % 
-% Performs a running average, also known as boxcar filter, of length
-% windowLength over the time series. 
+% Performs a running average with a boxcar window of length
+% windowLength over the data. 
 %
 % Inputs:
 %    in - Time series
 %
-%    windowLength - Length of the running median. It must be odd.
+%    windowLength - Length of the averaging window. It must be odd.
 %
 %    edgepad - Describes how the filter will act at the edges. Options
 %         are 'mirror', 'zeroorderhold' and 'nan'. Default is 'mirror'.
@@ -23,7 +23,7 @@ function out = runavg(in, windowLength, edgepad)
 % Author: RBR Ltd. Ottawa ON, Canada
 % email: support@rbr-global.com
 % Website: www.rbr-global.com
-% Last revision: 2017-06-21
+% Last revision: 2019-11-01
 
 if nargin == 2
     edgepad = 'mirror';
@@ -43,7 +43,7 @@ inpadded = padseries(in, padsize, edgepad);
 n = length(in);
 out = NaN*in;
 for ndx = 1:n
-    out(ndx) = nanmean(inpadded(ndx:ndx+(windowLength-1)));
+    out(ndx) = mean(inpadded(ndx:ndx+(windowLength-1)),'omitnan');
 end
 
 end

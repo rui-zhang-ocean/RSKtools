@@ -1,8 +1,8 @@
 %% RSKtools for Matlab processing RBR data
-% RSKtools v3.2.0;
+% RSKtools v3.3.0;
 % RBR Ltd. Ottawa ON, Canada;
 % support@rbr-global.com;
-% 2019-07-16
+% 2019-11-15
 
 %% Introduction
 % RSKtools includes a series of functions to post-process RBR logger

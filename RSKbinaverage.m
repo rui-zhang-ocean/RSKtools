@@ -46,6 +46,10 @@ function [RSK, samplesinbin] = RSKbinaverage(RSK, varargin)
 %
 %    samplesinbin - Amount of samples in each bin.
 %
+% Example:
+%    rsk = RSKbinaverage(rsk,'profile',1:3,'direction','down',...
+%          'binBy','sea pressure','binSize',0.5);
+%
 % Author: RBR Ltd. Ottawa ON, Canada
 % email: support@rbr-global.com
 % Website: www.rbr-global.com
@@ -125,7 +129,7 @@ for ndx = castidx
     for bin=1:length(binArray)-1
         binidx = findbinindices(Y(:,k), binArray(bin), binArray(bin+1));
         samplesinbin(bin,1) = sum(binidx);
-        binnedValues(bin,:) = nanmean(X(binidx,:),1);
+        binnedValues(bin,:) = mean(X(binidx,:),1,'omitnan');
     end
     
     RSK.data(ndx).values = binnedValues(:,2:end);
@@ -168,11 +172,11 @@ RSK = RSKappendtolog(RSK, logentry);
         end
 
         if binByTime
-            boundaryFloor = min(nanmin(Y))-samplingPeriod/86400/2;
-            boundaryCeil = max(nanmax(Y))+samplingPeriod/86400/2;
+            boundaryFloor = min(min(Y))-samplingPeriod/86400/2;
+            boundaryCeil = max(max(Y))+samplingPeriod/86400/2;
         else
-            boundaryFloor = floor(min(nanmin(Y)));
-            boundaryCeil = ceil(max(nanmax(Y)));
+            boundaryFloor = floor(min(min(Y)));
+            boundaryCeil = ceil(max(max(Y)));
         end
         
         if isempty(boundary)

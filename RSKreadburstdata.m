@@ -1,6 +1,6 @@
 function RSK = RSKreadburstdata(RSK, varargin)
 
-%RSKreadburstdata - Read the burst data tables from events.
+% RSKreadburstdata - Read the burst data tables from events.
 %
 % Syntax:  [RSK] = RSKreadburstdata(RSK, [OPTIONS])
 % 
@@ -31,7 +31,8 @@ function RSK = RSKreadburstdata(RSK, varargin)
 % Author: RBR Ltd. Ottawa ON, Canada
 % email: support@rbr-global.com
 % Website: www.rbr-global.com
-% Last revision: 2017-06-21
+% Last revision: 2019-10-10
+
 
 p = inputParser;
 addRequired(p, 'RSK', @isstruct);
@@ -42,7 +43,6 @@ parse(p, RSK, varargin{:})
 RSK = p.Results.RSK;
 t1 = p.Results.t1;
 t2 = p.Results.t2;
-
 
 
 if isempty(t1)
@@ -68,14 +68,11 @@ else
    return
 end
 
-
-
 results = removeunuseddatacolumns(results);
 results = arrangedata(results);
 
-t=results.tstamp';
-results.tstamp = rsktime2datenum(t);
-results.values(:,2:end) = [];
-RSK.burstData=results;
+results.tstamp = rsktime2datenum(results.tstamp');
+results.values = results.values(:,getchannelindex(RSK,'pressure'));
+RSK.burstData = results;
 
 end
