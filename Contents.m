@@ -1,5 +1,5 @@
 % RSKTOOLS
-% Version 3.2.0 2019-07-16
+% Version 3.3.0 2019-11-15
 %
 % 1.  This toolbox depends on the presence of a functional mksqlite
 % library.  We have included a couple of versions here for Windows (32 bit/
@@ -56,6 +56,9 @@
 %   RSKderiveC25            - derive specific conductivity at 25 degree Celsius
 %   RSKderiveO2             - derive O2 saturation or concentration
 %   RSKderivebuoyancy       - derive buoyance frequency and stability
+%   RSKderivesigma          - derive density anomaly
+%   RSKderivetheta          - derive potential temperature
+%   RSKderiveSA             - derive absolute salinity
 %   RSKcalculateCTlag       - estimate optimal conductivity shift relative to temperature
 %   RSKalignchannel         - align a channel in time using a specified lag
 %   RSKbinaverage           - bin average the profile data by reference channel intervals
