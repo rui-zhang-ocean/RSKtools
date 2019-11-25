@@ -34,13 +34,11 @@ if ~any(strcmp({RSK.channels.longName}, 'Salinity'))
     error('RSKderiveO2saturation needs salinity channel. Use RSKderivesalinity...')
 end
 
-% Channel shortnames for concentration
-CONname = {'doxy10','doxy20','doxy21','doxy23','doxy24','doxy27','doxy28'};
-
 % Find temperature and salinity data column
 TCol = getchannelindex(RSK,'Temperature');
 SCol = getchannelindex(RSK,'Salinity');
-O2CCol = find(ismember({RSK.channels.shortName},CONname));
+O2CCol = find(strncmpi({RSK.channels.longName},'Dissolved O2',12) & ...
+         ismember({RSK.channels.units},{'µmol/l', 'ml/l','mg/l'}));
 
 if ~any(O2CCol)
     error('RSK file does not contain any O2 concentration channel.')
