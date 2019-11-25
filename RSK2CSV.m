@@ -200,7 +200,7 @@ for castidx = select_cast(1:directions:end);
         filename = ([inputfilename, '_profile' num2str(RSK.data(castidx).profilenumber, '%04d') '.csv']); 
     end
 
-    fid = fopen([outputdir '/' filename],'w');
+    fid = fopen([outputdir filesep filename],'w');
     
     % Output header information
     fprintf(fid,'%s\n','//Creator: RBR Ltd');
