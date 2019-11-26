@@ -40,7 +40,8 @@ newChan = p.Results.newChan;
 channelName = p.Results.channelName;
 units = p.Results.units;
 
-RSK = addchannelmetadata(RSK, 'cnt_00', channelName, units); % 'cnt_00' is a temporaty solution for Ruskin to read, will change in future
+shortName = getchannelshortname(channelName);
+RSK = addchannelmetadata(RSK, shortName{:}, channelName, units); 
 Ncol = getchannelindex(RSK, channelName);
 castidx = getdataindex(RSK);
     
