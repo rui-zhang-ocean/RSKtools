@@ -148,7 +148,7 @@ function insertSchedules(RSK)
     if isstruct(readsamplingperiod(RSK))
         sp = 1;
     else
-        sp = readsamplingperiod(RSK);
+        sp = 1000*readsamplingperiod(RSK);
     end
     formatAndTransact('INSERT INTO schedules (scheduleID,deploymentID,samplingPeriod,mode,gate) VALUES','(%i,%i,%i,"%s","%s")',{RSK.schedules.scheduleID, RSK.deployments.deploymentID, sp, RSK.schedules.mode, RSK.schedules.gate});
 end
