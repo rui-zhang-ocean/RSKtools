@@ -1,4 +1,4 @@
-function [RSK, trimidx] = RSKtrim(RSK, varargin)
+function [RSK, trimidx] = RSKtrim(RSK, reference, range, varargin)
 
 % RSKtrim - Remove or replace values that fall in a certain range.
 %
@@ -71,7 +71,7 @@ addParameter(p, 'profile', [], @isnumeric);
 addParameter(p, 'direction', [], checkDirection);
 addParameter(p, 'action', 'nan', checkAction);
 addParameter(p, 'visualize', 0, @isnumeric);
-parse(p, RSK, varargin{:})
+parse(p, RSK, reference, range, varargin{:})
 
 RSK = p.Results.RSK;
 reference = p.Results.reference;
