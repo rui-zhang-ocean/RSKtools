@@ -99,7 +99,7 @@ isBPR = isfield(RSK,'instruments') && isfield(RSK.instruments,'model') && strncm
 if ~strcmpi(RSK.dbInfo(end).type, 'EPdesktop') && ~isCoda  && ~isBPR && isfield(RSK,'instrumentChannels')     
     instrumentChannels = RSK.instrumentChannels;
     if isfield(instrumentChannels,'channelStatus')
-        ind = [instrumentChannels.channelStatus] == 4  | [instrumentChannels.channelStatus] == 14;
+        ind = [instrumentChannels.channelStatus] == 4  | [instrumentChannels.channelStatus] == 14 | [instrumentChannels.channelStatus] == 30;
         instrumentChannels(ind) = [];
         if RSK.toolSettings.readHiddenChannels
             isDerived = logical([instrumentChannels.channelStatus] == 4);
