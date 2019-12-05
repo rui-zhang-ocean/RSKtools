@@ -96,22 +96,20 @@ results.tstamp = rsktime2datenum(t);
 
 isCoda = isfield(RSK,'instruments') && isfield(RSK.instruments,'model') && strcmpi(RSK.instruments.model,'RBRcoda');
 isBPR = isfield(RSK,'instruments') && isfield(RSK.instruments,'model') && strncmpi(RSK.instruments.model,'RBRquartz',9);
-if ~strcmpi(RSK.dbInfo(end).type, 'EPdesktop') && ~isCoda  && ~isBPR && isfield(RSK,'instrumentChannels')     
+if ~strcmpi(RSK.dbInfo(end).type, 'EPdesktop') && ~isCoda && ~isBPR && isfield(RSK,'instrumentChannels')     
     instrumentChannels = RSK.instrumentChannels;
     if isfield(instrumentChannels,'channelStatus')
-        ind = [instrumentChannels.channelStatus] == 4  | [instrumentChannels.channelStatus] == 14 | [instrumentChannels.channelStatus] == 30;
+        ind = logical(bitget([instrumentChannels.channelStatus],3));
         instrumentChannels(ind) = [];
-        if RSK.toolSettings.readHiddenChannels
-            isDerived = logical([instrumentChannels.channelStatus] == 4);
-        else
-            isDerived = logical([instrumentChannels.channelStatus]);
+        isHidden = logical(bitget([instrumentChannels.channelStatus],1));          
+        if ~RSK.toolSettings.readHiddenChannels
+            results.values = results.values(:,~isHidden);
         end
-        results.values = results.values(:,~isDerived);
     end
 end
 
 %% Put data into data field of RSK structure.
-RSK.data=results;
+RSK.data = results;
 
 %% Calculate Salinity  
 % NOTE : We no longer automatically derive salinity when you read data from

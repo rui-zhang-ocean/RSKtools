@@ -34,26 +34,21 @@ RSK = p.Results.RSK;
 isCoda = isfield(RSK,'instruments') && isfield(RSK.instruments,'model') && ~isempty(RSK.instruments) && strcmpi(RSK.instruments.model,'RBRcoda');
 isBPR = isfield(RSK,'instruments') && isfield(RSK.instruments,'model') && strncmpi(RSK.instruments.model,'RBRquartz',9);
 
-if ~(strcmp(RSK.dbInfo(end).type, 'EPdesktop') || strcmp(RSK.dbInfo(end).type, 'skinny')) && ~isCoda
-    if iscompatibleversion(RSK, 1, 8, 9) && ~strcmp(RSK.dbInfo(end).type, 'EP') 
-        if RSK.toolSettings.readHiddenChannels || isBPR
-            isDerived = logical([RSK.instrumentChannels.channelStatus] == 4);% derived channels have a '4' channelStatus
+if ~strcmpi(RSK.dbInfo(end).type, 'EPdesktop') && ~isCoda && ~isBPR && isfield(RSK,'instrumentChannels')     
+    instrumentChannels = RSK.instrumentChannels;
+    if isfield(instrumentChannels,'channelStatus')              
+        isDerived = logical(bitget([instrumentChannels.channelStatus],3));       
+        isHidden = logical(bitget([instrumentChannels.channelStatus],1));          
+        if RSK.toolSettings.readHiddenChannels
+            isRemoved = isDerived;
         else
-            isDerived = logical([RSK.instrumentChannels.channelStatus]);% hidden and derived channels have a non-zero channelStatus
+            isRemoved = isDerived | isHidden;
         end
-    else
-        results = doSelect(RSK, 'select isDerived from channels');
-        isDerived = logical([results.isDerived])'; 
+        
     end
-else
-    isDerived = false(length(RSK.channels));
 end
 
-
-if length(RSK.channels) == length(isDerived)
-    RSK.channels(isDerived) = [];
-end
-
+RSK.channels(isRemoved) = [];
 
 end
 
