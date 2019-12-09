@@ -45,16 +45,17 @@ else
     results.ratio = max([temp.ratio]);
     
     isCoda = isfield(RSK,'instruments') && isfield(RSK.instruments,'model') && strcmpi(RSK.instruments.model,'RBRcoda');
-    if ~strcmpi(RSK.dbInfo(end).type, 'EPdesktop') && ~isCoda && isfield(RSK,'instrumentChannels')      
+    isBPR = isfield(RSK,'instruments') && isfield(RSK.instruments,'model') && strncmpi(RSK.instruments.model,'RBRquartz',9);
+    if ~strcmpi(RSK.dbInfo(end).type, 'EPdesktop') && ~isCoda && ~isBPR && isfield(RSK,'instrumentChannels')      
         instrumentChannels = RSK.instrumentChannels;
-        ind = [instrumentChannels.channelStatus] == 4;
-        instrumentChannels(ind) = [];
-        if RSK.toolSettings.readHiddenChannels
-            isDerived = logical([instrumentChannels.channelStatus] == 4);
-        else
-            isDerived = logical([instrumentChannels.channelStatus]);
+        if isfield(instrumentChannels,'channelStatus')
+            ind = logical(bitget([instrumentChannels.channelStatus],3));
+            instrumentChannels(ind) = [];
+            isHidden = logical(bitget([instrumentChannels.channelStatus],1));          
+            if ~RSK.toolSettings.readHiddenChannels
+                results.values = results.values(:,~isHidden);
+            end
         end
-        results.values = results.values(:,~isDerived);
     end
         
     RSK.downsample = results;
