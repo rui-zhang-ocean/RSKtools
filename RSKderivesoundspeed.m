@@ -14,7 +14,7 @@ function [RSK] = RSKderivesoundspeed(RSK, varargin)
 % Inputs: 
 %    [Required] - RSK - Structure containing the logger metadata and data. 
 %
-%    [Optional] - method - UNESCO, DelGrosso or Wilson
+%    [Optional] - method - UNESCO (default), DelGrosso or Wilson
 %
 % Outputs:
 %    RSK - Updated structure containing a new channel for speed of sound.
