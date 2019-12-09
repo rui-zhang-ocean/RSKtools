@@ -50,7 +50,7 @@ method = p.Results.method;
 [Tcol,Scol,SPcol] = getchannel_T_S_SP_index(RSK);
 
 RSK = addchannelmetadata(RSK, 'sos_00', 'Speed of Sound', 'm/s');
-SScol = getchannelindex(RSK, 'Sound Speed');
+SScol = getchannelindex(RSK, 'Speed of Sound');
 
 castidx = getdataindex(RSK);
 for ndx = castidx
@@ -121,7 +121,7 @@ function SS = derive_SS_UNESCO(S,T,SP)
     end
 
     SP = SP / 10.0; % convert dbar to bar
-    cw = x0 + (x1 + (x2 + x3 * SP) * SP) * SP;
+    cw = x0 + (x1 + (x2 + x3 .* SP) .* SP) .* SP;
     [x0, x1, x2, x3] = deal(0);
 
     for i = 5:-1:1
@@ -140,7 +140,7 @@ function SS = derive_SS_UNESCO(S,T,SP)
         x3 = x3 .* T + a(4,i);
     end
 
-    atp = x0 + (x1 + (x2 + x3 * SP) * SP) * SP;
+    atp = x0 + (x1 + (x2 + x3 .* SP) .* SP) .* SP;
     btp = b(1,1) + b(1,2) .* T + (b(2,1) + b(2,2) .* T) .* SP;
     dtp = d00 + d10 .* SP;
     SS = cw + atp .* S + btp .* S.^(3/2)  + dtp .* S.^2;
@@ -169,7 +169,7 @@ function SS = derive_SS_WS(S,T,SP)
     cp = 1.63432 * SP - 1.06768E-3 * SP.^2 + 3.73403E-6 * SP.^3 - 3.6332E-8 * SP.^4;
     
     cstp = -1.1244E-10 * T + 7.7711E-7 * T.^2 + 7.85344E-4 * SP - 1.3458E-5 * SP.^2 + 3.2203E-7 * SP .* T + 1.6101E-8 * T.^2 .* SP;
-    cstp = cstp * (S - 35.0);
+    cstp = cstp .* (S - 35.0);
     cstp = cstp + SP .* (-1.8974E-3 * T + 7.6287E-5 * T.^2 + 4.6176E-7 * T.^3) + ...
            SP.^2 .* (-2.6301E-5 * T + 1.9302E-7 * T.^2) - 2.0831E-7 * SP.^3 .* T;
 
