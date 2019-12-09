@@ -7,6 +7,9 @@ function [RSK] = RSKderivesoundspeed(RSK, varargin)
 % This function computes the speed of sound using temprature, salinity and
 % pressure data. It provides three methods: UNESCO (Chen and Millero), 
 % Del Grosso and Wilson, among which UNESCO is default.
+% 
+% Special thanks to Andrew J. Moodie for initiating the idea of the
+% function.
 %    
 % Inputs: 
 %    [Required] - RSK - Structure containing the logger metadata and data. 
@@ -32,7 +35,7 @@ function [RSK] = RSKderivesoundspeed(RSK, varargin)
 % Author: RBR Ltd. Ottawa ON, Canada
 % email: support@rbr-global.com
 % Website: www.rbr-global.com
-% Last revision: 2019-12-06
+% Last revision: 2019-12-09
 
 
 validMethods = {'UNESCO', 'DelGrosso', 'Wilson'};
