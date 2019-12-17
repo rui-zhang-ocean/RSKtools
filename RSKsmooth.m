@@ -2,7 +2,7 @@ function RSK = RSKsmooth(RSK, varargin)
 
 % RSKsmooth - Apply a low pass filter on specified channel.
 %
-% Syntax:  [RSK] = RSKsmooth(RSK, [OPTIONS])
+% Syntax:  [RSK] = RSKsmooth(RSK, channel, 'channelName', [OPTIONS])
 % 
 % Low-pass filter a specified channel or multiple channels with a
 % running average or median.  The sample being evaluated is always in
