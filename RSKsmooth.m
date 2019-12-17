@@ -1,6 +1,6 @@
 function RSK = RSKsmooth(RSK, varargin)
 
-% RSKsmooth - Apply a low pass filter on specified channels.
+% RSKsmooth - Apply a low pass filter on specified channel.
 %
 % Syntax:  [RSK] = RSKsmooth(RSK, [OPTIONS])
 % 
@@ -12,11 +12,11 @@ function RSK = RSKsmooth(RSK, varargin)
 % Inputs: 
 %    [Required] - RSK - Structure containing the logger data.
 %
-%    [Optional] - channel - Longname of channel to filter. Can be a 
-%                       single channel, a cell array for multiple 
-%                       channels, default is all channels.
+%                 channel - Longname of channel to filter. Can be a 
+%                       single channel, or a cell array for multiple 
+%                       channels.
 %               
-%                 filter - The weighting function, 'boxcar' or 'triangle'.
+%    [Optional] - filter - The weighting function, 'boxcar' or 'triangle'.
 %                       Use 'median' to compute the running median. 
 %                       Defaults to 'boxcar.'
 %
@@ -56,7 +56,7 @@ checkDirection = @(x) any(validatestring(x,validDirections));
 
 p = inputParser;
 addRequired(p, 'RSK', @isstruct);
-addParameter(p, 'channel','all');
+addParameter(p, 'channel','');
 addParameter(p, 'filter', 'boxcar', checkFilter);
 addParameter(p, 'profile', [], @isnumeric);
 addParameter(p, 'direction', [], checkDirection);
@@ -72,6 +72,11 @@ direction = p.Results.direction;
 windowLength = p.Results.windowLength;
 visualize = p.Results.visualize;
 
+
+if isempty(channel)
+    disp('Please specify which channel(s) to apply the low pass filter.')
+    return
+end
 
 chanCol = [];
 channels = cellchannelnames(RSK, channel);
