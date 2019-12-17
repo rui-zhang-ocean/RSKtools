@@ -2,8 +2,8 @@ function [RSK, trimidx] = RSKtrim(RSK, varargin)
 
 % RSKtrim - Remove or replace values that fall in a certain range.
 %
-% Syntax:  [RSK, trimidx] = RSKtrim(RSK, reference, 'referenceChannel', ...
-%                           range, [x1 x2], [OPTIONS])
+% Syntax:  [RSK, trimidx] = RSKtrim(RSK, 'reference', 'referenceChannelName', ...
+%                           'range', [x1 x2], [OPTIONS])
 % 
 % Flags values that fall within the range of the specified reference
 % channel, time, or index.  Flagged samples can be replaced with NaN
