@@ -27,7 +27,7 @@ function [RSK] = RSKderiveC25(RSK, varargin)
 
 p = inputParser;
 addRequired(p, 'RSK', @isstruct);
-addOptional(p, 'alpha', 0.0191, @isnumeric);
+addParameter(p, 'alpha', 0.0191, @isnumeric);
 parse(p, RSK, varargin{:})
 
 RSK = p.Results.RSK;

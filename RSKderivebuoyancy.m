@@ -31,7 +31,7 @@ function [RSK] = RSKderivebuoyancy(RSK,varargin)
 
 p = inputParser;
 addRequired(p, 'RSK', @isstruct);
-addOptional(p, 'latitude', [], @isnumeric);
+addParameter(p, 'latitude', [], @isnumeric);
 parse(p, RSK, varargin{:})
 
 RSK = p.Results.RSK;
