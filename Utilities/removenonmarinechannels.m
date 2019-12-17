@@ -43,12 +43,10 @@ if ~strcmpi(RSK.dbInfo(end).type, 'EPdesktop') && ~isCoda && ~isBPR && isfield(R
             isRemoved = isDerived;
         else
             isRemoved = isDerived | isHidden;
-        end
-        
+        end  
+        RSK.channels(isRemoved) = [];
     end
 end
-
-RSK.channels(isRemoved) = [];
 
 end
 
