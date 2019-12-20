@@ -34,12 +34,12 @@ RSK = p.Results.RSK;
 isCoda = isfield(RSK,'instruments') && isfield(RSK.instruments,'model') && ~isempty(RSK.instruments) && strcmpi(RSK.instruments.model,'RBRcoda');
 isBPR = isfield(RSK,'instruments') && isfield(RSK.instruments,'model') && strncmpi(RSK.instruments.model,'RBRquartz',9);
 
-if ~strcmpi(RSK.dbInfo(end).type, 'EPdesktop') && ~isCoda && ~isBPR && isfield(RSK,'instrumentChannels')     
+if ~strcmpi(RSK.dbInfo(end).type, 'EPdesktop') && ~isCoda && isfield(RSK,'instrumentChannels')     
     instrumentChannels = RSK.instrumentChannels;
     if isfield(instrumentChannels,'channelStatus')              
         isDerived = logical(bitget([instrumentChannels.channelStatus],3));       
         isHidden = logical(bitget([instrumentChannels.channelStatus],1));          
-        if RSK.toolSettings.readHiddenChannels
+        if RSK.toolSettings.readHiddenChannels || isBPR
             isRemoved = isDerived;
         else
             isRemoved = isDerived | isHidden;
