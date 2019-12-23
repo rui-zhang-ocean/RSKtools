@@ -87,8 +87,8 @@ rsk = RSKcorrecthold(rsk,'action','interp');
 % after applying the function.  Users specify which profile(s) to
 % visualize.
 
-rsk = RSKsmooth(rsk,{'temperature','conductivity'}, 'windowLength', 5);
-rsk = RSKsmooth(rsk,'chlorophyll', 'windowLength', 9, 'visualize', 10);
+rsk = RSKsmooth(rsk,'channel',{'temperature','conductivity'}, 'windowLength', 5);
+rsk = RSKsmooth(rsk,'channel','chlorophyll', 'windowLength', 9, 'visualize', 10);
 
 
 %% Alignment of conductivity and temperature 
@@ -127,7 +127,7 @@ rsk = RSKsmooth(rsk,'chlorophyll', 'windowLength', 9, 'visualize', 10);
 % +0.2 sec).
 
 lag = RSKcalculateCTlag(rsk);
-rsk = RSKalignchannel(rsk, 'Conductivity', lag);
+rsk = RSKalignchannel(rsk,'channel','conductivity','lag',lag);
 
 
 %% Remove loops
@@ -152,7 +152,7 @@ rsk = RSKderivedepth(rsk);
 rsk = RSKderivevelocity(rsk);
 
 % Apply the algorithm
-rsk = RSKremoveloops(rsk, 'threshold', 0.3, 'visualize', 7);
+rsk = RSKremoveloops(rsk,'threshold',0.3,'visualize',7);
 
 
 %% Derive Practical Salinity
@@ -168,8 +168,7 @@ rsk = RSKderivesalinity(rsk);
 % Users may wish to add additional data to the RSK structure.  We
 % illustrate how this is done by computing Absolute Salinity and
 % adding it to the RSK structure
-p = getchannelindex(rsk,'sea pressure');
-sp = getchannelindex(rsk,'salinity');
+[p,sp] = getchannelindex(rsk,{'sea pressure','salinity'});
 
 ncast = length(rsk.data);
 sa = repmat(struct('values',[]),1,ncast);
@@ -178,7 +177,7 @@ for k = 1:ncast,
                                 rsk.data(k).values(:,p),-150,49);
 end
 
-rsk = RSKaddchannel(rsk,sa,'Absolute Salinity','g/kg');
+rsk = RSKaddchannel(rsk,'data',sa,'channel','Absolute Salinity','unit','g/kg');
 
 
 %% Bin average all channels by sea pressure
@@ -200,10 +199,10 @@ set(h(1:2:end),'marker','o','markerfacecolor','c')
 % a few example profiles.  Processed data are represented with thicker
 % lines.
 figure
-channels = {'salinity','temperature','chlorophyll'};
+channel = {'salinity','temperature','chlorophyll'};
 profile  = [3 10 20];
-h1 = RSKplotprofiles(raw,'profile',profile,'channel',channels);
-h2 = RSKplotprofiles(rsk,'profile',profile,'channel',channels);
+h1 = RSKplotprofiles(raw,'profile',profile,'channel',channel);
+h2 = RSKplotprofiles(rsk,'profile',profile,'channel',channel);
 set(h2,'linewidth',3,'marker','o','markerfacecolor','w')
 ax = findobj(gcf,'type','axes');
 set(ax(1),'xlim',[-2 80])

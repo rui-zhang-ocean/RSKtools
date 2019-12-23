@@ -45,7 +45,7 @@ function [RSK] = RSKderiveBPR(RSK, varargin)
 
 p = inputParser;
 addRequired(p, 'RSK', @isstruct);
-addOptional(p, 'coef', [], @isnumeric);
+addParameter(p, 'coef', [], @isnumeric);
 parse(p, RSK, varargin{:})
 
 RSK = p.Results.RSK;

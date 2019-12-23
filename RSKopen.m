@@ -39,7 +39,7 @@ function RSK = RSKopen(fname, varargin)
 
 p = inputParser;
 addRequired(p,'fname',@ischar);
-addOptional(p,'readHiddenChannels', false, @islogical)
+addParameter(p,'readHiddenChannels', false, @islogical)
 parse(p, fname, varargin{:})
 
 fname = p.Results.fname;

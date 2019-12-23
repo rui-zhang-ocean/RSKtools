@@ -1,8 +1,8 @@
-function RSK = RSKalignchannel(RSK, channel, lag, varargin)
+function RSK = RSKalignchannel(RSK, varargin)
 
 % RSKalignchannel - Align a channel using a specified lag.
 %
-% Syntax:  [RSK] = RSKalignchannel(RSK, channel, lag, [OPTIONS])
+% Syntax:  [RSK] = RSKalignchannel(RSK,'channel','channelName','lag',lag,[OPTIONS])
 % 
 % Applies a sample lag to a specified channel. Typically used for
 % conductivity to minimize salinity spiking from C/T mismatches when
@@ -55,22 +55,23 @@ function RSK = RSKalignchannel(RSK, channel, lag, varargin)
 %    rsk = RSKreadprofiles(rsk, 'profile', 1:10, 'direction', 'down'); 
 %
 %   1. Shift temperature channel of first four profiles with the same lag value.
-%    rsk = RSKalignchannel(rsk, 'temperature', 2, 'profile', 1:4);
+%    rsk = RSKalignchannel(rsk,'channel','temperature','lag',2,'profile',1:4);
 %
 %   2. Shift oxygen channel of first 4 profiles with profile-specific lags.
-%    rsk = RSKalignchannel(rsk, 'Dissolved O2', [2 1 -1 0], 'profile',1:4);
+%    rsk = RSKalignchannel(rsk,'channel','Dissolved O2','lag',[2 1 -1 0],'profile',1:4);
 %
 %   3. Shift conductivity channel from all downcasts with optimal lag calculated 
 %      with RSKcalculateCTlag.m.
-%    lags = RSKcalculateCTlag(rsk);
-%    rsk = RSKalignchannel(rsk, 'Conductivity', lags);
+%    lag = RSKcalculateCTlag(rsk);
+%    rsk = RSKalignchannel(rsk,'channel','Conductivity','lag',lag);
 %
 % See also: RSKcalculateCTlag.
 %
 % Author: RBR Ltd. Ottawa ON, Canada
 % email: support@rbr-global.com
 % Website: www.rbr-global.com
-% Last revision: 2018-04-06
+% Last revision: 2019-12-18
+
 
 validShiftfill = {'zeroorderhold', 'union', 'nan', 'mirror'};
 checkShiftfill = @(x) any(validatestring(x,validShiftfill));
@@ -83,14 +84,14 @@ checklagunits = @(x) any(validatestring(x,validlagunits));
 
 p = inputParser;
 addRequired(p, 'RSK', @isstruct);
-addRequired(p, 'channel', @ischar);
-addRequired(p, 'lag', @isnumeric);
+addParameter(p, 'channel', '', @ischar);
+addParameter(p, 'lag', [], @isnumeric);
 addParameter(p, 'profile', [], @isnumeric);
 addParameter(p, 'direction', [], checkDirection);
 addParameter(p, 'shiftfill', 'zeroorderhold', checkShiftfill);
 addParameter(p, 'lagunits', 'samples', checklagunits);
 addParameter(p, 'visualize', 0, @isnumeric);
-parse(p, RSK, channel, lag, varargin{:})
+parse(p, RSK, varargin{:})
 
 RSK = p.Results.RSK;
 channel = p.Results.channel;
@@ -102,12 +103,23 @@ lagunits = p.Results.lagunits;
 visualize = p.Results.visualize;
 
 
+if isempty(channel)
+    disp('Please specify which channel to align.')
+    return
+end
+
+if isempty(lag)
+    disp('Please specify lag to apply to the channel.')
+    return
+end
 
 castidx = getdataindex(RSK, profile, direction);
 lags = checklag(lag, castidx, lagunits);
 channelCol = getchannelindex(RSK, channel);
 
-if visualize ~= 0; [raw, diagndx] = checkDiagPlot(RSK, visualize, direction, castidx); end
+if visualize ~= 0; 
+    [raw, diagndx] = checkDiagPlot(RSK, visualize, direction, castidx); 
+end
 
 counter = 0;
 for ndx =  castidx
@@ -119,7 +131,8 @@ for ndx =  castidx
         
         profile_time_length = RSK.data(ndx).tstamp(end,1) - RSK.data(ndx).tstamp(1,1);
         if timelag/86400 > profile_time_length;
-            error('Time lag must be smaller than profile time length.')
+            disp('Time lag must be smaller than profile time length.')
+            return
         end
         
         shifttime = RSK.data(ndx).tstamp+timelag/86400;
@@ -134,7 +147,8 @@ for ndx =  castidx
     else
         samplelag = lags(counter);       
         if samplelag > length(channelData);
-            error('Sample lag must be smaller than profile sample length.')
+            disp('Sample lag must be smaller than profile sample length.')
+            return
         end
         shiftchan = channelData;
     end
