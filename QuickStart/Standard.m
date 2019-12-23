@@ -150,9 +150,7 @@ set(handles(1,:),'linewidth',3);
 % and dissolved O2 from the upcast of the 1st profile, run:
 
 profind = getdataindex(rsk,'direction','up','profile',1);
-tempcol = getchannelindex(rsk,'temperature');
-o2col   = getchannelindex(rsk,'dissolved o2');
-prescol = getchannelindex(rsk,'sea pressure');
+[tempcol,o2col,prescol] = getchannelindex(rsk,{'temperature','dissolved o2','sea pressure'});
 
 time        = rsk.data(profind).tstamp;
 seapressure = rsk.data(profind).values(:,prescol);
