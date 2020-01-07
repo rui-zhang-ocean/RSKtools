@@ -43,6 +43,8 @@ if ~hasTEOS
     error('Must install TEOS-10 toolbox. Download it from here: http://www.teos-10.org/software.htm');
 end
 
+checkDataField(RSK)
+
 [Tcol,Scol,SPcol] = getchannel_T_S_SP_index(RSK);
 
 RSK = addchannelmetadata(RSK, 'buoy00', 'Buoyancy Frequency Squared', '1/s²');

@@ -46,6 +46,7 @@ function [RSK,hasProfile] = RSKfindprofiles(RSK, varargin)
 % Website: www.rbr-global.com
 % Last revision: 2019-04-10
 
+
 p = inputParser;
 addRequired(p, 'RSK', @isstruct);
 addParameter(p, 'pressureThreshold', 3, @isnumeric);
@@ -58,6 +59,8 @@ conductivityThreshold = p.Results.conductivityThreshold;
 
 
 %% Set up values
+checkDataField(RSK)
+
 try
     Pcol = getchannelindex(RSK, 'Pressure');
 catch
@@ -146,7 +149,7 @@ RSK.profiles.downcast.tend = downend';
 
 %% Remove region.description, regionGeoData and regionComment field if exist
 if (isfield(RSK,'region') && isfield(RSK.region,'description')) || isfield(RSK,'regionGeoData') || isfield(RSK,'regionComment');
-    warning('Annotations from Ruskin will be deleted as they might conflict with the new profiles detected');
+    disp('Annotations from Ruskin will be deleted as they might conflict with the new profiles detected');
 end
 
 if isfield(RSK,'regionGeoData');

@@ -24,6 +24,7 @@ function [RSK] = RSKderivedepth(RSK, varargin)
 % Website: www.rbr-global.com
 % Last revision: 2018-05-29
 
+
 p = inputParser;
 addRequired(p, 'RSK', @isstruct);
 addParameter(p, 'latitude', 45, @isnumeric);
@@ -33,12 +34,11 @@ RSK = p.Results.RSK;
 latitude = p.Results.latitude;
 
 
+checkDataField(RSK)
 
 RSK = addchannelmetadata(RSK, 'dpth01', 'Depth', 'm');
 Dcol = getchannelindex(RSK, 'Depth');
 [RSKsp, SPcol] = getseapressure(RSK);
-
-
 
 castidx = getdataindex(RSK);
 for ndx = castidx

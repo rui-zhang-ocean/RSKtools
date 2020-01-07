@@ -46,6 +46,8 @@ RSK = p.Results.RSK;
 toolbox = p.Results.toolbox;
 
 
+checkDataField(RSK)
+
 hasTEOS = ~isempty(which('gsw_SP_from_C'));
 hasSW = ~isempty(which('sw_salt'));
 

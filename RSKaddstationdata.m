@@ -92,7 +92,9 @@ description = checkcell(description);
 if isempty([latitude longitude station comment description])
     error('No station data input is found. Please specify at least one station data field.')
 end
-    
+  
+checkDataField(RSK)
+
 isProfile = length(RSK.data) ~= 1 && isfield(RSK.data,'profilenumber') && isfield(RSK.data,'direction');
 
 if ~isProfile && ~isempty(profile)

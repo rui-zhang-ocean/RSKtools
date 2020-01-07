@@ -50,6 +50,8 @@ RSK = p.Results.RSK;
 method = p.Results.method;
 
 
+checkDataField(RSK)
+
 [Tcol,Scol,SPcol] = getchannel_T_S_SP_index(RSK);
 
 RSK = addchannelmetadata(RSK, 'sos_00', 'Speed of Sound', 'm/s');

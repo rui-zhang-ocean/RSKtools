@@ -55,10 +55,7 @@ pressureThreshold = p.Results.pressureThreshold;
 conductivityThreshold = p.Results.conductivityThreshold;
 
 
-if ~isfield(RSK,'data')
-    error('No data field found, use RSKreaddata...');
-end
-
+checkDataField(RSK)
 if length(RSK.data) ~= 1 || isfield(RSK.data,'direction') || isfield(RSK.data,'profilenumber')
     error('RSK structure already has profiles.')
 end

@@ -77,6 +77,8 @@ boundary = p.Results.boundary;
 visualize = p.Results.visualize;
 
 
+checkDataField(RSK)
+
 if isempty(direction);
     if isfield(RSK.data,'direction') && all(ismember({RSK.data.direction},'up'))
         direction = 'up';

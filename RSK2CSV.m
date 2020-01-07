@@ -80,6 +80,7 @@ function RSK2CSV(RSK, varargin)
 % Website: www.rbr-global.com
 % Last revision: 2019-04-08
 
+
 p = inputParser;
 addRequired(p, 'RSK', @isstruct);
 addParameter(p, 'channel', 'all');
@@ -97,10 +98,11 @@ comment = p.Results.comment;
 direction = p.Results.direction;
 
 
-
 if exist(outputdir, 'dir') ~= 7
     error('Input directory does not exist.')
 end
+
+checkDataField(RSK)
 
 % Check if the structure comes from RSKreaddata or RSKreadprofiles?
 isProfile = isfield(RSK.data,'direction');

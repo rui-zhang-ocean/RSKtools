@@ -84,7 +84,7 @@ reference = p.Results.reference;
 showgap = p.Results.showgap;
 threshold = p.Results.threshold;
 
-
+checkDataField(RSK)
 if isempty(direction);
     if isfield(RSK.data,'direction') && all(ismember({RSK.data.direction},'up'))
         direction = 'up';

@@ -73,6 +73,7 @@ windowLength = p.Results.windowLength;
 visualize = p.Results.visualize;
 
 
+checkDataField(RSK)
 if isempty(channel)
     disp('Please specify which channel(s) to apply the low pass filter.')
     return

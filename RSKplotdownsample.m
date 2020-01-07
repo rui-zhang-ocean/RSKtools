@@ -39,7 +39,6 @@ channel = p.Results.channel;
 field = 'downsample';
 if ~isfield(RSK,field)
     disp('Downsample field does not exist when dataset has less than 40960 samples per channel.');
-    handles = NaN;
     return
 end
 

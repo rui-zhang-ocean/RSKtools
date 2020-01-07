@@ -113,6 +113,8 @@ if isempty(lag)
     return
 end
 
+checkDataField(RSK)
+
 castidx = getdataindex(RSK, profile, direction);
 lags = checklag(lag, castidx, lagunits);
 channelCol = getchannelindex(RSK, channel);

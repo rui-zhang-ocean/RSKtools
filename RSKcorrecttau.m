@@ -80,6 +80,8 @@ direction = p.Results.direction;
 visualize = p.Results.visualize;
 
 
+checkDataField(RSK)
+
 if isempty(channel)
     disp('Please specify which channel to apply tau correction.')
     return

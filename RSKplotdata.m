@@ -73,9 +73,7 @@ direction = p.Results.direction;
 showcast = p.Results.showcast;
 
 
-if ~isfield(RSK,'data')
-    error('You must read a section of data in first! Use RSKreaddata...')
-end
+checkDataField(RSK)
 
 if length(RSK.data) == 1 && ~isempty(profile) && ~isfield(RSK.data,'direction')
     error('RSK structure does not contain any profiles, use RSKreadprofiles or RSKtimeseries2profiles.')

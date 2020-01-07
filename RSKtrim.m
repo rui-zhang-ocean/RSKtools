@@ -84,6 +84,7 @@ action = p.Results.action;
 visualize = p.Results.visualize;
 
 
+checkDataField(RSK)
 if isempty(reference)
     disp('Please specify a reference channel to determine the range to be trimmed.')
     trimidx = [];

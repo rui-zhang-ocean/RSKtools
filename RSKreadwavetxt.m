@@ -1,6 +1,6 @@
 function [RBR] = RSKreadwavetxt(file)
 
-%RSKreadwavetxt - Reads wave data from a Ruskin txt export.
+% RSKreadwavetxt - Reads wave data from a Ruskin txt export.
 %
 % Syntax:  RSK = RSKreadwavetxt(file)
 % 

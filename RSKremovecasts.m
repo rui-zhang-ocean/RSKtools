@@ -39,6 +39,7 @@ RSK = p.Results.RSK;
 direction = p.Results.direction;
 
 
+checkDataField(RSK)
 Pcol = getchannelindex(RSK, 'Pressure');
 ndata = length(RSK.data);
 
