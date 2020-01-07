@@ -92,6 +92,8 @@ action = p.Results.action;
 visualize = p.Results.visualize;
 
 
+checkDataField(RSK)
+
 if isempty(channel)
     disp('Please specify which channel to despike.')
     spike = [];

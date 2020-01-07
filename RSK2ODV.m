@@ -78,6 +78,7 @@ function RSK2ODV(RSK, varargin)
 % Website: www.rbr-global.com
 % Last revision: 2018-05-11
 
+
 p = inputParser;
 addRequired(p, 'RSK', @isstruct);
 addParameter(p, 'channel', 'all');
@@ -95,10 +96,11 @@ outputdir = p.Results.outputdir;
 comment = p.Results.comment;
 
 
-
 if exist(outputdir, 'dir') ~= 7
     error('Input directory does not exist.')
 end
+
+checkDataField(RSK)
 
 % Check if the structure comes from RSKreaddata or RSKreadprofiles?
 isProfile = isfield(RSK.data,'direction');

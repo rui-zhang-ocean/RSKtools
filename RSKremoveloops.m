@@ -67,6 +67,7 @@ accelerationThreshold = p.Results.accelerationThreshold;
 visualize = p.Results.visualize;
 
 
+checkDataField(RSK)
 try
     Dcol = getchannelindex(RSK, 'Depth');
 catch

@@ -53,6 +53,8 @@ latitude = p.Results.latitude;
 longitude = p.Results.longitude;
  
 
+checkDataField(RSK)
+
 hasTEOS = ~isempty(which('gsw_pt0_from_t'));
 if ~hasTEOS
     error('Must install TEOS-10 toolbox. Download it from here: http://www.teos-10.org/software.htm');

@@ -56,6 +56,8 @@ if ~hasTEOS
     error('Must install TEOS-10 toolbox. Download it from here: http://www.teos-10.org/software.htm');
 end
 
+checkDataField(RSK)
+
 if length(latitude) > 1 && length(RSK.data) ~= length(latitude)
     error('Input latitude must be either one value or vector of the same length of RSK.data')
 end

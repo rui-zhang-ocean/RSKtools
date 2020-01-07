@@ -25,6 +25,7 @@ function [RSK] = RSKderiveC25(RSK, varargin)
 % Website: www.rbr-global.com
 % Last revision: 2018-05-29
 
+
 p = inputParser;
 addRequired(p, 'RSK', @isstruct);
 addParameter(p, 'alpha', 0.0191, @isnumeric);
@@ -33,6 +34,8 @@ parse(p, RSK, varargin{:})
 RSK = p.Results.RSK;
 alpha = p.Results.alpha;
 
+
+checkDataField(RSK)
 
 Ccol = getchannelindex(RSK, 'Conductivity');
 Tcol = getchannelindex(RSK, 'Temperature');

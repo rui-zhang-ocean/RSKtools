@@ -81,6 +81,8 @@ direction = p.Results.direction;
 visualize = p.Results.visualize;
 
 
+checkDataField(RSK)
+
 if isempty(alpha)
     disp('Please specify alpha.')
     return

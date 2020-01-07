@@ -1,6 +1,6 @@
 function RSK = RSKreadcalibrations(RSK)
 
-%RSKreadcalibrations - Read the calibrations table of a .rsk file.
+% RSKreadcalibrations - Read the calibrations table of a .rsk file.
 %
 % Syntax:  RSK = RSKreadcalibrations(RSK)
 %

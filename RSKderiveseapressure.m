@@ -37,6 +37,8 @@ RSK = p.Results.RSK;
 patm = p.Results.patm;
 
 
+checkDataField(RSK)
+
 if isempty(patm)
     patm = getatmosphericpressure(RSK);
 end

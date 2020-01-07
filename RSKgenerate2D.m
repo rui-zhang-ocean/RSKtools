@@ -64,6 +64,8 @@ direction = p.Results.direction;
 reference = p.Results.reference;
 
 
+checkDataField(RSK)
+
 if isempty(direction);
     if isfield(RSK.data,'direction') && all(ismember({RSK.data.direction},'up'))
         direction = 'up';

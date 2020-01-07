@@ -60,6 +60,8 @@ toDerive = p.Results.toDerive;
 unit = p.Results.unit;
 
 
+checkDataField(RSK)
+
 if strcmp(toDerive,'concentration')
     RSK = deriveO2concentration(RSK,'unit',unit);
 else
