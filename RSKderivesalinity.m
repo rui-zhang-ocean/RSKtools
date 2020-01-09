@@ -69,14 +69,13 @@ castidx = getdataindex(RSK);
 for ndx = castidx
     if strcmpi(toolbox,'TEOS-10')
         salinity = gsw_SP_from_C(RSK.data(ndx).values(:, Ccol), RSK.data(ndx).values(:, Tcol), RSKsp.data(ndx).values(:,SPcol));
-        logentry = ('Practical Salinity derived using TEOS-10 GSW toolbox.');
     else
         salinity = sw_salt(RSK.data(ndx).values(:, Ccol)/sw_c3515, RSK.data(ndx).values(:, Tcol), RSKsp.data(ndx).values(:,SPcol));
-        logentry = ('Practical Salinity derived using seawater toolbox.');
     end
     RSK.data(ndx).values(:,Scol) = salinity;
 end
 
+logentry = (['Practical Salinity derived using ' toolbox ' toolbox.']);
 RSK = RSKappendtolog(RSK, logentry);
 
 end
