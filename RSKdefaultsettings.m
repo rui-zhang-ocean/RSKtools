@@ -2,7 +2,7 @@ function rsksettings = RSKdefaultsettings
  
 % RSKdefaultsettings - Set up RSKtools default parameters.
 %
-% Syntax: rsksettings = RSKsettings
+% Syntax: rsksettings = RSKdefaultsettings
 %
 % See also: RSKsettings
 %
@@ -17,9 +17,10 @@ rsksettings.atmosphericPressure = 10.1325;
 rsksettings.hydrostaticPressure = 0;
 rsksettings.salinity = 35;
 rsksettings.temperature = 15;
-rsksettings.eventBeginUpcast = 33;
-rsksettings.eventBeginDowncast = 34;
-rsksettings.eventEndcast = 35;
+rsksettings.pressureThreshold = 3;
+rsksettings.conductivityThreshold = 0.05;
+rsksettings.loopThreshold = 0.25;
+rsksettings.soundSpeedAlgorithm = 'UNESCO';
  
 disp('Setting default values for all RSKtools settings')
 RSKsettings(rsksettings);

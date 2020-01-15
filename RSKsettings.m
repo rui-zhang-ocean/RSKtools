@@ -4,12 +4,19 @@ function rsksettings = RSKsettings(rsksettings)
 %
 % Syntax:  rsksettings = RSKsettings([OPTIONS])
 %
+% The function returns current RSKtools parameters when there is no input 
+% argument. It resets RSKtools parameters when there is input.
+%
 % Inputs: 
 %    [Optional] - rsksettings - structure that contains specified RSKtools
-%    parameters
+%                 parameters, for instance:
+%
+%                 rsksettings.latitude = 45;
+%                 rsksettings.seawaterLibrary = 'TEOS-10';
 %
 % Outputs:
-%    rsksettings - Structure containing updated RSKtools parameters
+%    rsksettings - Structure containing current or updated RSKtools 
+%                 parameters
 %
 % Examples:
 %    rsksettings = RSKsettings; % get current setting parameters
@@ -21,11 +28,14 @@ function rsksettings = RSKsettings(rsksettings)
 % Author: RBR Ltd. Ottawa ON, Canada
 % email: support@rbr-global.com
 % Website: www.rbr-global.com
-% Last revision: 2020-01-10
+% Last revision: 2020-01-15
 
 
 validSeawaterLibrary = {'TEOS-10','seawater'};
 checkSeawaterLibrary = @(x) any(validatestring(x,validSeawaterLibrary));
+
+validSoundSpeedAlgorithm = {'UNESCO', 'DelGrosso', 'Wilson'};
+checkSoundSpeedAlgorithm = @(x) any(validatestring(x,validSoundSpeedAlgorithm));
 
 if nargin == 0
     rsksettings = getappdata(0,'rsksettings'); % return current settings
@@ -40,21 +50,24 @@ else
     addParameter(p,'atmosphericPressure',10.1325,@isnumeric);
     addParameter(p,'hydrostaticPressure',0,@isnumeric);
     addParameter(p,'salinity',35,@isnumeric);
-    addParameter(p,'temperature',15,@isnumeric);
-    addParameter(p,'eventBeginUpcast',33,@isnumeric);
-    addParameter(p,'eventBeginDowncast',34,@isnumeric);
-    addParameter(p,'eventEndcast',35,@isnumeric);
+    addParameter(p,'temperature',15,@isnumeric);           
+    addParameter(p,'pressureThreshold',3,@isnumeric);
+    addParameter(p,'conductivityThreshold',0.05,@isnumeric);
+    addParameter(p,'loopThreshold',0.25,@isnumeric);
+    addParameter(p,'soundSpeedAlgorithm',checkSoundSpeedAlgorithm);
+       
     parse(p, rsksettings)
-    
+
     rsksettings.seawaterLibrary = p.Results.seawaterLibrary;
     rsksettings.latitude = p.Results.latitude;
     rsksettings.atmosphericPressure = p.Results.atmosphericPressure;
     rsksettings.hydrostaticPressure = p.Results.hydrostaticPressure;
     rsksettings.salinity = p.Results.salinity;
     rsksettings.temperature = p.Results.temperature;
-    rsksettings.eventBeginUpcast = p.Results.eventBeginUpcast;
-    rsksettings.eventBeginDowncast = p.Results.eventBeginDowncast;
-    rsksettings.eventEndcast = p.Results.eventEndcast;
+    rsksettings.pressureThreshold = p.Results.pressureThreshold;
+    rsksettings.conductivityThreshold = p.Results.conductivityThreshold;
+    rsksettings.loopThreshold = p.Results.loopThreshold;
+    rsksettings.soundSpeedAlgorithm = p.Results.soundSpeedAlgorithm;
     
     setappdata(0,'rsksettings',rsksettings)  
 end
