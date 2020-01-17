@@ -11,6 +11,7 @@ function rsksettings = RSKdefaultsettings
 % Website: www.rbr-global.com
 % Last revision: 2020-01-10
 
+rsksettings.RSKtoolsVersion = '3.3.0';
 rsksettings.seawaterLibrary = 'TEOS-10'; 
 rsksettings.latitude = 45;
 rsksettings.atmosphericPressure = 10.1325;
@@ -22,7 +23,7 @@ rsksettings.conductivityThreshold = 0.05;
 rsksettings.loopThreshold = 0.25;
 rsksettings.soundSpeedAlgorithm = 'UNESCO';
  
-disp('Setting default values for all RSKtools settings')
+disp('Setting default values for all RSKtools parameters')
 RSKsettings(rsksettings);
 
 end
