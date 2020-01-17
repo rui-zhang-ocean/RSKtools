@@ -44,10 +44,12 @@ function RSK = RSKtimeseries2profiles(RSK, varargin)
 % Last revision: 2018-10-30
 
 
+rsksettings = RSKsettings;
+
 p = inputParser;
 addRequired(p, 'RSK', @isstruct);
-addParameter(p, 'pressureThreshold', 3, @isnumeric);
-addParameter(p, 'conductivityThreshold', 0.05, @isnumeric);
+addParameter(p, 'pressureThreshold', rsksettings.pressureThreshold, @isnumeric);
+addParameter(p, 'conductivityThreshold', rsksettings.conductivityThreshold, @isnumeric);
 parse(p, RSK, varargin{:})
 
 RSK = p.Results.RSK;
