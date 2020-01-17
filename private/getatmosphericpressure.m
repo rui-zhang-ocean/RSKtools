@@ -21,7 +21,7 @@ function pAtm = getatmosphericpressure(RSK)
 % Website: www.rbr-global.com
 % Last revision: 2017-06-28
 
-loadconstants
+rsksettings = RSKsettings;
 
 if isfield(RSK, 'parameterKeys')
     atmrow = strcmpi({RSK.parameterKeys.key}, 'ATMOSPHERE');
@@ -29,7 +29,7 @@ if isfield(RSK, 'parameterKeys')
 elseif isfield(RSK, 'parameters') && ~isempty(RSK.parameters)
     pAtm = RSK.parameters.atmosphere;
 else 
-    pAtm = defaultpAtm;
+    pAtm = rsksettings.atmosphericPressure;
 end
 
 end
