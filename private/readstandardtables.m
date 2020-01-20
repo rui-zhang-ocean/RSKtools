@@ -28,7 +28,12 @@ parse(p, RSK)
 RSK = p.Results.RSK;
 
 
-RSK.dbInfo = doSelect(RSK, 'select version,type from dbInfo');
+RSK.dbInfo = doSelect(RSK, 'select * from dbInfo');
+
+if ~isfield(RSK.dbInfo,'type')
+    RSK.dbInfo.type = 'full';
+end
+
 RSK.instruments = doSelect(RSK, 'select * from instruments');
 RSK = readchannels(RSK);
 
