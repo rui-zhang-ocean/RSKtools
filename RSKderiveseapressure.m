@@ -45,9 +45,9 @@ end
 
 if isvector(patm) && length(patm) > 1
     if length(RSK.data) ~= 1
-        error('Input atmosphere pressure is a vector, use RSKreaddata to flatten data into time series..')
+        RSKerror('Input atmosphere pressure is a vector, use RSKreaddata to flatten data into time series..')
     elseif length(RSK.data) == 1 && length(RSK.data.tstamp) ~= length(patm)
-        error('Length of RSK data samples and input atmosphere pressure do not match, please shape input atmosphere pressure..')
+        RSKerror('Length of RSK data samples and input atmosphere pressure do not match, please shape input atmosphere pressure..')
     end
     patm = patm(:);
 end
@@ -58,7 +58,7 @@ catch
     try
         Pcol = getchannelindex(RSK, 'BPR pressure');
     catch
-        disp('There is no pressure channel available, sea pressure is set to 0.')
+        RSKwarning('There is no pressure channel available, sea pressure is set to 0.')
         Pcol = 0;
     end
 end

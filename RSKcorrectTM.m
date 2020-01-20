@@ -84,12 +84,12 @@ visualize = p.Results.visualize;
 checkDataField(RSK)
 
 if isempty(alpha)
-    disp('Please specify alpha.')
+    RSKwarning('Please specify alpha.')
     return
 end
 
 if isempty(beta)
-    disp('Please specify beta.')
+    RSKwarning('Please specify beta.')
     return
 end
 

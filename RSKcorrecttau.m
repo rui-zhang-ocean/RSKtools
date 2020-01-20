@@ -83,12 +83,12 @@ visualize = p.Results.visualize;
 checkDataField(RSK)
 
 if isempty(channel)
-    disp('Please specify which channel to apply tau correction.')
+    RSKwarning('Please specify which channel to apply tau correction.')
     return
 end
 
 if isempty(tauResponse)
-    disp('Please specify tauResponse for the channel.')
+    RSKwarning('Please specify tauResponse for the channel.')
     return
 end
 

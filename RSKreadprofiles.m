@@ -62,7 +62,7 @@ direction = {p.Results.direction};
 
 
 if ~isfield(RSK, 'profiles') 
-    error('No profiles in this RSK, try RSKreaddata or RSKfindprofiles');
+    RSKerror('No profiles in this RSK, try RSKreaddata or RSKfindprofiles');
 end
 if strcmpi(direction{1}, 'both')
     if any(strcmpi({RSK.regionCast.type},'down')) && any(strcmpi({RSK.regionCast.type},'up'))        
@@ -99,7 +99,7 @@ profilecast = size(RSK.profiles.order, 2);
 
 if ~isempty(profile)
     if max(profile) > round(length(alltstart)/profilecast)
-        disp('The profile or cast selected does not exist in this file.');
+        RSKwarning('The profile or cast selected does not exist in this file.');
         return
     end
     if profilecast == 2

@@ -73,7 +73,7 @@ windowLength = p.Results.windowLength;
 
 hasTEOS = ~isempty(which('gsw_SP_from_C'));
 if ~hasTEOS
-    error('Must install TEOS-10 toolbox. Download it from here: http://www.teos-10.org/software.htm');
+    RSKerror('Must install TEOS-10 toolbox. Download it from here: http://www.teos-10.org/software.htm');
 end
 
 checkDataField(RSK)

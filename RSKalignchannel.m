@@ -104,12 +104,12 @@ visualize = p.Results.visualize;
 
 
 if isempty(channel)
-    disp('Please specify which channel to align.')
+    RSKwarning('Please specify which channel to align.')
     return
 end
 
 if isempty(lag)
-    disp('Please specify lag to apply to the channel.')
+    RSKwarning('Please specify lag to apply to the channel.')
     return
 end
 
@@ -133,7 +133,7 @@ for ndx =  castidx
         
         profile_time_length = RSK.data(ndx).tstamp(end,1) - RSK.data(ndx).tstamp(1,1);
         if timelag/86400 > profile_time_length;
-            disp('Time lag must be smaller than profile time length.')
+            RSKwarning('Time lag must be smaller than profile time length.')
             return
         end
         
@@ -149,7 +149,7 @@ for ndx =  castidx
     else
         samplelag = lags(counter);       
         if samplelag > length(channelData);
-            disp('Sample lag must be smaller than profile sample length.')
+            RSKwarning('Sample lag must be smaller than profile sample length.')
             return
         end
         shiftchan = channelData;
@@ -196,13 +196,13 @@ end
     % profiles or one for each profiles. 
 
         if ~isequal(fix(lag),lag) && strcmpi(lagunits, 'samples')
-           error('Lag values must be integers.')
+           RSKerror('Lag values must be integers.')
         end
 
         if length(lag) == 1 && length(castidx) ~= 1
             lags = repmat(lag, 1, length(castidx));
         elseif length(lag) > 1 && length(lag) ~= length(castidx)
-            error(['Length of lag must equal the number of profiles or be a ' ...
+            RSKerror(['Length of lag must equal the number of profiles or be a ' ...
                    'single value']);
         else
             lags = lag;

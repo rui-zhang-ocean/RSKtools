@@ -25,7 +25,7 @@ if strcmpi(mode, 'ddsampling')
     samplingperiod.fastThreshold = RSK.directional.fastThreshold/1000;
     samplingperiod.slowThreshold = RSK.directional.slowThreshold/1000;
 elseif strcmpi(mode, 'fetching')
-    error('"Fetching" files do not have a sampling period');
+    RSKerror('"Fetching" files do not have a sampling period');
 else 
     try
         samplingperiod = RSK.(mode).samplingPeriod/1000;

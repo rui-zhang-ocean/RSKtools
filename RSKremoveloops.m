@@ -74,7 +74,7 @@ checkDataField(RSK)
 try
     Dcol = getchannelindex(RSK, 'Depth');
 catch
-    error('RSKremoveloops requires a depth channel to calculate velocity (m/s). Use RSKderivedepth...');
+    RSKerror('RSKremoveloops requires a depth channel to calculate velocity (m/s). Use RSKderivedepth...');
 end
 
 castidx = getdataindex(RSK, profile, direction);

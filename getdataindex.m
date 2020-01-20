@@ -60,7 +60,7 @@ else
 end
 
 if isempty(castidx)     
-    error('The profile or direction requested does not exist in this RSK structure.');
+    RSKerror('The profile or direction requested does not exist in this RSK structure.');
 end
      
 end

@@ -28,7 +28,7 @@ v = RSK.dbInfo(end).version;
 vsn = textscan(v,'%s','delimiter','.');
 s=size(vsn{1});
 if s(1) ~= 3
-    disp('Version unreadable')
+    RSKwarning('Version unreadable')
     vsnMajor = 0;
     vsnMinor=0;
     vsnPatch=0;

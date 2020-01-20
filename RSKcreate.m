@@ -72,16 +72,16 @@ serialID = p.Results.serialID;
 
 RSK = [];
 if isempty(tstamp)
-    disp('Please specify tstamp.')
+    RSKwarning('Please specify tstamp.')
     return
 elseif isempty(values)
-    disp('Please specify values.')
+    RSKwarning('Please specify values.')
     return
 elseif isempty(channel)
-    disp('Please specify channel names.')
+    RSKwarning('Please specify channel names.')
     return
 elseif isempty(unit)
-    disp('Please specify channel units.')
+    RSKwarning('Please specify channel units.')
     return
 else
     % do nothing
@@ -90,11 +90,11 @@ end
 % Check consistency among input arguments
 [nsamples,nchannels] = size(values);
 if nsamples ~= length(tstamp)
-    error('The length of time stamp is not equal to number of rows in values.')
+    RSKerror('The length of time stamp is not equal to number of rows in values.')
 end
 
 if nchannels ~= length(channel) || nchannels ~= length(unit)
-    error('The length of channel or unit is not equal to number of columns in values.')
+    RSKerror('The length of channel or unit is not equal to number of columns in values.')
 end
 
 % Create data, channel and other logger metadata fields

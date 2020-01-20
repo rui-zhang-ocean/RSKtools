@@ -169,7 +169,7 @@ RSK = RSKappendtolog(RSK, logentry);
     
         binArray = [];
         if length(binSize) > length(boundary)+1 || (length(binSize) < length(boundary)-1 && ~isempty(boundary))
-            disp('Boundary must be of length 0, length(binSize) or length(binSize)+1')
+            RSKwarning('Boundary must be of length 0, length(binSize) or length(binSize)+1')
             return
         end
 

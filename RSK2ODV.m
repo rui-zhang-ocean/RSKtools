@@ -97,7 +97,7 @@ comment = p.Results.comment;
 
 
 if exist(outputdir, 'dir') ~= 7
-    error('Input directory does not exist.')
+    RSKerror('Input directory does not exist.')
 end
 
 checkDataField(RSK)
@@ -106,7 +106,7 @@ checkDataField(RSK)
 isProfile = isfield(RSK.data,'direction');
 
 if ~isProfile && (~isempty(profile) || ~isempty(direction))
-    error('RSK structure is not organized into profiles. Use RSKreadprofiles or RSKtimeseries2profiles.');
+    RSKerror('RSK structure is not organized into profiles. Use RSKreadprofiles or RSKtimeseries2profiles.');
 end
 
 if isempty(direction); 
@@ -115,7 +115,7 @@ end;
 
 if ~strcmp('both', direction) && isProfile && ...
     (all(strcmp('up',{RSK.data.direction})) && ~strcmp(direction,'up') || all(strcmp('down',{RSK.data.direction})) && ~strcmp(direction,'down'))
-    error('Requested cast direction or profile does not exist in RSK structure, use RSKreadprofiles.')
+    RSKerror('Requested cast direction or profile does not exist in RSK structure, use RSKreadprofiles.')
 end
 
 % Set up metadata

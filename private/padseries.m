@@ -30,7 +30,7 @@ switch edgepad
     case 'zeroorderhold'
         inpadded = zeroorderholdpad(in, padsize);
     otherwise
-        error('edgepad argument is not recognized. Must be `mirror`, `nan` or `zeroorderhold`');
+        RSKerror('edgepad argument is not recognized. Must be `mirror`, `nan` or `zeroorderhold`');
 end
 
 end

@@ -88,7 +88,7 @@ for ndx = 1:length(castidx)-1
     if length(RSK.data(castidx(ndx)).values(:,YCol)) == length(RSK.data(castidx(ndx+1)).values(:,YCol));
         binCenter = RSK.data(castidx(ndx)).values(:,YCol);
     else 
-        error('The reference channel data of all the selected profiles must be identical. Use RSKbinaverage.m for selected cast direction.')
+        RSKerror('The reference channel data of all the selected profiles must be identical. Use RSKbinaverage.m for selected cast direction.')
     end
 end
 

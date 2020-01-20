@@ -38,6 +38,6 @@ elseif iscolumn(in)
     pad = NaN(padsize,1);
     out = [pad; in; pad];
 else
-    error('in must be a row or column vector.')
+    RSKerror('in must be a row or column vector.')
 end
 end

@@ -86,7 +86,7 @@ end
 [wwevt] = detectprofiles(pressure, timestamp, conductivity, pressureThreshold, conductivityThreshold);
 if length(find((wwevt(:,2) == 1 | wwevt(:,2) == 2))) < 2
     hasProfile = false;
-    disp('No profiles were detected in this dataset with the given parameters.')
+    RSKwarning('No profiles were detected in this dataset with the given parameters.')
     return
 else
     hasProfile = true;
@@ -151,7 +151,7 @@ RSK.profiles.downcast.tend = downend';
 
 %% Remove region.description, regionGeoData and regionComment field if exist
 if (isfield(RSK,'region') && isfield(RSK.region,'description')) || isfield(RSK,'regionGeoData') || isfield(RSK,'regionComment');
-    disp('Annotations from Ruskin will be deleted as they might conflict with the new profiles detected');
+    RSKwarning('Annotations from Ruskin will be deleted as they might conflict with the new profiles detected');
 end
 
 if isfield(RSK,'regionGeoData');

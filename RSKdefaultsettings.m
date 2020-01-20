@@ -23,7 +23,7 @@ rsksettings.conductivityThreshold = 0.05;
 rsksettings.loopThreshold = 0.25;
 rsksettings.soundSpeedAlgorithm = 'UNESCO';
  
-disp('Setting default values for all RSKtools parameters')
+RSKwarning('Setting default values for all RSKtools parameters')
 RSKsettings(rsksettings);
 
 end

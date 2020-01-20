@@ -35,7 +35,7 @@ elseif iscolumn(in)
     post = flipud(in(end-padsize+1:end));
     out = [pre; in; post];
 else
-    error('in must be a row or column vector.')
+    RSKerror('in must be a row or column vector.')
 end
 
 end

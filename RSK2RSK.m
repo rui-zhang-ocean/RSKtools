@@ -53,7 +53,7 @@ data = convertProfilesIntoTimeseries(RSK);
 [data, nchannel] = removeRepeatedTimestamp(data);
 
 if exist([outputdir filesep newfile],'file') == 2
-    error([outputdir filesep newfile ' already exists, please revise suffix for a different name.'])
+    RSKerror([outputdir filesep newfile ' already exists, please revise suffix for a different name.'])
 else
     mksqlite('OPEN',[outputdir filesep newfile]);
     createSchema(nchannel);

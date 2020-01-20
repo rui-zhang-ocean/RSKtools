@@ -40,7 +40,7 @@ latitude = p.Results.latitude;
 
 hasTEOS = ~isempty(which('gsw_Nsquared'));
 if ~hasTEOS
-    error('Must install TEOS-10 toolbox. Download it from here: http://www.teos-10.org/software.htm');
+    RSKerror('Must install TEOS-10 toolbox. Download it from here: http://www.teos-10.org/software.htm');
 end
 
 checkDataField(RSK)
@@ -74,12 +74,12 @@ function [Tcol,Scol,SPcol] = getchannel_T_S_SP_index(RSK)
     try
         Scol = getchannelindex(RSK, 'Salinity');
     catch
-        error('RSKderivebuoyancy requires practical salinity. Use RSKderivesalinity...');
+        RSKerror('RSKderivebuoyancy requires practical salinity. Use RSKderivesalinity...');
     end
     try
         SPcol = getchannelindex(RSK, 'Sea Pressure');
     catch
-        error('RSKderivebuoyancy requires sea pressure. Use RSKderiveseapressure...');
+        RSKerror('RSKderivebuoyancy requires sea pressure. Use RSKderiveseapressure...');
     end
 end
 

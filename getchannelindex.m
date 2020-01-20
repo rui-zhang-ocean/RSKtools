@@ -36,7 +36,7 @@ if all(ismember(lower(channel),lower({RSK.channels.longName})))
     end
 else
     channelNotFound = channel(~ismember(lower(channel),lower({RSK.channels.longName})));
-    error(['There is no ' strjoin(channelNotFound) ' channel in this file.']);   
+    RSKerror(['There is no ' strjoin(channelNotFound) ' channel in this file.']);   
 end
 
 end

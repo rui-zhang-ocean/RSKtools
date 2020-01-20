@@ -86,13 +86,13 @@ visualize = p.Results.visualize;
 
 checkDataField(RSK)
 if isempty(reference)
-    disp('Please specify a reference channel to determine the range to be trimmed.')
+    RSKwarning('Please specify a reference channel to determine the range to be trimmed.')
     trimidx = [];
     return
 end
 
 if isempty(range)
-    disp('Please speficy a range for data to be trimmed.')
+    RSKwarning('Please speficy a range for data to be trimmed.')
     trimidx = [];
     return
 end

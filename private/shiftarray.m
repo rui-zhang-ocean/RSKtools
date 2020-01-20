@@ -53,7 +53,7 @@ switch lower(edgepad)
     case 'union'
         inpad = nanpad(in, abs(shift));
     otherwise
-        error('edgepad argument is not recognized. Must be ''mirror'', ''nan'', or ''zeroorderhold''');
+        RSKerror('edgepad argument is not recognized. Must be ''mirror'', ''nan'', or ''zeroorderhold''');
 end
 
 

@@ -38,7 +38,7 @@ checkDataField(RSK)
 try
     Dcol = getchannelindex(RSK, 'Depth');
 catch
-    error('RSKcalculatevelocity requires a depth channel to calculate velocity (m/s). Use RSKderivedepth...');
+    RSKerror('RSKcalculatevelocity requires a depth channel to calculate velocity (m/s). Use RSKderivedepth...');
 end
 
 RSK = addchannelmetadata(RSK, 'pvel00', 'Velocity', 'm/s');

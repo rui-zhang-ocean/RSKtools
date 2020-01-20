@@ -49,7 +49,7 @@ readHiddenChannels = p.Results.readHiddenChannels;
 
 
 if isempty(dir(fname))
-    disp('File cannot be found')
+    RSKwarning('File cannot be found')
     RSK = [];
     return
 end

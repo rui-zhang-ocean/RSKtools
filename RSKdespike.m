@@ -95,7 +95,7 @@ visualize = p.Results.visualize;
 checkDataField(RSK)
 
 if isempty(channel)
-    disp('Please specify which channel to despike.')
+    RSKwarning('Please specify which channel to despike.')
     spike = [];
     return
 end

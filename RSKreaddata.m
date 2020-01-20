@@ -67,14 +67,14 @@ t1 = datenum2rsktime(t1);
 t2 = datenum2rsktime(t2);
 
 if t2 <= t1
-    error('The end time (t2) must be greater (later) than the start time (t1).')
+    RSKerror('The end time (t2) must be greater (later) than the start time (t1).')
 end
 
 
 
 %% Check if file type is skinny
 if strcmp(RSK.dbInfo(end).type, 'skinny')
-    error('File must be opened in Ruskin before RSKtools can read the data.');
+    RSKerror('File must be opened in Ruskin before RSKtools can read the data.');
 end
 
 
@@ -83,7 +83,7 @@ end
 sql = ['select tstamp/1.0 as tstamp,* from data where tstamp between ' num2str(t1) ' and ' num2str(t2) ' order by tstamp'];
 results = doSelect(RSK, sql);
 if isempty(results)
-    disp('No data found in that interval.')
+    RSKwarning('No data found in that interval.')
     return
 end
 

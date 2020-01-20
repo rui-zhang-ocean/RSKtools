@@ -85,12 +85,12 @@ function [Tcol,Scol,SPcol] = getchannel_T_S_SP_index(RSK)
     try
         Scol = getchannelindex(RSK, 'Salinity');
     catch
-        error('RSKderivesoundspeed requires practical salinity. Use RSKderivesalinity...');
+        RSKerror('RSKderivesoundspeed requires practical salinity. Use RSKderivesalinity...');
     end
     try
         SPcol = getchannelindex(RSK, 'Sea Pressure');
     catch
-        error('RSKderivesoundspeed requires sea pressure. Use RSKderiveseapressure...');
+        RSKerror('RSKderivesoundspeed requires sea pressure. Use RSKderiveseapressure...');
     end
 end
 

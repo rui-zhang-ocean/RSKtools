@@ -31,7 +31,7 @@ RSK = p.Results.RSK;
 
 
 if ~any(strcmp({RSK.channels.longName}, 'Salinity'))
-    error('RSKderiveO2saturation needs salinity channel. Use RSKderivesalinity...')
+    RSKerror('RSKderiveO2saturation needs salinity channel. Use RSKderivesalinity...')
 end
 
 % Find temperature and salinity data column
@@ -41,7 +41,7 @@ O2CCol = find(strncmpi({RSK.channels.longName},'Dissolved O2',12) & ...
          ismember({RSK.channels.units},{'µmol/l', 'ml/l','mg/l'}));
 
 if ~any(O2CCol)
-    error('RSK file does not contain any O2 concentration channel.')
+    RSKerror('RSK file does not contain any O2 concentration channel.')
 end
 
 castidx = getdataindex(RSK);
@@ -84,7 +84,7 @@ function oxsat = con2sat_GG(oxcon, temp, sal, unit)
         case 'mg/l'
             oxsat = (1.4276 * 2.2414/44.659) * oxcon ./ coef;
         otherwise
-            error('O2 concentration channel must be in unit of µmol/l, ml/l or mg/l.')
+            RSKerror('O2 concentration channel must be in unit of µmol/l, ml/l or mg/l.')
     end        
 end
 

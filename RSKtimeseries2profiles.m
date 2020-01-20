@@ -59,7 +59,7 @@ conductivityThreshold = p.Results.conductivityThreshold;
 
 checkDataField(RSK)
 if length(RSK.data) ~= 1 || isfield(RSK.data,'direction') || isfield(RSK.data,'profilenumber')
-    error('RSK structure already has profiles.')
+    RSKerror('RSK structure already has profiles.')
 end
 
 [RSK,hasProfile] = RSKfindprofiles(RSK,'pressureThreshold',pressureThreshold,'conductivityThreshold',conductivityThreshold);

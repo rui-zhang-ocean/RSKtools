@@ -23,7 +23,7 @@ function RSK = getprofiles(RSK)
 
 
 if isfield(RSK, 'profiles')
-    error('Profiles are already found, get data using RSKreadprofiles.m');
+    RSKerror('Profiles are already found, get data using RSKreadprofiles.m');
 end
 
 RSK = readregionprofiles(RSK);

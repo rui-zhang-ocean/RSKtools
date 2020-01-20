@@ -57,15 +57,15 @@ checkDataField(RSK)
 
 hasTEOS = ~isempty(which('gsw_pt0_from_t'));
 if ~hasTEOS
-    error('Must install TEOS-10 toolbox. Download it from here: http://www.teos-10.org/software.htm');
+    RSKerror('Must install TEOS-10 toolbox. Download it from here: http://www.teos-10.org/software.htm');
 end
 
 if length(latitude) > 1 && length(RSK.data) ~= length(latitude)
-    error('Input latitude must be either one value or vector of the same length of RSK.data')
+    RSKerror('Input latitude must be either one value or vector of the same length of RSK.data')
 end
 
 if length(longitude) > 1 && length(RSK.data) ~= length(longitude)
-    error('Input longitude must be either one value or vector of the same length of RSK.data')
+    RSKerror('Input longitude must be either one value or vector of the same length of RSK.data')
 end
 
 [Tcol,Scol,SPcol] = getchannel_T_S_SP_index(RSK);
@@ -93,12 +93,12 @@ function [Tcol,Scol,SPcol] = getchannel_T_S_SP_index(RSK)
     try
         Scol = getchannelindex(RSK, 'Salinity');
     catch
-        error('RSKderivetheta requires practical salinity. Use RSKderivesalinity...');
+        RSKerror('RSKderivetheta requires practical salinity. Use RSKderivesalinity...');
     end
     try
         SPcol = getchannelindex(RSK, 'Sea Pressure');
     catch
-        error('RSKderivetheta requires sea pressure. Use RSKderiveseapressure...');
+        RSKerror('RSKderivetheta requires sea pressure. Use RSKderiveseapressure...');
     end
 end
 

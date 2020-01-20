@@ -30,7 +30,7 @@ if nargin == 2
 end
 
 if mod(windowLength, 2) == 0
-    error('windowLength must be odd');
+    RSKerror('windowLength must be odd');
 end
 
 

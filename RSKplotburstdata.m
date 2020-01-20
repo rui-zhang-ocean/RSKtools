@@ -42,8 +42,8 @@ channel = p.Results.channel;
 
 field = 'burstData';
 if ~isfield(RSK, field)
-    disp('You must read a section of burst data in first!');
-    disp('Use RSKreadburstdata...')
+    RSKwarning('You must read a section of burst data in first!');
+    RSKwarning('Use RSKreadburstdata...')
     return
 end
 

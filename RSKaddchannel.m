@@ -43,7 +43,7 @@ unit = p.Results.unit;
 
 
 if isempty(data)
-    disp('Please specify data to add.')
+    RSKwarning('Please specify data to add.')
     return
 end
 
@@ -54,7 +54,7 @@ castidx = getdataindex(RSK);
     
 for ndx = castidx
    if ~isequal(size(data(ndx).values), size(RSK.data(ndx).tstamp));
-       error('The dimensions of the new channel data structure must be consistent with RSK structure.')
+       RSKerror('The dimensions of the new channel data structure must be consistent with RSK structure.')
    else
        RSK.data(ndx).values(:,Ncol) = data(ndx).values(:);
    end

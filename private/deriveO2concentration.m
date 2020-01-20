@@ -39,7 +39,7 @@ unit = p.Results.unit;
 
 
 if ~any(strcmp({RSK.channels.longName}, 'Salinity'))
-    error('RSKderiveO2concentration needs salinity channel. Use RSKderivesalinity...')
+    RSKerror('RSKderiveO2concentration needs salinity channel. Use RSKderivesalinity...')
 end
 
 % Find temperature and salinity data column
@@ -48,7 +48,7 @@ SCol = getchannelindex(RSK,'Salinity');
 O2SCol = find(strncmpi({RSK.channels.longName},'Dissolved O2',12) & strcmpi({RSK.channels.units},'%'));
 
 if ~any(O2SCol)
-    error('RSK file does not contain any O2 saturation channel.')
+    RSKerror('RSK file does not contain any O2 saturation channel.')
 end
 
 castidx = getdataindex(RSK);

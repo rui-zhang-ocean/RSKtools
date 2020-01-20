@@ -50,12 +50,12 @@ for ndx = 1:ndata
 end
 
 if ~any(idx)
-    disp(['There are no ' direction 'casts in this RSK structure.']);
+    RSKwarning(['There are no ' direction 'casts in this RSK structure.']);
     return;
 end
 
 if all(idx)
-    disp(['There are only ' direction 'casts in this RSK structure.']);
+    RSKwarning(['There are only ' direction 'casts in this RSK structure.']);
     return;
 end
 

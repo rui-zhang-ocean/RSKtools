@@ -72,14 +72,14 @@ isopycnal = p.Results.isopycnal;
 
 hasTEOS = ~isempty(which('gsw_z_from_p'));
 if ~hasTEOS
-    error('Must install TEOS-10 toolbox. Download it from here: http://www.teos-10.org/software.htm');
+    RSKerror('Must install TEOS-10 toolbox. Download it from here: http://www.teos-10.org/software.htm');
 end
 
 checkDataField(RSK)
 
 isProfile = isfield(RSK.data,'direction');
 if ~isProfile && ( ~isempty(profile) ||  ~isempty(direction) )
-    error('RSK contains no profiles, use RSKreadprofiles first.');
+    RSKerror('RSK contains no profiles, use RSKreadprofiles first.');
 end
 
 castidx = getdataindex(RSK, profile, direction);
