@@ -10,12 +10,6 @@ function RSK = RSKreadprofiles(RSK, varargin)
 % RSK.data.direction. The function will parse annotations (GPS, comment)
 % and profile description/detail field available into the data structure.
 %
-% The profile events are parsed from the events table using the
-% following types (see utilities/loadconstants.m):
-%   33 - Begin upcast
-%   34 - Begin downcast
-%   35 - End of profile cast
-%
 % Note: RSKreadprofiles reads profiles directly from the RSK file (i.e. 
 % from disk). If one wishes to organize existing time series data in RSK
 % structure into profiles (i.e. from memory). Use RSKreaddata followed by

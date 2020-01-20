@@ -1,6 +1,6 @@
 function RSK = readeventsprofiles(RSK)
 
-%READEVENTSPROFILES - Read profiles start and end times from events table.
+% READEVENTSPROFILES - Read profiles start and end times from events table.
 %
 % Syntax:  [RSK] = READEVENTSPROFILES(RSK)
 %
@@ -16,9 +16,11 @@ function RSK = readeventsprofiles(RSK)
 % Author: RBR Ltd. Ottawa ON, Canada
 % email: support@rbr-global.com
 % Website: www.rbr-global.com
-% Last revision: 2017-06-21
+% Last revision: 2020-01-17
 
-loadconstants
+eventBeginUpcast = 33;
+eventBeginDowncast = 34;
+eventEndcast = 35;
 
 tables = doSelect(RSK, 'SELECT name FROM sqlite_master WHERE type="table"');
 if any(strcmpi({tables.name}, 'events'))

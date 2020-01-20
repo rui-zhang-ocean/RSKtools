@@ -25,9 +25,11 @@ function [RSK] = RSKderivedepth(RSK, varargin)
 % Last revision: 2018-05-29
 
 
+rsksettings = RSKsettings;
+
 p = inputParser;
 addRequired(p, 'RSK', @isstruct);
-addParameter(p, 'latitude', 45, @isnumeric);
+addParameter(p, 'latitude', rsksettings.latitude, @isnumeric);
 parse(p, RSK, varargin{:})
 
 RSK = p.Results.RSK;

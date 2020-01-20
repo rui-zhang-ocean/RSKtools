@@ -47,6 +47,9 @@ function [RSK, flagidx] = RSKremoveloops(RSK, varargin)
 % Website: www.rbr-global.com
 % Last revision: 2018-05-07
 
+
+rsksettings = RSKsettings;
+
 validDirections = {'down', 'up', 'both'};
 checkDirection = @(x) any(validatestring(x,validDirections));
 
@@ -54,7 +57,7 @@ p = inputParser;
 addRequired(p, 'RSK', @isstruct);
 addParameter(p, 'profile', [], @isnumeric);
 addParameter(p, 'direction', [], checkDirection);
-addParameter(p, 'threshold', 0.25, @isnumeric);
+addParameter(p, 'threshold', rsksettings.loopThreshold, @isnumeric);
 addParameter(p, 'accelerationThreshold', -Inf, @isnumeric);
 addParameter(p, 'visualize', 0, @isnumeric);
 parse(p, RSK, varargin{:})

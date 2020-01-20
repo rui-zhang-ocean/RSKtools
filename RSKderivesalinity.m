@@ -4,19 +4,18 @@ function [RSK] = RSKderivesalinity(RSK,varargin)
 %
 % Syntax:  [RSK] = RSKderivesalinty(RSK,[OPTIONS])
 % 
-% Derives salinity using either TEOS-10 GSW toolbox
-% (http://www.teos-10.org/software.htm) or sea water toolbox 
+% Derives salinity using either TEOS-10 library
+% (http://www.teos-10.org/software.htm) or sea water library
 % (http://www.cmar.csiro.au/datacentre/ext_docs/seawater.htm). 
-% Default is TEOS-10 GSW toolbox. The result is added to the 
-% RSK data structure, and the channel list is updated. If 
-% salinity is already in the RSK data structure (i.e., from Ruskin),
-% it will be overwritten.
+% Default is TEOS-10. The result is added to the RSK data structure, 
+% and the channel list is updated. If salinity is already in the RSK 
+% data structure (i.e., from Ruskin), it will be overwritten.
 %
 % Inputs: 
 %    [Required] - RSK - Structure containing the logger metadata and data.
 %
-%    [Optional] - toolbox - Specify which toolbox to use, should be either
-%                 'TEOS-10' or 'seawater', default is TEOS-10
+%    [Optional] - seawaterLibrary - Specify which library to use, should 
+%                 be either 'TEOS-10' or 'seawater', default is TEOS-10
 %
 % Outputs:
 %    RSK - Updated structure containing practical salinity.
@@ -24,7 +23,7 @@ function [RSK] = RSKderivesalinity(RSK,varargin)
 % Examples:
 %    rsk = RSKderivesalinity(rsk);
 %    OR
-%    rsk = RSKderivesalinity(rsk,'toolbox','seawater');
+%    rsk = RSKderivesalinity(rsk,'seawaterLibrary','seawater');
 %
 % See also: RSKcalculateCTlag.
 %
@@ -34,16 +33,18 @@ function [RSK] = RSKderivesalinity(RSK,varargin)
 % Last revision: 2019-11-12
 
 
-validToolbox = {'TEOS-10','seawater'};
-checkToolbox = @(x) any(validatestring(x,validToolbox));
+rsksettings = RSKsettings;
+
+validSeawaterLibrary = {'TEOS-10','seawater'};
+checkSeawaterLibrary = @(x) any(validatestring(x,validSeawaterLibrary));
 
 p = inputParser;
 addRequired(p, 'RSK', @isstruct);
-addParameter(p, 'toolbox', 'TEOS-10', checkToolbox);
+addParameter(p, 'seawaterLibrary', rsksettings.seawaterLibrary, checkSeawaterLibrary);
 parse(p, RSK, varargin{:})
 
 RSK = p.Results.RSK;
-toolbox = p.Results.toolbox;
+seawaterLibrary = p.Results.seawaterLibrary;
 
 
 checkDataField(RSK)
@@ -53,9 +54,9 @@ hasSW = ~isempty(which('sw_salt'));
 
 if ~hasTEOS && ~hasSW
     error('Must install TEOS-10 (recommended, download it from http://www.teos-10.org/software.htm) or seawater toolbox.');
-elseif ~hasTEOS && strcmpi(toolbox,'TEOS-10')
+elseif ~hasTEOS && strcmpi(seawaterLibrary,'TEOS-10')
     error('No TEOS-10 toolbox found on your MATLAB pathway. Please download it from http://www.teos-10.org/software.htm or specify seawater toolbox.')
-elseif ~hasSW && strcmpi(toolbox,'seawater')
+elseif ~hasSW && strcmpi(seawaterLibrary,'seawater')
     error('No seawater toolbox found on your MATLAB pathway.')
 else
     % do nothing
@@ -67,16 +68,15 @@ RSK = addchannelmetadata(RSK, 'sal_00', 'Salinity', 'PSU');
 
 castidx = getdataindex(RSK);
 for ndx = castidx
-    if strcmpi(toolbox,'TEOS-10')
+    if strcmpi(seawaterLibrary,'TEOS-10')
         salinity = gsw_SP_from_C(RSK.data(ndx).values(:, Ccol), RSK.data(ndx).values(:, Tcol), RSKsp.data(ndx).values(:,SPcol));
-        logentry = ('Practical Salinity derived using TEOS-10 GSW toolbox.');
     else
         salinity = sw_salt(RSK.data(ndx).values(:, Ccol)/sw_c3515, RSK.data(ndx).values(:, Tcol), RSKsp.data(ndx).values(:,SPcol));
-        logentry = ('Practical Salinity derived using seawater toolbox.');
     end
     RSK.data(ndx).values(:,Scol) = salinity;
 end
 
+logentry = (['Practical Salinity derived using ' seawaterLibrary ' toolbox.']);
 RSK = RSKappendtolog(RSK, logentry);
 
 end

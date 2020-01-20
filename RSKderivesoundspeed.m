@@ -14,7 +14,7 @@ function [RSK] = RSKderivesoundspeed(RSK, varargin)
 % Inputs: 
 %    [Required] - RSK - Structure containing the logger metadata and data. 
 %
-%    [Optional] - method - UNESCO (default), DelGrosso or Wilson
+%    [Optional] - soundSpeedAlgorithm - UNESCO (default), DelGrosso or Wilson
 %
 % Outputs:
 %    RSK - Updated structure containing a new channel for speed of sound.
@@ -38,16 +38,18 @@ function [RSK] = RSKderivesoundspeed(RSK, varargin)
 % Last revision: 2019-12-09
 
 
-validMethods = {'UNESCO', 'DelGrosso', 'Wilson'};
-checkMethod = @(x) any(validatestring(x,validMethods));
+rsksettings = RSKsettings;
+
+validSoundSpeedAlgorithm = {'UNESCO', 'DelGrosso', 'Wilson'};
+checkSoundSpeedAlgorithm = @(x) any(validatestring(x,validSoundSpeedAlgorithm));
 
 p = inputParser;
 addRequired(p, 'RSK', @isstruct);
-addParameter(p, 'method', 'UNESCO', checkMethod);
+addParameter(p, 'soundSpeedAlgorithm', rsksettings.soundSpeedAlgorithm, checkSoundSpeedAlgorithm);
 parse(p, RSK, varargin{:})
 
 RSK = p.Results.RSK;
-method = p.Results.method;
+soundSpeedAlgorithm = p.Results.soundSpeedAlgorithm;
 
 
 checkDataField(RSK)
@@ -63,9 +65,9 @@ for ndx = castidx
     T = RSK.data(ndx).values(:,Tcol);   
     SP = RSK.data(ndx).values(:,SPcol);
     
-    if strcmpi(method,'UNESCO')    
+    if strcmpi(soundSpeedAlgorithm,'UNESCO')    
         SS = derive_SS_UNESCO(S,T,SP);   
-    elseif strcmpi(method,'DelGrosso')
+    elseif strcmpi(soundSpeedAlgorithm,'DelGrosso')
         SS = derive_SS_DG(S,T,SP);
     else
         SS = derive_SS_WS(S,T,SP);
@@ -74,7 +76,7 @@ for ndx = castidx
     RSK.data(ndx).values(:,SScol) = SS;
 end
 
-logentry = (['Speed of sound derived using ' method ' method.']);
+logentry = (['Speed of sound derived using ' soundSpeedAlgorithm ' method.']);
 RSK = RSKappendtolog(RSK, logentry);
 
 %% Nested functions

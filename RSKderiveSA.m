@@ -19,7 +19,7 @@ function [RSK] = RSKderiveSA(RSK, varargin)
 %
 % Note: When geographic information are both available from optional inputs
 % and RSK.data structure, the optional inputs will override. The inputs
-% latitude/longitude must be either a single value of vector of the same
+% latitude/longitude must be either a single value or vector of the same
 % length of RSK.data.
 %
 % Inputs: 

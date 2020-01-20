@@ -47,10 +47,12 @@ function [RSK,hasProfile] = RSKfindprofiles(RSK, varargin)
 % Last revision: 2019-04-10
 
 
+rsksettings = RSKsettings;
+
 p = inputParser;
 addRequired(p, 'RSK', @isstruct);
-addParameter(p, 'pressureThreshold', 3, @isnumeric);
-addParameter(p, 'conductivityThreshold', 0.05, @isnumeric);
+addParameter(p, 'pressureThreshold', rsksettings.pressureThreshold, @isnumeric);
+addParameter(p, 'conductivityThreshold', rsksettings.conductivityThreshold, @isnumeric);
 parse(p, RSK, varargin{:})
 
 RSK = p.Results.RSK;
