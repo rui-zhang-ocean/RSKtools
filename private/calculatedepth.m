@@ -31,8 +31,7 @@ function depth = calculatedepth(seapressure, latitude)
 hasTEOS = ~isempty(which('gsw_z_from_p'));
 
 if hasTEOS
-    depth = -gsw_z_from_p(seapressure, latitude);  
-    
+    depth = -gsw_z_from_p(seapressure, latitude);     
 else
     x = (sin(latitude/57.29578)).^2;
     gr = 9.780318*(1.0 + (5.2788e-3 + 2.36e-5*x).*x) + 1.092e-6.*seapressure;

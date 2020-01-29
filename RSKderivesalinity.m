@@ -48,19 +48,7 @@ seawaterLibrary = p.Results.seawaterLibrary;
 
 
 checkDataField(RSK)
-
-hasTEOS = ~isempty(which('gsw_SP_from_C'));
-hasSW = ~isempty(which('sw_salt'));
-
-if ~hasTEOS && ~hasSW
-    RSKerror('Must install TEOS-10 (recommended, download it from http://www.teos-10.org/software.htm) or seawater toolbox.');
-elseif ~hasTEOS && strcmpi(seawaterLibrary,'TEOS-10')
-    RSKerror('No TEOS-10 toolbox found on your MATLAB pathway. Please download it from http://www.teos-10.org/software.htm or specify seawater toolbox.')
-elseif ~hasSW && strcmpi(seawaterLibrary,'seawater')
-    RSKerror('No seawater toolbox found on your MATLAB pathway.')
-else
-    % do nothing
-end
+checkSeawaterLibraryExistence(seawaterLibrary)
     
 RSK = addchannelmetadata(RSK, 'sal_00', 'Salinity', 'PSU');
 [Ccol,Tcol,Scol] = getchannelindex(RSK,{'Conductivity','Temperature','Salinity'});
@@ -68,10 +56,13 @@ RSK = addchannelmetadata(RSK, 'sal_00', 'Salinity', 'PSU');
 
 castidx = getdataindex(RSK);
 for ndx = castidx
+    C = RSK.data(ndx).values(:, Ccol);
+    T = RSK.data(ndx).values(:, Tcol);
+    SP = RSKsp.data(ndx).values(:, SPcol);
     if strcmpi(seawaterLibrary,'TEOS-10')
-        salinity = gsw_SP_from_C(RSK.data(ndx).values(:, Ccol), RSK.data(ndx).values(:, Tcol), RSKsp.data(ndx).values(:,SPcol));
+        salinity = gsw_SP_from_C(C, T, SP);
     else
-        salinity = sw_salt(RSK.data(ndx).values(:, Ccol)/sw_c3515, RSK.data(ndx).values(:, Tcol), RSKsp.data(ndx).values(:,SPcol));
+        salinity = sw_salt(C/sw_c3515, T, SP);
     end
     RSK.data(ndx).values(:,Scol) = salinity;
 end
