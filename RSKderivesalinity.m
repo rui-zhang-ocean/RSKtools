@@ -67,7 +67,7 @@ for ndx = castidx
     RSK.data(ndx).values(:,Scol) = salinity;
 end
 
-logentry = (['Practical Salinity derived using ' seawaterLibrary ' toolbox.']);
+logentry = (['Practical Salinity derived using ' seawaterLibrary ' library.']);
 RSK = RSKappendtolog(RSK, logentry);
 
 end
