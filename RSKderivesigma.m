@@ -9,14 +9,14 @@ function [RSK] = RSKderivesigma(RSK, varargin)
 % data structure, and the channel list is updated. The workflow of the
 % function is as below:
 %
-% 1, Calculate absolute salinity (SA)
+% 1, Calculate absolute salinity (SA) if it doesn't exist
 %    a) When latitude and longitude data are available (either from
 %    optional input or station data in RSK.data.latitude/longitude), the
 %    function will call SA = gsw_SA_from_SP(salinity,seapressure,lon,lat)
 %    b) When latitude and longitude data are absent, the function will call
 %    SA = gsw_SR_from_SP(salinity) assuming that reference salinity equals
 %    absolute salinity approximately.
-% 2, Calculate potential temperature (pt0)
+% 2, Calculate potential temperature (pt0) if it doesn't exist
 %    pt0 = gsw_pt0_from_t(absolute salinity,temperature,seapressure)
 % 3, Calculate potential density anomaly (sigma0)
 %    sigma0 = gsw_sigma0_pt0_exact(absolute salinity,potential temperature)
@@ -70,10 +70,14 @@ if length(longitude) > 1 && length(RSK.data) ~= length(longitude)
     RSKerror('Input longitude must be either one value or vector of the same length of RSK.data')
 end
 
-[Tcol,Scol,SPcol] = getchannel_T_S_SP_index(RSK);
+Tcol = getchannelindex(RSK, 'Temperature');
+[Scol,SPcol] = getchannel_S_SP_index(RSK);
 
 RSK = addchannelmetadata(RSK, 'dden00', 'Density Anomaly', 'kg/m³');
 DAcol = getchannelindex(RSK, 'Density Anomaly');
+
+hasSA = any(strcmp({RSK.channels.longName}, 'Absolute Salinity'));
+hasPT = any(strcmp({RSK.channels.longName}, 'Potential Temperature'));
 
 castidx = getdataindex(RSK);
 for ndx = castidx
@@ -81,55 +85,24 @@ for ndx = castidx
     S = RSK.data(ndx).values(:,Scol);
     T = RSK.data(ndx).values(:,Tcol);   
     [lat,lon] = getGeo(RSK,ndx,latitude,longitude);
-    DA = derive_DA(S,T,SP,lat,lon);    
+    
+    if hasSA
+        SA = RSK.data(ndx).values(:,getchannelindex(RSK,'Absolute Salinity'));
+    else
+        SA = deriveSA(S,SP,lat,lon);    
+    end  
+    
+    if hasPT
+        pt0 = RSK.data(ndx).values(:,getchannelindex(RSK,'Potential Temperature'));
+    else
+        pt0 = gsw_pt0_from_t(SA,T,SP);
+    end
+    
+    DA = gsw_sigma0_pt0_exact(SA,pt0);   
     RSK.data(ndx).values(:,DAcol) = DA;
 end
 
 logentry = ('Potential density anomaly derived using TEOS-10 GSW toolbox.');
 RSK = RSKappendtolog(RSK, logentry);
-
-
-%% Nested functions
-function [Tcol,Scol,SPcol] = getchannel_T_S_SP_index(RSK)
-    Tcol = getchannelindex(RSK, 'Temperature');
-    try
-        Scol = getchannelindex(RSK, 'Salinity');
-    catch
-        RSKerror('RSKderivesigma requires practical salinity. Use RSKderivesalinity...');
-    end
-    try
-        SPcol = getchannelindex(RSK, 'Sea Pressure');
-    catch
-        RSKerror('RSKderivesigma requires sea pressure. Use RSKderiveseapressure...');
-    end
-end
-
-function  [lat,lon] = getGeo(RSK,ndx,latitude,longitude)
-    if ~isempty(latitude) && length(latitude) > 1 
-        lat = latitude(ndx);  
-    elseif isempty(latitude) && isfield(RSK.data,'latitude')
-        lat = RSK.data(ndx).latitude; 
-    else
-        lat = latitude;    
-    end
-    
-    if ~isempty(longitude) && length(longitude) > 1 
-        lon = longitude(ndx);  
-    elseif isempty(longitude) && isfield(RSK.data,'longitude')
-        lon = RSK.data(ndx).longitude; 
-    else
-        lon = longitude;    
-    end
-end
-
-function DA = derive_DA(S,T,SP,lat,lon)
-    if isempty(lat) || isempty(lon)
-        SA = gsw_SR_from_SP(S); % Assume SA ~= SR
-    else
-        SA = gsw_SA_from_SP(S,SP,lon,lat);
-    end
-    pt0 = gsw_pt0_from_t(SA,T,SP);
-    DA = gsw_sigma0_pt0_exact(SA,pt0);
-end
 
 end

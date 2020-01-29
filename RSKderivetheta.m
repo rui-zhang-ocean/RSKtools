@@ -9,7 +9,7 @@ function [RSK] = RSKderivetheta(RSK, varargin)
 % data structure, and the channel list is updated. The workflow of the
 % function is as below:
 %
-% 1, Calculate absolute salinity (SA)
+% 1, Calculate absolute salinity (SA) if it doesn't exist
 %    a) When latitude and longitude data are available (either from
 %    optional input or station data in RSK.data.latitude/longitude), the
 %    function will call SA = gsw_SA_from_SP(salinity,seapressure,lon,lat)
@@ -68,10 +68,13 @@ if length(longitude) > 1 && length(RSK.data) ~= length(longitude)
     RSKerror('Input longitude must be either one value or vector of the same length of RSK.data')
 end
 
-[Tcol,Scol,SPcol] = getchannel_T_S_SP_index(RSK);
+Tcol = getchannelindex(RSK, 'Temperature');
+[Scol,SPcol] = getchannel_S_SP_index(RSK);
 
 RSK = addchannelmetadata(RSK, 'cnt_00', 'Potential Temperature', '°C'); % cnt_00 will need update when Ruskin sets up a shortname for theta
 PTcol = getchannelindex(RSK, 'Potential Temperature');
+
+hasSA = any(strcmp({RSK.channels.longName}, 'Absolute Salinity'));
 
 castidx = getdataindex(RSK);
 for ndx = castidx
@@ -79,54 +82,18 @@ for ndx = castidx
     S = RSK.data(ndx).values(:,Scol);
     T = RSK.data(ndx).values(:,Tcol);   
     [lat,lon] = getGeo(RSK,ndx,latitude,longitude);
-    PT = derive_PT(S,T,SP,lat,lon);    
+    
+    if hasSA
+        SA = RSK.data(ndx).values(:,getchannelindex(RSK,'Absolute Salinity'));
+    else
+        SA = deriveSA(S,SP,lat,lon);    
+    end    
+    
+    PT = gsw_pt0_from_t(SA,T,SP);   
     RSK.data(ndx).values(:,PTcol) = PT;
 end
 
 logentry = ('Potential temperature derived using TEOS-10 GSW toolbox.');
 RSK = RSKappendtolog(RSK, logentry);
-
-
-%% Nested functions
-function [Tcol,Scol,SPcol] = getchannel_T_S_SP_index(RSK)
-    Tcol = getchannelindex(RSK, 'Temperature');
-    try
-        Scol = getchannelindex(RSK, 'Salinity');
-    catch
-        RSKerror('RSKderivetheta requires practical salinity. Use RSKderivesalinity...');
-    end
-    try
-        SPcol = getchannelindex(RSK, 'Sea Pressure');
-    catch
-        RSKerror('RSKderivetheta requires sea pressure. Use RSKderiveseapressure...');
-    end
-end
-
-function  [lat,lon] = getGeo(RSK,ndx,latitude,longitude)
-    if ~isempty(latitude) && length(latitude) > 1 
-        lat = latitude(ndx);  
-    elseif isempty(latitude) && isfield(RSK.data,'latitude')
-        lat = RSK.data(ndx).latitude; 
-    else
-        lat = latitude;    
-    end
-    
-    if ~isempty(longitude) && length(longitude) > 1 
-        lon = longitude(ndx);  
-    elseif isempty(longitude) && isfield(RSK.data,'longitude')
-        lon = RSK.data(ndx).longitude; 
-    else
-        lon = longitude;    
-    end
-end
-
-function pt0 = derive_PT(S,T,SP,lat,lon)
-    if isempty(lat) || isempty(lon)
-        SA = gsw_SR_from_SP(S); % Assume SA ~= SR
-    else
-        SA = gsw_SA_from_SP(S,SP,lon,lat);
-    end
-    pt0 = gsw_pt0_from_t(SA,T,SP);
-end
 
 end
