@@ -69,7 +69,7 @@ units = regexprep(units,' ','');
 tstamp = rsktime2datenum(data(:,1))';
 values = data(:,2:end);
 
-RSK = RSKcreate(tstamp, values, channels, units,'filename',...
-      [strtok(fname,'.') '.rsk'],'model',model,'serialID',serialID);
+RSK = RSKcreate('tstamp',tstamp,'values',values,'channel',channels,'unit',...
+      units,'filename',[strtok(fname,'.') '.rsk'],'model',model,'serialID',serialID);
 
 end
