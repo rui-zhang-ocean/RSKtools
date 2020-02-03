@@ -107,7 +107,7 @@ for ndx = castidx
 
         DA = gsw_sigma0_pt0_exact(SA,pt0);      
     else
-        dens = sw_dens(S,T,SP);
+        dens = sw_pden(S,T,SP,0);
         DA = dens - 1000;
     end
     
