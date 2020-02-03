@@ -1,7 +1,7 @@
 function [RSK] = RSKderivesigma(RSK, varargin)
 
 % RSKderivesigma - Calculate potential density anomaly using TEOS-10 or
-% density anomaly using seawater library.
+% seawater library.
 %
 % Syntax: [RSK] = RSKderivesigma(RSK, [OPTIONS])
 % 
