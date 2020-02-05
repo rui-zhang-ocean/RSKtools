@@ -16,7 +16,9 @@ function [RSK] = RSKderivebuoyancy(RSK,varargin)
 %   [Required] - RSK - Structure containing the logger metadata and data
 %
 %   [Optional] - latitude - Latitude in decimal degrees north [-90 ... +90]
-%                Default is 45
+%                When latitude is available from both optional input and 
+%                RSK.data structure, the optional input will override. When
+%                neither source is available, it will use 45 as default.
 %
 %                seawaterLibrary - Specify which library to use, should 
 %                be either 'TEOS-10' or 'seawater', default is TEOS-10
@@ -39,7 +41,7 @@ checkSeawaterLibrary = @(x) any(validatestring(x,validSeawaterLibrary));
 
 p = inputParser;
 addRequired(p, 'RSK', @isstruct);
-addParameter(p, 'latitude', rsksettings.latitude, @isnumeric);
+addParameter(p, 'latitude', [], @isnumeric);
 addParameter(p, 'seawaterLibrary', rsksettings.seawaterLibrary, checkSeawaterLibrary);
 parse(p, RSK, varargin{:})
 
@@ -65,6 +67,14 @@ for ndx = castidx
     S = RSK.data(ndx).values(:,Scol);
     T = RSK.data(ndx).values(:,Tcol);
     
+    if isempty(latitude) 
+        if isfield(RSK.data,'latitude') && ~isempty(RSK.data(ndx).latitude)
+            latitude = RSK.data(ndx).latitude; 
+        else
+            latitude = rsksettings.latitude;
+        end
+    end
+   
     if strcmpi(seawaterLibrary,'TEOS-10')    
         [N2,ST] = derive_N2_ST_TEOS10(S,T,SP,latitude);  
     else
