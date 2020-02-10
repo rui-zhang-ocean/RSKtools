@@ -27,7 +27,7 @@ end
 
 channelTable = struct2table(RSK.channels);
 channelTable.Properties.VariableNames = {'index','channel','unit'};
-channelTable.index = [1:1:height(channelTable)]';
+channelTable.index = (1:1:height(channelTable))';
 
 disp(channelTable)
 
