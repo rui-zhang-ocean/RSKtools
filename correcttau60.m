@@ -1,6 +1,7 @@
 function RSK = correcttau60(RSK, varargin)
 
-% correcttau60 - Apply long term thermal adjustment to conductivity
+% correcttau60 - Apply SCI-22 algorithm to correct conductivity for
+%                the "tau60" thermal dynamic error.
 %
 % Syntax:  RSK = correcttau60(RSK,'CTcoef',CTcoef,[OPTIONS])
 %    
@@ -31,7 +32,7 @@ function RSK = correcttau60(RSK, varargin)
 % Author: RBR Ltd. Ottawa ON, Canada
 % email: support@rbr-global.com
 % Website: www.rbr-global.com
-% Last revision: 2020-02-05
+% Last revision: 2020-02-10
 
 
 validDirections = {'down', 'up', 'both'};
