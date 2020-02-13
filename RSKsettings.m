@@ -1,11 +1,12 @@
 function rsksettings = RSKsettings(rsksettings)
  
-% RSKsettings - Set up RSKtools parameters.
+% RSKsettings - View and change RSKtools parameters.
 %
 % Syntax:  rsksettings = RSKsettings([OPTIONS])
 %
 % The function returns current RSKtools parameters when there is no input 
-% argument. It resets RSKtools parameters when there is input.
+% argument. It updates RSKtools parameters when a structure of input 
+% parameters is specified.
 %
 % Inputs: 
 %    [Optional] -  rsksettings - structure that contains specified RSKtools
@@ -21,14 +22,14 @@ function rsksettings = RSKsettings(rsksettings)
 % Examples:
 %    rsksettings = RSKsettings; % get current setting parameters
 %    rsksettings.seawaterLibrary = 'seawater'; % revise seawaterLibrary
-%    rsksettings = RSKsettings(rsksettings); % set parameters
+%    RSKsettings(rsksettings); % set parameters
 %
 % See also: RSKdefaultsettings
 %
 % Author: RBR Ltd. Ottawa ON, Canada
 % email: support@rbr-global.com
 % Website: www.rbr-global.com
-% Last revision: 2020-01-15
+% Last revision: 2020-02-14
 
 
 validSeawaterLibrary = {'TEOS-10','seawater'};
@@ -45,7 +46,7 @@ if nargin == 0
 else    
     p = inputParser;
     p.StructExpand = true;
-    addParameter(p,'RSKtoolsVersion','3.3.0',@ischar);
+    addParameter(p,'RSKtoolsVersion','3.4.0',@ischar);
     addParameter(p,'seawaterLibrary','TEOS-10',checkSeawaterLibrary);
     addParameter(p,'latitude',45,@isnumeric);
     addParameter(p,'atmosphericPressure',10.1325,@isnumeric);
