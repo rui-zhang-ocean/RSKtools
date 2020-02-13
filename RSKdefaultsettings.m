@@ -1,6 +1,6 @@
 function rsksettings = RSKdefaultsettings
  
-% RSKdefaultsettings - Set up RSKtools default parameters.
+% RSKdefaultsettings - Set RSKtools parameters to default values.
 %
 % Syntax: rsksettings = RSKdefaultsettings
 %
@@ -9,9 +9,9 @@ function rsksettings = RSKdefaultsettings
 % Author: RBR Ltd. Ottawa ON, Canada
 % email: support@rbr-global.com
 % Website: www.rbr-global.com
-% Last revision: 2020-01-10
+% Last revision: 2020-02-14
 
-rsksettings.RSKtoolsVersion = '3.3.0';
+rsksettings.RSKtoolsVersion = '3.4.0';
 rsksettings.seawaterLibrary = 'TEOS-10'; 
 rsksettings.latitude = 45;
 rsksettings.atmosphericPressure = 10.1325;
