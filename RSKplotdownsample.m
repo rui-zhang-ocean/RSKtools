@@ -50,7 +50,7 @@ if ~strcmp(channel, 'all')
     end
 end
 
-clf
+
 [handles,axes] = channelsubplots(RSK, field, 'chanCol', chanCol);
 
 if nargout == 0

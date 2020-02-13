@@ -104,7 +104,7 @@ end
 clrs = lines(length(castidx));
 pmax = 0;
 n = 1;
-clf
+
 for chan = chanCol
     subplot(1,numchannels,n)
     

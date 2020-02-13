@@ -1,8 +1,8 @@
 %% RSKtools for Matlab processing RBR data
-% RSKtools v3.3.0;
+% RSKtools v3.4.0;
 % RBR Ltd. Ottawa ON, Canada;
 % support@rbr-global.com;
-% 2019-11-15
+% 2020-02-14
 
 %% Introduction
 % RSKtools includes a series of functions to post-process RBR logger
@@ -281,7 +281,7 @@ disp(rsk.data(4))
 % manual> for detailed RSKtools function documentation.
 %
 % * the
-% <http://rbr-global.com/wp-content/uploads/2019/07/Standard.pdf
+% <http://rbr-global.com/wp-content/uploads/2020/02/Standard.pdf
 % RSKtools Getting Started> for an introduction on how to load RBR
 % data into Matlab from RSK files, make plots, and access the data.
 
