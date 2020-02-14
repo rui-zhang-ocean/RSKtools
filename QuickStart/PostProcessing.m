@@ -163,23 +163,6 @@ rsk = RSKremoveloops(rsk,'threshold',0.3,'visualize',7);
 % data table along with other measured and derived channels.
 rsk = RSKderivesalinity(rsk);
 
-
-%% Compute an extra variable and add it to the RSK structure
-% Users may wish to add additional data to the RSK structure.  We
-% illustrate how this is done by computing Absolute Salinity and
-% adding it to the RSK structure
-[p,sp] = getchannelindex(rsk,{'sea pressure','salinity'});
-
-ncast = length(rsk.data);
-sa = repmat(struct('values',[]),1,ncast);
-for k = 1:ncast,
-  sa(k).values = gsw_SA_from_SP(rsk.data(k).values(:,sp),...
-                                rsk.data(k).values(:,p),-150,49);
-end
-
-rsk = RSKaddchannel(rsk,'data',sa,'channel','Absolute Salinity','unit','g/kg');
-
-
 %% Bin average all channels by sea pressure
 % Bin averaging reduces sensor noise and ensures that each profile is
 % referenced to a common grid. The latter is often an advantage for

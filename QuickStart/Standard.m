@@ -64,10 +64,10 @@ disp(rsk.data)
 % datenum format, and |rsk.data.values| contains the sensor data.
 % Each column in |rsk.data.values| contains data from a different
 % sensor, referred to as a channel.  The channel names and units for
-% each column in |data| are:
+% each column in |data| are contained in |rsk.channels|. To have a 
+% view of all channel names and units, run:
 
-disp([{rsk.channels.longName}' {rsk.channels.units}'])
-
+RSKprintchannels(rsk);
 
 %% Working with profiles
 % Most RBR CTDs can detect and record profile upcast and downcast
