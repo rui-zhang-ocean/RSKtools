@@ -35,7 +35,7 @@ RSKplotdata(rsk);
 
 * Low-pass filter selected channels:
 ```matlab
-rsk = RSKsmooth(rsk,{'Conductivity','Temperature'},'windowLength',5);
+rsk = RSKsmooth(rsk,'channel',{'Conductivity','Temperature'},'windowLength',5);
 ```
 
 * And lots of other stuff like automatic profile detection, sensor time
@@ -45,12 +45,12 @@ rsk = RSKsmooth(rsk,{'Conductivity','Temperature'},'windowLength',5);
 
 * Unzip the archive (to `~/matlab/RSKtools`, for instance).
 * Add the RSKtools folder to your Matlab path by running either of the following at the command prompt:
-    * `addpath ~/matlab/RSKtools` and `addpath(genpath(~/matlab/RSKtools))`
-    * `pathtool` and manually add RSKtools and its subdirectories
+    * `addpath ~/matlab/RSKtools`
+    * `pathtool` and manually add RSKtools directory
 * Type `help RSKtools` to get an overview and take a look at the examples.
 * Read the [RSKtools User Manual](https://docs.rbr-global.com/rsktools).
-* Check out [Getting started](http://rbr-global.com/wp-content/uploads/2018/11/Standard.pdf)
-  and [Post-processing](http://rbr-global.com/wp-content/uploads/2018/11/PostProcessing.pdf) for a quick start.
+* Check out [Getting started](http://rbr-global.com/wp-content/uploads/2020/02/Standard.pdf)
+  and [Post-processing](http://rbr-global.com/wp-content/uploads/2020/02/PostProcessing.pdf) for a quick start.
 
 ## A note on calculation of salinity
 
@@ -62,8 +62,9 @@ see
 [Unesco, 1981](http://unesdoc.unesco.org/images/0004/000461/046148eb.pdf)),
 or Absolute Salinity based on the Thermodynamic Equation of Seawater
 2010 (see [IOC, SCOR and IAPSO, 2010](http://www.teos-10.org)).  If
-the [TEOS-10 GSW](http://www.teos-10.org/software.htm) Matlab toolbox
-is installed, users can call the `RSKtools` function
+the [TEOS-10 GSW](http://www.teos-10.org/software.htm) or [seawater]
+(http://www.cmar.csiro.au/datacentre/ext_docs/seawater.htm) Matlab 
+toolbox is installed, users can call the `RSKtools` function
 `RSKderivesalinity` to calculate Practical Salinity and store it as a 
 channel in the RSK structure.
 
@@ -82,7 +83,7 @@ channel in the RSK structure.
    - All RSKtools functions now require name-value pair format for input arguments except when specifying the RSK structure and filename.
    - More derivation functions now support CSIRO seawater library, including `RSKderivesalinity`, `RSKderivedepth`, `RSKderivebuoyancy`, `RSKderivetheta` and `RSKderivesigma`.
    - New function `RSKderivesoundspeed` to derive speed of sound in seawater.
-   - New function `CSV2RSK` to read CSV export from RBR Wirewalker data hosting site into rsk structure
+   - New function `CSV2RSK` to read CSV file into rsk structure.
    - New functions `RSKsettings` and `RSKdefaultsettings` to set up global parameters for RSKtools.
    - New function `RSKprintchannels` to display channel names and units in MATLAB command window.
    - New functions `RSKerror` and `RSKwarning` to better handle error and warning messages.
@@ -91,7 +92,7 @@ channel in the RSK structure.
    - Fixed bug that `RSKreaddata` could not recognize derived and hidden channels correctly.
    - Export functions now adjust file path separator to be compatible across operating systems.
    - `RSK2RSK` now uses millisecond for sampling period unit.
-   - Subfolder `Utilities` renamed to `private`
+   - Subfolder `Utilities` renamed to `private`.
    - `Utilites/loadconstants` removed.
    - `RSKreadata` now handles cases when file type is not available.
    - `RSKderivetheta` and `RSKderivesigma` now check if Absolute Salinity exists before calculation.
