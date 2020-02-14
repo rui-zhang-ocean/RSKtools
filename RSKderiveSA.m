@@ -19,7 +19,7 @@ function [RSK] = RSKderiveSA(RSK, varargin)
 %
 % Note: When geographic information are both available from optional inputs
 % and RSK.data structure, the optional inputs will override. The inputs
-% latitude/longitude must be either a single value of vector of the same
+% latitude/longitude must be either a single value or vector of the same
 % length of RSK.data.
 %
 % Inputs: 
@@ -53,15 +53,17 @@ longitude = p.Results.longitude;
 
 hasTEOS = ~isempty(which('gsw_SA_from_SP'));
 if ~hasTEOS
-    error('Must install TEOS-10 toolbox. Download it from here: http://www.teos-10.org/software.htm');
+    RSKerror('Must install TEOS-10 toolbox. Download it from here: http://www.teos-10.org/software.htm');
 end
 
+checkDataField(RSK)
+
 if length(latitude) > 1 && length(RSK.data) ~= length(latitude)
-    error('Input latitude must be either one value or vector of the same length of RSK.data')
+    RSKerror('Input latitude must be either one value or vector of the same length of RSK.data')
 end
 
 if length(longitude) > 1 && length(RSK.data) ~= length(longitude)
-    error('Input longitude must be either one value or vector of the same length of RSK.data')
+    RSKerror('Input longitude must be either one value or vector of the same length of RSK.data')
 end
 
 [Scol,SPcol] = getchannel_S_SP_index(RSK);
@@ -74,52 +76,11 @@ for ndx = castidx
     SP = RSK.data(ndx).values(:,SPcol);
     S = RSK.data(ndx).values(:,Scol);
     [lat,lon] = getGeo(RSK,ndx,latitude,longitude);
-    SA = derive_SA(S,SP,lat,lon);    
+    SA = deriveSA(S,SP,lat,lon);    
     RSK.data(ndx).values(:,SAcol) = SA;
 end
 
 logentry = ('Absolute salinity derived using TEOS-10 GSW toolbox.');
 RSK = RSKappendtolog(RSK, logentry);
-
-
-%% Nested functions
-function [Scol,SPcol] = getchannel_S_SP_index(RSK)
-    try
-        Scol = getchannelindex(RSK, 'Salinity');
-    catch
-        error('RSKderiveSA requires practical salinity. Use RSKderivesalinity...');
-    end
-    try
-        SPcol = getchannelindex(RSK, 'Sea Pressure');
-    catch
-        error('RSKderiveSA requires sea pressure. Use RSKderiveseapressure...');
-    end
-end
-
-function  [lat,lon] = getGeo(RSK,ndx,latitude,longitude)
-    if ~isempty(latitude) && length(latitude) > 1 
-        lat = latitude(ndx);  
-    elseif isempty(latitude) && isfield(RSK.data,'latitude')
-        lat = RSK.data(ndx).latitude; 
-    else
-        lat = latitude;    
-    end
-    
-    if ~isempty(longitude) && length(longitude) > 1 
-        lon = longitude(ndx);  
-    elseif isempty(longitude) && isfield(RSK.data,'longitude')
-        lon = RSK.data(ndx).longitude; 
-    else
-        lon = longitude;    
-    end
-end
-
-function SA = derive_SA(S,SP,lat,lon)
-    if isempty(lat) || isempty(lon)
-        SA = gsw_SR_from_SP(S); % Assume SA ~= SR
-    else
-        SA = gsw_SA_from_SP(S,SP,lon,lat);
-    end
-end
 
 end

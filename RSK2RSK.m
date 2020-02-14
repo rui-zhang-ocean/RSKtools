@@ -52,10 +52,10 @@ newfile = setupOutputFilename(RSK,suffix);
 data = convertProfilesIntoTimeseries(RSK);
 [data, nchannel] = removeRepeatedTimestamp(data);
 
-if exist([outputdir '/' newfile],'file') == 2
-    error([outputdir '/' newfile ' already exists, please revise suffix for a different name.'])
+if exist([outputdir filesep newfile],'file') == 2
+    RSKerror([outputdir filesep newfile ' already exists, please revise suffix for a different name.'])
 else
-    mksqlite('OPEN',[outputdir '/' newfile]);
+    mksqlite('OPEN',[outputdir filesep newfile]);
     createSchema(nchannel);
     writeData(RSK, data, newfile);
     mksqlite('CLOSE')
@@ -148,7 +148,7 @@ function insertSchedules(RSK)
     if isstruct(readsamplingperiod(RSK))
         sp = 1;
     else
-        sp = readsamplingperiod(RSK);
+        sp = 1000*readsamplingperiod(RSK);
     end
     formatAndTransact('INSERT INTO schedules (scheduleID,deploymentID,samplingPeriod,mode,gate) VALUES','(%i,%i,%i,"%s","%s")',{RSK.schedules.scheduleID, RSK.deployments.deploymentID, sp, RSK.schedules.mode, RSK.schedules.gate});
 end

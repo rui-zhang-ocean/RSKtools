@@ -37,9 +37,11 @@ function RSK = RSKopen(fname, varargin)
 % Last revision: 2019-07-30
 
 
+rsksettings = RSKsettings;
+
 p = inputParser;
 addRequired(p,'fname',@ischar);
-addOptional(p,'readHiddenChannels', false, @islogical)
+addParameter(p,'readHiddenChannels', false, @islogical)
 parse(p, fname, varargin{:})
 
 fname = p.Results.fname;
@@ -47,12 +49,10 @@ readHiddenChannels = p.Results.readHiddenChannels;
 
 
 if isempty(dir(fname))
-    disp('File cannot be found')
+    RSKwarning('File cannot be found')
     RSK = [];
     return
 end
-
-loadconstants
 
 RSK.toolSettings.filename = fname;
 RSK.toolSettings.readHiddenChannels = readHiddenChannels;
@@ -62,7 +62,7 @@ RSK = readheader(RSK);
 RSK = getprofiles(RSK);
 RSK = readannotations(RSK);
 
-logentry = [fname ' opened using RSKtools v' RSKtoolsversion '.'];
+logentry = [fname ' opened using RSKtools v' rsksettings.RSKtoolsVersion '.'];
 RSK = RSKappendtolog(RSK, logentry);
 
 end

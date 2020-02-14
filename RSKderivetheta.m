@@ -1,15 +1,17 @@
 function [RSK] = RSKderivetheta(RSK, varargin)
 
-% RSKderivetheta - Calculate potential temperature.
+% RSKderivetheta - Calculate potential temperature with a reference sea
+% pressure of zero.
 %
 % Syntax: [RSK] = RSKderivetheta(RSK, [OPTIONS])
 % 
-% Derives potential temperature using the TEOS-10 GSW toolbox
-% (http://www.teos-10.org/software.htm). The result is added to the RSK 
-% data structure, and the channel list is updated. The workflow of the
-% function is as below:
+% Derives potential temperature using either TEOS-10 GSW toolbox
+% (http://www.teos-10.org/software.htm) or seawater toolbox. The result is 
+% added to the RSK data structure, and the channel list is updated. 
 %
-% 1, Calculate absolute salinity (SA)
+% When using TEOS-10 library, the workflow of the function is as below:
+%
+% 1, Calculate absolute salinity (SA) if it doesn't exist
 %    a) When latitude and longitude data are available (either from
 %    optional input or station data in RSK.data.latitude/longitude), the
 %    function will call SA = gsw_SA_from_SP(salinity,seapressure,lon,lat)
@@ -27,7 +29,10 @@ function [RSK] = RSKderivetheta(RSK, varargin)
 % Inputs: 
 %   [Required] - RSK - Structure containing the logger metadata and data
 %
-%   [Optional] - latitude - Latitude in decimal degrees north [-90 ... +90]
+%   [Optional] - seawaterLibrary - Specify which library to use, should 
+%                be either 'TEOS-10' or 'seawater', default is TEOS-10
+%
+%              - latitude - Latitude in decimal degrees north [-90 ... +90]
 %
 %              - longitude - Longitude in decimal degrees east [-180 ... +180]
 %
@@ -42,31 +47,37 @@ function [RSK] = RSKderivetheta(RSK, varargin)
 % Last revision: 2019-11-15
 
 
+rsksettings = RSKsettings;
+
+validSeawaterLibrary = {'TEOS-10','seawater'};
+checkSeawaterLibrary = @(x) any(validatestring(x,validSeawaterLibrary));
+
 p = inputParser;
 addRequired(p, 'RSK', @isstruct);
+addParameter(p, 'seawaterLibrary', rsksettings.seawaterLibrary, checkSeawaterLibrary);
 addParameter(p, 'latitude', [], @isnumeric);
 addParameter(p, 'longitude', [], @isnumeric);
 parse(p, RSK, varargin{:})
 
 RSK = p.Results.RSK;
+seawaterLibrary = p.Results.seawaterLibrary;
 latitude = p.Results.latitude;
 longitude = p.Results.longitude;
  
 
-hasTEOS = ~isempty(which('gsw_pt0_from_t'));
-if ~hasTEOS
-    error('Must install TEOS-10 toolbox. Download it from here: http://www.teos-10.org/software.htm');
-end
+checkDataField(RSK)
+checkSeawaterLibraryExistence(seawaterLibrary)
 
 if length(latitude) > 1 && length(RSK.data) ~= length(latitude)
-    error('Input latitude must be either one value or vector of the same length of RSK.data')
+    RSKerror('Input latitude must be either one value or vector of the same length of RSK.data')
 end
 
 if length(longitude) > 1 && length(RSK.data) ~= length(longitude)
-    error('Input longitude must be either one value or vector of the same length of RSK.data')
+    RSKerror('Input longitude must be either one value or vector of the same length of RSK.data')
 end
 
-[Tcol,Scol,SPcol] = getchannel_T_S_SP_index(RSK);
+Tcol = getchannelindex(RSK, 'Temperature');
+[Scol,SPcol] = getchannel_S_SP_index(RSK);
 
 RSK = addchannelmetadata(RSK, 'cnt_00', 'Potential Temperature', '°C'); % cnt_00 will need update when Ruskin sets up a shortname for theta
 PTcol = getchannelindex(RSK, 'Potential Temperature');
@@ -75,56 +86,25 @@ castidx = getdataindex(RSK);
 for ndx = castidx
     SP = RSK.data(ndx).values(:,SPcol);
     S = RSK.data(ndx).values(:,Scol);
-    T = RSK.data(ndx).values(:,Tcol);   
-    [lat,lon] = getGeo(RSK,ndx,latitude,longitude);
-    PT = derive_PT(S,T,SP,lat,lon);    
+    T = RSK.data(ndx).values(:,Tcol);  
+    
+    if strcmpi(seawaterLibrary,'TEOS-10')    
+        [lat,lon] = getGeo(RSK,ndx,latitude,longitude);  
+        hasSA = any(strcmp({RSK.channels.longName}, 'Absolute Salinity'));
+        if hasSA
+            SA = RSK.data(ndx).values(:,getchannelindex(RSK,'Absolute Salinity'));
+        else
+            SA = deriveSA(S,SP,lat,lon);    
+        end       
+        PT = gsw_pt0_from_t(SA,T,SP);  
+    else
+        PT = sw_ptmp(S,T,SP,0);
+    end
+    
     RSK.data(ndx).values(:,PTcol) = PT;
 end
 
-logentry = ('Potential temperature derived using TEOS-10 GSW toolbox.');
+logentry = (['Potential temperature derived using ' seawaterLibrary ' library.']);
 RSK = RSKappendtolog(RSK, logentry);
-
-
-%% Nested functions
-function [Tcol,Scol,SPcol] = getchannel_T_S_SP_index(RSK)
-    Tcol = getchannelindex(RSK, 'Temperature');
-    try
-        Scol = getchannelindex(RSK, 'Salinity');
-    catch
-        error('RSKderivetheta requires practical salinity. Use RSKderivesalinity...');
-    end
-    try
-        SPcol = getchannelindex(RSK, 'Sea Pressure');
-    catch
-        error('RSKderivetheta requires sea pressure. Use RSKderiveseapressure...');
-    end
-end
-
-function  [lat,lon] = getGeo(RSK,ndx,latitude,longitude)
-    if ~isempty(latitude) && length(latitude) > 1 
-        lat = latitude(ndx);  
-    elseif isempty(latitude) && isfield(RSK.data,'latitude')
-        lat = RSK.data(ndx).latitude; 
-    else
-        lat = latitude;    
-    end
-    
-    if ~isempty(longitude) && length(longitude) > 1 
-        lon = longitude(ndx);  
-    elseif isempty(longitude) && isfield(RSK.data,'longitude')
-        lon = RSK.data(ndx).longitude; 
-    else
-        lon = longitude;    
-    end
-end
-
-function pt0 = derive_PT(S,T,SP,lat,lon)
-    if isempty(lat) || isempty(lon)
-        SA = gsw_SR_from_SP(S); % Assume SA ~= SR
-    else
-        SA = gsw_SA_from_SP(S,SP,lon,lat);
-    end
-    pt0 = gsw_pt0_from_t(SA,T,SP);
-end
 
 end

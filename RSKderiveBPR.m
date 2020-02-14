@@ -45,15 +45,17 @@ function [RSK] = RSKderiveBPR(RSK, varargin)
 
 p = inputParser;
 addRequired(p, 'RSK', @isstruct);
-addOptional(p, 'coef', [], @isnumeric);
+addParameter(p, 'coef', [], @isnumeric);
 parse(p, RSK, varargin{:})
 
 RSK = p.Results.RSK;
 coef = p.Results.coef;
 
 
+checkDataField(RSK)
+
 if ~strcmp(RSK.dbInfo(end).type, 'full')
-    error('Only files of type "full" need derivation for BPR pressure and temperature');
+    RSKerror('Only files of type "full" need derivation for BPR pressure and temperature');
 end
 
 PresPeriCol = strcmp({RSK.channels.shortName},'peri00') == 1;

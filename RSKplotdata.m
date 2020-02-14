@@ -73,12 +73,10 @@ direction = p.Results.direction;
 showcast = p.Results.showcast;
 
 
-if ~isfield(RSK,'data')
-    error('You must read a section of data in first! Use RSKreaddata...')
-end
+checkDataField(RSK)
 
 if length(RSK.data) == 1 && ~isempty(profile) && ~isfield(RSK.data,'direction')
-    error('RSK structure does not contain any profiles, use RSKreadprofiles or RSKtimeseries2profiles.')
+    RSKerror('RSK structure does not contain any profiles, use RSKreadprofiles or RSKtimeseries2profiles.')
 end
 
 if isempty(profile); 
@@ -95,16 +93,16 @@ if showcast
     try
         pCol = getchannelindex(RSK,'Pressure');
     catch
-        error('There is no pressure channel, no cast can be shown.')
+        RSKerror('There is no pressure channel, no cast can be shown.')
     end    
     if ~ismember(pCol, chanCol) 
-        error('Please specify pressure in channel input so that showcast could work')
+        RSKerror('Please specify pressure in channel input so that showcast could work')
     end
     if length(RSK.data) ~= 1;
-        error('RSK structure must be time series for showcast, use RSKreaddata.')
+        RSKerror('RSK structure must be time series for showcast, use RSKreaddata.')
     end
     if ~isfield(RSK,'regionCast') || ~isfield(RSK,'profiles')
-        error('RSK does not have cast events for profiles, use RSKfindprofiles or RSKtimeseries2profiles.')
+        RSKerror('RSK does not have cast events for profiles, use RSKfindprofiles or RSKtimeseries2profiles.')
     end
 end
 
@@ -114,10 +112,10 @@ if isfield(RSK, 'profiles') && isfield(RSK.profiles, 'order') && any(strcmp(p.Us
     castidx = getdataindex(RSK, profile, direction);
 end
 if size(castidx,2) ~= 1 
-    error('RSKplotdata can only plot one cast and direction. To plot multiple casts or directions, use RSKplotprofiles.')
+    RSKerror('RSKplotdata can only plot one cast and direction. To plot multiple casts or directions, use RSKplotprofiles.')
 end
 
-clf
+
 [handles,axes] = channelsubplots(RSK, 'data', 'chanCol', chanCol, 'castidx', castidx);
 
 if isfield(RSK.data,'profilenumber') && isfield(RSK.data,'direction');

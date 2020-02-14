@@ -70,10 +70,10 @@ reference = p.Results.reference;
 
 
 if ~isfield(RSK,'data')
-    error('The .data structure is missing from your variable. Perhaps you forgot to call RSKreaddata or RSKreadprofiles first?')
+    RSKerror('The .data structure is missing from your variable. Perhaps you forgot to call RSKreaddata or RSKreadprofiles first?')
 else
     if ~isfield(RSK.data,'direction')
-        error('RSK contains no profiles, use RSKreadprofiles first.')
+        RSKerror('RSK contains no profiles, use RSKreadprofiles first.')
     end
 end
 
@@ -87,7 +87,7 @@ end
 numchannels = length(chanCol);
 
 if numchannels == 0;
-    error('There are only pressure, sea pressure or depth channel in the rsk file, use RSKplotdata...')
+    RSKerror('There are only pressure, sea pressure or depth channel in the rsk file, use RSKplotdata...')
 end
 
 castidx = getdataindex(RSK, profile, direction);
@@ -104,7 +104,7 @@ end
 clrs = lines(length(castidx));
 pmax = 0;
 n = 1;
-clf
+
 for chan = chanCol
     subplot(1,numchannels,n)
     

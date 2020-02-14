@@ -42,8 +42,8 @@ channel = p.Results.channel;
 
 field = 'burstData';
 if ~isfield(RSK, field)
-    disp('You must read a section of burst data in first!');
-    disp('Use RSKreadburstdata...')
+    RSKwarning('You must read a section of burst data in first!');
+    RSKwarning('Use RSKreadburstdata...')
     return
 end
 
@@ -55,7 +55,7 @@ if ~strcmp(channel, 'all')
     end
 end
 
-clf
+
 [handles,axes] = channelsubplots(RSK, field, 'chanCol', chanCol);
 
 if nargout == 0
