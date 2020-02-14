@@ -115,7 +115,7 @@ if size(castidx,2) ~= 1
     RSKerror('RSKplotdata can only plot one cast and direction. To plot multiple casts or directions, use RSKplotprofiles.')
 end
 
-clf
+
 [handles,axes] = channelsubplots(RSK, 'data', 'chanCol', chanCol, 'castidx', castidx);
 
 if isfield(RSK.data,'profilenumber') && isfield(RSK.data,'direction');
