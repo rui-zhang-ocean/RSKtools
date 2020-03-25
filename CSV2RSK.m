@@ -33,7 +33,7 @@ function RSK = CSV2RSK(fname,varargin)
 % Author: RBR Ltd. Ottawa ON, Canada
 % email: support@rbr-global.com
 % Website: www.rbr-global.com
-% Last revision: 2019-11-27
+% Last revision: 2020-03-25
 
 
 p = inputParser;
@@ -63,8 +63,13 @@ if exist('slCharacterEncoding','file')
 end
 
 varNameAndUnit = regexprep(varNameAndUnit(2:end),'[",(,)]','');
-[channels,units] = strtok(varNameAndUnit,' ');
-units = regexprep(units,' ','');
+[channels,units] = deal(cell(size(varNameAndUnit)));
+
+for i = 1:length(varNameAndUnit)
+    idx = find(isspace(varNameAndUnit{i}),1,'last');
+    channels{i} = varNameAndUnit{i}(1:idx-1);
+    units{i} = varNameAndUnit{i}(idx+1:end);
+end
 
 tstamp = rsktime2datenum(data(:,1))';
 values = data(:,2:end);
