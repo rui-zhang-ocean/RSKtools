@@ -62,14 +62,18 @@ if exist('slCharacterEncoding','file')
     slCharacterEncoding(originalCharacterEncoding)
 end
 
-varNameAndUnit = regexprep(varNameAndUnit(2:end),'[",(,)]','');
+varNameAndUnit = varNameAndUnit(2:end);
 [channels,units] = deal(cell(size(varNameAndUnit)));
 
 for i = 1:length(varNameAndUnit)
-    idx = find(isspace(varNameAndUnit{i}),1,'last');
-    channels{i} = varNameAndUnit{i}(1:idx-1);
-    units{i} = varNameAndUnit{i}(idx+1:end);
+    idx = strfind(varNameAndUnit{i},'(');
+    idx = idx(end);
+    channels{i} = varNameAndUnit{i}(1:idx-2);
+    units{i} = varNameAndUnit{i}(idx:end);
 end
+
+channels = regexprep(channels,'"','');
+units = regexprep(units,'[",(,)]','');
 
 tstamp = rsktime2datenum(data(:,1))';
 values = data(:,2:end);
