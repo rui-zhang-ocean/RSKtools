@@ -112,9 +112,13 @@ end
 
 function writeData(RSK,data,newfile)    
     
-    if exist('slCharacterEncoding','file')
-        originalCharacterEncoding = slCharacterEncoding;
-        slCharacterEncoding('UTF-8'); 
+%     if exist('slCharacterEncoding','file')
+%         originalCharacterEncoding = slCharacterEncoding;
+%         slCharacterEncoding('UTF-8'); 
+%     end
+    currentEncoding = feature('DefaultCharacterSet');
+    if ~strcmpi(currentEncoding,'UTF-8')
+        feature('DefaultCharacterSet','UTF-8');
     end
 
     insertDbInfo(RSK)
@@ -126,9 +130,10 @@ function writeData(RSK,data,newfile)
     insertData(data)
     insertRegionTables(RSK)  
         
-    if exist('slCharacterEncoding','file')
-        slCharacterEncoding(originalCharacterEncoding)
-    end
+%     if exist('slCharacterEncoding','file')
+%         slCharacterEncoding(originalCharacterEncoding)
+%     end
+    feature('DefaultCharacterSet',currentEncoding);
 
 end
 
