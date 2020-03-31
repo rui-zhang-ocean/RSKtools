@@ -33,7 +33,7 @@ function RSK = CSV2RSK(fname,varargin)
 % Author: RBR Ltd. Ottawa ON, Canada
 % email: support@rbr-global.com
 % Website: www.rbr-global.com
-% Last revision: 2020-03-25
+% Last revision: 2020-03-30
 
 
 p = inputParser;
@@ -49,18 +49,9 @@ serialID = p.Results.serialID;
 
 data = csvread(fname,1,0);
 
-if exist('slCharacterEncoding','file')
-    originalCharacterEncoding = slCharacterEncoding;
-    slCharacterEncoding('UTF-8');  
-end
-
-fid = fopen(fname);
+fid = fopen(fname,'r','n','UTF-8');
 varNameAndUnit = strsplit(fgetl(fid),',');
 fclose(fid);
-    
-if exist('slCharacterEncoding','file')
-    slCharacterEncoding(originalCharacterEncoding)
-end
 
 varNameAndUnit = varNameAndUnit(2:end);
 [channels,units] = deal(cell(size(varNameAndUnit)));
