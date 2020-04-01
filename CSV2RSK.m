@@ -72,4 +72,6 @@ values = data(:,2:end);
 RSK = RSKcreate('tstamp',tstamp,'values',values,'channel',channels,'unit',...
       units,'filename',[strtok(fname,'.') '.rsk'],'model',model,'serialID',serialID);
 
+RSK = renamechannels(RSK);
+
 end
