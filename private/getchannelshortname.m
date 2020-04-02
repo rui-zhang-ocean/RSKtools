@@ -46,7 +46,14 @@ shortName = cell(size(longName));
 shortName(ind1) = shortNameList(ind2);
 [shortName{cellfun(@isempty,shortName)}] = deal('cnt_00');
      
-shortName{strncmpi('dissolved',longName,9)} = 'ddox00';
-shortName{strncmpi('chlorophyll',longName,11)} = 'fluo01';
+idx = strncmpi('dissolved',longName,9);
+if any(idx)
+    shortName(idx) = repmat({'ddox00'},1,sum(idx));
+end
+
+idx = strncmpi('chlorophyll',longName,11);
+if any(idx)
+    shortName(idx) = repmat({'fluo01'},1,sum(idx));
+end
 
 end
