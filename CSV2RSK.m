@@ -72,4 +72,17 @@ values = data(:,2:end);
 RSK = RSKcreate('tstamp',tstamp,'values',values,'channel',channels,'unit',...
       units,'filename',[strtok(fname,'.') '.rsk'],'model',model,'serialID',serialID);
 
+RSK = renamechannels(RSK);
+
+% temporary fix for inconsistent units between WW data and Ruskin
+for i = 1:length(RSK.channels)
+    if strncmpi(RSK.channels(i).longName,'Dissolved O2',12) && strcmpi(RSK.channels(i).units(2:end),'Mol/L')
+        RSK.channels(i).units = lower(RSK.channels(i).units);
+    end
+    
+    if strncmpi(RSK.channels(i).longName,'Chlorophyll',11) && strcmpi(RSK.channels(i).units(2:end),'g/L')
+        RSK.channels(i).units = lower(RSK.channels(i).units);
+    end
+end
+
 end
