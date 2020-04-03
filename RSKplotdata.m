@@ -89,16 +89,15 @@ for chan = channels
     chanCol = [chanCol getchannelindex(RSK, chan{1})];
 end
 
-if showcast  
-    try
+if showcast     
+    if any(strcmpi({RSK.channels.longName},'pressure')) && any(strcmpi(channels,'pressure'));
         pCol = getchannelindex(RSK,'Pressure');
-    catch
-        try
-            spCol = getchannelindex(RSK,'Sea Pressure');
-        catch
-            RSKerror('There is no pressure or sea pressure channel in the data, showcast do not work.')
-        end
+    end
+    
+    if any(strcmpi({RSK.channels.longName},'sea pressure')) && any(strcmpi(channels,'sea pressure'));
+        spCol = getchannelindex(RSK,'Sea Pressure');
     end    
+    
     if length(RSK.data) ~= 1;
         RSKerror('RSK structure must be time series for showcast, use RSKreaddata.')
     end
@@ -123,12 +122,16 @@ if isfield(RSK.data,'profilenumber') && isfield(RSK.data,'direction');
     legend(['Profile ' num2str(RSK.data(castidx).profilenumber) ' ' RSK.data(castidx).direction 'cast']);
 end
 
-if showcast && exist('pCol','var') && ismember(pCol,chanCol)    
-    subplotShowcast(RSK,pCol,chanCol,axes)
-end
-
-if showcast && exist('spCol','var') && ismember(spCol,chanCol)    
-    subplotShowcast(RSK,spCol,chanCol,axes)
+if showcast
+    try
+        subplotShowcast(RSK,pCol,chanCol,axes)
+    catch
+        try
+            subplotShowcast(RSK,spCol,chanCol,axes)
+        catch
+            RSKwarning('No pressure or sea pressure channel is specified or available for showcast')
+        end
+    end
 end
 
 if nargout == 0
