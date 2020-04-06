@@ -152,7 +152,16 @@ end
 
 % Log entry
 logdata = logentrydata(RSK, profile, direction);
-logentry = ['Data samples with ' reference ' between ' num2str(range(1)) '  and ' num2str(range(2)) ' trimmed by ' action ' on ' channel ' channels of ' logdata '.'];
+
+if strcmpi(reference, 'time')
+    s1 = datestr(range(1));
+    s2 = datestr(range(2));
+else
+    s1 = num2str(range(1));
+    s2 = num2str(range(2));
+end
+
+logentry = ['Data samples with ' reference ' between ' s1 ' and ' s2 ' trimmed by ' action ' on ' channel ' channels of ' logdata '.'];
 RSK = RSKappendtolog(RSK, logentry);
 
 end
