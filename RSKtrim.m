@@ -156,12 +156,15 @@ logdata = logentrydata(RSK, profile, direction);
 if strcmpi(reference, 'time')
     s1 = datestr(range(1));
     s2 = datestr(range(2));
-else
+elseif strcmpi(reference, 'index')
     s1 = num2str(range(1));
     s2 = num2str(range(2));
+else
+    s1 = num2str(range(1));
+    s2 = [num2str(range(2)) ' ' RSK.channels(channelCol).units];
 end
 
-logentry = ['Data samples with ' reference ' between ' s1 ' and ' s2 ' trimmed by ' action ' on ' channel ' channels of ' logdata '.'];
+logentry = ['Data with ' reference ' between ' s1 ' and ' s2 ' trimmed by method "' action '" on ' channel ' channels of ' logdata '.'];
 RSK = RSKappendtolog(RSK, logentry);
 
 end
