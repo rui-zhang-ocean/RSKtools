@@ -79,15 +79,12 @@ RSK = RSKcreate('tstamp',tstamp,'values',values,'channel',channels,'unit',...
 
 % revise sampling rate if data in DD mode
 if DDmode
-    RSKP = RSKderiveseapressure(RSK);
-    RSKP = RSKtimeseries2profiles(RSKP);
-    downIdx = find(strcmpi({RSKP.data.direction},'down'),1,'first');
-    upIdx = find(strcmpi({RSKP.data.direction},'up'),1,'first');
-
-    samplingPeriodDown = round(median(diff(RSKP.data(downIdx).tstamp)*86400*1000));
-    samplingPeriodUp = round(median(diff(RSKP.data(upIdx).tstamp)*86400*1000));
+    timeDiff = diff(RSK.data.tstamp)*86400*1000;   
+    fastPeriod = ceil(1000/floor(1000/mode(timeDiff)));
+    timeDiff(timeDiff < fastPeriod + 5 & timeDiff > fastPeriod - 5) = NaN;
+    slowPeriod = round(mode(timeDiff));
     
-    if samplingPeriodDown == samplingPeriodUp
+    if isnan(slowPeriod)
         RSKwarning('The data is not in DD mode, please turn DDmode off.')
     else   
         if isfield(RSK.schedules,'samplingPeriod')
@@ -95,17 +92,10 @@ if DDmode
         end
         RSK.schedules.mode = 'ddsampling';
         RSK.directional.directionalID = 1;
-        RSK.directional.scheduleID = 1;
-
-        if samplingPeriodDown > samplingPeriodUp
-            RSK.directional.direction = 'Ascending';
-            RSK.directional.fastPeriod = samplingPeriodUp;
-            RSK.directional.slowPeriod = samplingPeriodDown;
-        else
-            RSK.directional.direction = 'Descending';
-            RSK.directional.fastPeriod = samplingPeriodDown;
-            RSK.directional.slowPeriod = samplingPeriodUp;
-        end 
+        RSK.directional.scheduleID = 1;        
+        RSK.directional.fastPeriod = fastPeriod;
+        RSK.directional.slowPeriod = slowPeriod;       
+        RSK.directional.direction = 'Ascending';       
     end
 end
 
