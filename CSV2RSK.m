@@ -80,7 +80,7 @@ RSK = RSKcreate('tstamp',tstamp,'values',values,'channel',channels,'unit',...
 % revise sampling rate if data in DD mode
 if DDmode
     timeDiff = diff(RSK.data.tstamp)*86400*1000;   
-    fastPeriod = ceil(1000/floor(1000/mode(timeDiff)));
+    fastPeriod = round(mode(timeDiff));
     timeDiff(timeDiff < fastPeriod + 5 & timeDiff > fastPeriod - 5) = NaN;
     slowPeriod = round(mode(timeDiff));
     
