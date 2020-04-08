@@ -13,6 +13,9 @@ function RSK = CSV2RSK(fname,varargin)
 %                 serialID - serial ID of the instrument from which data
 %                 was collected, default is 0
 %
+%                 DDmode - indicate if the data is from DD (directional
+%                 dependent) mode, defalt is false
+%
 % Output:
 %    RSK - RSK structure containing data from the csv file
 %
@@ -40,11 +43,13 @@ p = inputParser;
 addRequired(p,'fname', @ischar);
 addParameter(p,'model','unknown', @ischar);
 addParameter(p,'serialID', 0, @isnumeric);
+addParameter(p,'DDmode', false, @islogical);
 parse(p, fname, varargin{:})
 
 fname = p.Results.fname;
 model = p.Results.model;
 serialID = p.Results.serialID;
+DDmode = p.Results.DDmode;
 
 
 data = csvread(fname,1,0);
@@ -72,9 +77,41 @@ values = data(:,2:end);
 RSK = RSKcreate('tstamp',tstamp,'values',values,'channel',channels,'unit',...
       units,'filename',[strtok(fname,'.') '.rsk'],'model',model,'serialID',serialID);
 
-RSK = renamechannels(RSK);
+% revise sampling rate if data in DD mode
+if DDmode
+    RSKP = RSKderiveseapressure(RSK);
+    RSKP = RSKtimeseries2profiles(RSKP);
+    downIdx = find(strcmpi({RSKP.data.direction},'down'),1,'first');
+    upIdx = find(strcmpi({RSKP.data.direction},'up'),1,'first');
+
+    samplingPeriodDown = round(median(diff(RSKP.data(downIdx).tstamp)*86400*1000));
+    samplingPeriodUp = round(median(diff(RSKP.data(upIdx).tstamp)*86400*1000));
+    
+    if samplingPeriodDown == samplingPeriodUp
+        RSKwarning('The data is not in DD mode, please turn DDmode off.')
+    else   
+        if isfield(RSK.schedules,'samplingPeriod')
+            RSK.schedules = rmfield(RSK.schedules,'samplingPeriod'); 
+        end
+        RSK.schedules.mode = 'ddsampling';
+        RSK.directional.directionalID = 1;
+        RSK.directional.scheduleID = 1;
+
+        if samplingPeriodDown > samplingPeriodUp
+            RSK.directional.direction = 'Ascending';
+            RSK.directional.fastPeriod = samplingPeriodUp;
+            RSK.directional.slowPeriod = samplingPeriodDown;
+        else
+            RSK.directional.direction = 'Descending';
+            RSK.directional.fastPeriod = samplingPeriodDown;
+            RSK.directional.slowPeriod = samplingPeriodUp;
+        end 
+    end
+end
 
 % temporary fix for inconsistent units between WW data and Ruskin
+RSK = renamechannels(RSK);
+
 for i = 1:length(RSK.channels)
     if strncmpi(RSK.channels(i).longName,'Dissolved O2',12) && strcmpi(RSK.channels(i).units(2:end),'Mol/L')
         RSK.channels(i).units = lower(RSK.channels(i).units);
