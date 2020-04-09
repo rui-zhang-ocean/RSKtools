@@ -81,6 +81,7 @@ RSK = RSKcreate('tstamp',tstamp,'values',values,'channel',channels,'unit',...
 if DDmode
     timeDiff = diff(RSK.data.tstamp)*86400*1000;   
     fastPeriod = round(mode(timeDiff));
+    fastPeriod = 1000/(round(1000/fastPeriod));
     timeDiff(timeDiff < fastPeriod + 5 & timeDiff > fastPeriod - 5) = NaN;
     slowPeriod = round(mode(timeDiff));
     
