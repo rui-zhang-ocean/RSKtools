@@ -14,7 +14,7 @@ function RSK = CSV2RSK(fname,varargin)
 %                 was collected, default is 0
 %
 %                 DDmode - indicate if the data is from DD (directional
-%                 dependent) mode, defalt is false
+%                 dependent) mode, default is false
 %
 % Output:
 %    RSK - RSK structure containing data from the csv file
