@@ -80,11 +80,11 @@ channel in the RSK structure.
 
 * Version 3.4.1 (2020-04-09)
 
-    - `CSV2RSK` is compatible with wirewalker csv file downloaded from data hosting website.
-    - `CSV2RSK` and `RSK2RSK` now handles encoding scheme without SIMULINK.
-    - `CSV2RSK` and `readsamplingperiod` now supports directional dependent (DD) mode.
-    - `RSKplotdata`, `RSKplotburstdata` and `RSKplotdownsample` now reverses yaxis for `depth` channel. 
-    - `showcast` option in `RSKplotdata` now works for both `pressure` and `sea pressure` channels.
+    - `CSV2RSK` is compatible with Wirewalker CSV files downloaded from the RBR data hosting website.
+    - `CSV2RSK` and `RSK2RSK` now handle encoding scheme without SIMULINK.
+    - `CSV2RSK` and `readsamplingperiod` now supports the directional dependent (DD) CTD sampling mode.
+    - `RSKplotdata`, `RSKplotburstdata` and `RSKplotdownsample` now reverse the y-axis for `depth` channel. 
+    - `RSKplotdata` `showcast` option now works for both `pressure` and `sea pressure` channels.
     - `RSKtrim` log entry shows time period correctly when `reference` is set to `time`.
 
 * Version 3.4.0 (2020-02-14)
