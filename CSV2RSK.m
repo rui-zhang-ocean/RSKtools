@@ -14,7 +14,7 @@ function RSK = CSV2RSK(fname,varargin)
 %                 was collected, default is 0
 %
 %                 DDmode - indicate if the data is from DD (directional
-%                 dependent) mode, defalt is false
+%                 dependent) mode, default is false
 %
 % Output:
 %    RSK - RSK structure containing data from the csv file
@@ -81,6 +81,7 @@ RSK = RSKcreate('tstamp',tstamp,'values',values,'channel',channels,'unit',...
 if DDmode
     timeDiff = diff(RSK.data.tstamp)*86400*1000;   
     fastPeriod = round(mode(timeDiff));
+    fastPeriod = 1000/(round(1000/fastPeriod));
     timeDiff(timeDiff < fastPeriod + 5 & timeDiff > fastPeriod - 5) = NaN;
     slowPeriod = round(mode(timeDiff));
     
