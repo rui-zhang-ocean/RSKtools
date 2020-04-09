@@ -84,6 +84,15 @@ if DDmode
     timeDiff(timeDiff < fastPeriod + 5 & timeDiff > fastPeriod - 5) = NaN;
     slowPeriod = round(mode(timeDiff));
     
+    slowIdx = find(~isnan(timeDiff));
+    slowIdx2 = find(diff(slowIdx) > 1);
+    p = RSK.data.values(:,getchannelindex(RSK,'pressure'));
+    if p(slowIdx2(end-1)+1) > p(slowIdx2(end))
+        direction = 'Descending';
+    else
+        direction = 'Ascending';
+    end
+    
     if isnan(slowPeriod)
         RSKwarning('The data is not in DD mode, please turn DDmode off.')
     else   
@@ -95,7 +104,7 @@ if DDmode
         RSK.directional.scheduleID = 1;        
         RSK.directional.fastPeriod = fastPeriod;
         RSK.directional.slowPeriod = slowPeriod;       
-        RSK.directional.direction = 'Ascending';       
+        RSK.directional.direction = direction;       
     end
 end
 
