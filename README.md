@@ -1,3 +1,7 @@
+While working at [RBR Ltd](https://rbr-global.com/) from Sep 2017 to May 2020 as an oceanographer, I was responsible for development and maintenance of RSKtools, a MATLAB toolbox for reading, post-processing, visualizing and exporting RBR instrumental data. I continuously improved the toolbox by communicating with engineers and oceanographers, taking their feedback from conception through prototype, code implementation, version control, release planning and document management, with a suite of methods and tools including MATLAB, SQL, Kanban, Jira, Git, Confluence and Slack. During the time I worked at RBR, the toolbox expanded from more than 20 user-facing functions (**v2.1.0**) to more than 40 (**v3.4.1**), and covered all major functionalities that other competitor manufacturers could provide.
+
+The original development job was done in [Bitbucket](https://bitbucket.org/rbr/rsktools/src/master/), I migrate the repo (up to v3.4.1) to Github, just to showcase my work at RBR. For the current official version please go to [RBR website](https://rbr-global.com/support/matlab-tools), and [here](https://docs.rbr-global.com/rsktools) for manuals.
+
 # RSKtools
 
 Current stable version: 3.4.1 (2020-04-09)
